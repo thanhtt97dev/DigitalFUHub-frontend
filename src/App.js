@@ -1,25 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { AuthProvider } from 'react-auth-kit';
+import { BrowserRouter as Router } from 'react-router-dom';
+
+import Routing from './routes/Routing';
+import refreshToken from '~/api/refreshToken';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    return (
+        <AuthProvider
+            authType={'localstorage'}
+            authName={'_auth'}
+            refresh={refreshToken}
+            cookieDomain={window.location.hostname}
+            cookieSecure
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+            <Router>
+                <Routing />
+            </Router>
+        </AuthProvider>
+    );
 }
 
 export default App;
