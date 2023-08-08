@@ -9,12 +9,12 @@ function Login() {
     const signIn = useSignIn();
     const navigate = useNavigate();
 
-    const data = {
-        email: 'leduchieu2001x@gmail.com',
-        password: '123',
-    };
-
     const onFinish = (values) => {
+        const data = {
+            email: values.username,
+            password: values.password,
+        };
+
         login(data).then((res) => {
             if (res.status === 200) {
                 if (
@@ -24,11 +24,11 @@ function Login() {
                         tokenType: 'Bearer',
                         authState: {
                             email: res.data.email,
-                            firstName: res.data.firstName,
+                            firstName: res.data.email,
                             roleName: res.data.roleName,
                         },
                         refreshToken: res.data.refreshToken,
-                        refreshTokenExpireIn: 10,
+                        refreshTokenExpireIn: 15,
                     })
                 ) {
                     return navigate('/dashboard');
