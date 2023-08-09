@@ -8,7 +8,7 @@ import refreshToken from '~/api/refreshToken';
 function App() {
     return (
         <AuthProvider
-            authType={'localstorage'}
+            authType={'cookie'}
             authName={'_auth'}
             refresh={refreshToken}
             cookieDomain={window.location.hostname}

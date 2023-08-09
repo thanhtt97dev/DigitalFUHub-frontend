@@ -1,15 +1,19 @@
 import axios from 'axios';
 import { API_BASE_URL } from './config';
-import { getToken } from '~/utils';
+import { getToken, getJwtId } from '~/utils';
 
 axios.defaults.baseURL = API_BASE_URL;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
-const headerConfig = {
-    headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${getToken()}`,
-    },
+const getHeaderConfig = () => {
+    return {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getToken()}`,
+            'Access-Control-Allow-Origin': '*',
+        },
+        withCredentials: true,
+    };
 };
 
 export const apiGet = async (url) => {
@@ -18,7 +22,7 @@ export const apiGet = async (url) => {
 };
 
 export const apiGetAuth = async (url) => {
-    const response = axios.get(url, headerConfig);
+    const response = axios.get(url, getHeaderConfig());
     return response;
 };
 
@@ -28,7 +32,7 @@ export const apiPut = async (url, data) => {
 };
 
 export const apiPutAuth = async (url, data) => {
-    const response = axios.put(url, data, headerConfig);
+    const response = axios.put(url, data, getHeaderConfig());
     return response;
 };
 
@@ -38,7 +42,7 @@ export const apiPost = async (url, data) => {
 };
 
 export const apiPostAuth = async (url, data) => {
-    const response = axios.post(url, data, headerConfig);
+    const response = axios.post(url, data, getHeaderConfig());
     return response;
 };
 
@@ -48,6 +52,6 @@ export const apiDelete = async (url, data) => {
 };
 
 export const apiDeleteAuth = async (url, data) => {
-    const response = axios.delete(url, data, headerConfig);
+    const response = axios.delete(url, data, getHeaderConfig());
     return response;
 };

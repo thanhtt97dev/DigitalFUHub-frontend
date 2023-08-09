@@ -1,10 +1,10 @@
 import { createRefresh } from 'react-auth-kit';
 
 import { apiPost } from '~/api/defaultApi';
-import { getRefreshToken, getToken, saveRefreshTokenInlocalStorage } from '~/utils';
+import { getRefreshToken, getToken, saveDataAuthToCookies } from '~/utils';
 
 const refreshToken = createRefresh({
-    interval: 1, // Refreshs the token in every 10 minutes
+    interval: 9, // Refreshs the token in every 10 minutes
     refreshApiCallback: async (param) => {
         const data = {
             refreshToken: getRefreshToken(),
@@ -14,7 +14,7 @@ const refreshToken = createRefresh({
         apiPost('api/users/refreshToken', data)
             .then((res) => {
                 if (res.status === 200) {
-                    saveRefreshTokenInlocalStorage(res.data.accessToken, res.data.refreshToken);
+                    saveDataAuthToCookies(res.data.accessToken, res.data.refreshToken, res.data.jwtId);
                     return {
                         isSuccess: true,
                         newAuthToken: res.data.accessToken,
