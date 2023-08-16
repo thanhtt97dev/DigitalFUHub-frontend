@@ -28,18 +28,11 @@ export const getJwtId = () => {
     return jwtId;
 };
 
-export const saveDataAuthToCookies = (token, refreshToken, accessTokenId) => {
+export const saveDataAuthToCookies = (token, refreshToken) => {
     Cookies.remove('_auth');
     Cookies.set('_auth', token, { expires: 7 });
     Cookies.remove('_auth_refresh');
     Cookies.set('_auth_refresh', refreshToken, { expires: 7 });
-    Cookies.remove('_tid');
-    Cookies.set('_tid', accessTokenId, { expires: 7 });
-};
-
-export const saveAccessTokenIdToCookies = (accessTokenId) => {
-    Cookies.remove('_tid');
-    Cookies.set('_tid', accessTokenId, { expires: 7 });
 };
 
 export const removeAccessTokenIdToCookies = () => {

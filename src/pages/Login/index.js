@@ -4,7 +4,6 @@ import { Button, Checkbox, Form, Input } from 'antd';
 import { useSignIn } from 'react-auth-kit';
 
 import { login } from '~/api/user';
-import { saveAccessTokenIdToCookies } from '~/utils';
 
 function Login() {
     const signIn = useSignIn();
@@ -18,7 +17,6 @@ function Login() {
 
         login(data).then((res) => {
             if (res.status === 200) {
-                saveAccessTokenIdToCookies(res.data.jwtId);
                 if (
                     signIn({
                         token: res.data.accessToken,

@@ -4,7 +4,7 @@ import { apiPost } from '~/api/defaultApi';
 import { getRefreshToken, getToken, saveDataAuthToCookies } from '~/utils';
 
 const refreshToken = createRefresh({
-    interval: 9, // Refreshs the token in every 10 minutes
+    //interval: 1, // Refreshs the token in every 10 minutes
     refreshApiCallback: async (param) => {
         const data = {
             refreshToken: getRefreshToken(),
