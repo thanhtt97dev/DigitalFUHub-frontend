@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from './config';
-import { getToken, getJwtId } from '~/utils';
+import { getToken } from '~/utils';
 
 axios.defaults.baseURL = API_BASE_URL;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -10,9 +10,7 @@ const getHeaderConfig = () => {
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${getToken()}`,
-            'Access-Control-Allow-Origin': '*',
         },
-        withCredentials: true,
     };
 };
 

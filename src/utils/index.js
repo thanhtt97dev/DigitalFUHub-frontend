@@ -20,21 +20,9 @@ export const getRefreshToken = () => {
     return token;
 };
 
-export const getJwtId = () => {
-    let jwtId;
-    if (typeof window !== 'undefined') {
-        jwtId = Cookies.get('_tid');
-    }
-    return jwtId;
-};
-
 export const saveDataAuthToCookies = (token, refreshToken) => {
     Cookies.remove('_auth');
     Cookies.set('_auth', token, { expires: 7 });
     Cookies.remove('_auth_refresh');
     Cookies.set('_auth_refresh', refreshToken, { expires: 7 });
-};
-
-export const removeAccessTokenIdToCookies = () => {
-    Cookies.remove('_tid');
 };
