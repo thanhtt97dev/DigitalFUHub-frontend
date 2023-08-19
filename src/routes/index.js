@@ -1,10 +1,12 @@
 import Login from '~/pages/Login';
 import AccessDenied from '~/pages/AccessDenied';
 
-import Dashboard from '~/pages/Dashboard';
 import Home from '~/pages/Home';
 
 import { ADMIN_ROLE } from '~/constants';
+import AdminLayout from '~/pages/Admin/AdminLayout';
+import DashBoard from '~/pages/Admin/DashBoard';
+import Users from '~/pages/Admin/Users';
 
 const routesConfig = [
     {
@@ -25,15 +27,23 @@ const routesConfig = [
         component: <Home />,
         auth: true,
         role: [ADMIN_ROLE],
-        routes: [],
     },
     {
-        title: 'dashboard',
-        path: '/dashboard',
-        component: <Dashboard />,
+        title: 'admin',
+        path: '/admin',
+        component: <AdminLayout />,
         auth: true,
         role: [ADMIN_ROLE],
-        routes: [],
+        routes: [
+            {
+                path: 'dashboard',
+                component: <DashBoard />,
+            },
+            {
+                path: 'users',
+                component: <Users />,
+            },
+        ],
     },
 ];
 

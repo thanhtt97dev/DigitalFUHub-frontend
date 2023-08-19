@@ -6,6 +6,7 @@ import { useSignIn } from 'react-auth-kit';
 
 import { login } from '~/api/user';
 import { saveDataAuthToCookies } from '~/utils';
+import { ADMIN_ROLE, User_ROLE } from '~/constants';
 
 function Login() {
     const signIn = useSignIn();
@@ -37,7 +38,14 @@ function Login() {
                         })
                     ) {
                         saveDataAuthToCookies(res.data.accessToken, res.data.refreshToken, res.data.jwtId);
-                        return navigate('/dashboard');
+                        switch (res.data.roleName) {
+                            case ADMIN_ROLE:
+                                return navigate('/admin');
+                            case User_ROLE:
+                                return navigate('/home');
+                            default:
+                                throw new Error();
+                        }
                     }
                 }
             })

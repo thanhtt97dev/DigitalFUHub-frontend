@@ -1,51 +1,50 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useIsAuthenticated, useAuthUser } from 'react-auth-kit';
 import { Route, Routes } from 'react-router-dom';
 
 import routesConfig from './index';
-import Login from '~/pages/Login';
 import NotFound from '~/pages/NotFound';
-import Dashboard from '~/pages/Dashboard';
+import Home from '~/pages/Home';
 
 function Routing() {
     const isAuthenticated = useIsAuthenticated();
     const auth = useAuthUser();
     const user = auth();
 
-    const [routesCanVistis, setRoutesCanVistis] = useState([]);
+    const [routesCanVistit, setRoutesCanVistit] = useState([]);
 
-    const getRoutesCanVistisForUser = useCallback(() => {
-        setRoutesCanVistis([]);
-        routesConfig.map((route) => {
+    const getRoutesCanVisit = useCallback(() => {
+        setRoutesCanVistit([]);
+        routesConfig.forEach((route) => {
             if (route.auth === false) {
-                setRoutesCanVistis((prev) => [...prev, route]);
+                setRoutesCanVistit((prev) => [...prev, route]);
             } else {
                 if (isAuthenticated() && user !== null && route.role.includes(user.roleName)) {
-                    setRoutesCanVistis((prev) => [...prev, route]);
+                    setRoutesCanVistit((prev) => [...prev, route]);
                 }
             }
         });
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     useEffect(() => {
-        getRoutesCanVistisForUser();
-    }, []);
-
-    const getStartUpPage = useCallback(() => {
-        if (isAuthenticated()) {
-            return <Dashboard />;
-        } else {
-            return <Login />;
-        }
+        getRoutesCanVisit();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     return (
         <Routes>
-            <Route path="/" exact element={getStartUpPage()}></Route>
-            {routesCanVistis.map((route, index) => {
-                return <Route key={index} path={route.path} element={route.component} />;
+            <Route path="/" exact element={<Home />}></Route>
+            {routesCanVistit.map((route, index) => {
+                return (
+                    <Route key={index} path={route.path} element={route.component}>
+                        {route.routes !== undefined
+                            ? route.routes.map((child) => {
+                                  return <Route key={child.path} path={child.path} element={child.component} />;
+                              })
+                            : ''}
+                    </Route>
+                );
             })}
             <Route path="*" element={<NotFound />} />
         </Routes>
