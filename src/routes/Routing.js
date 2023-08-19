@@ -1,53 +1,53 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useIsAuthenticated, useAuthUser } from 'react-auth-kit';
 import { Route, Routes } from 'react-router-dom';
 
 import routesConfig from './index';
+import Login from '~/pages/Login';
+import NotFound from '~/pages/NotFound';
+import Dashboard from '~/pages/Dashboard';
 
 function Routing() {
     const isAuthenticated = useIsAuthenticated();
     const auth = useAuthUser();
     const user = auth();
 
-    let routesProtected = [];
-    let routesUnProtected = [];
+    const [routesCanVistis, setRoutesCanVistis] = useState([]);
 
     const getRoutesCanVistisForUser = useCallback(() => {
+        setRoutesCanVistis([]);
         routesConfig.map((route) => {
             if (route.auth === false) {
-                routesUnProtected.push(route.title);
+                setRoutesCanVistis((prev) => [...prev, route]);
             } else {
-                if (isAuthenticated() && user !== null) {
-                    if (route.role.includes(user.roleName)) {
-                        routesProtected.push(route.title);
-                    }
+                if (isAuthenticated() && user !== null && route.role.includes(user.roleName)) {
+                    setRoutesCanVistis((prev) => [...prev, route]);
                 }
             }
         });
-    }, [user]);
+    }, []);
 
-    getRoutesCanVistisForUser();
+    useEffect(() => {
+        getRoutesCanVistisForUser();
+    }, []);
+
+    const getStartUpPage = useCallback(() => {
+        if (isAuthenticated()) {
+            return <Dashboard />;
+        } else {
+            return <Login />;
+        }
+    }, [user]);
 
     return (
         <Routes>
-            {routesConfig.map((route, index) => {
-                if (routesUnProtected.includes(route.title)) {
-                    return <Route key={index} path={route.path} exact={route.exact} element={route.component} />;
-                }
-                if (routesProtected.includes(route.title)) {
-                    return <Route key={index} path={route.path} exact={route.exact} element={route.component} />;
-                }
+            <Route path="/" exact element={getStartUpPage()}></Route>
+            {routesCanVistis.map((route, index) => {
+                return <Route key={index} path={route.path} element={route.component} />;
             })}
-            <Route
-                path="*"
-                element={
-                    <div>
-                        <h2>404 Page not found</h2>
-                    </div>
-                }
-            />
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }

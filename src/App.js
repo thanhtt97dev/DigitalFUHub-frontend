@@ -3,14 +3,14 @@ import { AuthProvider } from 'react-auth-kit';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import Routing from './routes/Routing';
-import refreshToken from '~/api/refreshToken';
+//import refreshToken from '~/api/refreshToken';
 
 function App() {
     return (
         <AuthProvider
             authType={'cookie'}
             authName={'_auth'}
-            refresh={refreshToken}
+            //refresh={refreshToken}
             cookieDomain={window.location.hostname}
             cookieSecure
         >

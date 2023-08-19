@@ -20,9 +20,28 @@ export const getRefreshToken = () => {
     return token;
 };
 
-export const saveDataAuthToCookies = (token, refreshToken) => {
+export const getJwtId = () => {
+    let jwtId;
+    if (typeof window !== 'undefined') {
+        jwtId = Cookies.get('_tid');
+    }
+    return jwtId;
+};
+
+export const saveJwtIdToCookies = (jwtId) => {
+    Cookies.remove('_tid');
+    Cookies.set('_tid', jwtId, { expires: process.env.REACT_APP_TOKEN_EXPIRES_TIME });
+};
+
+export const saveDataAuthToCookies = (token, refreshToken, jwtId) => {
+    const time_expries = 15;
+
     Cookies.remove('_auth');
-    Cookies.set('_auth', token, { expires: 7 });
+    Cookies.set('_auth', token, { expires: time_expries });
+
     Cookies.remove('_auth_refresh');
-    Cookies.set('_auth_refresh', refreshToken, { expires: 7 });
+    Cookies.set('_auth_refresh', refreshToken, { expires: time_expries });
+
+    Cookies.remove('_tid');
+    Cookies.set('_tid', jwtId, { expires: time_expries });
 };
