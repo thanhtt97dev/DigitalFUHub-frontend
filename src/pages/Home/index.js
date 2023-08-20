@@ -14,8 +14,9 @@ function Home() {
                 <Col span={4}>col-4</Col>
                 <Col span={4}>col-4</Col>
             </Row>
-            <Link to="/Dashboard">Dashboard</Link>
+            <Link to="/admin">Admin</Link>
             <Logout />
+            <Link to="/login">Login</Link>
         </React.Fragment>
     );
 }

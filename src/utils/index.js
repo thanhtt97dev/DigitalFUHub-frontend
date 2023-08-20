@@ -8,7 +8,6 @@ export const getToken = () => {
     if (typeof window !== 'undefined') {
         token = Cookies.get('_auth');
     }
-    console.log(token);
     return token;
 };
 

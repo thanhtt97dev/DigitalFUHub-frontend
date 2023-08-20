@@ -1,5 +1,7 @@
+import SkeletonPage from '../Skeleton';
+
 function DashBoard() {
-    return <>DashBoard</>;
+    return <SkeletonPage />;
 }
 
 export default DashBoard;

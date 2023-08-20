@@ -24,11 +24,6 @@ export const apiGetAuth = async (url) => {
 };
 
 export const apiPut = async (url, data) => {
-    const response = axios.put(url, data);
-    return response;
-};
-
-export const apiPutAuth = async (url, data) => {
     const response = axios.put(url, data, getHeaderConfig());
     return response;
 };
@@ -44,11 +39,6 @@ export const apiPostAuth = async (url, data) => {
 };
 
 export const apiDelete = async (url, data) => {
-    const response = axios.delete(url, data);
-    return response;
-};
-
-export const apiDeleteAuth = async (url, data) => {
     const response = axios.delete(url, data, getHeaderConfig());
     return response;
 };

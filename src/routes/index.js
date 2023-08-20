@@ -7,6 +7,7 @@ import { ADMIN_ROLE } from '~/constants';
 import AdminLayout from '~/pages/Admin/AdminLayout';
 import DashBoard from '~/pages/Admin/DashBoard';
 import Users from '~/pages/Admin/Users';
+import Detail from '~/pages/Admin/Users/Detail';
 
 const routesConfig = [
     {
@@ -25,8 +26,7 @@ const routesConfig = [
         title: 'home',
         path: '/home',
         component: <Home />,
-        auth: true,
-        role: [ADMIN_ROLE],
+        auth: false,
     },
     {
         title: 'admin',
@@ -42,6 +42,10 @@ const routesConfig = [
             {
                 path: 'users',
                 component: <Users />,
+            },
+            {
+                path: 'users/:id',
+                component: <Detail />,
             },
         ],
     },

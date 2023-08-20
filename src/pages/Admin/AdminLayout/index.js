@@ -34,7 +34,13 @@ function AdminLayout() {
                     console.log(collapsed, type);
                 }}
             >
-                <div className="demo-logo-vertical" />
+                <div className="demo-logo-vertical">
+                    <img
+                        src="https://scontent.fsgn2-8.fna.fbcdn.net/v/t1.6435-9/68804899_385443322167641_2798430459044823040_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=174925&_nc_ohc=8pRShptFVFoAX_tZBDP&_nc_ht=scontent.fsgn2-8.fna&oh=00_AfA_ZGbGImC59fphMxImb8OZkW25r2usRyzvfsCP1SaPhg&oe=6509820E"
+                        alt="he"
+                        style={{ width: '100%', height: 200 }}
+                    />
+                </div>
                 <Menu
                     theme="dark"
                     mode="inline"
@@ -48,8 +54,8 @@ function AdminLayout() {
             </Sider>
             <Layout>
                 <Header style={{ padding: 0, background: colorBgContainer }} />
-                <Content style={{ margin: '24px 16px 0' }}>
-                    <div style={{ padding: 24, height: '600px', background: colorBgContainer }}>
+                <Content style={{ margin: '12px 12px 0' }}>
+                    <div style={{ padding: 12, height: '600px', background: colorBgContainer }}>
                         <Outlet />
                     </div>
                 </Content>
