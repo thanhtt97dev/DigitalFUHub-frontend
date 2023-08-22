@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Select, Form, Input, Table, Tag, Spin } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Select, Form, Input, Table, Tag, Spin, Space } from 'antd';
 
 import { getUsersByCondition } from '~/api/user';
 import { getAllRoles } from '~/api/role';
@@ -39,48 +39,41 @@ const columns = [
 ];
 
 function Users() {
+    const [form] = Form.useForm();
     const [loading, setLoading] = useState(true);
     const [dataTable, setDataTable] = useState([]);
     const [roles, setRoles] = useState([]);
+    const [searchData, setSearchData] = useState({
+        email: '',
+        roleId: 0,
+        status: -1,
+    });
 
-    const onFinish = useCallback((values) => {
+    const onFinish = (values) => {
         setLoading(true);
-        const dataRequest = {
+
+        setSearchData({
             email: values.email,
             roleId: values.role,
             status: values.status,
-        };
+        });
+    };
 
-        getUsersByCondition(dataRequest)
-            .then((res) => {
-                let respone = [];
-                res.data.forEach((data) => {
-                    respone.push({
-                        key: data.userId,
-                        id: data.userId,
-                        email: data.email,
-                        role: data.roleName,
-                        status: data.status,
-                    });
-                });
-                setDataTable(respone);
-                setTimeout(() => {
-                    setLoading(false);
-                }, 500);
-            })
-            .catch((err) => {
-                console.log('faild');
-            });
-    }, []);
+    const onFill = () => {
+        form.setFieldsValue({ email: '', role: 0, status: -1 });
+    };
 
     useEffect(() => {
         setLoading(true);
-        getUsersByCondition()
+
+        setDataTable([]);
+
+        getUsersByCondition(searchData)
             .then((res) => {
                 let respone = [];
-                res.data.forEach((data) => {
+                res.data.forEach((data, index) => {
                     respone.push({
-                        key: data.userId,
+                        key: index,
                         id: data.userId,
                         email: data.email,
                         role: data.roleName,
@@ -95,7 +88,9 @@ function Users() {
             .catch((err) => {
                 console.log('faild');
             });
+    }, [searchData]);
 
+    useEffect(() => {
         getAllRoles()
             .then((res) => {
                 setRoles(res.data);
@@ -103,9 +98,22 @@ function Users() {
             .catch((err) => {
                 console.log('faild');
             });
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const initFormValues = [
+        {
+            name: 'email',
+            value: searchData.email,
+        },
+        {
+            name: 'role',
+            value: searchData.roleId,
+        },
+        {
+            name: 'status',
+            value: searchData.status,
+        },
+    ];
 
     return (
         <>
@@ -122,9 +130,9 @@ function Users() {
                         maxWidth: 500,
                         position: 'relative',
                     }}
+                    form={form}
                     onFinish={onFinish}
-                    autoComplete="off"
-                    initialValues={{ email: '', role: 0, status: -1 }}
+                    fields={initFormValues}
                 >
                     <Form.Item label="Email" name="email">
                         <Input />
@@ -133,9 +141,9 @@ function Users() {
                     <Form.Item label="Role" name="role">
                         <Select>
                             <Select.Option value={0}>All</Select.Option>
-                            {roles.map((role, index) => {
+                            {roles.map((role) => {
                                 return (
-                                    <Select.Option key={index} value={role.roleId}>
+                                    <Select.Option key={role.roleId} value={role.roleId}>
                                         {role.roleName}
                                     </Select.Option>
                                 );
@@ -152,9 +160,14 @@ function Users() {
                     </Form.Item>
 
                     <Form.Item style={{ position: 'absolute', top: 111, left: 550 }}>
-                        <Button type="primary" htmlType="submit">
-                            Search
-                        </Button>
+                        <Space>
+                            <Button htmlType="button" onClick={onFill}>
+                                Reset
+                            </Button>
+                            <Button type="primary" htmlType="submit">
+                                searchDatarch
+                            </Button>
+                        </Space>
                     </Form.Item>
                 </Form>
 

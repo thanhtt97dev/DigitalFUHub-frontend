@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Row, Skeleton, Space } from 'antd';
+import { Col, Row, Skeleton } from 'antd';
 
 function SkeletonPage() {
     return (

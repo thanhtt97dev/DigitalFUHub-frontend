@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { getUserById, editUserInfo } from '~/api/user';
 import { getAllRoles } from '~/api/role';
+import Notification from '~/components/Notification';
 
 function Detail() {
     let { id } = useParams();
@@ -14,7 +15,7 @@ function Detail() {
 
     const [userInfo, setUserInfo] = useState({ userId: '', email: '', roleId: 0, status: 0 });
     const [roles, setRoles] = useState([]);
-    //const [loading, setLoading] = useState(true);
+    const [openNotification, setOpenNotification] = useState(true);
 
     useLayoutEffect(() => {
         getUserById(id)
@@ -74,12 +75,13 @@ function Detail() {
 
         editUserInfo(id, userInfo)
             .then((res) => {
-                console.log('sucess');
+                setOpenNotification(true);
             })
             .catch((err) => {
                 console.log('err');
             });
         setTimeout(() => {
+            setOpenNotification(false);
             setOpenConfirm(false);
             setConfirmLoading(false);
         }, 2000);
@@ -91,6 +93,7 @@ function Detail() {
 
     return (
         <>
+            <Notification hidden={!openNotification} />
             <Row gutter={32}>
                 <Col offset={4} span={4}>
                     <Image
