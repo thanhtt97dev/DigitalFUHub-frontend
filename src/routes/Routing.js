@@ -7,7 +7,6 @@ import NotFound from '~/pages/NotFound';
 import Home from '~/pages/Home';
 
 function Routing() {
-    const isAuthenticated = useIsAuthenticated();
     const auth = useAuthUser();
     const user = auth();
 
@@ -19,7 +18,7 @@ function Routing() {
             if (route.auth === false) {
                 setRoutesCanVistit((prev) => [...prev, route]);
             } else {
-                if (isAuthenticated() && user !== null && route.role.includes(user.roleName)) {
+                if (user !== null && route.role.includes(user.roleName)) {
                     setRoutesCanVistit((prev) => [...prev, route]);
                 }
             }
