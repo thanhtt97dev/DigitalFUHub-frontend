@@ -1,10 +1,10 @@
 import * as signalR from '@microsoft/signalr';
 import { API_BASE_URL_SIGNAL_R } from '../config';
-import { getToken } from '~/utils';
+import { getTokenInCookies } from '~/utils';
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl(API_BASE_URL_SIGNAL_R, {
-        accessTokenFactory: getToken(),
+        accessTokenFactory: getTokenInCookies(),
     })
     .configureLogging(signalR.LogLevel.Information)
     .build();
