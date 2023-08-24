@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { UserOutlined, VideoCameraOutlined, BellOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme, Badge, Space, Avatar } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { useAuthUser } from 'react-auth-kit';
 
 import connectionHub from '~/api/signalr';
 
@@ -24,6 +25,9 @@ function AdminLayout() {
     const navigate = useNavigate();
     const [notifications, setNotifications] = useState([]);
 
+    const auth = useAuthUser();
+    const user = auth();
+
     useEffect(() => {
         /*
         const getAuthToken = () => {
@@ -32,17 +36,16 @@ function AdminLayout() {
         };
         */
         // Create a new SignalR connection with the token
-        const connection = connectionHub('notificationHub');
-
-        console.log('connectionId ' + connection.connectionId);
+        const connection = connectionHub(`notificationHub?userId=${user.id}`);
         console.log(connection);
         // Start the connection
-        connection
-            .start()
-            .then(() => {
-                console.log('connectionId ' + connection.connectionId);
-            })
-            .catch((err) => console.error(err));
+        connection.start().catch((err) => console.error(err));
+
+        // Receive connectionId from the server
+        connection.on('ReceiveConnectionId', (data) => {
+            console.log('connectionId: ' + data);
+        });
+
         // Receive notifications from the server
         connection.on('ReceiveNotification', (message) => {
             console.log('notifi: ' + message);
