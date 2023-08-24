@@ -1,16 +1,19 @@
 import * as signalR from '@microsoft/signalr';
-import { API_BASE_URL_SIGNAL_R } from '../config';
 import { getTokenInCookies } from '~/utils';
 
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl(API_BASE_URL_SIGNAL_R, {
-        accessTokenFactory: getTokenInCookies(),
-    })
-    .configureLogging(signalR.LogLevel.Information)
-    .build();
+const connectionHub = (hubName) => {
+    return new signalR.HubConnectionBuilder()
+        .withUrl(`http://localhost:4000/${hubName}`, {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets,
+        })
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+};
 
-export default connection;
+export default connectionHub;
 
+//process.env.API_BASE_URL_SIGNAL_R
 /**
 How to use
 useEffect(() => {

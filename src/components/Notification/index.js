@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { SmileOutlined } from '@ant-design/icons';
-import { Button, notification } from 'antd';
+import { notification } from 'antd';
 
 function Notification({ hidden }) {
     const [api, contextHolder] = notification.useNotification();
@@ -25,6 +25,7 @@ function Notification({ hidden }) {
         if (!hidden) {
             openMessage();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [api]);
 
     return <>{contextHolder}</>;

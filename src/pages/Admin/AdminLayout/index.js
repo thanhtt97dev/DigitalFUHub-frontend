@@ -1,7 +1,9 @@
-import React from 'react';
-import { UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { UserOutlined, VideoCameraOutlined, BellOutlined } from '@ant-design/icons';
+import { Layout, Menu, theme, Badge, Space, Avatar } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
+
+import connectionHub from '~/api/signalr';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -20,6 +22,38 @@ const navigationItems = [
 
 function AdminLayout() {
     const navigate = useNavigate();
+    const [notifications, setNotifications] = useState([]);
+
+    useEffect(() => {
+        /*
+        const getAuthToken = () => {
+            // Replace this with your logic to obtain the token from the backend
+            // Example: return localStorage.getItem('token');
+        };
+        */
+        // Create a new SignalR connection with the token
+        const connection = connectionHub('notificationHub');
+
+        console.log('connectionId ' + connection.connectionId);
+        console.log(connection);
+        // Start the connection
+        connection
+            .start()
+            .then(() => {
+                console.log('connectionId ' + connection.connectionId);
+            })
+            .catch((err) => console.error(err));
+        // Receive notifications from the server
+        connection.on('ReceiveNotification', (message) => {
+            console.log('notifi: ' + message);
+            setNotifications((prevNotifications) => [...prevNotifications, message]);
+        });
+
+        return () => {
+            // Clean up the connection when the component unmounts
+            connection.stop();
+        };
+    }, []);
 
     const {
         token: { colorBgContainer },
@@ -56,7 +90,14 @@ function AdminLayout() {
                 />
             </Sider>
             <Layout>
-                <Header style={{ padding: 0, background: colorBgContainer }} />
+                <Header style={{ padding: 0, background: colorBgContainer, justifyContent: 'end' }}>
+                    <Space size={30}>
+                        <Badge size="small" count={5}>
+                            <BellOutlined style={{ fontSize: 30 }} />
+                        </Badge>
+                        <Avatar size={38} icon={<UserOutlined />} />
+                    </Space>
+                </Header>
                 <Content style={{ margin: '12px 12px 0' }}>
                     <div style={{ padding: 12, height: '600px', background: colorBgContainer }}>
                         <Outlet />
