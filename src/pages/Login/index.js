@@ -6,7 +6,7 @@ import { useSignIn } from 'react-auth-kit';
 
 import { login } from '~/api/user';
 import { saveDataAuthToCookies } from '~/utils';
-import { ADMIN_ROLE, User_ROLE } from '~/constants';
+import { ADMIN_ROLE, User_ROLE, NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 
 function Login() {
     const signIn = useSignIn();
@@ -21,47 +21,30 @@ function Login() {
 
         login(data)
             .then((res) => {
-                if (res.status === 200) {
-                    if (
-                        signIn({
-                            token: res.data.accessToken,
-                            expiresIn: 10,
-                            tokenType: 'Bearer',
-                            authState: {
-                                id: res.data.userId,
-                                email: res.data.email,
-                                firstName: res.data.email,
-                                roleName: res.data.roleName,
-                            },
-                            //refreshToken: res.data.refreshToken,
-                            //refreshTokenExpireIn: 15,
-                        })
-                    ) {
-                        saveDataAuthToCookies(res.data.accessToken, res.data.refreshToken, res.data.jwtId);
-                        switch (res.data.roleName) {
-                            case ADMIN_ROLE:
-                                return navigate('/admin');
-                            case User_ROLE:
-                                return navigate('/home');
-                            default:
-                                throw new Error();
-                        }
-                    }
+                signIn({
+                    token: NOT_HAVE_MEANING_FOR_TOKEN,
+                    expiresIn: NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES,
+                    authState: {
+                        id: res.data.userId,
+                        email: res.data.email,
+                        firstName: res.data.email,
+                        roleName: res.data.roleName,
+                    },
+                    //refreshToken: res.data.refreshToken,
+                    //refreshTokenExpireIn: 15,
+                });
+                saveDataAuthToCookies(res.data.userId, res.data.accessToken, res.data.refreshToken, res.data.jwtId);
+                switch (res.data.roleName) {
+                    case ADMIN_ROLE:
+                        return navigate('/admin');
+                    case User_ROLE:
+                        return navigate('/home');
+                    default:
+                        throw new Error();
                 }
             })
             .catch((err) => {
-                if (err.response === undefined) {
-                    console.log(err);
-                    setMessage('Some err!');
-                    return;
-                }
-                if (err.response.status === 401) {
-                    setMessage('Email or password was wrong!');
-                } else if (err.response.status === 500) {
-                    setMessage('Server not respone! Try again!');
-                } else {
-                    setMessage('Server not respone! Try again!');
-                }
+                setMessage(err.message);
             });
     };
     const onFinishFailed = (errorInfo) => {};

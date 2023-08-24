@@ -1,7 +1,7 @@
 import React from 'react';
 import { UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -19,6 +19,8 @@ const navigationItems = [
 ];
 
 function AdminLayout() {
+    const navigate = useNavigate();
+
     const {
         token: { colorBgContainer },
     } = theme.useToken();
@@ -39,6 +41,7 @@ function AdminLayout() {
                         src="https://scontent.fsgn2-8.fna.fbcdn.net/v/t1.6435-9/68804899_385443322167641_2798430459044823040_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=174925&_nc_ohc=8pRShptFVFoAX_tZBDP&_nc_ht=scontent.fsgn2-8.fna&oh=00_AfA_ZGbGImC59fphMxImb8OZkW25r2usRyzvfsCP1SaPhg&oe=6509820E"
                         alt="he"
                         style={{ width: '100%', height: 200 }}
+                        onClick={() => navigate('/home')}
                     />
                 </div>
                 <Menu

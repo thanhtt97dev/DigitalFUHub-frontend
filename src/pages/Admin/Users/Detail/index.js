@@ -37,9 +37,7 @@ function Detail() {
             .then((res) => {
                 setRoles(res.data.filter((x) => x.roleId === 2));
             })
-            .catch((err) => {
-                console.log('faild');
-            });
+            .catch((err) => {});
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
@@ -77,9 +75,7 @@ function Detail() {
             .then((res) => {
                 setOpenNotification(true);
             })
-            .catch((err) => {
-                console.log('err');
-            });
+            .catch((err) => {});
         setTimeout(() => {
             setOpenNotification(false);
             setOpenConfirm(false);
@@ -153,7 +149,7 @@ function Detail() {
             </Row>
             <Row>
                 <Col offset={20}>
-                    <Button size={'large'} onClick={() => navigate('/admin/users')}>
+                    <Button size={'large'} onClick={() => navigate(-1)}>
                         <RollbackOutlined />
                         Back
                     </Button>

@@ -4,6 +4,14 @@ export const login = (data) => {
     return apiPost('api/users/signIn', data);
 };
 
+export const refreshToken = (accessToken, refreshToken) => {
+    const data = {
+        refreshToken,
+        accessToken,
+    };
+    return apiPost('api/users/refreshToken', data);
+};
+
 export const revokeToken = (data) => {
     return apiPostAuth('api/users/revokeToken', data);
 };

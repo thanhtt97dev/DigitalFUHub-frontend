@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken } from '~/utils';
+import { getTokenInCookies } from '~/utils';
 
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -8,7 +8,7 @@ const getHeaderConfig = () => {
     return {
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${getToken()}`,
+            Authorization: `Bearer ${getTokenInCookies()}`,
         },
     };
 };

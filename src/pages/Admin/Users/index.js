@@ -86,7 +86,8 @@ function Users() {
                 }, 500);
             })
             .catch((err) => {
-                console.log('faild');
+                setLoading(false);
+                alert('Unauthorized');
             });
     }, [searchData]);
 
@@ -96,7 +97,7 @@ function Users() {
                 setRoles(res.data);
             })
             .catch((err) => {
-                console.log('faild');
+                alert('Unauthorized');
             });
     }, []);
 
