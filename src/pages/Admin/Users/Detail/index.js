@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { getUserById, editUserInfo } from '~/api/user';
 import { getAllRoles } from '~/api/role';
-import Notification from '~/components/Notification';
 
 function Detail() {
     let { id } = useParams();
@@ -89,7 +88,6 @@ function Detail() {
 
     return (
         <>
-            <Notification hidden={!openNotification} />
             <Row gutter={32}>
                 <Col offset={4} span={4}>
                     <Image

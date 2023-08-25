@@ -1,5 +1,5 @@
 import * as signalR from '@microsoft/signalr';
-import { getTokenInCookies } from '~/utils';
+//import { getTokenInCookies } from '~/utils';
 
 const connectionHub = (hubName) => {
     return new signalR.HubConnectionBuilder()

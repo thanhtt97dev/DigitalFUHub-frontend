@@ -8,6 +8,7 @@ import AdminLayout from '~/pages/Admin/AdminLayout';
 import DashBoard from '~/pages/Admin/DashBoard';
 import Users from '~/pages/Admin/Users';
 import Detail from '~/pages/Admin/Users/Detail';
+import Notificaion from '~/pages/Admin/Notificaion';
 
 const routesConfig = [
     {
@@ -46,6 +47,10 @@ const routesConfig = [
             {
                 path: 'users/:id',
                 component: <Detail />,
+            },
+            {
+                path: 'notificaions',
+                component: <Notificaion />,
             },
         ],
     },

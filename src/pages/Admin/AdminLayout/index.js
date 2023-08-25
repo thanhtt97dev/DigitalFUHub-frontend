@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { UserOutlined, VideoCameraOutlined, BellOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme, Badge, Space, Avatar, notification, Drawer, Empty, Alert, Card, Divider } from 'antd';
+import { UserOutlined, VideoCameraOutlined, BellOutlined, NotificationOutlined } from '@ant-design/icons';
+import { Layout, Menu, theme, Badge, Space, Avatar, notification, Drawer, Empty, Alert } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
+import { formatTimeAgoVN } from '~/utils';
 
 import connectionHub from '~/api/signalr';
 
@@ -18,6 +19,11 @@ const navigationItems = [
         icon: UserOutlined,
         label: 'Users',
         link: 'users',
+    },
+    {
+        icon: NotificationOutlined,
+        label: 'Notification',
+        link: 'notificaions',
     },
 ];
 
@@ -58,9 +64,10 @@ function AdminLayout() {
         });
 
         // Receive notifications from the server
-        connection.on('ReceiveNotification', (message) => {
-            openNotificationWithIcon('info', message);
-            setNotifications((prev) => [...prev, message]);
+        connection.on('ReceiveNotification', (res) => {
+            const notifi = JSON.parse(res);
+            openNotificationWithIcon('info', notifi);
+            setNotifications((prev) => [notifi, ...prev]);
         });
 
         return () => {
@@ -71,12 +78,10 @@ function AdminLayout() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    console.log(notifications);
-
-    const openNotificationWithIcon = (type, content) => {
+    const openNotificationWithIcon = (type, notifi) => {
         api[type]({
-            message: 'New notification',
-            description: content,
+            message: notifi.Title,
+            description: notifi.Message,
         });
     };
 
@@ -134,10 +139,29 @@ function AdminLayout() {
                 </Layout>
             </Layout>
 
-            <Drawer title="Notification" placement="right" onClose={onClose} open={open}>
+            <Drawer
+                style={{ overflowY: 'scroll' }}
+                title="Notification"
+                placement="right"
+                onClose={onClose}
+                open={open}
+            >
                 {notifications.length !== 0 ? (
                     notifications.map((notifi, index) => {
-                        return <Alert message="Informational Notes" description={notifi} type="info" showIcon />;
+                        return (
+                            <Alert
+                                style={{ marginBottom: 20 }}
+                                message={<span style={{ fontWeight: 'bold' }}>{notifi.Title}</span>}
+                                description={
+                                    <>
+                                        <p>{notifi.Message}</p>
+                                        <p style={{ fontSize: 10 }}>{formatTimeAgoVN(notifi.Date)}</p>
+                                    </>
+                                }
+                                type="info"
+                                showIcon
+                            />
+                        );
                     })
                 ) : (
                     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
