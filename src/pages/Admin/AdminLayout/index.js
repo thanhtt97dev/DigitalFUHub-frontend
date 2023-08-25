@@ -46,21 +46,16 @@ function AdminLayout() {
     };
 
     useEffect(() => {
-        /*
-        const getAuthToken = () => {
-            // Replace this with your logic to obtain the token from the backend
-            // Example: return localStorage.getItem('token');
-        };
-        */
         // Create a new SignalR connection with the token
         const connection = connectionHub(`notificationHub?userId=${user.id}`);
         console.log(connection);
         // Start the connection
         connection.start().catch((err) => console.error(err));
 
-        // Receive connectionId from the server
-        connection.on('ReceiveConnectionId', (data) => {
-            console.log('connectionId: ' + data);
+        // Receive all notification from the server
+        connection.on('ReceiveAllNotification', (res) => {
+            const notifi = JSON.parse(res);
+            setNotifications((prev) => [...notifi, ...prev]);
         });
 
         // Receive notifications from the server
@@ -154,7 +149,7 @@ function AdminLayout() {
                                 message={<span style={{ fontWeight: 'bold' }}>{notifi.Title}</span>}
                                 description={
                                     <>
-                                        <p>{notifi.Message}</p>
+                                        <p>{notifi.Content}</p>
                                         <p style={{ fontSize: 10 }}>{formatTimeAgoVN(notifi.Date)}</p>
                                     </>
                                 }

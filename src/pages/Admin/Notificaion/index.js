@@ -7,7 +7,7 @@ function Notificaion() {
     const onFinish = (values) => {
         const data = {
             title: values.title,
-            message: values.message,
+            content: values.content,
         };
         sendMessageForUser(values.userId, data);
     };
@@ -34,7 +34,7 @@ function Notificaion() {
                 <Form.Item label="Title" name="title">
                     <Input />
                 </Form.Item>
-                <Form.Item label="Message" name="message">
+                <Form.Item label="Content" name="content">
                     <Input />
                 </Form.Item>
                 <Button type="primary" htmlType="submit">
