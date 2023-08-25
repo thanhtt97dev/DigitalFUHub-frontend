@@ -1,16 +1,15 @@
 import React from 'react';
 import { Button, Form, Input } from 'antd';
 
-import { sendNotification } from '~/api/user';
+import { sendMessageForUser } from '~/api/signalr/notification';
 
 function Notificaion() {
     const onFinish = (values) => {
         const data = {
-            titile: values.title,
+            title: values.title,
             message: values.message,
         };
-        console.log(data);
-        sendNotification(values.userId, data);
+        sendMessageForUser(values.userId, data);
     };
 
     return (

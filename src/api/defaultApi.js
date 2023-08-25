@@ -42,8 +42,3 @@ export const apiDelete = async (url, data) => {
     const response = axios.delete(url, data, getHeaderConfig());
     return response;
 };
-
-export const apiPostRealTime = async (url, data) => {
-    const response = axios.post(`http://localhost:4000/${url}`, data);
-    return response;
-};

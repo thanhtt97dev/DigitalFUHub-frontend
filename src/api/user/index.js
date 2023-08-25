@@ -1,4 +1,4 @@
-import { apiGetAuth, apiPost, apiPostAuth, apiPut, apiPostRealTime } from '../defaultApi';
+import { apiGetAuth, apiPost, apiPostAuth, apiPut } from '../defaultApi';
 
 export const login = (data) => {
     return apiPost('api/users/signIn', data);
@@ -33,8 +33,4 @@ export const getUserById = (id) => {
 
 export const editUserInfo = (id, data) => {
     return apiPut(`api/users/EditUserInfo/${id}`, data);
-};
-
-export const sendNotification = (id, data) => {
-    return apiPostRealTime(`api/Notifications/sendNotification/${id}`, data);
 };
