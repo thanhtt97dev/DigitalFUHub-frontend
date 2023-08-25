@@ -5,7 +5,7 @@ import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
 import { formatTimeAgoVN } from '~/utils';
 
-import connectionHub from '~/api/signalr';
+import connectionHub from '~/api/signalr/connectionHub';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -145,12 +145,13 @@ function AdminLayout() {
                     notifications.map((notifi, index) => {
                         return (
                             <Alert
+                                key={index}
                                 style={{ marginBottom: 20 }}
                                 message={<span style={{ fontWeight: 'bold' }}>{notifi.Title}</span>}
                                 description={
                                     <>
                                         <p>{notifi.Content}</p>
-                                        <p style={{ fontSize: 10 }}>{formatTimeAgoVN(notifi.Date)}</p>
+                                        <p style={{ fontSize: 10 }}>{formatTimeAgoVN(notifi.DateCreated)}</p>
                                     </>
                                 }
                                 type="info"

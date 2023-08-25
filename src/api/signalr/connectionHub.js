@@ -1,9 +1,11 @@
 import * as signalR from '@microsoft/signalr';
-//import { getTokenInCookies } from '~/utils';
+import { getTokenInCookies } from '~/utils';
+
+const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const connectionHub = (hubName) => {
     return new signalR.HubConnectionBuilder()
-        .withUrl(`http://localhost:4000/${hubName}`, {
+        .withUrl(`${baseURL}${hubName}`, {
             skipNegotiation: true,
             transport: signalR.HttpTransportType.WebSockets,
         })

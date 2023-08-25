@@ -68,7 +68,7 @@ export const removeDataAuthInCookies = () => {
 
 //For UI
 
-export const formatTimeAgo = (time, localDate) => {
+export const formatTimeAgo = (time) => {
     register('my-locale', localeFunc);
     return format(time, 'my-locale');
     //console.log('time: ' + format('2023-08-20T10:30:00', 'hn_VN'));
@@ -96,7 +96,7 @@ const localeFunc = (number, index, totalSec) => {
     ][index];
 };
 
-export const formatTimeAgoVN = (time, localDate) => {
+export const formatTimeAgoVN = (time) => {
     register('vi', localeFuncVN);
     return format(time, 'vi');
     //console.log('time: ' + format('2023-08-20T10:30:00', 'hn_VN'));
