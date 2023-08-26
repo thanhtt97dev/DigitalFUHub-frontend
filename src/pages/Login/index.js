@@ -44,7 +44,7 @@ function Login() {
                 }
             })
             .catch((err) => {
-                setMessage(err.message);
+                setMessage(err.response.data);
             });
     };
     const onFinishFailed = (errorInfo) => {};
