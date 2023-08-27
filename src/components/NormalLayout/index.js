@@ -7,7 +7,7 @@ import HeaderLayout from '~/components/HeaderLayout';
 
 const { Content, Footer } = Layout;
 
-function NormalLayout() {
+function NormalLayout(props) {
     const {
         token: { colorBgContainer },
     } = theme.useToken();
@@ -25,6 +25,7 @@ function NormalLayout() {
                         }}
                     >
                         <Outlet />
+                        {props.children}
                     </div>
                 </Content>
                 <Footer

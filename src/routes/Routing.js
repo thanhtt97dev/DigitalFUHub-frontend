@@ -35,7 +35,15 @@ function Routing() {
     return (
         <>
             <Routes>
-                <Route path="/" exact element={<Home />}></Route>
+                <Route
+                    path="/"
+                    exact
+                    element={
+                        <NormalLayout>
+                            <Home />
+                        </NormalLayout>
+                    }
+                ></Route>
                 {routesCanVistit.map((route, index) => {
                     return (
                         <>
