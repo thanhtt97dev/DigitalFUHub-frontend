@@ -14,7 +14,7 @@ const { Header } = Layout;
 
 const itemsFixed = [
     {
-        key: '1',
+        key: 'logout',
         label: <Logout />,
     },
 ];
@@ -23,13 +23,14 @@ function HeaderLayout() {
     const auth = useAuthUser();
     const user = auth();
 
-    const [items, setItems] = useState(itemsFixed);
+    const [items, setItems] = useState([]);
 
     useLayoutEffect(() => {
+        setItems(itemsFixed);
         if (user === null) return;
         if (user.roleName === ADMIN_ROLE) {
             const item = {
-                key: items.length + 1,
+                key: 'admin',
                 label: (
                     <Link to="/admin">
                         <Button>Admin</Button>
@@ -38,12 +39,11 @@ function HeaderLayout() {
             };
             setItems((prev) => [item, ...prev]);
         }
-
         return () => {
             setItems([]);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [user]);
 
     return (
         <>
@@ -61,7 +61,9 @@ function HeaderLayout() {
             >
                 <Space>
                     <Image width={60} src={logo} />
-                    <h5>MelodyMix</h5>
+                    <Link to={'/Home'}>
+                        <h5>MelodyMix</h5>
+                    </Link>
                 </Space>
                 <Space size={12}>
                     {user === null ? (

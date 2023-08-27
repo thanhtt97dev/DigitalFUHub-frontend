@@ -12,18 +12,16 @@ function Logout() {
 
     const hanldeLogout = () => {
         const jwtId = getJwtId();
-        removeDataAuthInCookies();
+
         revokeToken(jwtId)
             .then((res) => {
-                if (res.status === 200) {
-                    console.log('revoke token success!');
-                }
+                console.log('revoke token success!');
+                removeDataAuthInCookies();
+                signOut();
             })
             .catch((err) => {
                 console.log(err);
             });
-
-        signOut();
 
         return navigate('/login');
     };

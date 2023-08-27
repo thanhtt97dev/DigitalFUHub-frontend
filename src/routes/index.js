@@ -21,6 +21,7 @@ const routesConfig = [
     {
         title: 'accessDenied',
         path: '/accessDenied',
+        layout: <NormalLayout />,
         component: <AccessDenied />,
         auth: false,
     },

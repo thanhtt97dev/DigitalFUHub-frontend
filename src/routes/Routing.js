@@ -47,8 +47,8 @@ function Routing() {
                 {routesCanVistit.map((route, index) => {
                     return (
                         <>
-                            <Route element={route.layout === undefined ? <Outlet /> : <NormalLayout />}>
-                                <Route key={index} path={route.path} element={route.component}>
+                            <Route key={index} element={route.layout === undefined ? <Outlet /> : <NormalLayout />}>
+                                <Route key={route.path} path={route.path} element={route.component}>
                                     {route.routes !== undefined
                                         ? route.routes.map((child) => {
                                               return (
