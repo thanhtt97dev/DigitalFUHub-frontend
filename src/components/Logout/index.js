@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useSignOut } from 'react-auth-kit';
+import { Button } from 'antd';
 
 import { revokeToken } from '~/api/user';
 import { getJwtId, removeDataAuthInCookies } from '~/utils';
@@ -27,7 +28,7 @@ function Logout() {
         return navigate('/login');
     };
 
-    return <button onClick={hanldeLogout}>Sign Out</button>;
+    return <Button onClick={hanldeLogout}>Sign Out</Button>;
 }
 
 export default Logout;

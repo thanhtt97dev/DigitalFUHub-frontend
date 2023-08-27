@@ -4,11 +4,12 @@ import AccessDenied from '~/pages/AccessDenied';
 import Home from '~/pages/Home';
 
 import { ADMIN_ROLE, User_ROLE } from '~/constants';
-import AdminLayout from '~/pages/Admin/AdminLayout';
+import AdminLayout from '~/components/AdminLayout';
 import DashBoard from '~/pages/Admin/DashBoard';
 import Users from '~/pages/Admin/Users';
 import Detail from '~/pages/Admin/Users/Detail';
 import Notificaion from '~/pages/Admin/Notificaion';
+import NormalLayout from '~/components/NormalLayout';
 
 const routesConfig = [
     {
@@ -26,6 +27,7 @@ const routesConfig = [
     {
         title: 'home',
         path: '/home',
+        layout: <NormalLayout />,
         component: <Home />,
         auth: false,
     },
