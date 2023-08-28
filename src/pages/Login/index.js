@@ -23,7 +23,7 @@ function Login() {
             .then((res) => {
                 signIn({
                     token: NOT_HAVE_MEANING_FOR_TOKEN,
-                    expiresIn: 1,
+                    expiresIn: NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES,
                     authState: {
                         id: res.data.userId,
                         email: res.data.email,
