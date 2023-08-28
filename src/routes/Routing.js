@@ -46,19 +46,17 @@ function Routing() {
                 ></Route>
                 {routesCanVistit.map((route, index) => {
                     return (
-                        <>
-                            <Route key={index} element={route.layout === undefined ? <Outlet /> : <NormalLayout />}>
-                                <Route key={route.path} path={route.path} element={route.component}>
-                                    {route.routes !== undefined
-                                        ? route.routes.map((child) => {
-                                              return (
-                                                  <Route key={child.path} path={child.path} element={child.component} />
-                                              );
-                                          })
-                                        : ''}
-                                </Route>
+                        <Route key={index} element={route.layout === undefined ? <Outlet /> : <NormalLayout />}>
+                            <Route key={route.path} path={route.path} element={route.component}>
+                                {route.routes !== undefined
+                                    ? route.routes.map((child) => {
+                                        return (
+                                            <Route key={child.path} path={child.path} element={child.component} />
+                                        );
+                                    })
+                                    : ''}
                             </Route>
-                        </>
+                        </Route>
                     );
                 })}
                 <Route path="*" element={<NotFound />} />
@@ -68,24 +66,3 @@ function Routing() {
 }
 
 export default Routing;
-
-/*
-return (
-    <Routes>
-        <Route path="/" exact element={<Home />}></Route>
-        {routesCanVistit.map((route, index) => {
-            return (
-                <Route key={index} path={route.path} element={route.component}>
-                    {route.routes !== undefined
-                        ? route.routes.map((child) => {
-                              return <Route key={child.path} path={child.path} element={child.component} />;
-                          })
-                        : ''}
-                </Route>
-            );
-        })}
-        <Route path="*" element={<NotFound />} />
-    </Routes>
-);
-
-*/
