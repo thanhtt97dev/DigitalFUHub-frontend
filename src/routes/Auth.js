@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react';
 import { useSignIn } from 'react-auth-kit';
 
-import { getUserId, getTokenInCookies } from '~/utils';
+import { getUserId, getTokenInCookies, removeUserInfoInCookie } from '~/utils';
 import { getUserById } from '~/api/user';
 import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 
@@ -31,6 +31,7 @@ function Auth(props) {
                 })
                 .catch((err) => {
                     console.error('User un logined');
+                    removeUserInfoInCookie();
                 });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

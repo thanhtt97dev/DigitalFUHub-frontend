@@ -27,6 +27,8 @@ function Routing() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
+    console.log(user)
+
     useEffect(() => {
         getRoutesCanVisit();
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -66,6 +66,10 @@ export const removeDataAuthInCookies = () => {
     Cookies.remove('_tid');
 };
 
+export const removeUserInfoInCookie = () =>{
+    Cookies.remove('_auth_state');
+}
+
 //For UI
 
 export const formatTimeAgo = (time) => {
