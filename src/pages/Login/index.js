@@ -1,19 +1,27 @@
 import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Form, Input, Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import { useSignIn } from 'react-auth-kit';
 
 import { login } from '~/api/user';
 import { saveDataAuthToCookies } from '~/utils';
-import { ADMIN_ROLE, User_ROLE, NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
+import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
+//import { ADMIN_ROLE, User_ROLE } from "~/constants"
 
 function Login() {
     const signIn = useSignIn();
     const navigate = useNavigate();
     let [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+    const loadingIcon = (
+        <LoadingOutlined style={{ fontSize: 24, marginRight: 10 }} spin />
+    )
 
     const onFinish = (values) => {
+        setLoading(true)
+        setMessage('');
         const data = {
             email: values.username,
             password: values.password,
@@ -34,6 +42,7 @@ function Login() {
                     //refreshTokenExpireIn: 15,
                 });
                 saveDataAuthToCookies(res.data.userId, res.data.accessToken, res.data.refreshToken, res.data.jwtId);
+                /*
                 switch (res.data.roleName) {
                     case ADMIN_ROLE:
                         return navigate('/admin');
@@ -42,12 +51,18 @@ function Login() {
                     default:
                         throw new Error();
                 }
+                */
+                return navigate('/home');
             })
             .catch((err) => {
-                setMessage(err.response.data);
+                setTimeout(() => {
+                    setMessage(err.response.data);
+                    setLoading(false)
+                }, 500)
             });
+
     };
-    const onFinishFailed = (errorInfo) => {};
+    const onFinishFailed = (errorInfo) => { };
 
     return (
         <>
@@ -95,17 +110,6 @@ function Login() {
                     <Input.Password />
                 </Form.Item>
 
-                <Form.Item
-                    name="remember"
-                    valuePropName="checked"
-                    wrapperCol={{
-                        offset: 8,
-                        span: 16,
-                    }}
-                >
-                    <Checkbox>Remember me</Checkbox>
-                </Form.Item>
-
                 {message !== '' ? (
                     <Form.Item
                         wrapperCol={{
@@ -125,6 +129,7 @@ function Login() {
                         span: 16,
                     }}
                 >
+                    <Spin spinning={loading} indicator={loadingIcon} />
                     <Button type="primary" htmlType="submit">
                         Submit
                     </Button>
