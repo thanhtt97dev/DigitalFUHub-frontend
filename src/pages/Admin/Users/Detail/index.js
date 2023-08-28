@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Image, Col, Row, Form, Input, Radio, Select, Button, Popconfirm } from 'antd';
+import { Image, Col, Row, Form, Input, Radio, Select, Button, Popconfirm,notification  } from 'antd';
 import { WarningOutlined, RollbackOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 //import { Spin } from 'antd';
@@ -14,7 +14,7 @@ function Detail() {
 
     const [userInfo, setUserInfo] = useState({ userId: '', email: '', roleId: 0, status: 0 });
     const [roles, setRoles] = useState([]);
-    const [openNotification, setOpenNotification] = useState(true);
+    const [api, contextHolder] = notification.useNotification();
 
     useLayoutEffect(() => {
         getUserById(id)
@@ -72,11 +72,10 @@ function Detail() {
 
         editUserInfo(id, userInfo)
             .then((res) => {
-                setOpenNotification(true);
             })
             .catch((err) => {});
         setTimeout(() => {
-            setOpenNotification(false);
+            openNotification();
             setOpenConfirm(false);
             setConfirmLoading(false);
         }, 2000);
@@ -86,8 +85,17 @@ function Detail() {
         setOpenConfirm(false);
     };
 
+    const openNotification = () => {
+        api.open({
+          message: 'Alter',
+          description:"Update user's info success!",
+          duration: 3,
+        });
+      };
+
     return (
         <>
+        {contextHolder}
             <Row gutter={32}>
                 <Col offset={4} span={4}>
                     <Image

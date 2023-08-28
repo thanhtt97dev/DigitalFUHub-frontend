@@ -82,7 +82,7 @@ function HeaderLayout() {
                                         marginTop: '20px',
                                     }}
                                     alt=""
-                                    src="https://scontent.fsgn2-9.fna.fbcdn.net/v/t39.30808-6/340617253_756857036006843_1695725732570396065_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=174925&_nc_ohc=a6-W6Abaw5YAX8BbDZd&_nc_ht=scontent.fsgn2-9.fna&oh=00_AfAPc9UT-ApACAaCMdkFPSXwMKoNA-mEc4hrW8FfSZHcpw&oe=64EF430A"
+                                    src="https://scontent.fsgn2-8.fna.fbcdn.net/v/t39.30808-6/327186771_897523861694243_5094115961239590668_n.jpg?_nc_cat=1&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=Rw_HeVuEIvcAX-dDucE&_nc_ht=scontent.fsgn2-8.fna&oh=00_AfDws4iBbYFY0b5kmChNdyLnKpqspYVtv-vjCNeoPseE6g&oe=64F08780"
                                 />
                             </Dropdown>
                         </>
