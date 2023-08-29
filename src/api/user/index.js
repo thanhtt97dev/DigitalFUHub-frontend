@@ -28,7 +28,7 @@ export const getUsersByCondition = (data) => {
 };
 
 export const getUserById = (id) => {
-    return apiGetAuth(`api/users/GetUserById/${id}`);
+    return apiGetAuth(`api/users/GetUser/${id}`);
 };
 
 export const editUserInfo = (id, data) => {

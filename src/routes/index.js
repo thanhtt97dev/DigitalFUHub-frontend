@@ -16,27 +16,23 @@ const routesConfig = [
         title: 'login',
         path: '/login',
         component: <Login />,
-        auth: false,
     },
     {
         title: 'accessDenied',
         path: '/accessDenied',
         layout: <NormalLayout />,
         component: <AccessDenied />,
-        auth: false,
     },
     {
         title: 'home',
         path: '/home',
         layout: <NormalLayout />,
         component: <Home />,
-        auth: false,
     },
     {
         title: 'admin',
         path: '/admin',
         component: <AdminLayout />,
-        auth: true,
         role: [ADMIN_ROLE, User_ROLE],
         routes: [
             {

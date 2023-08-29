@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Image, Col, Row, Form, Input, Radio, Select, Button, Popconfirm,notification  } from 'antd';
+import { Image, Col, Row, Form, Input, Radio, Select, Button, Popconfirm, notification } from 'antd';
 import { WarningOutlined, RollbackOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 //import { Spin } from 'antd';
@@ -30,13 +30,13 @@ function Detail() {
                     userId: res.data.userId,
                 });
             })
-            .catch(() => {});
+            .catch(() => { });
 
         getAllRoles()
             .then((res) => {
                 setRoles(res.data.filter((x) => x.roleId === 2));
             })
-            .catch((err) => {});
+            .catch((err) => { });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
@@ -73,7 +73,7 @@ function Detail() {
         editUserInfo(id, userInfo)
             .then((res) => {
             })
-            .catch((err) => {});
+            .catch((err) => { });
         setTimeout(() => {
             openNotification();
             setOpenConfirm(false);
@@ -87,15 +87,15 @@ function Detail() {
 
     const openNotification = () => {
         api.open({
-          message: 'Alter',
-          description:"Update user's info success!",
-          duration: 3,
+            message: 'Alter',
+            description: "Update user's info success!",
+            duration: 3,
         });
-      };
+    };
 
     return (
         <>
-        {contextHolder}
+            {contextHolder}
             <Row gutter={32}>
                 <Col offset={4} span={4}>
                     <Image

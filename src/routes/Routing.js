@@ -16,7 +16,7 @@ function Routing() {
     const getRoutesCanVisit = useCallback(() => {
         setRoutesCanVistit([]);
         routesConfig.forEach((route) => {
-            if (route.auth === false) {
+            if (route.role === undefined) {
                 setRoutesCanVistit((prev) => [...prev, route]);
             } else {
                 if (user !== null && route.role.includes(user.roleName)) {
