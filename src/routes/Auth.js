@@ -4,7 +4,7 @@ import { LoadingOutlined } from '@ant-design/icons'
 import { useSignIn } from 'react-auth-kit';
 
 import { getUserId, getTokenInCookies, removeUserInfoInCookie } from '~/utils';
-import { getUserById } from '~/api/user';
+import { getUserByIdForAuth } from '~/api/user';
 import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 
 function Auth(props) {
@@ -22,7 +22,7 @@ function Auth(props) {
         setLoading(true);
         ///token not expires in cookie
         if (token !== undefined && userId !== undefined) {
-            getUserById(userId)
+            getUserByIdForAuth(userId)
                 .then((res) => {
                     signIn({
                         token: NOT_HAVE_MEANING_FOR_TOKEN,
