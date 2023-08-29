@@ -1,4 +1,6 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useState } from 'react';
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons'
 import { useSignIn } from 'react-auth-kit';
 
 import { getUserId, getTokenInCookies, removeUserInfoInCookie } from '~/utils';
@@ -11,8 +13,13 @@ function Auth(props) {
     const token = getTokenInCookies();
     const userId = getUserId();
 
+    const [loading, setLoading] = useState(false);
+
+    const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+
     //check user was logined
     useLayoutEffect(() => {
+        setLoading(true);
         ///token not expires in cookie
         if (token !== undefined && userId !== undefined) {
             getUserById(userId)
@@ -30,14 +37,27 @@ function Auth(props) {
                     //saveDataAuthToCookies(userId, token, res.data.refreshToken, res.data.jwtId);
                 })
                 .catch((err) => {
-                    console.error('User un logined');
                     removeUserInfoInCookie();
+                }).finally(() => {
+                    setTimeout(() => {
+                        setLoading(false)
+                    }, 1000)
                 });
+        } else {
+            setTimeout(() => {
+                setLoading(false)
+            }, 1000)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId, token]);
 
-    return props.children;
+    return (
+        <>
+            <Spin tip="Loading" size="large" indicator={loadingIcon} spinning={loading}>
+                {props.children}
+            </Spin>
+        </>
+    )
 }
 
 export default Auth;

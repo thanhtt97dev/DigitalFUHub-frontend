@@ -61,9 +61,10 @@ function HeaderLayout() {
             >
                 <Space>
                     <Image width={60} src={logo} />
-                    <Link to={'/Home'}>
+                    <Link to={'/home'}>
                         <h5>MelodyMix</h5>
                     </Link>
+                    <Link to={"/accessdenied"}>test</Link>
                 </Space>
                 <Space size={12}>
                     {user === null ? (
