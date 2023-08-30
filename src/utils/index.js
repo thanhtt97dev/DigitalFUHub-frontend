@@ -35,6 +35,14 @@ export const getUserId = () => {
     return userId;
 };
 
+export const getUser = () => {
+    let user;
+    if (typeof window !== 'undefined') {
+        user = Cookies.get('_auth_state');
+    }
+    return user;
+};
+
 export const saveJwtIdToCookies = (jwtId) => {
     Cookies.remove('_tid');
     Cookies.set('_tid', jwtId, { expires: process.env.REACT_APP_TOKEN_EXPIRES_TIME });
@@ -57,6 +65,8 @@ export const saveDataAuthToCookies = (uid, token, refreshToken, jwtId) => {
 };
 
 export const removeDataAuthInCookies = () => {
+    Cookies.remove('_auth_state');
+
     Cookies.remove('_uid');
 
     Cookies.remove('_token');
@@ -66,7 +76,7 @@ export const removeDataAuthInCookies = () => {
     Cookies.remove('_tid');
 };
 
-export const removeUserInfoInCookie = () =>{
+export const removeUserInfoInCookie = () => {
     Cookies.remove('_auth_state');
 }
 

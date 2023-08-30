@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Form, Input, Spin } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
-import { useSignIn } from 'react-auth-kit';
+import { Button, Form, Input, Spin, Modal } from 'antd';
+import { LoadingOutlined, WarningOutlined } from '@ant-design/icons';
+import { useSignIn, useAuthUser } from 'react-auth-kit';
 
 import { login } from '~/api/user';
-import { saveDataAuthToCookies } from '~/utils';
+import { saveDataAuthToCookies, removeDataAuthInCookies, getUser } from '~/utils';
 import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 //import { ADMIN_ROLE, User_ROLE } from "~/constants"
 
@@ -18,6 +18,28 @@ function Login() {
     const loadingIcon = (
         <LoadingOutlined style={{ fontSize: 24, marginRight: 10 }} spin />
     )
+
+    const user = getUser();
+    const [modalOpen, setModalOpen] = useState(false)
+
+    useEffect(() => {
+        // checking user was logined (with data auth in cookie)
+        if (user !== undefined) {
+            setModalOpen(true);
+        }
+    }, [user])
+
+    // handle remove auth data in cookie
+    const onModalOk = () => {
+        removeDataAuthInCookies();
+        setModalOpen(false)
+    }
+
+    // redirect to home page
+    const onModalCancel = () => {
+        setModalOpen(false)
+        return navigate('/home');
+    }
 
     const onFinish = (values) => {
         setLoading(true)
@@ -66,6 +88,19 @@ function Login() {
 
     return (
         <>
+            <Modal
+                title={
+                    <>
+                        <WarningOutlined style={{ fontSize: 30, color: "#faad14" }} />
+                        <b> Warning</b>
+                    </>}
+                open={modalOpen}
+                onOk={onModalOk}
+                onCancel={onModalCancel}
+            >
+                <p>Are you sure to sign out current account ?</p>
+            </Modal>
+
             <Form
                 name="basic"
                 labelCol={{
