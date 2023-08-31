@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useEffect, useState } from 'react';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons'
 import { useSignIn } from 'react-auth-kit';
@@ -50,6 +50,20 @@ function Auth(props) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId, token]);
+
+
+    //check user sign-in or sign-out in other windown(tab)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const newToken = getTokenInCookies();
+            if (newToken !== token) {
+                window.location.reload();
+            }
+        }, 1000)
+
+        return () => clearInterval(interval);
+
+    }, [token])
 
     return (
         <>
