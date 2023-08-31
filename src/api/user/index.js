@@ -1,4 +1,4 @@
-import { apiGetAuth, apiPost, apiPostAuth, apiPut } from '../defaultApi';
+import { apiGetAuth, apiPost, apiPostAuth, apiPostDownloadFile, apiPut } from '../defaultApi';
 
 export const login = (data) => {
     return apiPost('api/users/signIn', data);
@@ -37,4 +37,12 @@ export const getUserById = (id) => {
 
 export const editUserInfo = (id, data) => {
     return apiPut(`api/users/EditUserInfo/${id}`, data);
+};
+
+export const postUserInfo = (id, data) => {
+    return apiPut(`api/users/EditUserInfo/${id}`, data);
+};
+
+export const postUserExport = (data) => {
+    return apiPostDownloadFile(`api/export/user`, data);
 };

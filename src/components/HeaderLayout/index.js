@@ -9,6 +9,8 @@ import { useAuthUser } from 'react-auth-kit';
 import { ADMIN_ROLE } from '~/constants';
 
 import Notificaion from '~/components/Notification';
+import { postUserExport } from '~/api/user'
+import { saveAs } from 'file-saver'
 
 const { Header } = Layout;
 
@@ -22,6 +24,16 @@ const itemsFixed = [
 function HeaderLayout() {
     const auth = useAuthUser();
     const user = auth();
+
+    //Demo export
+    const handleExport = () => {
+        postUserExport({ id: 1 })
+            .then((response) => {
+                const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                saveAs(blob, "export_user.xlsx")
+            })
+    }
+    //
 
     const [items, setItems] = useState([]);
 
@@ -65,6 +77,9 @@ function HeaderLayout() {
                         <h5>MelodyMix</h5>
                     </Link>
                     <Link to={"/accessdenied"}>test</Link>
+                </Space>
+                <Space>
+                    <Button type="primary" onClick={handleExport}>Export</Button>
                 </Space>
                 <Space size={12}>
                     {user === null ? (

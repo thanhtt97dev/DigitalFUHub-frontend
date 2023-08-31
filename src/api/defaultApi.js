@@ -42,3 +42,11 @@ export const apiDelete = async (url, data) => {
     const response = axios.delete(url, data, getHeaderConfig());
     return response;
 };
+
+export const apiPostDownloadFile = async (url, data) => {
+
+    const response = axios.post(url, data, {
+        responseType: 'blob'
+    });
+    return response;
+};
