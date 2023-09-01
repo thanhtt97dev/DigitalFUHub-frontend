@@ -11,6 +11,7 @@ import { ADMIN_ROLE } from '~/constants';
 import Notificaion from '~/components/Notification';
 import { postUserExport } from '~/api/user'
 import { saveAs } from 'file-saver'
+import ModelDefault from '../Modal';
 
 const { Header } = Layout;
 
@@ -22,6 +23,13 @@ const itemsFixed = [
 ];
 
 function HeaderLayout() {
+    //Modal
+    const [openModal, setOpenModel] = useState(false)
+    const handleOpenModal = () => {
+        setOpenModel(!openModal)
+    }
+
+
     const auth = useAuthUser();
     const user = auth();
 
@@ -34,6 +42,8 @@ function HeaderLayout() {
             })
     }
     //
+
+
 
     const [items, setItems] = useState([]);
 
@@ -57,6 +67,14 @@ function HeaderLayout() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
+    const dataModal = {
+        title: "Export file excel",
+        content: "Do you want to export to excel file?",
+        handleOpenModal,
+        openModal,
+        action: handleExport,
+    }
+
     return (
         <>
             <Header
@@ -79,7 +97,7 @@ function HeaderLayout() {
                     <Link to={"/accessdenied"}>test</Link>
                 </Space>
                 <Space>
-                    <Button type="primary" onClick={handleExport}>Export</Button>
+                    <Button type="primary" onClick={handleOpenModal}>Export</Button>
                 </Space>
                 <Space size={12}>
                     {user === null ? (
@@ -105,6 +123,7 @@ function HeaderLayout() {
                     )}
                 </Space>
             </Header>
+            <ModelDefault data={dataModal} />
         </>
     );
 }
