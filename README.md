@@ -11,8 +11,7 @@ This repository it about configuration all things you need in React app about:
 
 #### 1.1: Down load [node.js](https://nodejs.org/en/download) (If you not install node.js yet)
 
-#### 1.2: I was have a api prject using [ASP.NET API](https://github.com/hiuhihi78/asp.net-api-configuration) to use this project
-- Clone and run this repo
+#### 1.2:Clone and running repo [ASP.NET API](https://github.com/hiuhihi78/asp.net-api-configuration) to use this project
 
 ### 2: Project Structure
 
@@ -35,7 +34,7 @@ This repository it about configuration all things you need in React app about:
            ├── package.json
 
    ```
- #### 2.1: Api folder :This is folder is folder to config default api
+ #### 2.1: Api folder :This is to config api
     	   			
  ```diff			
  api
@@ -45,11 +44,11 @@ This repository it about configuration all things you need in React app about:
      ├── defaultApi.js
 
  ```
-- defaultApi.js it help to config app method (GET, PUT, POST, DELETE) with auth or unauth
+- defaultApi.js it help to config api method (GET, PUT, POST, DELETE) with auth or unauth
 - And other folder like user, role, refreshtoken, it corresponding with your controller api in back-end
-- If you have other controller api like "customer". So that you can create new folder with name "customer" and define all api with this controller
+- If you have other controller api like "customer". So that you can create new folder with name "customer" and define all api in this controller
 
-#### 2.2: Routes folder :This is folder is folder to config for routing page in react app
+#### 2.2: Routes folder :This folder to config routing pages in react app
 ```diff			
 routes
      ├── Auth.js
@@ -102,18 +101,18 @@ const routesConfig = [
     },
 ];
 ```
-- In this file was define a array name "routesConfig" and each element it define a route in app
+- In this file was define a array "routesConfig" and each element define a route in app
 - Property in object element:
-	+ title (optional): Name of rounte (string)
+	+ title (optional): route's name (string)
 	+ path(*) : route's path (string)
   + layout(optional): route's layout (function component)
   + component(*) : route's content (function component)
   + role(optional) : what user can visit this route (string[])
   + routes : defile route's childs in this route (object[])
   
-##### 2.2.2 : Routing.js : This file it config all for routing and authorization in app
+##### 2.2.2 : Routing.js : This file config routing and authorization in app
 (You not need to modify this file)
-##### 2.2.3 : Auth.js : This file it config all for authentication 
+##### 2.2.3 : Auth.js : This file config authentication in app
 - In this project I was use [cookie-base authentication](https://stackoverflow.com/questions/17769011/how-does-cookie-based-authentication-work)
 - If you want to use [token-base authentication](https://www.okta.com/identity-101/what-is-token-based-authentication/) you need to read [React auth kit](https://authkit.arkadip.dev/installation/) library to use.
 
