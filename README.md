@@ -1,9 +1,10 @@
 # React configuration 
 
-This repository it about configuration all things you need in React app about:
+This repository it about configuration a React app includes:
  - Project Structure
  - Authentication
  - Routing
+ - ...
 
 ## Usage
 
