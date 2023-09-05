@@ -1,4 +1,5 @@
 import Login from '~/pages/Login';
+import Register from '~/pages/Register';
 import AccessDenied from '~/pages/AccessDenied';
 
 import Home from '~/pages/Home';
@@ -52,6 +53,11 @@ const routesConfig = [
                 component: <Notificaion />,
             },
         ],
+    },
+    {
+        title: 'register',
+        path: '/register',
+        component: <Register />,
     },
 ];
 

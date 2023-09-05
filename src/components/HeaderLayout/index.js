@@ -99,6 +99,11 @@ function HeaderLayout() {
                 <Space>
                     <Button type="primary" onClick={handleOpenModal}>Export</Button>
                 </Space>
+                <Space>
+                    <Link to={'/register'}>
+                        <Button type="primary">Register</Button>
+                    </Link>
+                </Space>
                 <Space size={12}>
                     {user === null ? (
                         <Link to={'/Login'}>
