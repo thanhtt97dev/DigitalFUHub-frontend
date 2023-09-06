@@ -20,6 +20,15 @@ const Register = () => {
         return Promise.reject('Please enter a valid email address.');
     };
 
+    const passwordValidator = (value) => {
+        const regex = /^[a-zA-Z]{7}$/;
+
+        if (regex.test(value)) {
+            return Promise.resolve()
+        }
+
+        return Promise.reject('Please enter a valid email address.')
+    }
     return (
         <>
             <Title level={2}>Register</Title>
@@ -66,6 +75,9 @@ const Register = () => {
                             required: true,
                             message: 'Please input your password!',
                         },
+                        {
+                            validator: passwordValidator
+                        }
                     ]}
                 >
                     <Input.Password />
