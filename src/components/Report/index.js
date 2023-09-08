@@ -1,11 +1,17 @@
 import React, { useState } from 'react'
 import { saveAs } from 'file-saver'
-import { postUserExport } from '~/api/export'
 import { Button } from 'antd'
-import ModelDefault from '../Modal'
-import { stringGuid } from '~/utils/string-guid'
+import { useAuthUser } from 'react-auth-kit'
 
-export const ExportUser = () => {
+import { userInfo } from '~/api/report'
+import { stringGuid } from '~/utils/string-guid'
+import ModelDefault from '../Modal'
+
+export const ReportUserInfo = () => {
+
+    const auth = useAuthUser();
+    const user = auth();
+
     //Modal
     const [openModal, setOpenModel] = useState(false)
     const handleOpenModal = () => {
@@ -13,9 +19,8 @@ export const ExportUser = () => {
     }
 
     const handleExport = () => {
-        postUserExport({ id: 1 })
+        userInfo({ id: user.id })
             .then((response) => {
-                debugger
                 const typeResponse = response.data.type
                 const fileName = `user_report_${stringGuid()}.xlsx`
                 const blob = new Blob([response.data], { type: typeResponse });
@@ -30,7 +35,6 @@ export const ExportUser = () => {
         openModal,
         action: handleExport
     }
-
 
     return (
         <>
