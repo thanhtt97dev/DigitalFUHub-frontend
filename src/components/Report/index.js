@@ -26,6 +26,9 @@ export const ReportUserInfo = () => {
                 const blob = new Blob([response.data], { type: typeResponse });
                 saveAs(blob, fileName)
             })
+            .catch((err) => {
+                alert("cannot get report !");
+            })
     }
 
     const dataModal = {

@@ -4,7 +4,7 @@ import { getTokenInCookies } from '~/utils';
 
 const baseURL = process.env.REACT_APP_API_BASE_URL;
 
-const getConfig = () => {
+const getHeaderConfig = () => {
     return {
         responseType: 'blob'
     };
@@ -13,16 +13,14 @@ const getConfig = () => {
 
 const getHeaderConfigAuth = () => {
     return {
-        headers: {
-            Authorization: `Bearer ${getTokenInCookies()}`,
-            responseType: 'blob',
-        },
+        Authorization: `Bearer ${getTokenInCookies()}`,
+        responseType: 'blob'
     };
 };
 
 
 export const apiPost = async (url, data) => {
-    const response = axios.post(baseURL + url, data, getConfig());
+    const response = axios.post(baseURL + url, data, getHeaderConfig());
     return response;
 };
 
