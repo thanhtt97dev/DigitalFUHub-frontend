@@ -1,12 +1,25 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
+import { dowloadFile } from '~/api/storage';
 
 function Home() {
+    const [srcAudio, setSrcAudio] = useState('')
+    useEffect(() => {
+        dowloadFile('api/Files/GetFile/450049af-7813-4eb4-8430-c4ba1a40643a.mp3')
+            .then(function (response) {
+                var srcBlob = URL.createObjectURL(response.data)
+                setSrcAudio(srcBlob)
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+
+    }, [])
     return (
         <>
             <h5>DLow</h5>
-            <audio controls src="https://fpt.blob.core.windows.net/test/nhacHay.mp3">
-                <a href="/media/cc0-audio/t-rex-roar.mp3"> Download audio </a>
+            <audio controls src={srcAudio}>
             </audio>
+            <a href={srcAudio} download={`lilpown.mp3`} > Download audio </a>
         </>
     );
 }

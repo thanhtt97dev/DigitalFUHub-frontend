@@ -17,6 +17,10 @@ export const apiGet = async (url) => {
     const response = axios.get(url);
     return response;
 };
+export const apiGetFile = async (url) => {
+    const response = axios.get(url, { responseType: 'blob' });
+    return response;
+};
 
 export const apiGetAuth = async (url) => {
     const response = axios.get(url, getHeaderConfig());
