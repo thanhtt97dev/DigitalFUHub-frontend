@@ -4,7 +4,7 @@ import { getTokenInCookies } from '~/utils';
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
-const getHeaderConfig = () => {
+const headerWithToken = () => {
     return {
         headers: {
             'Content-Type': 'application/json',
@@ -13,22 +13,33 @@ const getHeaderConfig = () => {
     };
 };
 
+const headerWithTokenForFile = () => {
+    return {
+        headers: {
+            Authorization: `Bearer ${getTokenInCookies()}`,
+        },
+        responseType: 'blob'
+    };
+};
+
+
+
 export const apiGet = async (url) => {
     const response = axios.get(url);
     return response;
 };
 export const apiGetFile = async (url) => {
-    const response = axios.get(url, { responseType: 'blob' });
+    const response = axios.get(url, headerWithTokenForFile());
     return response;
 };
 
 export const apiGetAuth = async (url) => {
-    const response = axios.get(url, getHeaderConfig());
+    const response = axios.get(url, headerWithToken());
     return response;
 };
 
 export const apiPut = async (url, data) => {
-    const response = axios.put(url, data, getHeaderConfig());
+    const response = axios.put(url, data, headerWithToken());
     return response;
 };
 
@@ -38,11 +49,16 @@ export const apiPost = async (url, data) => {
 };
 
 export const apiPostAuth = async (url, data) => {
-    const response = axios.post(url, data, getHeaderConfig());
+    const response = axios.post(url, data, headerWithToken());
+    return response;
+};
+
+export const apiPostFile = async (url, data) => {
+    const response = axios.post(url, data, headerWithTokenForFile());
     return response;
 };
 
 export const apiDelete = async (url, data) => {
-    const response = axios.delete(url, data, getHeaderConfig());
+    const response = axios.delete(url, data, headerWithToken());
     return response;
 };
