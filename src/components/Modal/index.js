@@ -11,11 +11,9 @@ const ModelDefault = ({ data: {
 
 
     return (
-        <>
-            <Modal title={title} open={openModal} onOk={() => { action(); handleOpenModal(); }} onCancel={handleOpenModal}>
-                <p>{content}</p>
-            </Modal>
-        </>
+        <Modal title={title} open={openModal} onOk={() => { action(); handleOpenModal(); }} onCancel={handleOpenModal}>
+            <p>{content}</p>
+        </Modal>
     )
 }
 

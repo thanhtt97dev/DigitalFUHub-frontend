@@ -9,9 +9,7 @@ import { useAuthUser } from 'react-auth-kit';
 import { ADMIN_ROLE } from '~/constants';
 
 import Notificaion from '~/components/Notification';
-import { postUserExport } from '~/api/user'
-import { saveAs } from 'file-saver'
-import ModelDefault from '../Modal';
+import { ExportUser } from '~/components/Report'
 
 const { Header } = Layout;
 
@@ -32,18 +30,6 @@ function HeaderLayout() {
 
     const auth = useAuthUser();
     const user = auth();
-
-    //Demo export
-    const handleExport = () => {
-        postUserExport({ id: 1 })
-            .then((response) => {
-                const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                saveAs(blob, "export_user.xlsx")
-            })
-    }
-    //
-
-
 
     const [items, setItems] = useState([]);
 
@@ -67,13 +53,6 @@ function HeaderLayout() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
-    const dataModal = {
-        title: "Export file excel",
-        content: "Do you want to export to excel file?",
-        handleOpenModal,
-        openModal,
-        action: handleExport,
-    }
 
     return (
         <>
@@ -97,7 +76,7 @@ function HeaderLayout() {
                     <Link to={"/accessdenied"}>test</Link>
                 </Space>
                 <Space>
-                    <Button type="primary" onClick={handleOpenModal}>Export</Button>
+                    <ExportUser handleOpenModal={handleOpenModal} />
                 </Space>
                 <Space>
                     <Link to={'/register'}>
@@ -128,7 +107,6 @@ function HeaderLayout() {
                     )}
                 </Space>
             </Header>
-            <ModelDefault data={dataModal} />
         </>
     );
 }
