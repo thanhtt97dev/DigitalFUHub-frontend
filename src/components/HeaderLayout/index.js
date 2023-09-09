@@ -72,6 +72,9 @@ function HeaderLayout() {
 
 
                 <Space size={12}>
+                    <Link to={'/upload'}>
+                        <Button type="primary">Upload</Button>
+                    </Link>
                     {user === null ? (
                         <Space>
                             <Link to={'/register'}>

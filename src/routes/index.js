@@ -11,6 +11,7 @@ import Users from '~/pages/Admin/Users';
 import Detail from '~/pages/Admin/Users/Detail';
 import Notificaion from '~/pages/Admin/Notificaion';
 import NormalLayout from '~/components/NormalLayout';
+import UploadFile from '~/components/UploadFile';
 
 const routesConfig = [
     {
@@ -58,6 +59,13 @@ const routesConfig = [
         title: 'register',
         path: '/register',
         component: <Register />,
+    },
+    {
+        title: 'upload',
+        path: '/upload',
+        role: [ADMIN_ROLE, User_ROLE],
+        layout: <NormalLayout />,
+        component: <UploadFile />,
     },
 ];
 

@@ -1,24 +1,16 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthUser } from 'react-auth-kit';
 import { PlusOutlined } from '@ant-design/icons';
-import { useState } from 'react';
-import { uploadFile } from '~/api/storage';
 import {
     notification,
     Button,
-    Cascader,
-    Checkbox,
-    DatePicker,
     Form,
-    Input,
-    InputNumber,
-    Radio,
-    Select,
-    Slider,
     Switch,
-    TreeSelect,
     Upload,
 } from 'antd';
-const { RangePicker } = DatePicker;
-const { TextArea } = Input;
+
+import { uploadFile } from '~/api/storage';
 const normFile = (e) => {
     if (Array.isArray(e)) {
         return e;
@@ -27,6 +19,12 @@ const normFile = (e) => {
 };
 
 function UploadFile() {
+
+    const auth = useAuthUser();
+    const user = auth();
+
+    const navigate = useNavigate();
+
     const [form] = Form.useForm();
     const [api, contextHolder] = notification.useNotification();
     const openNotificationWithIcon = (type) => {
@@ -35,6 +33,12 @@ function UploadFile() {
             description: '',
         });
     };
+
+    useEffect(() => {
+        if (user === null) return navigate('/login');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     const onFinish = (values) => {
         var bodyFormData = new FormData();
         bodyFormData.append('isPublic', values.visible);
