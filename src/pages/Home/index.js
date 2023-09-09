@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { dowloadFile } from '~/api/storage';
+import UploadFile from '~/components/UploadFile';
 
 function Home() {
     const [srcAudio, setSrcAudio] = useState('')
@@ -20,7 +21,11 @@ function Home() {
             <audio controls src={srcAudio}>
             </audio>
             <a href={srcAudio} download={`lilpown.mp3`} > Download audio </a>
+            <div style={{ width: '50%' }}>
+                <UploadFile />
+            </div>
         </>
+
     );
 }
 
