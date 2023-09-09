@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, Input, Spin, Modal } from 'antd';
 import { LoadingOutlined, WarningOutlined } from '@ant-design/icons';
-import { useSignIn, useAuthUser } from 'react-auth-kit';
+import { useSignIn } from 'react-auth-kit';
 
 import { login } from '~/api/user';
 import { saveDataAuthToCookies, removeDataAuthInCookies, getUser } from '~/utils';

@@ -9,7 +9,7 @@ import { useAuthUser } from 'react-auth-kit';
 import { ADMIN_ROLE } from '~/constants';
 
 import Notificaion from '~/components/Notification';
-import { ExportUser } from '~/components/Report'
+import { ReportUserInfo } from '~/components/Report'
 
 const { Header } = Layout;
 
@@ -21,12 +21,6 @@ const itemsFixed = [
 ];
 
 function HeaderLayout() {
-    //Modal
-    const [openModal, setOpenModel] = useState(false)
-    const handleOpenModal = () => {
-        setOpenModel(!openModal)
-    }
-
 
     const auth = useAuthUser();
     const user = auth();
@@ -75,21 +69,21 @@ function HeaderLayout() {
                     </Link>
                     <Link to={"/accessdenied"}>test</Link>
                 </Space>
-                <Space>
-                    <ExportUser handleOpenModal={handleOpenModal} />
-                </Space>
-                <Space>
-                    <Link to={'/register'}>
-                        <Button type="primary">Register</Button>
-                    </Link>
-                </Space>
+
+
                 <Space size={12}>
                     {user === null ? (
-                        <Link to={'/Login'}>
-                            <Button type="primary">Login</Button>
-                        </Link>
+                        <Space>
+                            <Link to={'/register'}>
+                                <Button type="primary">Register</Button>
+                            </Link>
+                            <Link to={'/Login'}>
+                                <Button type="primary">Login</Button>
+                            </Link>
+                        </Space>
                     ) : (
                         <>
+                            <ReportUserInfo />
                             <Notificaion />
                             <Dropdown menu={{ items }} placement="bottom">
                                 <img

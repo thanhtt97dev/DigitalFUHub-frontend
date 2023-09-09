@@ -1,4 +1,4 @@
-import { apiGetAuth, apiPost, apiPostAuth, apiPostDownloadFile, apiPut } from '../defaultApi';
+import { apiGetAuth, apiPost, apiPostAuth, apiPut } from '../defaultApi';
 
 export const login = (data) => {
     return apiPost('api/users/signIn', data);
