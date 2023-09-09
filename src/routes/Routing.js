@@ -35,18 +35,10 @@ function Routing() {
     return (
         <>
             <Routes>
-                <Route
-                    path="/"
-                    exact
-                    element={
-                        <NormalLayout>
-                            <Home />
-                        </NormalLayout>
-                    }
-                ></Route>
+                <Route path="/" exact element={<NormalLayout><Home /></NormalLayout>} />
                 {routesCanVistit.map((route, index) => {
                     return (
-                        <Route key={index} element={route.layout === undefined ? <Outlet /> : <NormalLayout />}>
+                        <Route key={index} element={route.layout === undefined ? <Outlet /> : route.layout}>
                             <Route key={route.path} path={route.path} element={route.component}>
                                 {route.routes !== undefined
                                     ? route.routes.map((child) => {

@@ -79,7 +79,7 @@ const routesConfig = [
     {
         title: 'admin',
         path: '/admin',
-        component: <AdminLayout />,
+        layout: <AdminLayout />,
         role: [ADMIN_ROLE, User_ROLE],
         routes: [
             {

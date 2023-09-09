@@ -11,7 +11,7 @@ import Users from '~/pages/Admin/Users';
 import Detail from '~/pages/Admin/Users/Detail';
 import Notificaion from '~/pages/Admin/Notificaion';
 import NormalLayout from '~/components/NormalLayout';
-import UploadFile from '~/components/UploadFile';
+import UploadFile from '~/pages/UploadFile';
 
 const routesConfig = [
     {
@@ -34,7 +34,7 @@ const routesConfig = [
     {
         title: 'admin',
         path: '/admin',
-        component: <AdminLayout />,
+        layout: <AdminLayout />,
         role: [ADMIN_ROLE, User_ROLE],
         routes: [
             {
@@ -63,7 +63,6 @@ const routesConfig = [
     {
         title: 'upload',
         path: '/upload',
-        role: [ADMIN_ROLE, User_ROLE],
         layout: <NormalLayout />,
         component: <UploadFile />,
     },

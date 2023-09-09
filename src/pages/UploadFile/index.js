@@ -35,7 +35,9 @@ function UploadFile() {
     };
 
     useEffect(() => {
-        if (user === null) return navigate('/login');
+        if (user === null) {
+            return navigate("/login")
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
