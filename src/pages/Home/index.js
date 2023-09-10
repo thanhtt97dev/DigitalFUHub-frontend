@@ -26,10 +26,3 @@ function Home() {
 }
 
 export default Home;
-
-/*
-
-   <Link to="/admin">Admin</Link>
-            <Logout />
-            <Link to="/login">Login</Link>
-            */

@@ -1,15 +1,15 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-import { Layout, Image, Space, Button, Dropdown } from 'antd';
-import Logout from '~/components/Logout';
-
-import logo from '~/assets/images/Logo.png';
 import { useAuthUser } from 'react-auth-kit';
-import { ADMIN_ROLE } from '~/constants';
+import { Layout, Image, Space, Button, Dropdown } from 'antd';
 
+import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
 import { ReportUserInfo } from '~/components/Report'
+
+import logo from '~/assets/images/Logo.png';
+import logoFPT from '~/assets/images/fpt-logo.jpg';
+import { ADMIN_ROLE } from '~/constants';
 
 const { Header } = Layout;
 
@@ -97,7 +97,7 @@ function HeaderLayout() {
                                         marginTop: '20px',
                                     }}
                                     alt=""
-                                    src="https://scontent.fsgn2-8.fna.fbcdn.net/v/t39.30808-6/327186771_897523861694243_5094115961239590668_n.jpg?_nc_cat=1&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=Rw_HeVuEIvcAX-dDucE&_nc_ht=scontent.fsgn2-8.fna&oh=00_AfDws4iBbYFY0b5kmChNdyLnKpqspYVtv-vjCNeoPseE6g&oe=64F08780"
+                                    src={logoFPT}
                                 />
                             </Dropdown>
                         </>

@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { getUserById, editUserInfo } from '~/api/user';
 import { getAllRoles } from '~/api/role';
+import logoFPT from "~/assets/images/fpt-logo.jpg"
 
 function Detail() {
     let { id } = useParams();
@@ -100,7 +101,7 @@ function Detail() {
                 <Col offset={4} span={4}>
                     <Image
                         width={200}
-                        src="https://scontent.fsgn2-8.fna.fbcdn.net/v/t39.30808-6/328544549_494001532902586_198214383855259790_n.jpg?stp=cp6_dst-jpg&_nc_cat=102&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=XDThcNWOIx8AX_RGnPl&_nc_ht=scontent.fsgn2-8.fna&oh=00_AfDn05NvPEGdwYjHXWpdEv-6tkJMLzrJp_bnuQKreHsCTg&oe=64E753F6"
+                        src={logoFPT}
                     />
                 </Col>
                 <Col offset={1} span={14}>

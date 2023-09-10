@@ -68,7 +68,7 @@ function Login() {
                 switch (res.data.roleName) {
                     case ADMIN_ROLE:
                         return navigate('/admin');
-                    case User_ROLE:
+                    case USER_ROLE:
                         return navigate('/home');
                     default:
                         throw new Error();

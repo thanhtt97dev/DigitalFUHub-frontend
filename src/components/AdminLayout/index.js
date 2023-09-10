@@ -3,9 +3,10 @@ import { UserOutlined, VideoCameraOutlined, BellOutlined, NotificationOutlined }
 import { Layout, Menu, theme, Badge, Space, Avatar, notification, Drawer, Empty, Alert } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
-import { formatTimeAgoVN } from '~/utils';
 
 import connectionHub from '~/api/signalr/connectionHub';
+
+import { formatTimeAgoVN } from '~/utils';
 
 const { Header, Content, Footer, Sider } = Layout;
 

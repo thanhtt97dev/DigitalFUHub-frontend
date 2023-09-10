@@ -4,7 +4,7 @@ import AccessDenied from '~/pages/AccessDenied';
 
 import Home from '~/pages/Home';
 
-import { ADMIN_ROLE, User_ROLE } from '~/constants';
+import { ADMIN_ROLE, USER_ROLE } from '~/constants';
 import AdminLayout from '~/components/AdminLayout';
 import DashBoard from '~/pages/Admin/DashBoard';
 import Users from '~/pages/Admin/Users';
@@ -35,7 +35,7 @@ const routesConfig = [
         title: 'admin',
         path: '/admin',
         layout: <AdminLayout />,
-        role: [ADMIN_ROLE, User_ROLE],
+        role: [ADMIN_ROLE, USER_ROLE],
         routes: [
             {
                 path: 'dashboard',

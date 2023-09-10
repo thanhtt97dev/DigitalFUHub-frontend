@@ -41,12 +41,12 @@ function Auth(props) {
                 }).finally(() => {
                     setTimeout(() => {
                         setLoading(false)
-                    }, 1000)
+                    }, 500)
                 });
         } else {
             setTimeout(() => {
                 setLoading(false)
-            }, 1000)
+            }, 500)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId, token]);

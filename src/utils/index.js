@@ -82,7 +82,7 @@ export const removeUserInfoInCookie = () => {
 
 //For UI
 
-export const formatTimeAgo = (time) => {
+export const formatTimeAgoCustom = (time) => {
     register('my-locale', localeFunc);
     return format(time, 'my-locale');
     //console.log('time: ' + format('2023-08-20T10:30:00', 'hn_VN'));
@@ -111,26 +111,6 @@ const localeFunc = (number, index, totalSec) => {
 };
 
 export const formatTimeAgoVN = (time) => {
-    register('vi', localeFuncVN);
     return format(time, 'vi');
     //console.log('time: ' + format('2023-08-20T10:30:00', 'hn_VN'));
-};
-
-const localeFuncVN = (number, index, totalSec) => {
-    return [
-        ['vừa xong', 'ngay bây giờ'],
-        [`${number} giây trước`, `trong ${number} giây`],
-        ['1 phút trước', 'trong 1 phút'],
-        [`${number} phút trước`, `trong ${number} phút`],
-        ['1 giờ trước', 'trong 1 giờ'],
-        [`${number} giờ trước`, `trong ${number} giờ`],
-        ['1 ngày trước', 'trong 1 ngày'],
-        [`${number} ngày trước`, `trong ${number} ngày`],
-        ['1 tuần trước', 'trong 1 tuần'],
-        [`${number} tuần trước`, `trong ${number} tuần`],
-        ['1 tháng trước', 'trong 1 tháng'],
-        [`${number} tháng trước`, `trong ${number} tháng`],
-        ['1 năm trước', 'trong 1 năm'],
-        [`${number} năm trước`, `trong ${number} năm`],
-    ][index];
 };

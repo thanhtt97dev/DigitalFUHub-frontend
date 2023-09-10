@@ -1,5 +1,5 @@
-import { apiPost } from '~/api/signalr/defaultApi';
+import { apiPostAuth } from '~/api/defaultApi';
 
 export const sendMessageForUser = (id, data) => {
-    return apiPost(`api/Notifications/sendNotification/${id}`, data);
+    return apiPostAuth(`api/Notifications/sendNotification/${id}`, data);
 };
