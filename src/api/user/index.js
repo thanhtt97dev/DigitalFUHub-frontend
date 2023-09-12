@@ -4,6 +4,10 @@ export const login = (data) => {
     return apiPost('api/users/signIn', data);
 };
 
+export const generateAccessToken = (id, data) => {
+    return apiPost(`api/users/GenerateAccessToken/${id}`, data);
+}
+
 export const refreshToken = (accessToken, refreshToken) => {
     const data = {
         refreshToken,

@@ -12,6 +12,7 @@ import Detail from '~/pages/Admin/Users/Detail';
 import Notificaion from '~/pages/Admin/Notificaion';
 import NormalLayout from '~/components/NormalLayout';
 import UploadFile from '~/pages/UploadFile';
+import Verification2FA from '~/pages/Verification2FA';
 
 const routesConfig = [
     {
@@ -65,6 +66,11 @@ const routesConfig = [
         path: '/upload',
         layout: <NormalLayout />,
         component: <UploadFile />,
+    },
+    {
+        title: 'verification2FA',
+        path: '/verification2FA/:id',
+        component: <Verification2FA />,
     },
 ];
 

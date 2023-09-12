@@ -77,11 +77,17 @@ function Login() {
                 return navigate('/home');
             })
             .catch((err) => {
+                setMessage(err.response.data);
+                if (err.response.status === 416) { //handle 2FA
+                    return navigate(`/verification2FA/${err.response.data}`);
+                }
+            })
+            .finally(() => {
                 setTimeout(() => {
-                    setMessage(err.response.data);
                     setLoading(false)
                 }, 500)
-            });
+            })
+
 
     };
     const onFinishFailed = (errorInfo) => { };
