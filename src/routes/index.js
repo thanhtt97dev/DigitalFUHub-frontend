@@ -13,9 +13,9 @@ import Notificaion from '~/pages/Admin/Notificaion';
 import NormalLayout from '~/components/NormalLayout';
 import UploadFile from '~/pages/UploadFile';
 import Verification2FA from '~/pages/Verification2FA';
-import SettingsLayout from '~/pages/User/SettingsLayout';
-import Personal from '~/pages/User/Personal';
-import Security from '~/pages/User/Security';
+import SettingsLayout from '~/pages/User/Settings/SettingsLayout';
+import Personal from '~/pages/User/Settings/Personal';
+import Security from '~/pages/User/Settings/Security';
 
 const routesConfig = [
     {
@@ -87,7 +87,7 @@ const routesConfig = [
                 component: <Personal />,
             },
             {
-                path: '',
+                path: 'security',
                 component: <Security />,
             },
         ],

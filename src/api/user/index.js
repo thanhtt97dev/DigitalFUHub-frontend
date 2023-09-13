@@ -47,3 +47,10 @@ export const postUserInfo = (id, data) => {
     return apiPut(`api/users/EditUserInfo/${id}`, data);
 };
 
+export const generate2FaKey = (id) => {
+    return apiPostAuth(`api/users/Generate2FaKey/${id}`);
+};
+
+export const activate2Fa = (id, data) => {
+    return apiPostAuth(`api/users/Activate2Fa/${id}`, data);
+};

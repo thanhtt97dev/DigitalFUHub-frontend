@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
 import { Layout, Image, Space, Button, Dropdown } from 'antd';
@@ -21,7 +21,7 @@ const itemsFixed = [
     },
     {
         key: 'settings',
-        label: <Link to={"/settings"}>Profile</Link>,
+        label: <Link to={"/settings"}>Cài đặt</Link>,
         role: USER_ROLE
     },
     {
@@ -37,14 +37,21 @@ function HeaderLayout() {
 
     const [items, setItems] = useState([]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
+
         var itemsCanAccses = itemsFixed;
-        if (user === null) {
+        if (user === null) return;
+        if (user.roleName === undefined) {
             itemsCanAccses = itemsFixed.filter(x => x.role === undefined);
+        } else {
+            if (user.roleName === USER_ROLE) {
+                itemsCanAccses = itemsFixed.filter(x => x.role !== ADMIN_ROLE);
+            }
+            if (user.roleName === ADMIN_ROLE) {
+                itemsCanAccses = itemsFixed.filter(x => x.role !== USER_ROLE);
+            }
         }
-        if (user.roleName === USER_ROLE) {
-            itemsCanAccses = itemsFixed.filter(x => x.role !== ADMIN_ROLE);
-        }
+
         setItems(itemsCanAccses);
         return () => {
             setItems([]);
