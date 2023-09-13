@@ -13,6 +13,9 @@ import Notificaion from '~/pages/Admin/Notificaion';
 import NormalLayout from '~/components/NormalLayout';
 import UploadFile from '~/pages/UploadFile';
 import Verification2FA from '~/pages/Verification2FA';
+import SettingsLayout from '~/pages/User/SettingsLayout';
+import Personal from '~/pages/User/Personal';
+import Security from '~/pages/User/Security';
 
 const routesConfig = [
     {
@@ -71,6 +74,23 @@ const routesConfig = [
         title: 'verification2FA',
         path: '/verification2FA/:id',
         component: <Verification2FA />,
+    },
+    {
+        title: 'user settings',
+        path: '/settings',
+        layout: <NormalLayout />,
+        component: <SettingsLayout />,
+        role: [USER_ROLE],
+        routes: [
+            {
+                path: '',
+                component: <Personal />,
+            },
+            {
+                path: '',
+                component: <Security />,
+            },
+        ],
     },
 ];
 

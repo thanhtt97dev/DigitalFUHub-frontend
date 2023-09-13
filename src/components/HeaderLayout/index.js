@@ -9,11 +9,21 @@ import { ReportUserInfo } from '~/components/Report'
 
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
-import { ADMIN_ROLE } from '~/constants';
+import { ADMIN_ROLE, USER_ROLE } from '~/constants';
 
 const { Header } = Layout;
 
 const itemsFixed = [
+    {
+        key: 'admin',
+        label: <Link to={"/admin"}>Admin</Link>,
+        role: ADMIN_ROLE
+    },
+    {
+        key: 'settings',
+        label: <Link to={"/settings"}>Profile</Link>,
+        role: USER_ROLE
+    },
     {
         key: 'logout',
         label: <Logout />,
@@ -28,19 +38,14 @@ function HeaderLayout() {
     const [items, setItems] = useState([]);
 
     useLayoutEffect(() => {
-        setItems(itemsFixed);
-        if (user === null) return;
-        if (user.roleName === ADMIN_ROLE) {
-            const item = {
-                key: 'admin',
-                label: (
-                    <Link to="/admin">
-                        <Button>Admin</Button>
-                    </Link>
-                ),
-            };
-            setItems((prev) => [item, ...prev]);
+        var itemsCanAccses = itemsFixed;
+        if (user === null) {
+            itemsCanAccses = itemsFixed.filter(x => x.role === undefined);
         }
+        if (user.roleName === USER_ROLE) {
+            itemsCanAccses = itemsFixed.filter(x => x.role !== ADMIN_ROLE);
+        }
+        setItems(itemsCanAccses);
         return () => {
             setItems([]);
         };
