@@ -54,3 +54,7 @@ export const generate2FaKey = (id) => {
 export const activate2Fa = (id, data) => {
     return apiPostAuth(`api/users/Activate2Fa/${id}`, data);
 };
+
+export const deactivate2Fa = (id, data) => {
+    return apiPostAuth(`api/users/Deactivate2Fa/${id}`, data);
+};

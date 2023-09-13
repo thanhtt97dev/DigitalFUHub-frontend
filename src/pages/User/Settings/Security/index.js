@@ -6,7 +6,7 @@ import { getUserById } from "~/api/user";
 import { getUserId } from '~/utils';
 import { CheckCircleFilled, CloseCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
 
-import { generate2FaKey, activate2Fa } from '~/api/user'
+import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user'
 
 function Security() {
 
@@ -16,7 +16,9 @@ function Security() {
     const [userInfo, setUserInfo] = useState({});
 
     const [srcQrCode2Fa, setsrcQrCode2Fa] = useState("");
-    const [openModalConfirm2FA, setOpenModalConfirm2FA] = useState(false);
+
+    const [openModalActivate2FA, setOpenModalActivate2FA] = useState(false);
+    const [openModalDeactive2FA, setOpenModalDeactive2FA] = useState(false);
 
     const [user2FaStatus, setUser2FaStatus] = useState(false)
     const [secretKey2FA, setSecretKey2FA] = useState("");
@@ -57,7 +59,7 @@ function Security() {
             .then((res) => {
                 setsrcQrCode2Fa(res.data.qrCode);
                 setSecretKey2FA(res.data.secretKey)
-                setOpenModalConfirm2FA(true);
+                setOpenModalActivate2FA(true);
 
             })
             .catch(() => {
@@ -72,13 +74,12 @@ function Security() {
         }
         activate2Fa(userId, data)
             .then((res) => {
-                setOpenModalConfirm2FA(false);
+                setOpenModalActivate2FA(false);
                 openNotification("success", "Kích hoạt bảo mật hai lớp thành công!")
                 resetVariable();
                 setUser2FaStatus(true)
             })
             .catch((err) => {
-                console.log(err.response.status)
                 if (err.response.status === 400 || err.response.status === 409) {
                     setmesage2FA("Mã code không hợp lệ!")
                     return;
@@ -87,17 +88,40 @@ function Security() {
             })
     }
 
-    const handleDeactivate2FA = () => {
+    const handleCancelModalActivate2FA = () => {
+        setOpenModalActivate2FA(false);
+        resetVariable();
+    }
 
+    const handleDeactivate2FA = () => {
+        setOpenModalDeactive2FA(true)
+    }
+
+    const handleSubmitDeactivate2FA = () => {
+        const data = { Code: code2FA }
+        deactivate2Fa(userId, data)
+            .then((res) => {
+                setOpenModalDeactive2FA(false)
+                openNotification("success", "Tắt bảo mật hai lớp thành công!")
+                setUser2FaStatus(false)
+                resetVariable();
+            })
+            .catch((err) => {
+                if (err.response.status === 400 || err.response.status === 409) {
+                    setmesage2FA("Mã code không hợp lệ!")
+                    return;
+                }
+                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+            })
+    }
+
+    const handleCancleModalDeactivate2FA = () => {
+        setOpenModalDeactive2FA(false);
+        resetVariable();
     }
 
     const handleResend2FA = () => {
 
-    }
-
-    const handleCancelModal2FA = () => {
-        setOpenModalConfirm2FA(false);
-        resetVariable();
     }
 
     const resetVariable = () => {
@@ -133,7 +157,7 @@ function Security() {
                         <Space>
                             <Button
                                 type="primary"
-                                onClick={handleResend2FA}
+                                onClick={handleDeactivate2FA}
                                 style={{ background: "#c00" }}
                             >
                                 Tắt bảo mật hai lớp
@@ -142,7 +166,7 @@ function Security() {
                                 type="primary"
                                 onClick={handleResend2FA}
                             >
-                                Gửi lại mã kích hoạt
+                                Gửi lại mã QR kích hoạt
                             </Button>
                         </Space>
                     </div>
@@ -171,9 +195,9 @@ function Security() {
             <Modal
                 title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Bảo mật hai lớp</>}
                 centered
-                open={openModalConfirm2FA}
+                open={openModalActivate2FA}
                 onOk={handleSubmitActive2FA}
-                onCancel={handleCancelModal2FA}
+                onCancel={handleCancelModalActivate2FA}
                 width={400}
             >
                 <Divider />
@@ -185,6 +209,24 @@ function Security() {
                 </div>
                 <Divider />
                 <p style={{ textAlign: "center" }}>Hãy nhập mã code trước khi xác nhận!</p>
+                <Input value={code2FA} maxLength={6} onChange={(e) => setCode2FA(e.target.value)} />
+                <div style={{ textAlign: "center" }}>
+                    <i style={{ color: "red" }}>{mesage2FA}</i>
+                </div>
+            </Modal>
+
+            <Modal
+                title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Tắt bảo mật hai lớp</>}
+                centered
+                open={openModalDeactive2FA}
+                onOk={handleSubmitDeactivate2FA}
+                onCancel={() => handleCancleModalDeactivate2FA(false)}
+                width={400}
+            >
+                <Divider />
+                <p style={{ textAlign: "center", width: "70%", margin: "0 auto", marginBottom: "10px" }}>
+                    Hãy nhập mã code nếu bạn đã chắc chắn muốn tắt bảo mật hai lớp!
+                </p>
                 <Input value={code2FA} maxLength={6} onChange={(e) => setCode2FA(e.target.value)} />
                 <div style={{ textAlign: "center" }}>
                     <i style={{ color: "red" }}>{mesage2FA}</i>
