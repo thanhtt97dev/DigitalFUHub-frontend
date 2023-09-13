@@ -58,3 +58,7 @@ export const activate2Fa = (id, data) => {
 export const deactivate2Fa = (id, data) => {
     return apiPostAuth(`api/users/Deactivate2Fa/${id}`, data);
 };
+
+export const send2FaQrCode = (id) => {
+    return apiPostAuth(`api/users/Send2FaQrCode/${id}`);
+};

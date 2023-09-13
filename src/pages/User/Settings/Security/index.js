@@ -6,7 +6,7 @@ import { getUserById } from "~/api/user";
 import { getUserId } from '~/utils';
 import { CheckCircleFilled, CloseCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
 
-import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user'
+import { generate2FaKey, activate2Fa, deactivate2Fa, send2FaQrCode } from '~/api/user'
 
 function Security() {
 
@@ -19,6 +19,7 @@ function Security() {
 
     const [openModalActivate2FA, setOpenModalActivate2FA] = useState(false);
     const [openModalDeactive2FA, setOpenModalDeactive2FA] = useState(false);
+    const [openModalSend2FAQrCode, setOpenModalSend2FAQrCode] = useState(false);
 
     const [user2FaStatus, setUser2FaStatus] = useState(false)
     const [secretKey2FA, setSecretKey2FA] = useState("");
@@ -120,9 +121,21 @@ function Security() {
         resetVariable();
     }
 
-    const handleResend2FA = () => {
-
+    const handleSend2FaOrCode = () => {
+        setOpenModalSend2FAQrCode(true);
     }
+
+    const handleSubmitSend2FaOrCode = () => {
+        send2FaQrCode(userId)
+            .then(() => {
+                openNotification("success", "Gửi mã QR thành công!")
+            })
+            .catch(() => {
+                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+            })
+    }
+
+
 
     const resetVariable = () => {
         setCode2FA("")
@@ -164,7 +177,7 @@ function Security() {
                             </Button>
                             <Button
                                 type="primary"
-                                onClick={handleResend2FA}
+                                onClick={handleSend2FaOrCode}
                             >
                                 Gửi lại mã QR kích hoạt
                             </Button>
@@ -231,6 +244,28 @@ function Security() {
                 <div style={{ textAlign: "center" }}>
                     <i style={{ color: "red" }}>{mesage2FA}</i>
                 </div>
+            </Modal>
+
+            <Modal
+                title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Gửi lại mã QR bảo mật hai lớp</>}
+                centered
+                open={openModalSend2FAQrCode}
+                onOk={handleSubmitSend2FaOrCode}
+                onCancel={() => setOpenModalSend2FAQrCode(false)}
+                width={400}
+            >
+                <Divider />
+                <p style={{ textAlign: "center", margin: "0 auto", marginBottom: "10px" }}>
+                    Bạn có chắc cần gửi lại QR Code này không?
+                </p>
+                <p>
+                    <b style={{ color: "red" }}>Chú ý:</b>
+                    <div style={{ marginLeft: "30px" }}>
+                        <i>Chúng tôi sẽ gửi QR Code đến email của bạn!</i>
+                        <br />
+                        <i>Xin đùng gửi QR Code này cho ai!</i>
+                    </div>
+                </p>
             </Modal>
 
         </>
