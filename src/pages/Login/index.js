@@ -8,7 +8,7 @@ import { useSignIn } from 'react-auth-kit';
 import { login } from '~/api/user';
 import { saveDataAuthToCookies, removeDataAuthInCookies, getUser } from '~/utils';
 import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
-//import { ADMIN_ROLE, User_ROLE } from "~/constants"
+//import { ADMIN_ROLE, CUSTOMER_ROLE } from "~/constants"
 
 function Login() {
     const signIn = useSignIn();
@@ -68,7 +68,7 @@ function Login() {
                 switch (res.data.roleName) {
                     case ADMIN_ROLE:
                         return navigate('/admin');
-                    case USER_ROLE:
+                    case CUSTOMER_ROLE:
                         return navigate('/home');
                     default:
                         throw new Error();
