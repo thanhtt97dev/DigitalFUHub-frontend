@@ -1,3 +1,4 @@
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +8,8 @@ import { useSignIn } from 'react-auth-kit';
 
 import { login } from '~/api/user';
 import { saveDataAuthToCookies, removeDataAuthInCookies, getUser } from '~/utils';
-import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
+import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES, GOOGLE_CLIENT_ID } from '~/constants';
+import GoogleSignIn from '~/components/GoogleSignIn';
 //import { ADMIN_ROLE, User_ROLE } from "~/constants"
 
 function Login() {
@@ -49,7 +51,7 @@ function Login() {
             password: values.password,
         };
 
-        login(data)
+        login(data, values.google)
             .then((res) => {
                 signIn({
                     token: NOT_HAVE_MEANING_FOR_TOKEN,
@@ -93,7 +95,7 @@ function Login() {
     const onFinishFailed = (errorInfo) => { };
 
     return (
-        <>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
             <Modal
                 title={
                     <>
@@ -175,9 +177,17 @@ function Login() {
                         Submit
                     </Button>
                 </Form.Item>
+                <Form.Item
+                    wrapperCol={{
+                        offset: 8,
+                        span: 16,
+                    }}
+                >
+                    <GoogleSignIn onFinish={onFinish} />
+                </Form.Item>
             </Form>
-            ;
-        </>
+
+        </GoogleOAuthProvider>
     );
 }
 
