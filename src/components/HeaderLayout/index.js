@@ -5,7 +5,6 @@ import { Layout, Image, Space, Button, Dropdown } from 'antd';
 
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
-import { ReportUserInfo } from '~/components/Report'
 
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
@@ -84,9 +83,6 @@ function HeaderLayout() {
 
 
                 <Space size={12}>
-                    <Link to={'/upload'}>
-                        <Button type="primary">Upload</Button>
-                    </Link>
                     {user === null ? (
                         <Space>
                             <Link to={'/register'}>
@@ -98,7 +94,9 @@ function HeaderLayout() {
                         </Space>
                     ) : (
                         <>
-                            <ReportUserInfo />
+                            <Link to={'/deposite'}>
+                                <Button type="primary">Nạp tiền</Button>
+                            </Link>
                             <Notificaion />
                             <Dropdown menu={{ items }} placement="bottom">
                                 <img

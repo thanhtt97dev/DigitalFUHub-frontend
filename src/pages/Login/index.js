@@ -45,7 +45,7 @@ function Login() {
         setLoading(true)
         setMessage('');
         const data = {
-            email: values.username,
+            username: values.username,
             password: values.password,
         };
 
@@ -57,7 +57,7 @@ function Login() {
                     authState: {
                         id: res.data.userId,
                         email: res.data.email,
-                        firstName: res.data.email,
+                        username: res.data.username,
                         roleName: res.data.roleName,
                     },
                     //refreshToken: res.data.refreshToken,

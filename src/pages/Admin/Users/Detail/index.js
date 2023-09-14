@@ -13,7 +13,7 @@ function Detail() {
     let { id } = useParams();
     const navigate = useNavigate();
 
-    const [userInfo, setUserInfo] = useState({ userId: '', email: '', roleId: 0, status: 0 });
+    const [userInfo, setUserInfo] = useState({});
     const [roles, setRoles] = useState([]);
     const [api, contextHolder] = notification.useNotification();
 
@@ -23,7 +23,6 @@ function Detail() {
                 if (res.data.roleId === 1) navigate('/admin/users');
                 setUserInfo({
                     userId: res.data.userId,
-                    email: res.data.email,
                     roleId: res.data.roleId,
                     status: res.data.status,
                 });

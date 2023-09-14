@@ -19,6 +19,10 @@ export const ReportUserInfo = () => {
     }
 
     const handleExport = () => {
+        if (user === null) {
+            alert("cannot get report !");
+            return;
+        }
         userInfo({ id: user.id })
             .then((response) => {
                 const typeResponse = response.data.type

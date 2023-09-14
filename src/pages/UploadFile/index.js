@@ -36,7 +36,8 @@ function UploadFile() {
 
     useEffect(() => {
         if (user === null) {
-            return navigate("/login")
+            alert("You cannot upload file!")
+            return navigate("/home");
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
