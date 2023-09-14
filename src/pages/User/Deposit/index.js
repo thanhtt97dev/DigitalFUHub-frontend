@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuthUser } from 'react-auth-kit';
 
 import { Row, Col } from "antd";
 
-
-const vietQr = process.env.REACT_APP_BANK_ACCOUNT_IMAGE_SRC;
+import { BANK_ACCOUNT_IMAGE_SRC } from '~/constants'
 
 function Deposit() {
-    const auth = useAuthUser();
-    const user = auth();
+
     const navigate = useNavigate();
 
     const location = useLocation();
@@ -25,7 +22,8 @@ function Deposit() {
         }
         setCode(location.state.code)
         setAmount(location.state.amount)
-        setQrCode(vietQr + `&amount=${location.state.amount}&addInfo=${location.state.code}`)
+        const bankCodeInfo = `&amount=${location.state.amount}&addInfo=${location.state.code}`;
+        setQrCode(BANK_ACCOUNT_IMAGE_SRC + bankCodeInfo)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
