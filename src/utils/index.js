@@ -1,5 +1,6 @@
 import Cookies from 'js-cookie';
 import { format, register } from 'timeago.js';
+import jwtDecode from 'jwt-decode'
 
 //API
 
@@ -114,3 +115,7 @@ export const formatTimeAgoVN = (time) => {
     return format(time, 'vi');
     //console.log('time: ' + format('2023-08-20T10:30:00', 'hn_VN'));
 };
+
+export const decodeGoogleCredential = (credential) => {
+    return jwtDecode(credential);
+}

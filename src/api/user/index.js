@@ -1,7 +1,8 @@
 import { apiGetAuth, apiPost, apiPostAuth, apiPut } from '../defaultApi';
 
-export const login = (data) => {
-    return apiPost('api/users/signIn', data);
+export const login = (data, google = false) => {
+    const url = google ? 'api/users/SignInhGoogle' : 'api/users/signIn'
+    return apiPost(url, data);
 };
 
 export const generateAccessToken = (id, data) => {

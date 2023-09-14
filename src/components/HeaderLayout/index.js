@@ -10,7 +10,8 @@ import { MessageOutlined } from '@ant-design/icons';
 
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
-import { ADMIN_ROLE, USER_ROLE } from '~/constants';
+import { ADMIN_ROLE, CUSTOMER_ROLE } from '~/constants';
+import ModalRequestDeposit from '../ModalRequestDeposit';
 
 const { Header } = Layout;
 
@@ -23,7 +24,7 @@ const itemsFixed = [
     {
         key: 'settings',
         label: <Link to={"/settings"}>Cài đặt</Link>,
-        role: USER_ROLE
+        role: CUSTOMER_ROLE
     },
     {
         key: 'logout',
@@ -45,11 +46,11 @@ function HeaderLayout() {
         if (user.roleName === undefined) {
             itemsCanAccses = itemsFixed.filter(x => x.role === undefined);
         } else {
-            if (user.roleName === USER_ROLE) {
+            if (user.roleName === CUSTOMER_ROLE) {
                 itemsCanAccses = itemsFixed.filter(x => x.role !== ADMIN_ROLE);
             }
             if (user.roleName === ADMIN_ROLE) {
-                itemsCanAccses = itemsFixed.filter(x => x.role !== USER_ROLE);
+                itemsCanAccses = itemsFixed.filter(x => x.role !== CUSTOMER_ROLE);
             }
         }
 
@@ -85,9 +86,6 @@ function HeaderLayout() {
 
 
                 <Space size={12}>
-                    <Link to={'/upload'}>
-                        <Button type="primary">Upload</Button>
-                    </Link>
                     {user === null ? (
                         <Space>
                             <Link to={'/register'}>
@@ -99,7 +97,7 @@ function HeaderLayout() {
                         </Space>
                     ) : (
                         <>
-                            <ReportUserInfo />
+                            <ModalRequestDeposit userId={user.id} />
                             <Notificaion />
                             <Link to={'/chatBox'}>
                                 <MessageOutlined style={{ fontSize: '20px' }} />

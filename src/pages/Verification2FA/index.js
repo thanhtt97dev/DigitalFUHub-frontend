@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSignIn } from 'react-auth-kit';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input, Space, message } from 'antd';
 
 import { generateAccessToken } from '~/api/user'
 
 import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 import { saveDataAuthToCookies, getUser } from '~/utils';
+import ModalSend2FaQrCode from '~/components/ModalSend2FaQrCode';
 
 
 const layout = {
@@ -100,9 +101,12 @@ function Verification2FA() {
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <Button type="primary" htmlType="submit">
-                        Submit
-                    </Button>
+                    <Space>
+                        <Button type="primary" htmlType="submit">
+                            Submit
+                        </Button>
+                        <ModalSend2FaQrCode />
+                    </Space>
                 </Form.Item>
             </Form>
         </>

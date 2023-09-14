@@ -4,7 +4,7 @@ import AccessDenied from '~/pages/AccessDenied';
 
 import Home from '~/pages/Home';
 
-import { ADMIN_ROLE, USER_ROLE } from '~/constants';
+import { ADMIN_ROLE, CUSTOMER_ROLE } from '~/constants';
 import AdminLayout from '~/components/AdminLayout';
 import DashBoard from '~/pages/Admin/DashBoard';
 import Users from '~/pages/Admin/Users';
@@ -17,6 +17,7 @@ import SettingsLayout from '~/pages/User/Settings/SettingsLayout';
 import Personal from '~/pages/User/Settings/Personal';
 import Security from '~/pages/User/Settings/Security';
 import ChatBox from '~/pages/ChatBox';
+import Deposit from '~/pages/User/Deposit';
 
 const routesConfig = [
     {
@@ -40,7 +41,7 @@ const routesConfig = [
         title: 'admin',
         path: '/admin',
         layout: <AdminLayout />,
-        role: [ADMIN_ROLE, USER_ROLE],
+        role: [ADMIN_ROLE, CUSTOMER_ROLE],
         routes: [
             {
                 path: 'dashboard',
@@ -81,7 +82,7 @@ const routesConfig = [
         path: '/settings',
         layout: <NormalLayout />,
         component: <SettingsLayout />,
-        role: [USER_ROLE],
+        role: [CUSTOMER_ROLE],
         routes: [
             {
                 path: '',
@@ -98,6 +99,10 @@ const routesConfig = [
         path: '/chatBox',
         layout: <NormalLayout />,
         component: <ChatBox />,
+        title: 'deposit',
+        path: '/deposit',
+        layout: <NormalLayout />,
+        component: <Deposit />,
     },
 ];
 
