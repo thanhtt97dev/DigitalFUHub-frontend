@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Layout, Input, Button, Menu } from 'antd';
+import { Layout, Input, Button, Menu, Avatar, Divider, List, Skeleton } from 'antd';
 import connectionHub from '~/api/signalr/connectionHub';
 import { useAuthUser } from 'react-auth-kit';
 import {
     UserOutlined,
     SendOutlined,
 } from '@ant-design/icons';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 
 const { Sider, Content } = Layout;
@@ -17,7 +18,6 @@ const ChatBox = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
-    const messageContainerRef = useRef(null);
 
     useEffect(() => {
 
@@ -34,9 +34,6 @@ const ChatBox = () => {
             console.log(`messageContent = ${response.messageContent}, senderId = ${response.senderId}`);
             setMessages([...messages, { sender: response.senderId, text: response.messageContent }])
 
-            // if (messageContainerRef.current) {
-            //     messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
-            // }
         });
 
         return () => {
@@ -63,99 +60,132 @@ const ChatBox = () => {
         //     });
     };
 
-    const userList = ['User1', 'User2', 'User3', 'User4'];
 
 
 
+    const [loading, setLoading] = useState(false);
+    const [data, setData] = useState([]);
+
+    const loadMoreData = () => {
+        if (loading) {
+            return;
+        }
+        setLoading(true);
+
+        fetch('https://randomuser.me/api/?results=10&inc=name,gender,email,nat,picture&noinfo')
+            .then((res) => res.json())
+            .then((body) => {
+                setData([...data, ...body.results]);
+                setLoading(false);
+            })
+            .catch(() => {
+                setLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        loadMoreData();
+    }, []);
 
     return (
-        <>
-            {/* <Layout>
-                <Header>Chat App</Header>
-                <Content>
-                    <List
-                        itemLayout="horizontal"
-                        dataSource={messages}
-                        renderItem={item => (
-                            <List.Item>
-                                <List.Item.Meta
-                                    // avatar={<Avatar>{item.sender[0]}</Avatar>}
-                                    title={item.sender}
-                                    description={item.text}
+
+        <div style={{ border: '1px solid rgba(140, 140, 140, 0.35)', width: '100%', display: 'flex' }}>
+
+            <Layout style={{ height: '70vh', width: '30%' }}>
+                <div
+                    id="scrollableDiv"
+                    style={{
+                        height: '100%',
+                        overflow: 'auto',
+                        padding: '0 16px',
+
+                    }}
+                >
+
+                    <InfiniteScroll
+                        dataLength={data.length}
+                        next={loadMoreData}
+                        hasMore={data.length < 50}
+                        loader={
+                            <Skeleton
+                                avatar
+                                paragraph={{
+                                    rows: 1,
+                                }}
+                                active
+                            />
+                        }
+                        endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+                        scrollableTarget="scrollableDiv"
+                    >
+                        <List
+                            dataSource={data}
+                            renderItem={(item) => (
+                                <List.Item key={item.email}>
+                                    <List.Item.Meta
+                                        avatar={<Avatar src={item.picture.large} />}
+                                        title={<a href="https://ant.design">{item.name.last}</a>}
+                                        description={item.email}
+                                    />
+                                    <div>Content</div>
+                                </List.Item>
+                            )}
+                        />
+                    </InfiniteScroll>
+                </div>
+            </Layout>
+            <Layout style={{ height: '70vh', width: '65%', padding: 10 }}>
+                <div className="chat-input">
+                    <div
+                        id="scrollableDiv"
+                        style={{
+                            height: '60vh',
+                            overflow: 'auto',
+                            padding: '0 16px',
+
+                        }}
+                    >
+
+                        <InfiniteScroll
+                            dataLength={data.length}
+                            next={loadMoreData}
+                            hasMore={data.length < 50}
+                            loader={
+                                <Skeleton
+                                    avatar
+                                    paragraph={{
+                                        rows: 1,
+                                    }}
+                                    active
                                 />
-                            </List.Item>
-                        )}
-                    />
+                            }
+                            endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+                            scrollableTarget="scrollableDiv"
+                        >
+                            {messages}
+                        </InfiniteScroll>
+                    </div>
                     <Input
                         placeholder="Type a message..."
                         value={newMessage}
-                        onChange={e => newMessage(e.target.value)}
+                        onChange={(e) => setNewMessage(e.target.value)}
                         onPressEnter={handleSendMessage}
-                        addonAfter={<Button type="primary" onClick={handleSendMessage}>Send</Button>}
-                    />
-                </Content>
-            </Layout> */}
-
-
-
-            <Layout style={{ minHeight: '100vh' }}>
-                <Sider theme="dark" width={200}>
-                    <Menu mode="vertical" theme="dark" defaultSelectedKeys={['1']}>
-                        {
-                            userList.map((userName, index) =>
-                                <Menu.Item
-                                    key={index}
-                                    icon={<UserOutlined />}
-                                    onClick={() => setSelectedUser(userName)}
-                                >{userName}</Menu.Item>)
+                        suffix={
+                            <Button
+                                type="primary"
+                                icon={<SendOutlined />}
+                                onClick={handleSendMessage}
+                            />
                         }
-                    </Menu>
-                </Sider>
-                <Layout>
-                    <Content style={{ padding: '24px' }}>
-                        <div className="chat-container">
-                            <div className="message-container">
-                                {selectedUser ? (
-                                    <div className="chat-header">{selectedUser}</div>
-                                ) : (
-                                    <div className="chat-header">Chat</div>
-                                )}
-                                <div className="chat-messages" ref={messageContainerRef}>
-                                    {messages.map((message, index) => (
-                                        <div
-                                            key={index}
-                                            className={`message ${message.sent ? 'sent' : 'received'
-                                                }`}
-                                        >
-                                            <div className="message-avatar">
-                                                {message.sender[0]}
-                                            </div>
-                                            <div className="message-content">{message.text}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="chat-input">
-                                    <Input
-                                        placeholder="Type a message..."
-                                        value={newMessage}
-                                        onChange={(e) => setNewMessage(e.target.value)}
-                                        onPressEnter={handleSendMessage}
-                                        suffix={
-                                            <Button
-                                                type="primary"
-                                                icon={<SendOutlined />}
-                                                onClick={handleSendMessage}
-                                            />
-                                        }
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </Content>
-                </Layout>
+                    />
+                </div>
             </Layout>
-        </>
+        </div>
+
+
     );
 }
 
 export default ChatBox;
+
+
