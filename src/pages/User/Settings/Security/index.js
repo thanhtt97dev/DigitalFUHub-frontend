@@ -6,12 +6,15 @@ import { getUserById } from "~/api/user";
 import { getUserId } from '~/utils';
 import { CheckCircleFilled, CloseCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
 
-import { generate2FaKey, activate2Fa, deactivate2Fa, send2FaQrCode } from '~/api/user'
+import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user'
+import ModalSend2FaQrCode from "~/components/ModalSend2FaQrCode";
 
 function Security() {
 
     const navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
+    const [confirmLoading, setConfirmLoading] = useState(false);
+
     const userId = getUserId();
     const [userInfo, setUserInfo] = useState({});
 
@@ -19,7 +22,6 @@ function Security() {
 
     const [openModalActivate2FA, setOpenModalActivate2FA] = useState(false);
     const [openModalDeactive2FA, setOpenModalDeactive2FA] = useState(false);
-    const [openModalSend2FAQrCode, setOpenModalSend2FAQrCode] = useState(false);
 
     const [user2FaStatus, setUser2FaStatus] = useState(false)
     const [secretKey2FA, setSecretKey2FA] = useState("");
@@ -73,6 +75,7 @@ function Security() {
             SecretKey: secretKey2FA,
             Code: code2FA
         }
+        setConfirmLoading(true)
         activate2Fa(userId, data)
             .then((res) => {
                 setOpenModalActivate2FA(false);
@@ -87,6 +90,11 @@ function Security() {
                 }
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
+            .finally(() => {
+                setTimeout(() => {
+                    setConfirmLoading(false);
+                }, 500);
+            })
     }
 
     const handleCancelModalActivate2FA = () => {
@@ -100,6 +108,7 @@ function Security() {
 
     const handleSubmitDeactivate2FA = () => {
         const data = { Code: code2FA }
+        setConfirmLoading(true)
         deactivate2Fa(userId, data)
             .then((res) => {
                 setOpenModalDeactive2FA(false)
@@ -114,28 +123,17 @@ function Security() {
                 }
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
+            .finally(() => {
+                setTimeout(() => {
+                    setConfirmLoading(false);
+                }, 500);
+            })
     }
 
     const handleCancleModalDeactivate2FA = () => {
         setOpenModalDeactive2FA(false);
         resetVariable();
     }
-
-    const handleSend2FaOrCode = () => {
-        setOpenModalSend2FAQrCode(true);
-    }
-
-    const handleSubmitSend2FaOrCode = () => {
-        send2FaQrCode(userId)
-            .then(() => {
-                openNotification("success", "Gửi mã QR thành công!")
-            })
-            .catch(() => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
-            })
-    }
-
-
 
     const resetVariable = () => {
         setCode2FA("")
@@ -154,6 +152,7 @@ function Security() {
                 <p style={{ marginLeft: "30px" }}>{userInfo.email}</p>
                 <h3>Liên kết Facebook</h3>
                 <p style={{ marginLeft: "30px" }}>Chưa liên kết tài khoản Facebook <Button type="primary" disabled>Liên kết</Button></p>
+
             </div>
 
             <div className="twoFactorAuthentication" style={{ marginTop: 40 }}>
@@ -175,19 +174,11 @@ function Security() {
                             >
                                 Tắt bảo mật hai lớp
                             </Button>
-                            <Button
-                                type="primary"
-                                onClick={handleSend2FaOrCode}
-                            >
-                                Gửi lại mã QR kích hoạt
-                            </Button>
+                            <ModalSend2FaQrCode userId={userId} />
                         </Space>
                     </div>
                     :
                     <div style={{ marginLeft: "30px" }}>
-
-                        <li>Bật bảo mật hai lớp bằng code 2FA cho tài khoản của bạn.</li>
-                        <li>Mỗi khi đăng nhập hệ thống sẽ yêu cầu 1 mã 6 số được tạo từ chuỗi 2FA. Đề phòng trường hợp bạn bị lộ tài khoản và mật khẩu.</li>
                         <div>
                             <CloseCircleFilled style={{ color: "red" }} />
                             <span> Chưa kích hoạt</span>
@@ -200,6 +191,10 @@ function Security() {
                         >
                             Kích hoạt
                         </Button>
+                        <p>
+                            <li><i>Bật bảo mật hai lớp bằng code 2FA cho tài khoản của bạn</i>.</li>
+                            <li><i>Mỗi khi đăng nhập hệ thống sẽ yêu cầu 1 mã 6 số được tạo từ chuỗi 2FA. Đề phòng trường hợp bạn bị lộ tài khoản và mật khẩu.</i></li>
+                        </p>
                     </div>
                 }
             </div>
@@ -211,6 +206,9 @@ function Security() {
                 open={openModalActivate2FA}
                 onOk={handleSubmitActive2FA}
                 onCancel={handleCancelModalActivate2FA}
+                confirmLoading={confirmLoading}
+                okText={"Đồng ý"}
+                cancelText={"Đóng"}
                 width={400}
             >
                 <Divider />
@@ -234,6 +232,9 @@ function Security() {
                 open={openModalDeactive2FA}
                 onOk={handleSubmitDeactivate2FA}
                 onCancel={() => handleCancleModalDeactivate2FA(false)}
+                confirmLoading={confirmLoading}
+                okText={"Đồng ý"}
+                cancelText={"Đóng"}
                 width={400}
             >
                 <Divider />
@@ -244,28 +245,6 @@ function Security() {
                 <div style={{ textAlign: "center" }}>
                     <i style={{ color: "red" }}>{mesage2FA}</i>
                 </div>
-            </Modal>
-
-            <Modal
-                title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Gửi lại mã QR bảo mật hai lớp</>}
-                centered
-                open={openModalSend2FAQrCode}
-                onOk={handleSubmitSend2FaOrCode}
-                onCancel={() => setOpenModalSend2FAQrCode(false)}
-                width={400}
-            >
-                <Divider />
-                <p style={{ textAlign: "center", margin: "0 auto", marginBottom: "10px" }}>
-                    Bạn có chắc cần gửi lại QR Code này không?
-                </p>
-                <p>
-                    <b style={{ color: "red" }}>Chú ý:</b>
-                    <div style={{ marginLeft: "30px" }}>
-                        <i>Chúng tôi sẽ gửi QR Code đến email của bạn!</i>
-                        <br />
-                        <i>Xin đùng gửi QR Code này cho ai!</i>
-                    </div>
-                </p>
             </Modal>
 
         </>
