@@ -13,6 +13,7 @@ function Security() {
 
     const navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
+    const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const userId = getUserId();
@@ -58,15 +59,20 @@ function Security() {
     }, [userId])
 
     const handleActivate2FA = () => {
+        setLoading(true)
         generate2FaKey(userId)
             .then((res) => {
                 setsrcQrCode2Fa(res.data.qrCode);
                 setSecretKey2FA(res.data.secretKey)
                 setOpenModalActivate2FA(true);
-
             })
             .catch(() => {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setLoading(false)
+                }, 500);
             })
     }
 
@@ -188,6 +194,7 @@ function Security() {
                             type="primary"
                             onClick={handleActivate2FA}
                             style={{ background: "#28a745" }}
+                            loading={loading}
                         >
                             Kích hoạt
                         </Button>
