@@ -6,6 +6,7 @@ import { Layout, Image, Space, Button, Dropdown } from 'antd';
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
 import { ReportUserInfo } from '~/components/Report'
+import { MessageOutlined } from '@ant-design/icons';
 
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
@@ -100,6 +101,9 @@ function HeaderLayout() {
                         <>
                             <ReportUserInfo />
                             <Notificaion />
+                            <Link to={'/chatBox'}>
+                                <MessageOutlined style={{ fontSize: '20px' }} />
+                            </Link>
                             <Dropdown menu={{ items }} placement="bottom">
                                 <img
                                     style={{
