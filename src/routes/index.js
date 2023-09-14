@@ -98,7 +98,9 @@ const routesConfig = [
         title: 'chatBox',
         path: '/chatBox',
         layout: <NormalLayout />,
-        component: <ChatBox />,
+        component: <ChatBox />
+    },
+    {
         title: 'deposit',
         path: '/deposit',
         layout: <NormalLayout />,
