@@ -16,7 +16,7 @@ function NormalLayout(props) {
         <>
             <Layout style={{ minHeight: '90vh' }}>
                 <HeaderLayout />
-                <Content className="site-layout" style={{ padding: '0 50px', overflowY: 'scroll' }}>
+                <Content className="site-layout" style={{ padding: '0 50px' }}>
                     <div
                         style={{
                             padding: 24,
@@ -41,10 +41,3 @@ function NormalLayout(props) {
 }
 
 export default NormalLayout;
-
-/*
-
-   <Link to="/admin">Admin</Link>
-            <Logout />
-            <Link to="/login">Login</Link>
-            */
