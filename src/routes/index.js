@@ -16,7 +16,7 @@ import Verification2FA from '~/pages/Verification2FA';
 import SettingsLayout from '~/pages/User/Settings/SettingsLayout';
 import Personal from '~/pages/User/Settings/Personal';
 import Security from '~/pages/User/Settings/Security';
-import Deposite from '~/pages/User/Deposite';
+import Deposit from '~/pages/User/Deposit';
 
 const routesConfig = [
     {
@@ -94,10 +94,10 @@ const routesConfig = [
         ],
     },
     {
-        title: 'deposite',
-        path: '/deposite',
+        title: 'deposit',
+        path: '/deposit',
         layout: <NormalLayout />,
-        component: <Deposite />,
+        component: <Deposit />,
     },
 ];
 

@@ -9,6 +9,7 @@ import Notificaion from '~/components/Notification';
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
 import { ADMIN_ROLE, CUSTOMER_ROLE } from '~/constants';
+import ModalRequestDeposit from '../ModalRequestDeposit';
 
 const { Header } = Layout;
 
@@ -94,9 +95,7 @@ function HeaderLayout() {
                         </Space>
                     ) : (
                         <>
-                            <Link to={'/deposite'}>
-                                <Button type="primary">Nạp tiền</Button>
-                            </Link>
+                            <ModalRequestDeposit userId={user.id} />
                             <Notificaion />
                             <Dropdown menu={{ items }} placement="bottom">
                                 <img

@@ -7,12 +7,12 @@ import { send2FaQrCode } from '~/api/user'
 
 function ModalSend2FaQrCode({ userId }) {
 
-    const [openModalSend2FAQrCode, setOpenModalSend2FAQrCode] = useState(false);
+    const [openModal, setOpenMoodal] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const [api, contextHolder] = notification.useNotification();
 
-    const handleSubmitSend2FaOrCode = () => {
+    const handleSubmit = () => {
         setConfirmLoading(true);
         send2FaQrCode(1)
             .then(() => {
@@ -39,7 +39,7 @@ function ModalSend2FaQrCode({ userId }) {
             {contextHolder}
 
             <Button
-                onClick={() => setOpenModalSend2FAQrCode(true)}
+                onClick={() => setOpenMoodal(true)}
                 type="primary"
             >
                 Yêu cầu gửi lại mã QR kích hoạt
@@ -49,9 +49,9 @@ function ModalSend2FaQrCode({ userId }) {
             <Modal
                 title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Gửi lại mã QR bảo mật hai lớp</>}
                 centered
-                open={openModalSend2FAQrCode}
-                onOk={handleSubmitSend2FaOrCode}
-                onCancel={() => setOpenModalSend2FAQrCode(false)}
+                open={openModal}
+                onOk={handleSubmit}
+                onCancel={() => setOpenMoodal(false)}
                 confirmLoading={confirmLoading}
                 okText={"Đồng ý"}
                 cancelText={"Đóng"}
