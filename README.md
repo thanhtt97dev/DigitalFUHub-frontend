@@ -80,7 +80,7 @@ const routesConfig = [
         title: 'admin',
         path: '/admin',
         layout: <AdminLayout />,
-        role: [ADMIN_ROLE, USER_ROLE],
+        role: [ADMIN_ROLE, CUSTOMER_ROLE],
         routes: [
             {
                 path: 'dashboard',

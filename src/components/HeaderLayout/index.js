@@ -5,11 +5,10 @@ import { Layout, Image, Space, Button, Dropdown } from 'antd';
 
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
-import { ReportUserInfo } from '~/components/Report'
 
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
-import { ADMIN_ROLE, USER_ROLE } from '~/constants';
+import { ADMIN_ROLE, CUSTOMER_ROLE } from '~/constants';
 
 const { Header } = Layout;
 
@@ -22,7 +21,7 @@ const itemsFixed = [
     {
         key: 'settings',
         label: <Link to={"/settings"}>Cài đặt</Link>,
-        role: USER_ROLE
+        role: CUSTOMER_ROLE
     },
     {
         key: 'logout',
@@ -44,11 +43,11 @@ function HeaderLayout() {
         if (user.roleName === undefined) {
             itemsCanAccses = itemsFixed.filter(x => x.role === undefined);
         } else {
-            if (user.roleName === USER_ROLE) {
+            if (user.roleName === CUSTOMER_ROLE) {
                 itemsCanAccses = itemsFixed.filter(x => x.role !== ADMIN_ROLE);
             }
             if (user.roleName === ADMIN_ROLE) {
-                itemsCanAccses = itemsFixed.filter(x => x.role !== USER_ROLE);
+                itemsCanAccses = itemsFixed.filter(x => x.role !== CUSTOMER_ROLE);
             }
         }
 
@@ -84,9 +83,6 @@ function HeaderLayout() {
 
 
                 <Space size={12}>
-                    <Link to={'/upload'}>
-                        <Button type="primary">Upload</Button>
-                    </Link>
                     {user === null ? (
                         <Space>
                             <Link to={'/register'}>
@@ -98,7 +94,9 @@ function HeaderLayout() {
                         </Space>
                     ) : (
                         <>
-                            <ReportUserInfo />
+                            <Link to={'/deposite'}>
+                                <Button type="primary">Nạp tiền</Button>
+                            </Link>
                             <Notificaion />
                             <Dropdown menu={{ items }} placement="bottom">
                                 <img

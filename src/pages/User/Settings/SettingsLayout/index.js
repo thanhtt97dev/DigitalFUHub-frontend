@@ -21,7 +21,7 @@ const items = [
     },
     {
         icon: GlobalOutlined,
-        label: 'Bảo mật và đăng nhập',
+        label: 'Bảo mật',
         link: '/settings/security',
     },
 ]

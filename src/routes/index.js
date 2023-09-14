@@ -4,7 +4,7 @@ import AccessDenied from '~/pages/AccessDenied';
 
 import Home from '~/pages/Home';
 
-import { ADMIN_ROLE, USER_ROLE } from '~/constants';
+import { ADMIN_ROLE, CUSTOMER_ROLE } from '~/constants';
 import AdminLayout from '~/components/AdminLayout';
 import DashBoard from '~/pages/Admin/DashBoard';
 import Users from '~/pages/Admin/Users';
@@ -16,6 +16,7 @@ import Verification2FA from '~/pages/Verification2FA';
 import SettingsLayout from '~/pages/User/Settings/SettingsLayout';
 import Personal from '~/pages/User/Settings/Personal';
 import Security from '~/pages/User/Settings/Security';
+import Deposite from '~/pages/User/Deposite';
 
 const routesConfig = [
     {
@@ -39,7 +40,7 @@ const routesConfig = [
         title: 'admin',
         path: '/admin',
         layout: <AdminLayout />,
-        role: [ADMIN_ROLE, USER_ROLE],
+        role: [ADMIN_ROLE, CUSTOMER_ROLE],
         routes: [
             {
                 path: 'dashboard',
@@ -80,7 +81,7 @@ const routesConfig = [
         path: '/settings',
         layout: <NormalLayout />,
         component: <SettingsLayout />,
-        role: [USER_ROLE],
+        role: [CUSTOMER_ROLE],
         routes: [
             {
                 path: '',
@@ -91,6 +92,12 @@ const routesConfig = [
                 component: <Security />,
             },
         ],
+    },
+    {
+        title: 'deposite',
+        path: '/deposite',
+        layout: <NormalLayout />,
+        component: <Deposite />,
     },
 ];
 

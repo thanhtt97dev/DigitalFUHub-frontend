@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { dowloadFile } from '~/api/storage';
+import { Link } from 'react-router-dom';
+import { Button } from 'antd';
+
+import { ReportUserInfo } from '~/components/Report'
 
 function Home() {
+
     const [srcAudio, setSrcAudio] = useState('')
     useEffect(() => {
         dowloadFile('api/Files/GetFile/450049af-7813-4eb4-8430-c4ba1a40643a.mp3')
@@ -20,6 +25,10 @@ function Home() {
             <audio controls src={srcAudio}>
             </audio>
             <a href={srcAudio} download={`lilpown.mp3`} > Download audio </a>
+            <Link to={'/upload'}>
+                <Button type="primary">Upload</Button>
+            </Link>
+            <ReportUserInfo />
         </>
 
     );

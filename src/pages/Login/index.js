@@ -47,7 +47,7 @@ function Login() {
         setLoading(true)
         setMessage('');
         const data = {
-            email: values.username,
+            username: values.username,
             password: values.password,
         };
 
@@ -59,7 +59,7 @@ function Login() {
                     authState: {
                         id: res.data.userId,
                         email: res.data.email,
-                        firstName: res.data.email,
+                        username: res.data.username,
                         roleName: res.data.roleName,
                     },
                     //refreshToken: res.data.refreshToken,
@@ -70,7 +70,7 @@ function Login() {
                 switch (res.data.roleName) {
                     case ADMIN_ROLE:
                         return navigate('/admin');
-                    case USER_ROLE:
+                    case CUSTOMER_ROLE:
                         return navigate('/home');
                     default:
                         throw new Error();
