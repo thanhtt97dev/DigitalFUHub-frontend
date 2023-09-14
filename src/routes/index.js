@@ -16,6 +16,7 @@ import Verification2FA from '~/pages/Verification2FA';
 import SettingsLayout from '~/pages/User/Settings/SettingsLayout';
 import Personal from '~/pages/User/Settings/Personal';
 import Security from '~/pages/User/Settings/Security';
+import ChatBox from '~/pages/ChatBox';
 import Deposit from '~/pages/User/Deposit';
 
 const routesConfig = [
@@ -92,6 +93,12 @@ const routesConfig = [
                 component: <Security />,
             },
         ],
+    },
+    {
+        title: 'chatBox',
+        path: '/chatBox',
+        layout: <NormalLayout />,
+        component: <ChatBox />
     },
     {
         title: 'deposit',
