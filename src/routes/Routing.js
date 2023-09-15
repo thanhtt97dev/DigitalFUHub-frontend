@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useState, Fragment } from 'react';
 import { useAuthUser } from 'react-auth-kit';
 import { Outlet, Route, Routes } from 'react-router-dom';
 
@@ -27,7 +27,7 @@ function Routing() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         getRoutesCanVisit();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
@@ -35,26 +35,40 @@ function Routing() {
     return (
         <>
             <Routes>
-                <Route path="/" exact element={<NormalLayout><Home /></NormalLayout>} />
                 {routesCanVistit.map((route, index) => {
                     return (
-                        <Route key={index} element={route.layout === undefined ? <Outlet /> : route.layout}>
-                            <Route key={route.path} path={route.path} element={route.component}>
-                                {route.routes !== undefined
-                                    ? route.routes.map((child) => {
-                                        return (
-                                            <Route key={child.path} path={child.path} element={child.component} />
-                                        );
-                                    })
-                                    : ''}
-                            </Route>
+                        <Route key={index} path={route.path} element={route.layout ? route.layout : <Outlet />}>
+                            <Route key={route.path} path="" element={route.component} />
                         </Route>
-                    );
+                    )
                 })}
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </>
+
     );
 }
 
 export default Routing;
+
+// <>
+//     <Routes>
+//         <Route path="/" exact element={<NormalLayout><Home /></NormalLayout>} />
+//         {routesCanVistit.map((route, index) => {
+//             return (
+//                 <Route key={index} element={route.layout === undefined ? <Outlet /> : route.layout}>
+//                     <Route key={route.path} path={route.path} element={route.component}>
+//                         {route.routes !== undefined
+//                             ? route.routes.map((child) => {
+//                                 return (
+//                                     <Route key={child.path} path={child.path} element={child.component} />
+//                                 );
+//                             })
+//                             : ''}
+//                     </Route>
+//                 </Route>
+//             );
+//         })}
+//         <Route path="*" element={<NotFound />} />
+//     </Routes>
+// </>

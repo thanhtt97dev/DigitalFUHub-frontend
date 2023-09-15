@@ -25,7 +25,6 @@ function NormalLayout(props) {
                         }}
                     >
                         <Outlet />
-                        {props.children}
                     </div>
                 </Content>
                 <Footer

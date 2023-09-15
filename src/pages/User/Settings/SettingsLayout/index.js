@@ -26,7 +26,7 @@ const items = [
     },
 ]
 
-function SettingsLayout() {
+function SettingsLayout({ children }) {
 
     const {
         token: { colorBgContainer },
@@ -68,7 +68,8 @@ function SettingsLayout() {
                 </Sider>
                 <Content >
                     <div style={{ padding: 12, height: '100vh', background: colorBgContainer }}>
-                        <Outlet />
+                        {/* <Outlet /> */}
+                        {children}
                     </div>
                 </Content>
             </Layout>
