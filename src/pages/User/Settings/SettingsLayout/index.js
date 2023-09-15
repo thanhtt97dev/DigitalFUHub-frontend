@@ -7,7 +7,6 @@ import {
     UserOutlined,
     GlobalOutlined
 } from '@ant-design/icons';
-import { Outlet } from 'react-router-dom';
 
 
 const { Content, Sider } = Layout;

@@ -20,100 +20,7 @@ import ChatBox from '~/pages/ChatBox';
 import Deposit from '~/pages/User/Deposit';
 import SignUp from '~/pages/SignUp';
 
-// const routesConfig = [
-//     {
-//         title: 'login',
-//         path: '/login',
-//         component: <Login />,
-//     },
-//     {
-//         title: 'accessDenied',
-//         path: '/accessDenied',
-//         layout: <NormalLayout />,
-//         component: <AccessDenied />,
-//     },
-//     {
-//         title: 'home',
-//         path: '/home',
-//         layout: <NormalLayout />,
-//         component: <Home />,
-//     },
-//     {
-//         title: 'admin',
-//         path: '/admin',
-//         layout: <AdminLayout />,
-//         role: [ADMIN_ROLE, CUSTOMER_ROLE],
-//         routes: [
-//             {
-//                 path: 'dashboard',
-//                 component: <DashBoard />,
-//             },
-//             {
-//                 path: 'users',
-//                 component: <Users />,
-//             },
-//             {
-//                 path: 'users/:id',
-//                 component: <Detail />,
-//             },
-//             {
-//                 path: 'notificaions',
-//                 component: <Notificaion />,
-//             },
-//         ],
-//     },
-//     {
-//         title: 'register',
-//         path: '/register',
-//         component: <Register />,
-//     },
-//     {
-//         title: 'upload',
-//         path: '/upload',
-//         layout: <NormalLayout />,
-//         component: <UploadFile />,
-//     },
-//     {
-//         title: 'verification2FA',
-//         path: '/verification2FA/:id',
-//         component: <Verification2FA />,
-//     },
-//     {
-//         title: 'user settings',
-//         path: '/settings',
-//         layout: <NormalLayout />,
-//         component: <SettingsLayout />,
-//         role: [CUSTOMER_ROLE],
-//         routes: [
-//             {
-//                 path: '',
-//                 component: <Personal />,
-//             },
-//             {
-//                 path: 'security',
-//                 component: <Security />,
-//             },
-//         ],
-//     },
-//     {
-//         title: 'chatBox',
-//         path: '/chatBox',
-//         layout: <NormalLayout />,
-//         component: <ChatBox />
-//     },
-//     {
-//         title: 'signup',
-//         path: '/signup',
-//         layout: <NormalLayout />,
-//         component: <SignUp />
-//     },
-//     {
-//         title: 'deposit',
-//         path: '/deposit',
-//         layout: <NormalLayout />,
-//         component: <Deposit />,
-//     },
-// ];
+
 const routesConfig = [
     {
         title: 'login',
@@ -217,3 +124,103 @@ const routesConfig = [
     },
 ];
 export default routesConfig;
+
+
+
+
+
+
+// const routesConfig = [
+//     {
+//         title: 'login',
+//         path: '/login',
+//         component: <Login />,
+//     },
+//     {
+//         title: 'accessDenied',
+//         path: '/accessDenied',
+//         layout: <NormalLayout />,
+//         component: <AccessDenied />,
+//     },
+//     {
+//         title: 'home',
+//         path: '/home',
+//         layout: <NormalLayout />,
+//         component: <Home />,
+//     },
+//     {
+//         title: 'admin',
+//         path: '/admin',
+//         layout: <AdminLayout />,
+//         role: [ADMIN_ROLE, CUSTOMER_ROLE],
+//         routes: [
+//             {
+//                 path: 'dashboard',
+//                 component: <DashBoard />,
+//             },
+//             {
+//                 path: 'users',
+//                 component: <Users />,
+//             },
+//             {
+//                 path: 'users/:id',
+//                 component: <Detail />,
+//             },
+//             {
+//                 path: 'notificaions',
+//                 component: <Notificaion />,
+//             },
+//         ],
+//     },
+//     {
+//         title: 'register',
+//         path: '/register',
+//         component: <Register />,
+//     },
+//     {
+//         title: 'upload',
+//         path: '/upload',
+//         layout: <NormalLayout />,
+//         component: <UploadFile />,
+//     },
+//     {
+//         title: 'verification2FA',
+//         path: '/verification2FA/:id',
+//         component: <Verification2FA />,
+//     },
+//     {
+//         title: 'user settings',
+//         path: '/settings',
+//         layout: <NormalLayout />,
+//         component: <SettingsLayout />,
+//         role: [CUSTOMER_ROLE],
+//         routes: [
+//             {
+//                 path: '',
+//                 component: <Personal />,
+//             },
+//             {
+//                 path: 'security',
+//                 component: <Security />,
+//             },
+//         ],
+//     },
+//     {
+//         title: 'chatBox',
+//         path: '/chatBox',
+//         layout: <NormalLayout />,
+//         component: <ChatBox />
+//     },
+//     {
+//         title: 'signup',
+//         path: '/signup',
+//         layout: <NormalLayout />,
+//         component: <SignUp />
+//     },
+//     {
+//         title: 'deposit',
+//         path: '/deposit',
+//         layout: <NormalLayout />,
+//         component: <Deposit />,
+//     },
+// ];

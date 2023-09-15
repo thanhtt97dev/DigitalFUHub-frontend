@@ -4,8 +4,6 @@ import { Outlet, Route, Routes } from 'react-router-dom';
 
 import routesConfig from './index';
 import NotFound from '~/pages/NotFound';
-import Home from '~/pages/Home';
-import NormalLayout from '~/components/NormalLayout';
 
 function Routing() {
     const auth = useAuthUser();
