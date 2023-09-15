@@ -1,7 +1,7 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, Form, Input, Spin, Modal } from 'antd';
 import { LoadingOutlined, WarningOutlined } from '@ant-design/icons';
 import { useSignIn } from 'react-auth-kit';
@@ -186,6 +186,7 @@ function Login() {
                     <GoogleSignIn onFinish={onFinish} />
                 </Form.Item>
             </Form>
+            <Link to={'/signup'}>Chưa có tài khoản?</Link>
 
         </GoogleOAuthProvider>
     );

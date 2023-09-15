@@ -18,6 +18,7 @@ import Personal from '~/pages/User/Settings/Personal';
 import Security from '~/pages/User/Settings/Security';
 import ChatBox from '~/pages/ChatBox';
 import Deposit from '~/pages/User/Deposit';
+import SignUp from '~/pages/SignUp';
 
 const routesConfig = [
     {
@@ -99,6 +100,12 @@ const routesConfig = [
         path: '/chatBox',
         layout: <NormalLayout />,
         component: <ChatBox />
+    },
+    {
+        title: 'signup',
+        path: '/signup',
+        layout: <NormalLayout />,
+        component: <SignUp />
     },
     {
         title: 'deposit',
