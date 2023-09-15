@@ -44,10 +44,6 @@ export const editUserInfo = (id, data) => {
     return apiPut(`api/users/EditUserInfo/${id}`, data);
 };
 
-export const postUserInfo = (id, data) => {
-    return apiPut(`api/users/EditUserInfo/${id}`, data);
-};
-
 export const generate2FaKey = (id) => {
     return apiPostAuth(`api/users/Generate2FaKey/${id}`);
 };
@@ -62,4 +58,8 @@ export const deactivate2Fa = (id, data) => {
 
 export const send2FaQrCode = (id) => {
     return apiPostAuth(`api/users/Send2FaQrCode/${id}`);
+};
+
+export const getCustomerBalance = (id) => {
+    return apiGetAuth(`api/users/GetCustomerBalance/${id}`);
 };

@@ -5,13 +5,13 @@ import { Layout, Image, Space, Button, Dropdown } from 'antd';
 
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
-import { ReportUserInfo } from '~/components/Report'
 import { MessageOutlined } from '@ant-design/icons';
 
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
 import { ADMIN_ROLE, CUSTOMER_ROLE } from '~/constants';
 import ModalRequestDeposit from '../ModalRequestDeposit';
+import AccountBalance from '../AccountBalance';
 
 const { Header } = Layout;
 
@@ -97,6 +97,7 @@ function HeaderLayout() {
                         </Space>
                     ) : (
                         <>
+                            <AccountBalance />
                             <ModalRequestDeposit userId={user.id} />
                             <Notificaion />
                             <Link to={'/chatBox'}>
