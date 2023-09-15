@@ -46,13 +46,23 @@ function Login() {
     const onFinish = (values) => {
         setLoading(true)
         setMessage('');
-        const data = {
+
+        console.log(values.google)
+
+        let data = {
             username: values.username,
             password: values.password,
         };
+        if (values.google === true) {
+            data = {
+                email: values.email,
+            };
+        }
+
 
         login(data, values.google)
             .then((res) => {
+                console.log(res)
                 signIn({
                     token: NOT_HAVE_MEANING_FOR_TOKEN,
                     expiresIn: NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES,
