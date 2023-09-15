@@ -95,7 +95,7 @@ function ModalRequestDeposit({ userId }) {
                 <>
                     <Divider />
                     <p>Hãy nhập số tiền bạn muồn nạp:</p>
-                    <p style={{ textAlign: "center", margin: "0 auto", marginBottom: "10px" }}>
+                    <div style={{ textAlign: "center", margin: "0 auto", marginBottom: "10px" }}>
                         <Input
                             type="number"
                             value={amount}
@@ -103,7 +103,7 @@ function ModalRequestDeposit({ userId }) {
                             onChange={(e) => handleInputAmount(e)}
                         />
                         <p><i style={{ color: "red" }}>{message}</i></p>
-                    </p>
+                    </div>
                     <p>
                         <b style={{ color: "red" }}>Lưu ý:</b>
                         <div style={{ marginLeft: "30px" }}>

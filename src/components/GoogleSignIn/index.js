@@ -5,8 +5,7 @@ function GoogleSignIn({ onFinish }) {
     const handleCredentialResponse = (response) => {
         googleLogout();
         const userCredential = decodeGoogleCredential(response.credential);
-        console.log(userCredential)
-        onFinish({ username: userCredential.email, password: '', google: true })
+        onFinish({ email: userCredential.email, google: true })
     }
     const handleError = () => {
         console.log('SignIn Error!');
