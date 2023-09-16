@@ -14,7 +14,7 @@ function ModalSend2FaQrCode({ userId }) {
 
     const handleSubmit = () => {
         setConfirmLoading(true);
-        send2FaQrCode(1)
+        send2FaQrCode(userId)
             .then(() => {
                 openNotification("success", "Gửi mã QR thành công!")
             })

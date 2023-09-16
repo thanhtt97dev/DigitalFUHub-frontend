@@ -4,7 +4,7 @@ import AccessDenied from '~/pages/AccessDenied';
 
 import Home from '~/pages/Home';
 
-import { ADMIN_ROLE, CUSTOMER_ROLE } from '~/constants';
+import { ADMIN_ROLE, CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import AdminLayout from '~/components/AdminLayout';
 import DashBoard from '~/pages/Admin/DashBoard';
 import Users from '~/pages/Admin/Users';
@@ -19,6 +19,7 @@ import Security from '~/pages/User/Settings/Security';
 import ChatBox from '~/pages/ChatBox';
 import Deposit from '~/pages/User/Deposit';
 import SignUp from '~/pages/SignUp';
+import BankAccount from '~/pages/User/Settings/BankAccount';
 
 
 const routesConfig = [
@@ -49,14 +50,14 @@ const routesConfig = [
         title: 'admin',
         path: '/admin/dashboard',
         layout: <AdminLayout />,
-        role: [ADMIN_ROLE, CUSTOMER_ROLE],
+        role: [ADMIN_ROLE],
         component: <DashBoard />,
     },
     {
         title: 'admin',
         path: '/admin/users',
         layout: <AdminLayout />,
-        role: [ADMIN_ROLE, CUSTOMER_ROLE],
+        role: [ADMIN_ROLE],
         component: <Users />,
 
     },
@@ -64,14 +65,14 @@ const routesConfig = [
         title: 'admin',
         path: '/admin/users/:id',
         layout: <AdminLayout />,
-        role: [ADMIN_ROLE, CUSTOMER_ROLE],
+        role: [ADMIN_ROLE],
         component: <Detail />
     },
     {
         title: 'admin',
         path: '/admin/notificaions',
         layout: <AdminLayout />,
-        role: [ADMIN_ROLE, CUSTOMER_ROLE],
+        role: [ADMIN_ROLE],
         component: <Notificaion />,
     },
     {
@@ -95,14 +96,21 @@ const routesConfig = [
         path: '/settings',
         layout: <NormalLayout />,
         component: <SettingsLayout><Personal /></SettingsLayout>,
-        role: [CUSTOMER_ROLE],
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {
         title: 'user settings',
         path: '/settings/security',
         layout: <NormalLayout />,
         component: <SettingsLayout><Security /></SettingsLayout>,
-        role: [CUSTOMER_ROLE],
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
+    },
+    {
+        title: 'user settings',
+        path: '/settings/bankAccount',
+        layout: <NormalLayout />,
+        component: <SettingsLayout><BankAccount /></SettingsLayout>,
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {
         title: 'chatBox',

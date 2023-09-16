@@ -5,8 +5,10 @@ import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     UserOutlined,
-    GlobalOutlined
+    GlobalOutlined,
+    BankOutlined
 } from '@ant-design/icons';
+
 
 
 const { Content, Sider } = Layout;
@@ -22,6 +24,11 @@ const items = [
         icon: GlobalOutlined,
         label: 'Bảo mật',
         link: '/settings/security',
+    },
+    {
+        icon: BankOutlined,
+        label: 'Tài khoản ngân hàng',
+        link: '/settings/bankAccount',
     },
 ]
 
