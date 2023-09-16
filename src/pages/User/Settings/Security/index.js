@@ -9,6 +9,11 @@ import { CheckCircleFilled, CloseCircleFilled, ExclamationCircleFilled } from "@
 import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user'
 import ModalSend2FaQrCode from "~/components/ModalSend2FaQrCode";
 
+import classNames from 'classnames/bind';
+import styles from './Security.module.scss';
+
+const cx = classNames.bind(styles)
+
 function Security() {
 
     const navigate = useNavigate();
@@ -154,19 +159,19 @@ function Security() {
             <div className="accountLogin">
                 <h2>Liên kết tài khoản đăng nhập</h2>
                 <Divider />
-                <h3>Liên kết Google</h3>
-                <p style={{ marginLeft: "30px" }}>{userInfo.email}</p>
-                <h3>Liên kết Facebook</h3>
-                <p style={{ marginLeft: "30px" }}>Chưa liên kết tài khoản Facebook <Button type="primary" disabled>Liên kết</Button></p>
+                <h4 className={cx('mb-5')}>Liên kết Google</h4>
+                <p className={cx('ml-30')}>{userInfo.email}</p>
+                <h4 className={cx('mt-5')}>Liên kết Facebook</h4>
+                <p className={cx('ml-30')}>Chưa liên kết tài khoản Facebook <Button type="primary" disabled>Liên kết</Button></p>
 
             </div>
 
             <div className="twoFactorAuthentication" style={{ marginTop: 40 }}>
-                <h2>Xác thực dùng hai yếu tố</h2>
+                <h2>Bật bảo mật hai lớp</h2>
                 <Divider />
 
                 {user2FaStatus ?
-                    <div style={{ marginLeft: "30px" }}>
+                    <div className={cx('ml-30')}>
                         <div>
                             <CheckCircleFilled style={{ color: "green" }} />
                             <span> Đã kích hoạt</span>
@@ -184,9 +189,9 @@ function Security() {
                         </Space>
                     </div>
                     :
-                    <div style={{ marginLeft: "30px" }}>
+                    <div className={cx('ml-30')}>
                         <div>
-                            <CloseCircleFilled style={{ color: "red" }} />
+                            <CloseCircleFilled className={cx('text-message-err')} />
                             <span> Chưa kích hoạt</span>
                         </div>
                         <br />
@@ -219,17 +224,17 @@ function Security() {
                 width={400}
             >
                 <Divider />
-                <h3 style={{ textAlign: "center" }}>
+                <h3 className={cx('text-center')}>
                     Sử dụng app Google Authenticator trên điện thoại của bạn và quét mã này
                 </h3>
-                <div style={{ textAlign: "center" }}>
+                <div className={cx('text-center')}>
                     <img src={srcQrCode2Fa} alt="QR Code for two-factor authentication" />
                 </div>
                 <Divider />
-                <p style={{ textAlign: "center" }}>Hãy nhập mã code trước khi xác nhận!</p>
+                <p className={cx('text-center')}>Hãy nhập mã code trước khi xác nhận!</p>
                 <Input value={code2FA} maxLength={6} onChange={(e) => setCode2FA(e.target.value)} />
-                <div style={{ textAlign: "center" }}>
-                    <i style={{ color: "red" }}>{mesage2FA}</i>
+                <div className={cx('text-center')}>
+                    <i className={cx('text-message-err')}>{mesage2FA}</i>
                 </div>
             </Modal>
 
@@ -249,8 +254,8 @@ function Security() {
                     Hãy nhập mã code nếu bạn đã chắc chắn muốn tắt bảo mật hai lớp!
                 </p>
                 <Input value={code2FA} maxLength={6} onChange={(e) => setCode2FA(e.target.value)} />
-                <div style={{ textAlign: "center" }}>
-                    <i style={{ color: "red" }}>{mesage2FA}</i>
+                <div className={cx('text-center')}>
+                    <i className={cx('text-message-err')}>{mesage2FA}</i>
                 </div>
             </Modal>
 
