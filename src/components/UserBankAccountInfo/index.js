@@ -1,10 +1,9 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 
 import { BANKS_INFO } from "~/constants";
 
 import classNames from 'classnames/bind';
 import styles from './UserBankAccountInfo.module.scss';
-import { Divider } from "antd";
 
 const cx = classNames.bind(styles)
 
@@ -13,6 +12,7 @@ function UserBankAccountInfo({ userBank }) {
     const [bank, setBank] = useState(null)
     const [getDataSuccess, setGetDataSuccess] = useState(false)
 
+    // eslint-disable-next-line eqeqeq
     var bankInfo = BANKS_INFO.filter(x => x.id == userBank.bankId)[0];
 
 

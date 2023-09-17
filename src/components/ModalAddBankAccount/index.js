@@ -44,7 +44,7 @@ function ModalAddBankAccount({ userId }) {
     const [bankAccountName, setBankAccountName] = useState("")
 
     const [openModal, setOpenModal] = useState(false);
-    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [loadingBtnOpenModal, setLoadingBtnOpenModal] = useState(false);
     const [loadingBtnCheckAccount, setLoadingBtnCheckAccount] = useState(false);
     const [loadingBtnSubmit, setLoadingBtnSubmit] = useState(false)
 
@@ -67,6 +67,23 @@ function ModalAddBankAccount({ userId }) {
 
     const filterOptions = (inputValue, option) => {
         return option.props.name.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1;
+    }
+
+    // check can connect with MB bank
+    const handleOpenModalBankAccount = () => {
+        setLoadingBtnOpenModal(true);
+        testConnect()
+            .then(() => {
+                setOpenModal(true)
+            })
+            .catch((err) => {
+                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setLoadingBtnOpenModal(false)
+                }, 500)
+            })
     }
 
 
@@ -115,23 +132,13 @@ function ModalAddBankAccount({ userId }) {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
-                setConfirmLoading(false)
                 setTimeout(() => {
                     setLoadingBtnSubmit(false)
                 }, 500)
             })
     }
 
-    // check can connect with MB bank
-    const handleOpenModalBankAccount = () => {
-        testConnect()
-            .then(() => {
-                setOpenModal(true)
-            })
-            .catch((err) => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
-            })
-    }
+
 
 
     return (
@@ -141,7 +148,7 @@ function ModalAddBankAccount({ userId }) {
             <Button
                 type="primary"
                 style={{ background: "#28a745" }}
-                loading={confirmLoading}
+                loading={loadingBtnOpenModal}
                 size="large"
                 onClick={handleOpenModalBankAccount}
             >
