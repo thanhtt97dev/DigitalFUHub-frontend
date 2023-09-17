@@ -11,6 +11,7 @@ import UserBankAccountInfo from "~/components/UserBankAccountInfo";
 import classNames from 'classnames/bind';
 import styles from './BankAccount.module.scss';
 import Spinning from "~/components/Spinning";
+import ModalUpdateBankAccount from "~/components/ModalUpdateBankAccount";
 const cx = classNames.bind(styles)
 
 
@@ -71,7 +72,10 @@ function BankAccount() {
                                 {getUserBankInfoSuccess ?
 
                                     <>
-                                        <UserBankAccountInfo userBank={userBank} />
+                                        <div style={{ display: "flex" }}>
+                                            <UserBankAccountInfo userBank={userBank} />
+                                            <ModalUpdateBankAccount userId={userId} />
+                                        </div>
                                         <div className={cx('warning-info')}>
                                             <h4 className={cx('text-message-err')}>Lưu ý:</h4>
                                             <li><i>Thực hiện thêm tài khoản ngân hàng nhằm giúp bạn có thể rút tiền từ số dư tài khoản của bạn trong </i> <span>DigitalFUHub</span>.</li>

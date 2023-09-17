@@ -21,8 +21,12 @@ export const addBankAccount = (data) => {
     return apiPostAuth('api/banks/addBankAccount', data);
 };
 
+export const updateBankAccount = (data) => {
+    return apiPostAuth('api/banks/updateBankAccount', data);
+};
+
 export const createDepositTransaction = (data) => {
-    return apiPostAuth('api/financialTransaction/CreateDepositTransaction', data);
+    return apiPostAuth('api/banks/CreateDepositTransaction', data);
 };
 
 

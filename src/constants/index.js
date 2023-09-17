@@ -92,3 +92,10 @@ export const BANKS_INFO = [
         image: LPB
     },
 ]
+
+
+
+//request's status
+export const RESPONSE_CODE_SUCCESS = "00"
+export const RESPONSE_CODE_NOT_ALLOW = "01"
+export const RESPONSE_CODE_DATA_NOT_FOUND = "01"
