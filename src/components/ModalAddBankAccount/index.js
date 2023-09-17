@@ -4,8 +4,7 @@ import { Divider, notification, Modal, Button, Input, Select, Form, Space } from
 import { ExclamationCircleFilled } from "@ant-design/icons";
 
 import { BANKS_INFO } from "~/constants";
-import { inquiryAccountName, addBankAccount } from '~/api/bank'
-
+import { inquiryAccountName, addBankAccount, testConnect } from '~/api/bank'
 
 import classNames from 'classnames/bind';
 import styles from './ModalAddBankAccount.module.scss';
@@ -110,6 +109,7 @@ function ModalAddBankAccount({ userId }) {
             .then((res) => {
                 setOpenModal(false)
                 openNotification("success", "Liên kết tài khoản ngân hàng thành công!")
+                window.location.reload();
             })
             .catch(() => {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
@@ -122,6 +122,17 @@ function ModalAddBankAccount({ userId }) {
             })
     }
 
+    // check can connect with MB bank
+    const handleOpenModalBankAccount = () => {
+        testConnect()
+            .then(() => {
+                setOpenModal(true)
+            })
+            .catch((err) => {
+                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+            })
+    }
+
 
     return (
         <>
@@ -129,10 +140,10 @@ function ModalAddBankAccount({ userId }) {
 
             <Button
                 type="primary"
-                onClick={() => setOpenModal(true)}
                 style={{ background: "#28a745" }}
                 loading={confirmLoading}
                 size="large"
+                onClick={handleOpenModalBankAccount}
             >
                 + Thêm tài khoản ngân hàng
             </Button>

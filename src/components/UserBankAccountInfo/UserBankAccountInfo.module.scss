@@ -1,0 +1,21 @@
+.info{
+    position: relative;
+    margin-left: 2rem;
+    display: flex;
+    .bank-image{
+        border: 1px solid;
+    }
+    .bank-user-info{
+        margin-left: 1rem;
+        .bank-name{
+            margin-bottom: 15px;
+        }
+        .bank-user-info-field{
+            display: flex;
+        }
+        .lable{
+            margin-right: 1rem;
+        }
+    }
+    
+}
