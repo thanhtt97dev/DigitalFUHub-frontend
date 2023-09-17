@@ -10,7 +10,7 @@ import UserBankAccountInfo from "~/components/UserBankAccountInfo";
 
 import classNames from 'classnames/bind';
 import styles from './BankAccount.module.scss';
-import SpinningPage from "~/components/Spinning";
+import Spinning from "~/components/Spinning";
 const cx = classNames.bind(styles)
 
 
@@ -22,7 +22,6 @@ function BankAccount() {
     const [userBank, setUserBank] = useState(null);
     const [getUserBankInfoSuccess, SetGetUserBankInfoSuccess] = useState(false);
     const [canConnectWithMbBank, setCanConnectWithMbBank] = useState(false)
-    const [showWarningMbBankText, setShowWarningMbBankText] = useState(false)
 
 
     const openNotification = (type, message) => {
@@ -41,7 +40,6 @@ function BankAccount() {
                 getUserBankAccount(userId)
                     .then((res) => {
                         setUserBank(res.data)
-                        console.log(res)
                         setTimeout(() => {
                             SetGetUserBankInfoSuccess(true)
                         }, 500)
@@ -51,7 +49,6 @@ function BankAccount() {
                     })
             })
             .catch(() => {
-                setShowWarningMbBankText(true)
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
 
@@ -84,7 +81,7 @@ function BankAccount() {
                                         </div>
                                     </>
                                     :
-                                    <SpinningPage />
+                                    <Spinning />
                                 }
                             </>
                             :
@@ -111,7 +108,7 @@ function BankAccount() {
                     </>
                     :
                     <>
-                        {showWarningMbBankText ?
+                        {canConnectWithMbBank ?
                             <div className={cx("text-connect-err")}>
                                 <p>Hiện tại đang xảy ra một vài sự cố!</p>
                                 <p>Vui lòng thử lại sau!</p>
