@@ -22,6 +22,8 @@ function BankAccount() {
     const [userBank, setUserBank] = useState(null);
     const [getUserBankInfoSuccess, SetGetUserBankInfoSuccess] = useState(false);
     const [canConnectWithMbBank, setCanConnectWithMbBank] = useState(false)
+    const [showWarningMbBankText, setShowWarningMbBankText] = useState(false)
+
 
     const openNotification = (type, message) => {
         api[type]({
@@ -35,6 +37,7 @@ function BankAccount() {
 
         testConnect()
             .then(() => {
+                setCanConnectWithMbBank(true)
                 getUserBankAccount(userId)
                     .then((res) => {
                         setUserBank(res.data)
@@ -48,6 +51,7 @@ function BankAccount() {
                     })
             })
             .catch(() => {
+                setShowWarningMbBankText(true)
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
 
@@ -106,10 +110,17 @@ function BankAccount() {
                         }
                     </>
                     :
-                    <div className={cx("text-connect-err")}>
-                        <p>Hiện tại đang xảy ra một vài sự cố!</p>
-                        <p>Vui lòng thử lại sau!</p>
-                    </div>
+                    <>
+                        {showWarningMbBankText ?
+                            <div className={cx("text-connect-err")}>
+                                <p>Hiện tại đang xảy ra một vài sự cố!</p>
+                                <p>Vui lòng thử lại sau!</p>
+                            </div>
+                            :
+                            ""
+                        }
+                    </>
+
                 }
 
 

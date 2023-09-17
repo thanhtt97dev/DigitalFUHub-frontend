@@ -55,6 +55,7 @@ function ModalAddBankAccount({ userId }) {
             openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             return navigate("/settings")
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -139,7 +140,11 @@ function ModalAddBankAccount({ userId }) {
     }
 
 
-
+    const handleCancel = () => {
+        setDisableInput(false)
+        setBankAccountName("")
+        setOpenModal(false)
+    }
 
     return (
         <>
@@ -159,8 +164,9 @@ function ModalAddBankAccount({ userId }) {
                 title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Liên kết tài khoản ngân hàng</>}
                 open={openModal}
                 onOk={handleSubmit}
-                onCancel={() => setOpenModal(false)}
+                onCancel={handleCancel}
                 confirmLoading={loadingBtnSubmit}
+
                 okText={"Xác nhận"}
                 cancelText={"Hủy"}
                 width={"40%"}
