@@ -72,7 +72,7 @@ function BankAccount() {
                                 {getUserBankInfoSuccess ?
 
                                     <>
-                                        <div >
+                                        <div className={cx("bank-account-info")}>
                                             <UserBankAccountInfo userBank={userBank} />
                                             <ModalUpdateBankAccount userId={userId} />
                                         </div>

@@ -63,7 +63,7 @@ function HeaderLayout() {
 
     useEffect(() => {
         if (user !== null) {
-            if (user.avatar === undefined) {
+            if (user.avatar === undefined || user.avatar === "") {
                 setUserAvatart(logoFPT)
             } else {
                 setUserAvatart(user.avatar)

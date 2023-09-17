@@ -92,6 +92,13 @@ const routesConfig = [
     },
     {
         title: 'user settings',
+        path: '/settings/personal',
+        layout: <NormalLayout />,
+        component: <SettingsLayout><Personal /></SettingsLayout>,
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
+    },
+    {
+        title: 'user settings',
         path: '/settings/security',
         layout: <NormalLayout />,
         component: <SettingsLayout><Security /></SettingsLayout>,

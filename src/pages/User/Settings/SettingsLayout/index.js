@@ -18,7 +18,7 @@ const items = [
     {
         icon: UserOutlined,
         label: 'Cài đặt tài khoản',
-        link: '',
+        link: '/settings/personal',
     },
     {
         icon: GlobalOutlined,
