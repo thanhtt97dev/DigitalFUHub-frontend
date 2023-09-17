@@ -107,20 +107,8 @@ function BankAccount() {
                         }
                     </>
                     :
-                    <>
-                        {canConnectWithMbBank ?
-                            <div className={cx("text-connect-err")}>
-                                <p>Hiện tại đang xảy ra một vài sự cố!</p>
-                                <p>Vui lòng thử lại sau!</p>
-                            </div>
-                            :
-                            ""
-                        }
-                    </>
-
+                    <></>
                 }
-
-
 
             </div>
 

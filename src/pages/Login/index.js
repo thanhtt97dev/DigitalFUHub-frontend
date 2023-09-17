@@ -65,15 +65,18 @@ function Login() {
 
         login(data, values.google)
             .then((res) => {
-                console.log(res)
                 signIn({
                     token: NOT_HAVE_MEANING_FOR_TOKEN,
                     expiresIn: NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES,
                     authState: {
                         id: res.data.userId,
-                        email: res.data.email,
                         username: res.data.username,
+                        email: res.data.email,
+                        fullname: res.data.fullname,
+                        avatar: res.data.avatar,
                         roleName: res.data.roleName,
+                        twoFactorAuthentication: res.data.twoFactorAuthentication,
+                        signInGoogle: res.data.signInGoogle,
                     },
                     //refreshToken: res.data.refreshToken,
                     //refreshTokenExpireIn: 15,
