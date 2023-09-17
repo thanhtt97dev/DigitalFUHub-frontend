@@ -17,3 +17,12 @@
     width: 63%;
     margin-left: 1%;
 }
+
+.btn-change{
+    margin-left: 30px;
+    margin-top: 33px;
+    background: rgb(40, 167, 69);
+    &:hover{
+        background: rgb(107, 173, 122);
+    }
+}

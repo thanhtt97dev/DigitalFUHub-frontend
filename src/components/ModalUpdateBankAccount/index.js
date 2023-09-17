@@ -33,6 +33,7 @@ function ModalUpdateBankAccount({ userId }) {
 
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
+    const [form] = Form.useForm();
 
     ///DTO for body of api "addBankAccount"
     const [bankAccoutRequest, setBankAccoutRequest] = useState({
@@ -151,13 +152,19 @@ function ModalUpdateBankAccount({ userId }) {
         setOpenModal(false)
     }
 
+    const onReset = () => {
+        form.resetFields();
+        setBankAccountName("")
+        setDisableInput(false)
+    };
+
     return (
         <>
             {contextHolder}
 
             <Button
                 type="primary"
-                style={{ background: "#28a745" }}
+                className={cx("btn-change")}
                 loading={loadingBtnOpenModal}
                 size="large"
                 onClick={handleOpenModalBankAccount}
@@ -184,6 +191,7 @@ function ModalUpdateBankAccount({ userId }) {
                         {...layout}
                         name="control-hooks"
                         onFinish={handleCheckBankAccount}
+                        form={form}
                     >
                         <Form.Item
                             name="bankId"
@@ -217,7 +225,8 @@ function ModalUpdateBankAccount({ userId }) {
                         >
                             <Space>
                                 <Input disabled={disableInput} />
-                                <Button htmlType="submit" loading={loadingBtnCheckAccount}> Kiểm tra</Button>
+                                <Button onClick={onReset}> Xóa</Button>
+                                <Button htmlType="submit" loading={loadingBtnCheckAccount} disabled={disableInput} > Kiểm tra</Button>
                             </Space>
 
                         </Form.Item>

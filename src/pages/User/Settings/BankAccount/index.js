@@ -72,7 +72,7 @@ function BankAccount() {
                                 {getUserBankInfoSuccess ?
 
                                     <>
-                                        <div style={{ display: "flex" }}>
+                                        <div >
                                             <UserBankAccountInfo userBank={userBank} />
                                             <ModalUpdateBankAccount userId={userId} />
                                         </div>
