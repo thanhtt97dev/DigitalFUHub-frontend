@@ -5,7 +5,7 @@ import { useSignIn } from 'react-auth-kit';
 
 import { getUserId, getTokenInCookies, removeUserInfoInCookie } from '~/utils';
 import { getUserByIdForAuth } from '~/api/user';
-import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
+import { ADMIN_ROLE, NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 
 function Auth(props) {
     const signIn = useSignIn();
@@ -24,7 +24,6 @@ function Auth(props) {
         if (token !== undefined && userId !== undefined) {
             getUserByIdForAuth(userId)
                 .then((res) => {
-                    console.log(res.data)
                     signIn({
                         token: NOT_HAVE_MEANING_FOR_TOKEN,
                         expiresIn: NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES,
@@ -38,10 +37,11 @@ function Auth(props) {
                             twoFactorAuthentication: res.data.twoFactorAuthentication,
                             signInGoogle: res.data.signInGoogle,
                         },
-                        //refreshToken: res.data.refreshToken,
-                        //refreshTokenExpireIn: 15,
                     });
-                    //saveDataAuthToCookies(userId, token, res.data.refreshToken, res.data.jwtId);
+                    //rule: this FE just for customer, seller
+                    if (res.data.roleName === ADMIN_ROLE) {
+                        removeUserInfoInCookie()
+                    }
                 })
                 .catch((err) => {
                     removeUserInfoInCookie();

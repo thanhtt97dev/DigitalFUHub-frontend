@@ -17,11 +17,6 @@ const { Header } = Layout;
 
 const itemsFixed = [
     {
-        key: 'admin',
-        label: <Link to={"/admin"}>Admin</Link>,
-        role: ADMIN_ROLE
-    },
-    {
         key: 'settings',
         label: <Link to={"/settings"}>Cài đặt</Link>,
         role: CUSTOMER_ROLE
