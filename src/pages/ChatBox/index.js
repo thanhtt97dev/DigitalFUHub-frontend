@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Layout, Input, Button, Avatar, Divider, List, Skeleton } from 'antd';
+import React, { useState, useEffect, useRef } from 'react'
+import { Layout, Input, Button, Avatar, Divider, List, Skeleton, Card, Typography } from 'antd';
 import connectionHub from '~/api/signalr/connectionHub';
 import { useAuthUser } from 'react-auth-kit';
 import { getSenderConversations, getListMessage, sendMessage } from '~/api/chat';
@@ -7,21 +7,32 @@ import {
     SendOutlined,
 } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
-
 import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss'
+import moment from 'moment'
 
 const cx = classNames.bind(styles);
+const { Meta } = Card;
+const { Text } = Typography;
 
 const ChatBox = () => {
     const auth = useAuthUser();
     const user = auth();
+    const initialSelectedUser = {
+        userId: 0,
+        username: '',
+        email: '',
+        fullname: '',
+        avatar: '',
+        conversationId: 0
+    }
     const limit = 3
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(initialSelectedUser);
+    const messagesEndRef = useRef(null);
 
     const [page, setPage] = useState(1)
 
@@ -33,8 +44,8 @@ const ChatBox = () => {
         setLoading(true);
         getSenderConversations(user.id, page, limit)
             .then((response) => {
-
-                setData([...data, ...response.data]);
+                setData((prev) => [...prev, ...response.data]);
+                setSelectedUser(response.data[0])
                 setLoading(false);
             })
             .catch((errors) => {
@@ -43,6 +54,12 @@ const ChatBox = () => {
             });
 
     };
+
+    const scrollToBottom = () => {
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(scrollToBottom, [messages]);
 
 
     useEffect(() => {
@@ -56,6 +73,7 @@ const ChatBox = () => {
         loadMoreData();
         connection.on("ReceiveMessage", (response) => {
             setMessages((prev) => [...prev, response])
+            scrollToBottom();
         });
 
         return () => {
@@ -63,6 +81,17 @@ const ChatBox = () => {
             connection.stop();
         };
     }, []);
+
+
+    // styles
+    const bodyCardMessageSender = {
+        padding: 16
+    }
+
+    const bodyCardHeader = {
+        padding: 20,
+    }
+
 
 
     const handleSendMessage = () => {
@@ -95,22 +124,23 @@ const ChatBox = () => {
 
 
     const handleClickUser = (user) => {
-        setSelectedUser({ userId: user.userId, conversationId: user.conversationId })
+        setSelectedUser(user)
     }
 
     useEffect(() => {
-        if (selectedUser === null) return;
+        if (selectedUser.userId === 0) return;
         getListMessage(selectedUser.conversationId)
             .then((response) => {
                 setMessages([...response.data])
             })
+
     }, [selectedUser])
 
     return (
 
-        <div className={cx('container')} style={{}}>
+        <div className={cx('container')}>
 
-            <Layout style={{ height: '70vh', width: '30%' }}>
+            <Layout style={{ height: '75vh', width: '30%' }}>
                 <div
                     id="scrollableDiv"
                     style={{
@@ -143,7 +173,7 @@ const ChatBox = () => {
                                 <List.Item onClick={() => { handleClickUser(item) }}>
                                     <List.Item.Meta
                                         avatar={<Avatar src={item.avatar} />}
-                                        title={<a href="https://ant.design">{item.username}</a>}
+                                        title={item.username}
                                         description={item.email}
                                     />
                                 </List.Item>
@@ -153,18 +183,17 @@ const ChatBox = () => {
                 </div>
 
             </Layout>
-            <Layout style={{ height: '70vh', width: '65%', padding: 10 }}>
+            <Layout className={cx('layout-chat-message')}>
+                <Card
+                    className={cx('card-header')}
+                    bodyStyle={bodyCardHeader}>
+                    <Meta
+                        avatar={<Avatar size={35} src={selectedUser.avatar} />}
+                        title={selectedUser.fullname}
+                    />
+                </Card>
                 <div className="chat-input">
-                    <div
-                        id="scrollChatInput"
-                        style={{
-                            height: '60vh',
-                            overflow: 'auto',
-                            padding: '0 16px',
-
-                        }}
-                    >
-
+                    <div id={cx('scrollChatMessage')}>
                         <InfiniteScroll
                             dataLength={messages.length}
                             // next={loadMoreData}
@@ -179,17 +208,24 @@ const ChatBox = () => {
                             //     />
                             // }
                             // endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
-                            scrollableTarget="scrollChatInput"
+                            scrollableTarget="scrollChatMessage"
                         >
                             <List
                                 dataSource={messages}
                                 renderItem={(item) => (
-                                    <List.Item key={item.conversationId} onClick={() => { handleClickUser(item.conversationId) }}>
-                                        {item.content}
-                                    </List.Item>
+                                    <div style={{ marginBottom: 25 }}>
+                                        <Card className={cx('message-sender')} bodyStyle={bodyCardMessageSender}>
+                                            <Meta
+                                                avatar={<Avatar size={30} src={selectedUser.avatar} />}
+                                                title={item.content} />
+                                        </Card>
+                                        <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
+                                    </div>
+
                                 )}
                             />
                         </InfiniteScroll>
+                        <div ref={messagesEndRef} />
                     </div>
                     <Input
                         placeholder="Type a message..."

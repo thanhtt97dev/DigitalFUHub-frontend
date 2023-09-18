@@ -3,3 +3,25 @@
     width: 100%;
     display: flex;
 }
+
+.message-sender {
+    width: fit-content;
+    height: fit-content;
+}
+
+.card-header {
+    background: #bae7ff;
+    color: white;
+}
+
+.layout-chat-message {
+    height: 75vh;
+    width: 65%;
+    padding: 10px;
+}
+
+#scrollChatMessage {
+    height: 55vh;
+    overflow: auto;
+    padding: 0 16px;
+}
