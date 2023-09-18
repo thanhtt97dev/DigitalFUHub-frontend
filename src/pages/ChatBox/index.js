@@ -55,8 +55,7 @@ const ChatBox = () => {
 
         loadMoreData();
         connection.on("ReceiveMessage", (response) => {
-            console.log("messages is: " + messages)
-            setMessages([...messages, response])
+            setMessages((prev) => [...prev, response])
         });
 
         return () => {
