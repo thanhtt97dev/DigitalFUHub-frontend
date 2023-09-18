@@ -4,7 +4,7 @@ import { Divider, notification, Modal, Button, Input } from "antd";
 
 import { ExclamationCircleFilled } from "@ant-design/icons";
 
-import { createDepositTransaction } from "~/api/financialTransaction";
+import { createDepositTransaction } from "~/api/bank";
 
 function ModalRequestDeposit({ userId }) {
 

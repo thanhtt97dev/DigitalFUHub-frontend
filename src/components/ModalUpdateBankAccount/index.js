@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Divider, notification, Modal, Button, Input, Select, Form, Space } from "antd";
-import { ExclamationCircleFilled } from "@ant-design/icons";
+import { ExclamationCircleFilled, RedoOutlined } from "@ant-design/icons";
 
-import { BANKS_INFO } from "~/constants";
-import { inquiryAccountName, addBankAccount, testConnect } from '~/api/bank'
+import { BANKS_INFO, RESPONSE_CODE_NOT_ALLOW, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { inquiryAccountName, updateBankAccount, testConnect } from '~/api/bank'
 
 import classNames from 'classnames/bind';
-import styles from './ModalAddBankAccount.module.scss';
+import styles from './ModalUpdateBankAccount.module.scss';
 const cx = classNames.bind(styles)
 
 const layout = {
@@ -29,7 +29,7 @@ BANKS_INFO.forEach((bank) => {
     bankOptions.push(bankOption)
 })
 
-function ModalAddBankAccount({ userId }) {
+function ModalUpdateBankAccount({ userId }) {
 
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
@@ -124,11 +124,16 @@ function ModalAddBankAccount({ userId }) {
         }
 
         setLoadingBtnSubmit(true)
-        addBankAccount(bankAccoutRequest)
+        updateBankAccount(bankAccoutRequest)
             .then((res) => {
-                setOpenModal(false)
-                openNotification("success", "Liên kết tài khoản ngân hàng thành công!")
-                window.location.reload();
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setOpenModal(false)
+                    openNotification("success", "Thay đổi tài khoản ngân hàng thành công!")
+                    window.location.reload();
+                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ALLOW) {
+                    openNotification("error", "Mỗi lần thay đổi bạn cần chờ 15 ngày mới có thể thay đổi tài khoản khác!")
+                }
+
             })
             .catch(() => {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
@@ -159,16 +164,16 @@ function ModalAddBankAccount({ userId }) {
 
             <Button
                 type="primary"
-                style={{ background: "#28a745" }}
+                className={cx("btn-change")}
                 loading={loadingBtnOpenModal}
                 size="large"
                 onClick={handleOpenModalBankAccount}
             >
-                + Thêm tài khoản ngân hàng
+                <RedoOutlined /> Thay đổi
             </Button>
 
             <Modal
-                title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Liên kết tài khoản ngân hàng</>}
+                title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Thay đổi tài khoản ngân hàng</>}
                 open={openModal}
                 onOk={handleSubmit}
                 onCancel={handleCancel}
@@ -236,4 +241,4 @@ function ModalAddBankAccount({ userId }) {
         </>)
 }
 
-export default ModalAddBankAccount;
+export default ModalUpdateBankAccount;

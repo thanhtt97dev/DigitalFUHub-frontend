@@ -27,7 +27,6 @@ function Logout() {
         var getUserInfoInterval = setInterval(() => {
             userInfo = getUser();
             if (userInfo === null || userInfo === undefined) {
-                console.log(userInfo)
                 clearInterval(getUserInfoInterval);
                 return navigate('/login');
             }

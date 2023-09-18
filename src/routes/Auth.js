@@ -24,15 +24,22 @@ function Auth(props) {
         if (token !== undefined && userId !== undefined) {
             getUserByIdForAuth(userId)
                 .then((res) => {
+                    console.log(res.data)
                     signIn({
                         token: NOT_HAVE_MEANING_FOR_TOKEN,
                         expiresIn: NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES,
                         authState: {
                             id: res.data.userId,
+                            username: res.data.username,
                             email: res.data.email,
-                            firstName: res.data.email,
+                            fullname: res.data.fullname,
+                            avatar: res.data.avatar,
                             roleName: res.data.roleName,
+                            twoFactorAuthentication: res.data.twoFactorAuthentication,
+                            signInGoogle: res.data.signInGoogle,
                         },
+                        //refreshToken: res.data.refreshToken,
+                        //refreshTokenExpireIn: 15,
                     });
                     //saveDataAuthToCookies(userId, token, res.data.refreshToken, res.data.jwtId);
                 })

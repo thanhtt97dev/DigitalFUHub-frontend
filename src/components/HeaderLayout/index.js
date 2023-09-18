@@ -38,6 +38,7 @@ function HeaderLayout() {
     const user = auth();
 
     const [items, setItems] = useState([]);
+    const [userAvatart, setUserAvatart] = useState(null);
 
     useEffect(() => {
 
@@ -53,13 +54,22 @@ function HeaderLayout() {
                 itemsCanAccses = itemsFixed.filter(x => x.role !== CUSTOMER_ROLE);
             }
         }
-
         setItems(itemsCanAccses);
         return () => {
             setItems([]);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
+
+    useEffect(() => {
+        if (user !== null) {
+            if (user.avatar === undefined || user.avatar === "") {
+                setUserAvatart(logoFPT)
+            } else {
+                setUserAvatart(user.avatar)
+            }
+        }
+    }, [user])
 
 
     return (
@@ -112,7 +122,7 @@ function HeaderLayout() {
                                         marginTop: '20px',
                                     }}
                                     alt=""
-                                    src={logoFPT}
+                                    src={userAvatart}
                                 />
                             </Dropdown>
                         </>

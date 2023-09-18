@@ -19,6 +19,8 @@ function AccountBalance() {
             }).catch((err) => {
                 console.log(err.message)
             })
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (

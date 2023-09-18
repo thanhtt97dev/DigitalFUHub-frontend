@@ -8,11 +8,14 @@ import { useSignIn } from 'react-auth-kit';
 
 import { login } from '~/api/user';
 import { saveDataAuthToCookies, removeDataAuthInCookies, getUser } from '~/utils';
-import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES, GOOGLE_CLIENT_ID } from '~/constants';
+import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 import GoogleSignIn from '~/components/GoogleSignIn';
 //import { ADMIN_ROLE, User_ROLE } from "~/constants"
 
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID
+
 function Login() {
+    console.log(GOOGLE_CLIENT_ID)
     const signIn = useSignIn();
     const navigate = useNavigate();
     let [message, setMessage] = useState('');
@@ -62,15 +65,18 @@ function Login() {
 
         login(data, values.google)
             .then((res) => {
-                console.log(res)
                 signIn({
                     token: NOT_HAVE_MEANING_FOR_TOKEN,
                     expiresIn: NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES,
                     authState: {
                         id: res.data.userId,
-                        email: res.data.email,
                         username: res.data.username,
+                        email: res.data.email,
+                        fullname: res.data.fullname,
+                        avatar: res.data.avatar,
                         roleName: res.data.roleName,
+                        twoFactorAuthentication: res.data.twoFactorAuthentication,
+                        signInGoogle: res.data.signInGoogle,
                     },
                     //refreshToken: res.data.refreshToken,
                     //refreshTokenExpireIn: 15,

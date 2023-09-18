@@ -17,6 +17,7 @@ function ModalSend2FaQrCode({ userId }) {
         send2FaQrCode(userId)
             .then(() => {
                 openNotification("success", "Gửi mã QR thành công!")
+                setOpenMoodal(false)
             })
             .catch(() => {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")

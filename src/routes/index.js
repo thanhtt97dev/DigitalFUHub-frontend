@@ -1,10 +1,6 @@
 import Login from '~/pages/Login';
-import Register from '~/pages/Register';
 import AccessDenied from '~/pages/AccessDenied';
-
 import Home from '~/pages/Home';
-
-import { ADMIN_ROLE, CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import AdminLayout from '~/components/AdminLayout';
 import DashBoard from '~/pages/Admin/DashBoard';
 import Users from '~/pages/Admin/Users';
@@ -21,6 +17,7 @@ import Deposit from '~/pages/User/Deposit';
 import SignUp from '~/pages/SignUp';
 import BankAccount from '~/pages/User/Settings/BankAccount';
 
+import { ADMIN_ROLE, CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 
 const routesConfig = [
     {
@@ -76,11 +73,6 @@ const routesConfig = [
         component: <Notificaion />,
     },
     {
-        title: 'register',
-        path: '/register',
-        component: <Register />,
-    },
-    {
         title: 'upload',
         path: '/upload',
         layout: <NormalLayout />,
@@ -94,6 +86,13 @@ const routesConfig = [
     {
         title: 'user settings',
         path: '/settings',
+        layout: <NormalLayout />,
+        component: <SettingsLayout><Personal /></SettingsLayout>,
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
+    },
+    {
+        title: 'user settings',
+        path: '/settings/personal',
         layout: <NormalLayout />,
         component: <SettingsLayout><Personal /></SettingsLayout>,
         role: [CUSTOMER_ROLE, SELLER_ROLE],

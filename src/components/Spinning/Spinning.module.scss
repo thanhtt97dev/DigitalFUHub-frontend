@@ -1,0 +1,10 @@
+.spinning-page{
+    height: 50vh;
+    position: relative;
+    z-index: 10;
+    .spin{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+}

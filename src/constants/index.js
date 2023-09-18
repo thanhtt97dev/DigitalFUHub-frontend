@@ -18,7 +18,6 @@ export const CUSTOMER_ROLE = 'Customer';
 export const SELLER_ROLE = 'Seller';
 export const NOT_HAVE_MEANING_FOR_TOKEN = 'not have meaning';
 export const NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES = 100;
-export const GOOGLE_CLIENT_ID = '564304857223-s162gb7ckolct80f4p44j6bmv8so803v.apps.googleusercontent.com'
 export const BANK_ACCOUNT_IMAGE_SRC = "https://img.vietqr.io/image/MB-0336687454-compact.png?accountName=LE%20DUC%20HIEU"
 
 export const BANKS_INFO = [
@@ -93,3 +92,10 @@ export const BANKS_INFO = [
         image: LPB
     },
 ]
+
+
+
+//request's status
+export const RESPONSE_CODE_SUCCESS = "00"
+export const RESPONSE_CODE_NOT_ALLOW = "01"
+export const RESPONSE_CODE_DATA_NOT_FOUND = "01"
