@@ -1,95 +1,114 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Layout, Input, Button, Menu, Avatar, Divider, List, Skeleton } from 'antd';
+import React, { useState, useEffect } from 'react'
+import { Layout, Input, Button, Avatar, Divider, List, Skeleton } from 'antd';
 import connectionHub from '~/api/signalr/connectionHub';
 import { useAuthUser } from 'react-auth-kit';
+import { getSenderConversations, getListMessage, sendMessage } from '~/api/chat';
 import {
-    UserOutlined,
     SendOutlined,
 } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
+import classNames from 'classnames/bind';
+import styles from './Chatbox.module.scss'
 
-const { Sider, Content } = Layout;
-
+const cx = classNames.bind(styles);
 
 const ChatBox = () => {
     const auth = useAuthUser();
     const user = auth();
+    const limit = 3
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [data, setData] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
 
-    useEffect(() => {
+    const [page, setPage] = useState(1)
 
+    const loadMoreData = () => {
+
+        if (loading) {
+            return;
+        }
+        setLoading(true);
+        getSenderConversations(user.id, page, limit)
+            .then((response) => {
+
+                setData([...data, ...response.data]);
+                setLoading(false);
+            })
+            .catch((errors) => {
+                console.log(errors)
+                setLoading(false);
+            });
+
+    };
+
+
+    useEffect(() => {
         if (user === null || user === undefined) return;
         // Create a new SignalR connection with the token
         const connection = connectionHub(`chatHub?userId=${user.id}`);
-        console.log(connection);
+
         // Start the connection
         connection.start().catch((err) => console.error(err));
 
-
+        loadMoreData();
         connection.on("ReceiveMessage", (response) => {
-            debugger
-            console.log(`messageContent = ${response.messageContent}, senderId = ${response.senderId}`);
-            setMessages([...messages, { sender: response.senderId, text: response.messageContent }])
-
+            setMessages((prev) => [...prev, response])
         });
 
         return () => {
             // Clean up the connection when the component unmounts
             connection.stop();
         };
-
-
-    }, [messages, user]);
-
+    }, []);
 
 
     const handleSendMessage = () => {
-        // axios.post('/api/chat/SendMessage', {
-        //     user: 'User',
-        //     text: newMessage
-        // })
-        //     .then(response => {
-        //         // Tin nhắn đã được gửi thành công đến API và xử lý ở đó.
-        //         setNewMessage('');
-        //     })
-        //     .catch(error => {
-        //         console.error(error);
-        //     });
-    };
-
-
-
-
-    const [loading, setLoading] = useState(false);
-    const [data, setData] = useState([]);
-
-    const loadMoreData = () => {
-        if (loading) {
-            return;
+        if (user === null || user === undefined) return;
+        const request = {
+            conversationId: selectedUser.conversationId,
+            senderId: user.id,
+            recipientId: selectedUser.userId,
+            content: newMessage,
+            dateCreate: new Date()
         }
-        setLoading(true);
+        const messageState = {
+            userId: user.id,
+            conversationId: selectedUser.conversationId,
+            content: newMessage,
+            dateCreate: new Date()
+        }
+        setMessages([...messages, messageState])
+        sendMessage(request)
+            .then(response => {
+                // Tin nhắn đã được gửi thành công đến API và xử lý ở đó.
+                setNewMessage('');
 
-        fetch('https://randomuser.me/api/?results=10&inc=name,gender,email,nat,picture&noinfo')
-            .then((res) => res.json())
-            .then((body) => {
-                setData([...data, ...body.results]);
-                setLoading(false);
             })
-            .catch(() => {
-                setLoading(false);
+            .catch(error => {
+                console.error(error);
             });
+
     };
+
+
+    const handleClickUser = (user) => {
+        setSelectedUser({ userId: user.userId, conversationId: user.conversationId })
+    }
 
     useEffect(() => {
-        loadMoreData();
-    }, []);
+        if (selectedUser === null) return;
+        getListMessage(selectedUser.conversationId)
+            .then((response) => {
+                setMessages([...response.data])
+            })
+    }, [selectedUser])
 
     return (
 
-        <div style={{ border: '1px solid rgba(140, 140, 140, 0.35)', width: '100%', display: 'flex' }}>
+        <div className={cx('container')} style={{}}>
 
             <Layout style={{ height: '70vh', width: '30%' }}>
                 <div
@@ -106,38 +125,38 @@ const ChatBox = () => {
                         dataLength={data.length}
                         next={loadMoreData}
                         hasMore={data.length < 50}
-                        loader={
-                            <Skeleton
-                                avatar
-                                paragraph={{
-                                    rows: 1,
-                                }}
-                                active
-                            />
-                        }
+                        // loader={
+                        //     <Skeleton
+                        //         avatar
+                        //         paragraph={{
+                        //             rows: 1,
+                        //         }}
+                        //         active
+                        //     />
+                        // }
                         endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
                         scrollableTarget="scrollableDiv"
                     >
                         <List
                             dataSource={data}
                             renderItem={(item) => (
-                                <List.Item key={item.email}>
+                                <List.Item onClick={() => { handleClickUser(item) }}>
                                     <List.Item.Meta
-                                        avatar={<Avatar src={item.picture.large} />}
-                                        title={<a href="https://ant.design">{item.name.last}</a>}
+                                        avatar={<Avatar src={item.avatar} />}
+                                        title={<a href="https://ant.design">{item.username}</a>}
                                         description={item.email}
                                     />
-                                    <div>Content</div>
                                 </List.Item>
                             )}
                         />
                     </InfiniteScroll>
                 </div>
+
             </Layout>
             <Layout style={{ height: '70vh', width: '65%', padding: 10 }}>
                 <div className="chat-input">
                     <div
-                        id="scrollableDiv"
+                        id="scrollChatInput"
                         style={{
                             height: '60vh',
                             overflow: 'auto',
@@ -147,22 +166,29 @@ const ChatBox = () => {
                     >
 
                         <InfiniteScroll
-                            dataLength={data.length}
-                            next={loadMoreData}
+                            dataLength={messages.length}
+                            // next={loadMoreData}
                             hasMore={data.length < 50}
-                            loader={
-                                <Skeleton
-                                    avatar
-                                    paragraph={{
-                                        rows: 1,
-                                    }}
-                                    active
-                                />
-                            }
-                            endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
-                            scrollableTarget="scrollableDiv"
+                            // loader={
+                            //     <Skeleton
+                            //         avatar
+                            //         paragraph={{
+                            //             rows: 1,
+                            //         }}
+                            //         active
+                            //     />
+                            // }
+                            // endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+                            scrollableTarget="scrollChatInput"
                         >
-                            {messages}
+                            <List
+                                dataSource={messages}
+                                renderItem={(item) => (
+                                    <List.Item key={item.conversationId} onClick={() => { handleClickUser(item.conversationId) }}>
+                                        {item.content}
+                                    </List.Item>
+                                )}
+                            />
                         </InfiniteScroll>
                     </div>
                     <Input
