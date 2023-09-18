@@ -96,6 +96,7 @@ const ChatBox = () => {
 
     const handleSendMessage = () => {
         if (user === null || user === undefined) return;
+        if (newMessage.length === 0) return;
         const request = {
             conversationId: selectedUser.conversationId,
             senderId: user.id,
@@ -140,9 +141,9 @@ const ChatBox = () => {
 
         <div className={cx('container')}>
 
-            <Layout style={{ height: '75vh', width: '30%' }}>
+            <Layout className={cx('layout-user-chat')}>
                 <div
-                    id="scrollableDiv"
+                    id="scrollUserChat"
                     style={{
                         height: '100%',
                         overflow: 'auto',
@@ -165,7 +166,7 @@ const ChatBox = () => {
                         //     />
                         // }
                         endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
-                        scrollableTarget="scrollableDiv"
+                        scrollableTarget="scrollUserChat"
                     >
                         <List
                             dataSource={data}
@@ -213,13 +214,25 @@ const ChatBox = () => {
                             <List
                                 dataSource={messages}
                                 renderItem={(item) => (
+
                                     <div style={{ marginBottom: 25 }}>
-                                        <Card className={cx('message-sender')} bodyStyle={bodyCardMessageSender}>
-                                            <Meta
-                                                avatar={<Avatar size={30} src={selectedUser.avatar} />}
-                                                title={item.content} />
-                                        </Card>
-                                        <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
+                                        {item.userId !== user.id ? (
+                                            <>
+                                                <Card className={cx('card-message')} bodyStyle={bodyCardMessageSender}>
+                                                    <Meta
+                                                        avatar={<Avatar size={30} src={selectedUser.avatar} />}
+                                                        title={item.content} />
+                                                </Card>
+                                                <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
+                                            </>
+                                        ) : (<>
+                                            <Card className={cx('card-message-sender')} bodyStyle={bodyCardMessageSender}>
+                                                <Meta
+                                                    title={item.content} />
+                                            </Card>
+                                            <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
+                                        </>)}
+
                                     </div>
 
                                 )}
