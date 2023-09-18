@@ -7,7 +7,7 @@ import { generateAccessToken } from '~/api/user'
 
 import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 import { saveDataAuthToCookies, getUser } from '~/utils';
-import ModalSend2FaQrCode from '~/components/ModalSend2FaQrCode';
+import ModalSend2FaQrCode from '~/components/Modals/ModalSend2FaQrCode';
 
 
 const layout = {

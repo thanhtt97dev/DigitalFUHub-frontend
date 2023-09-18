@@ -5,13 +5,13 @@ import { CloseCircleFilled } from "@ant-design/icons";
 import { getUserBankAccount, testConnect } from '~/api/bank'
 
 import { getUserId } from "~/utils";
-import ModalAddBankAccount from "~/components/ModalAddBankAccount";
+import ModalAddBankAccount from "~/components/Modals/ModalAddBankAccount";
 import UserBankAccountInfo from "~/components/UserBankAccountInfo";
 
 import classNames from 'classnames/bind';
 import styles from './BankAccount.module.scss';
 import Spinning from "~/components/Spinning";
-import ModalUpdateBankAccount from "~/components/ModalUpdateBankAccount";
+import ModalUpdateBankAccount from "~/components/Modals/ModalUpdateBankAccount";
 const cx = classNames.bind(styles)
 
 

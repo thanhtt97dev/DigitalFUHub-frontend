@@ -10,8 +10,8 @@ import { MessageOutlined } from '@ant-design/icons';
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
 import { ADMIN_ROLE, CUSTOMER_ROLE } from '~/constants';
-import ModalRequestDeposit from '../ModalRequestDeposit';
-import AccountBalance from '../AccountBalance';
+import ModalRequestDeposit from '../../components/Modals/ModalRequestDeposit';
+import AccountBalance from '../../components/AccountBalance';
 
 const { Header } = Layout;
 
