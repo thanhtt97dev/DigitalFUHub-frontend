@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 import { Layout, theme } from 'antd';
 
-import HeaderLayout from '~/components/HeaderLayout';
+import HeaderLayout from '~/layouts/HeaderLayout';
 
 const { Content, Footer } = Layout;
 

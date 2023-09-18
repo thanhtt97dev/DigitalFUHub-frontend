@@ -7,7 +7,7 @@ import { getUserId } from '~/utils';
 import { CheckCircleFilled, CloseCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
 
 import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user'
-import ModalSend2FaQrCode from "~/components/ModalSend2FaQrCode";
+import ModalSend2FaQrCode from "~/components/Modals/ModalSend2FaQrCode";
 
 import classNames from 'classnames/bind';
 import styles from './Security.module.scss';

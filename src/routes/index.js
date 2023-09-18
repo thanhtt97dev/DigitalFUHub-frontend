@@ -1,12 +1,7 @@
 import Login from '~/pages/Login';
 import AccessDenied from '~/pages/AccessDenied';
 import Home from '~/pages/Home';
-import AdminLayout from '~/components/AdminLayout';
-import DashBoard from '~/pages/Admin/DashBoard';
-import Users from '~/pages/Admin/Users';
-import Detail from '~/pages/Admin/Users/Detail';
-import Notificaion from '~/pages/Admin/Notificaion';
-import NormalLayout from '~/components/NormalLayout';
+import NormalLayout from '~/layouts/NormalLayout';
 import UploadFile from '~/pages/UploadFile';
 import Verification2FA from '~/pages/Verification2FA';
 import SettingsLayout from '~/pages/User/Settings/SettingsLayout';
@@ -17,7 +12,7 @@ import Deposit from '~/pages/User/Deposit';
 import SignUp from '~/pages/SignUp';
 import BankAccount from '~/pages/User/Settings/BankAccount';
 
-import { ADMIN_ROLE, CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
+import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 
 const routesConfig = [
     {
@@ -42,35 +37,6 @@ const routesConfig = [
         path: '/',
         layout: <NormalLayout />,
         component: <Home />,
-    },
-    {
-        title: 'admin',
-        path: '/admin/dashboard',
-        layout: <AdminLayout />,
-        role: [ADMIN_ROLE],
-        component: <DashBoard />,
-    },
-    {
-        title: 'admin',
-        path: '/admin/users',
-        layout: <AdminLayout />,
-        role: [ADMIN_ROLE],
-        component: <Users />,
-
-    },
-    {
-        title: 'admin',
-        path: '/admin/users/:id',
-        layout: <AdminLayout />,
-        role: [ADMIN_ROLE],
-        component: <Detail />
-    },
-    {
-        title: 'admin',
-        path: '/admin/notificaions',
-        layout: <AdminLayout />,
-        role: [ADMIN_ROLE],
-        component: <Notificaion />,
     },
     {
         title: 'upload',

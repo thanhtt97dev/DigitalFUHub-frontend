@@ -4,6 +4,7 @@ import { Outlet, Route, Routes } from 'react-router-dom';
 
 import routesConfig from './index';
 import NotFound from '~/pages/NotFound';
+import { ADMIN_ROLE } from '~/constants';
 
 function Routing() {
     const auth = useAuthUser();
@@ -17,7 +18,7 @@ function Routing() {
             if (route.role === undefined) {
                 setRoutesCanVistit((prev) => [...prev, route]);
             } else {
-                if (user !== null && route.role.includes(user.roleName)) {
+                if (user !== null && route.role.includes(user.roleName) && user.roleName !== ADMIN_ROLE) {
                     setRoutesCanVistit((prev) => [...prev, route]);
                 }
             }
