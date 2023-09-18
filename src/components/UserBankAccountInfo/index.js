@@ -4,6 +4,7 @@ import { BANKS_INFO } from "~/constants";
 
 import classNames from 'classnames/bind';
 import styles from './UserBankAccountInfo.module.scss';
+import { ParseDateTime } from "~/utils";
 
 const cx = classNames.bind(styles)
 
@@ -41,6 +42,10 @@ function UserBankAccountInfo({ userBank }) {
                         <div className={cx("bank-user-info-field")}>
                             <span className={cx("lable")}>Số tài khoản: </span>
                             <p className={cx("credit-account")}>{userBank.creditAccount}</p>
+                        </div>
+                        <div className={cx("bank-user-info-field")}>
+                            <span className={cx("lable")}>Ngày cập nhật: </span>
+                            <p className={cx("credit-account")}>{ParseDateTime(userBank.updateAt)}</p>
                         </div>
                     </div>
                 </div>
