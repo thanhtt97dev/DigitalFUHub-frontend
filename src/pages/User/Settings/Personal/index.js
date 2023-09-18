@@ -194,15 +194,6 @@ function Personal() {
                     <Input value={userInfo.email} disabled style={{ backgroundColor: "white" }} />
                 </Col>
             </Row ><br />
-            <Row gutter={10}>
-                <Col span={10}>
-                    <h3>Tình trạng</h3><br />
-                    <Radio.Group value={userInfo.status}>
-                        <Radio value={1}>Active</Radio>
-                        <Radio value={0}>Ban</Radio>
-                    </Radio.Group>
-                </Col>
-            </Row >
         </>
     );
 }
