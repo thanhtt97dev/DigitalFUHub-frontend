@@ -45,7 +45,6 @@ function ModalUpdateBankAccount({ userId }) {
     const [bankAccountName, setBankAccountName] = useState("")
 
     const [openModal, setOpenModal] = useState(false);
-    const [loadingBtnOpenModal, setLoadingBtnOpenModal] = useState(false);
     const [loadingBtnCheckAccount, setLoadingBtnCheckAccount] = useState(false);
     const [loadingBtnSubmit, setLoadingBtnSubmit] = useState(false)
 
@@ -73,19 +72,7 @@ function ModalUpdateBankAccount({ userId }) {
 
     // check can connect with MB bank
     const handleOpenModalBankAccount = () => {
-        setLoadingBtnOpenModal(true);
-        testConnect()
-            .then(() => {
-                setOpenModal(true)
-            })
-            .catch((err) => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
-            })
-            .finally(() => {
-                setTimeout(() => {
-                    setLoadingBtnOpenModal(false)
-                }, 500)
-            })
+        setOpenModal(true)
     }
 
 
@@ -165,7 +152,6 @@ function ModalUpdateBankAccount({ userId }) {
             <Button
                 type="primary"
                 className={cx("btn-change")}
-                loading={loadingBtnOpenModal}
                 size="large"
                 onClick={handleOpenModalBankAccount}
             >
