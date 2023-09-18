@@ -18,9 +18,7 @@ function Routing() {
             if (route.role === undefined) {
                 setRoutesCanVistit((prev) => [...prev, route]);
             } else {
-                //rule: this FE just for customer, seller
-                if (user !== null && route.role.includes(user.roleName &&
-                    user.roleName !== ADMIN_ROLE)) {
+                if (user !== null && route.role.includes(user.roleName) && user.roleName !== ADMIN_ROLE) {
                     setRoutesCanVistit((prev) => [...prev, route]);
                 }
             }
