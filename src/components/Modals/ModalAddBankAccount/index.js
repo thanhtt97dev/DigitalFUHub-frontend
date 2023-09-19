@@ -4,7 +4,7 @@ import { Divider, notification, Modal, Button, Input, Select, Form, Space } from
 import { ExclamationCircleFilled } from "@ant-design/icons";
 
 import { BANKS_INFO } from "~/constants";
-import { inquiryAccountName, addBankAccount, testConnect } from '~/api/bank'
+import { inquiryAccountName, addBankAccount } from '~/api/bank'
 
 import classNames from 'classnames/bind';
 import styles from './ModalAddBankAccount.module.scss';
@@ -45,7 +45,6 @@ function ModalAddBankAccount({ userId }) {
     const [bankAccountName, setBankAccountName] = useState("")
 
     const [openModal, setOpenModal] = useState(false);
-    const [loadingBtnOpenModal, setLoadingBtnOpenModal] = useState(false);
     const [loadingBtnCheckAccount, setLoadingBtnCheckAccount] = useState(false);
     const [loadingBtnSubmit, setLoadingBtnSubmit] = useState(false)
 
@@ -73,19 +72,7 @@ function ModalAddBankAccount({ userId }) {
 
     // check can connect with MB bank
     const handleOpenModalBankAccount = () => {
-        setLoadingBtnOpenModal(true);
-        testConnect()
-            .then(() => {
-                setOpenModal(true)
-            })
-            .catch((err) => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
-            })
-            .finally(() => {
-                setTimeout(() => {
-                    setLoadingBtnOpenModal(false)
-                }, 500)
-            })
+        setOpenModal(true)
     }
 
 
@@ -160,7 +147,6 @@ function ModalAddBankAccount({ userId }) {
             <Button
                 type="primary"
                 style={{ background: "#28a745" }}
-                loading={loadingBtnOpenModal}
                 size="large"
                 onClick={handleOpenModalBankAccount}
             >

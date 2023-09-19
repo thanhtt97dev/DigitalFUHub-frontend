@@ -9,10 +9,6 @@ export const getAllBankInfo = () => {
     return apiGetAuth('api/banks/getAll');
 };
 
-export const testConnect = () => {
-    return apiGetAuth('api/banks/connect');
-};
-
 export const inquiryAccountName = (data) => {
     return apiPostAuth('api/banks/inquiryAccountName', data);
 };
