@@ -1,7 +1,10 @@
 .container {
-    border: 1px solid rgba(140, 140, 140, 0.35);
     width: 100%;
     display: flex;
+}
+
+.card-header-user-conversation {
+    margin-bottom: 0vh;
 }
 
 .card-message {
@@ -24,16 +27,28 @@
     height: 75vh;
     width: 65%;
     padding: 10px;
+    border: 1px solid rgba(140, 140, 140, 0.35);
 }
 
 .layout-user-chat {
     height: 75vh;
     width: 30%;
     padding: 10px;
+    border: 1px solid rgba(140, 140, 140, 0.35);
 }
 
 #scrollChatMessage {
     height: 55vh;
     overflow: auto;
     padding: 0 16px;
+}
+
+.style-message-sender {
+    margin-left: auto;
+    max-width: fit-content;
+}
+
+.style-message-sender-1 {
+    margin-left: auto;
+    max-width: fit-content;
 }
