@@ -93,9 +93,11 @@ export const BANKS_INFO = [
     },
 ]
 
-
-
 //request's status
 export const RESPONSE_CODE_SUCCESS = "00"
-export const RESPONSE_CODE_NOT_ALLOW = "01"
-export const RESPONSE_CODE_DATA_NOT_FOUND = "01"
+export const RESPONSE_CODE_NOT_ACCEPT = "01"
+export const RESPONSE_CODE_DATA_NOT_FOUND = "02"
+export const RESPONSE_CODE_DATA_FAILD = "03"
+export const RESPONSE_CODE_CANT_CREATE = "04"
+export const RESPONSE_CODE_CANT_UPDATE = "05"
+export const RESPONSE_CODE_CANT_DELETE = "06"

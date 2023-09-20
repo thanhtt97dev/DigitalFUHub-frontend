@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Layout, Input, Button, Avatar, Divider, List, Skeleton, Card, Typography } from 'antd';
+import { Layout, Input, Button, Avatar, Divider, List, Skeleton, Card, Typography, Col, Row } from 'antd';
 import connectionHub from '~/api/signalr/connectionHub';
 import { useAuthUser } from 'react-auth-kit';
 import { getSenderConversations, getListMessage, sendMessage } from '~/api/chat';
 import {
     SendOutlined,
+    FileImageOutlined
 } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import classNames from 'classnames/bind';
@@ -29,30 +30,18 @@ const ChatBox = () => {
     const limit = 3
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
     const [selectedUser, setSelectedUser] = useState(initialSelectedUser);
     const messagesEndRef = useRef(null);
 
-    const [page, setPage] = useState(1)
-
-    const loadMoreData = () => {
-
-        if (loading) {
-            return;
-        }
-        setLoading(true);
-        getSenderConversations(user.id, page, limit)
+    const loadData = () => {
+        getSenderConversations(user.id)
             .then((response) => {
                 setData((prev) => [...prev, ...response.data]);
-
                 setSelectedUser(response.data[0] ?? initialSelectedUser)
-                console.log('selectedUser: ' + selectedUser)
-                setLoading(false);
             })
             .catch((errors) => {
                 console.log(errors)
-                setLoading(false);
             });
 
     };
@@ -72,10 +61,9 @@ const ChatBox = () => {
         // Start the connection
         connection.start().catch((err) => console.error(err));
 
-        loadMoreData();
+        loadData();
         connection.on("ReceiveMessage", (response) => {
             setMessages((prev) => [...prev, response])
-            scrollToBottom();
         });
 
         return () => {
@@ -168,8 +156,8 @@ const ChatBox = () => {
 
                     <InfiniteScroll
                         dataLength={data.length}
-                        next={loadMoreData}
-                        hasMore={data.length < 50}
+                        // next={loadMoreData}
+                        // hasMore={data.length < 50}
                         // loader={
                         //     <Skeleton
                         //         avatar
@@ -179,7 +167,6 @@ const ChatBox = () => {
                         //         active
                         //     />
                         // }
-                        endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
                         scrollableTarget="scrollUserChat"
                     >
                         <List
@@ -212,7 +199,7 @@ const ChatBox = () => {
                         <InfiniteScroll
                             dataLength={messages.length}
                             // next={loadMoreData}
-                            hasMore={data.length < 50}
+                            // hasMore={data.length < 50}
                             // loader={
                             //     <Skeleton
                             //         avatar
@@ -259,19 +246,29 @@ const ChatBox = () => {
                         </InfiniteScroll>
                         <div ref={messagesEndRef} />
                     </div>
-                    <Input
-                        placeholder="Type a message..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onPressEnter={handleSendMessage}
-                        suffix={
-                            <Button
-                                type="primary"
-                                icon={<SendOutlined />}
-                                onClick={handleSendMessage}
+                    <Row>
+                        <Col span={2}>
+                            <Button style={{ marginLeft: 15 }} type="primary" shape="circle" icon={<FileImageOutlined />} size={30} />
+                        </Col>
+                        <Col span={22}>
+
+                            <Input
+                                placeholder="Type a message..."
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                onPressEnter={handleSendMessage}
+                                suffix={
+                                    <Button
+                                        type="primary"
+                                        icon={<SendOutlined />}
+                                        onClick={handleSendMessage}
+                                    />
+                                }
                             />
-                        }
-                    />
+                        </Col>
+
+                    </Row>
+
 
                 </div>
             </Layout>
