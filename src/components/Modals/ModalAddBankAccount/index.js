@@ -5,6 +5,7 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 
 import { BANKS_INFO } from "~/constants";
 import { inquiryAccountName, addBankAccount } from '~/api/bank'
+import { RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_SUCCESS, RESPONSE_CODE_NOT_ACCEPT } from "~/constants";
 
 import classNames from 'classnames/bind';
 import styles from './ModalAddBankAccount.module.scss';
@@ -81,19 +82,22 @@ function ModalAddBankAccount({ userId }) {
         const data = { bankId: values.bankId, creditAccount: values.creditAccount }
         inquiryAccountName(data)
             .then((res) => {
-                setBankAccountName(res.data)
-                setBankAccoutRequest({
-                    userId: userId,
-                    bankId: values.bankId,
-                    creditAccount: values.creditAccount
-                })
-                setDisableInput(true)
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setBankAccoutRequest({
+                        userId: userId,
+                        bankId: values.bankId,
+                        creditAccount: values.creditAccount
+                    })
+                    setBankAccountName(res.data.result)
+                    setDisableInput(true)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
+                    openNotification("error", "Bạn đã liên kết bằng 1 tài khoản ngân hàng!")
+                }
+                else {
+                    openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
+                }
             })
             .catch((err) => {
-                if (err.response.status === 409) {
-                    openNotification("error", "Tài khoản ngân hàng không tồn tại!")
-                    return;
-                }
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
@@ -113,9 +117,15 @@ function ModalAddBankAccount({ userId }) {
         setLoadingBtnSubmit(true)
         addBankAccount(bankAccoutRequest)
             .then((res) => {
-                setOpenModal(false)
-                openNotification("success", "Liên kết tài khoản ngân hàng thành công!")
-                window.location.reload();
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setOpenModal(false)
+                    openNotification("success", "Thay đổi tài khoản ngân hàng thành công!")
+                    window.location.reload();
+                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
+                    openNotification("error", "Mỗi lần thay đổi bạn cần chờ 15 ngày mới có thể thay đổi tài khoản khác!")
+                } else {
+                    openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
+                }
             })
             .catch(() => {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
