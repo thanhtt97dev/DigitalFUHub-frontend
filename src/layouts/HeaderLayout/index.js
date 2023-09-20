@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
-import { Layout, Image, Space, Button, Dropdown } from 'antd';
+import { Layout, Image, Space, Button, Dropdown, Avatar } from 'antd';
 
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
@@ -109,16 +109,7 @@ function HeaderLayout() {
                                 <MessageOutlined style={{ fontSize: '20px' }} />
                             </Link>
                             <Dropdown menu={{ items }} placement="bottom">
-                                <img
-                                    style={{
-                                        borderRadius: '50%',
-                                        width: '50px',
-                                        marginRight: '20px',
-                                        marginTop: '20px',
-                                    }}
-                                    alt=""
-                                    src={userAvatart}
-                                />
+                                <Avatar size={50} src={userAvatart} />
                             </Dropdown>
                         </>
                     )}

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Layout, Input, Button, Avatar, Divider, List, Skeleton, Card, Typography } from 'antd';
+import { Layout, Input, Button, Avatar, Divider, List, Skeleton, Card, Typography, Col, Row } from 'antd';
 import connectionHub from '~/api/signalr/connectionHub';
 import { useAuthUser } from 'react-auth-kit';
 import { getSenderConversations, getListMessage, sendMessage } from '~/api/chat';
 import {
     SendOutlined,
+    FileImageOutlined
 } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import classNames from 'classnames/bind';
@@ -259,19 +260,29 @@ const ChatBox = () => {
                         </InfiniteScroll>
                         <div ref={messagesEndRef} />
                     </div>
-                    <Input
-                        placeholder="Type a message..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onPressEnter={handleSendMessage}
-                        suffix={
-                            <Button
-                                type="primary"
-                                icon={<SendOutlined />}
-                                onClick={handleSendMessage}
+                    <Row>
+                        <Col span={2}>
+                            <Button style={{ marginLeft: 15 }} type="primary" shape="circle" icon={<FileImageOutlined />} size={30} />
+                        </Col>
+                        <Col span={22}>
+
+                            <Input
+                                placeholder="Type a message..."
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                onPressEnter={handleSendMessage}
+                                suffix={
+                                    <Button
+                                        type="primary"
+                                        icon={<SendOutlined />}
+                                        onClick={handleSendMessage}
+                                    />
+                                }
                             />
-                        }
-                    />
+                        </Col>
+
+                    </Row>
+
 
                 </div>
             </Layout>
