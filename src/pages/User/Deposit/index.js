@@ -1,75 +1,91 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-
-import { Row, Col } from "antd";
-
+import classNames from 'classnames/bind';
+import styles from './Deposit.module.scss';
 import { BANK_ACCOUNT_IMAGE_SRC } from '~/constants'
 
+const cx = classNames.bind(styles);
+
 function Deposit() {
-
     const navigate = useNavigate();
-
     const location = useLocation();
 
-    const [code, setCode] = useState("")
-    const [amount, setAmount] = useState("")
-    const [qrCode, setQrCode] = useState()
+    const [code, setCode] = useState("");
+    const [amount, setAmount] = useState("");
+    const [qrCode, setQrCode] = useState("");
 
     useEffect(() => {
         if (location.state === null) {
-            alert("Xảy ra sự cố! Hãy thử lại sau!")
+            alert("Xảy ra sự cố! Hãy thử lại sau!");
             return navigate("/home");
         }
-        setCode(location.state.code)
-        setAmount(location.state.amount)
+        setCode(location.state.code);
+        setAmount(location.state.amount);
         const bankCodeInfo = `&amount=${location.state.amount}&addInfo=${location.state.code}`;
-        setQrCode(BANK_ACCOUNT_IMAGE_SRC + bankCodeInfo)
+        setQrCode(BANK_ACCOUNT_IMAGE_SRC + bankCodeInfo);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-
+    }, []);
 
     return (
         <>
-            <Row>
-                <h1>Nạp tiền</h1>
-            </Row>
-
-            <div style={{ height: 'auto', width: "30%", margin: "0 auto" }}>
-                <div id="qrCode">
-                    <img src={qrCode} alt="payment" style={{ display: "block", margin: "0 auto", width: "90%" }} />
-                </div>
-                <ul style={{ display: "block", margin: "0 auto", width: "100%", marginLeft: "20%" }}>
-                    <li>Số tiền: <b><span style={{ color: "red" }}>{amount} VNĐ</span></b> </li>
-                    <li>Nội dung chuyển khoản: <b><span style={{ color: "red" }}>{code}</span></b> </li>
-                    <li>Tên chủ tài khoản: <b><span style={{ color: "red" }}>Lê Đức Hiếu</span></b> </li>
-                    <li>Số tài khoản: <b><span style={{ color: "red" }}>0336687454</span></b></li>
-                    <li><b><span style={{ color: "red" }}>Ngân hàng Quân đội </span></b></li>
-                </ul>
-
-                <h3 style={{ color: "red" }}>Chú ý mỗi mã QRCode chỉ chuyển 1 lần duy nhất</h3>
-                <p>
-                    Nếu chuyển thủ công điền sai thông tin chuyển khoản hoặc chuyển nhiều lần cùng 1 mã giao dịch, hệ thống sẽ
-                </p>
-                <ul>
-                    <li><strong>không</strong> cộng tiền vào tài khoản của quý khách</li>
-                    <li><strong>không</strong> hoàn trả tiền</li>
-                    <li><strong>không</strong> chịu trách nhiệm về khoản tiền chuyển nhầm hoặc chuyển thừa</li>
-                </ul>
-                <h4>
-                    Vui lòng chờ đợi 1 vài phút để hệ thống cập nhật số dư sau khi đã chuyển khoản.<br />
-                </h4>
+            <div className={cx("instruction")}>
+                <h2 className={cx("section-title")}>Chuyển khoản bằng QR</h2>
             </div>
-
-            <Row>
-                <Col xs={24} xl={8} offset={1}>
-                </Col>
-
-                <Col xs={24} xl={13} offset={1}>
-                </Col>
-            </Row>
+            <div className={cx("deposit-container-1")}>
+                <div className={cx("part")}>
+                    <div className={cx("qr-code")}>
+                        <img src={qrCode} alt="payment" />
+                    </div>
+                </div>
+                <div className={cx("part")}>
+                    <ul className={cx("qr-code-guide")}>
+                        <li></li>
+                        <li><strong>Bước 1:</strong> Mở app ngân hàng và quét mã QR.</li>
+                        <li ><strong>Bước 2:</strong> Đảm bảo nội dung chuyển khoản là <b className={cx("code")}>{code}</b>.</li>
+                        <li><strong>Bước 3:</strong> Thực hiện thanh toán.</li>
+                    </ul>
+                </div>
+            </div >
+            <div className={cx("deposit-container-2")}>
+                <div className={cx("part")}>
+                    <h2 className={cx("section-title")}>Chuyển khoảng thủ công</h2>
+                    <div className={cx("info")}>
+                        <ul className={cx("grid-container")}>
+                            <li className={cx("grid-item")}>
+                                <span className={cx("head-grid")}>Nội dung chuyển khoản:</span> <br />
+                                <b className={cx("code")}>{code}</b>
+                            </li>
+                            <li className={cx("grid-item")}>
+                                <span className={cx("head-grid")}>Tên chủ tài khoản:</span> <br />
+                                <b>Lê Đức Hiếu</b>
+                            </li>
+                            <li className={cx("grid-item")}>
+                                <span className={cx("head-grid")}>Số tài khoản:</span> <br />
+                                <b>0336687454</b>
+                            </li>
+                            <li className={cx("grid-item")}>
+                                <span className={cx("head-grid")}>Ngân hàng:</span> <br />
+                                <b>Ngân hàng Quân đội</b>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div className={cx("part")}>
+                    <h2 className={cx("section-title")}>Lưu ý</h2>
+                    <div className={cx("note-adj")}>
+                        <h3>Chú ý mỗi mã QRCode chỉ chuyển 1 lần duy nhất.</h3>
+                        <p>Nếu chuyển thủ công điền sai thông tin chuyển khoản hoặc chuyển nhiều lần cùng 1 mã giao dịch, hệ thống sẽ : </p>
+                        <ul className={cx("note")}>
+                            <li><strong>Không</strong> cộng tiền vào tài khoản của quý khách.</li>
+                            <li><strong>Không</strong> hoàn trả tiền.</li>
+                            <li><strong>Không</strong> chịu trách nhiệm về khoản tiền chuyển nhầm hoặc chuyển thừa.</li>
+                        </ul>
+                        <p>Vui lòng chờ đợi 1 vài phút để hệ thống cập nhật số dư sau khi đã chuyển khoản.</p>
+                    </div>
+                </div>
+            </div>
         </>
     );
 }
 
-export default Deposit; 
+export default Deposit;
