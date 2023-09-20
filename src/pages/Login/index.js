@@ -7,7 +7,7 @@ import { LoadingOutlined, WarningOutlined } from '@ant-design/icons';
 import { useSignIn } from 'react-auth-kit';
 
 import { login } from '~/api/user';
-import { saveDataAuthToCookies, removeDataAuthInCookies, getUser } from '~/utils';
+import { saveDataAuthToCookies, removeDataAuthInCookies, getUser, encryptPassword } from '~/utils';
 import { ADMIN_ROLE, NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 import GoogleSignIn from '~/components/GoogleSignIn';
 //import { ADMIN_ROLE, User_ROLE } from "~/constants"
@@ -15,7 +15,6 @@ import GoogleSignIn from '~/components/GoogleSignIn';
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID
 
 function Login() {
-    console.log(GOOGLE_CLIENT_ID)
     const signIn = useSignIn();
     const navigate = useNavigate();
     let [message, setMessage] = useState('');
@@ -50,18 +49,16 @@ function Login() {
         setLoading(true)
         setMessage('');
 
-        console.log(values.google)
-
         let data = {
             username: values.username,
-            password: values.password,
+            password: values.password ? encryptPassword(values.password) : null,
         };
         if (values.google === true) {
             data = {
                 email: values.email,
             };
         }
-
+        console.log(data.password)
 
         login(data, values.google)
             .then((res) => {

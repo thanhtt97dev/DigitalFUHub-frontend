@@ -93,8 +93,8 @@ function HeaderLayout() {
                 <Space size={12}>
                     {user === null ? (
                         <Space>
-                            <Link to={'/register'}>
-                                <Button type="primary">Register</Button>
+                            <Link to={'/signup'}>
+                                <Button type="primary">SignUp</Button>
                             </Link>
                             <Link to={'/Login'}>
                                 <Button type="primary">Login</Button>

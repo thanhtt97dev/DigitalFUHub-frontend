@@ -47,7 +47,7 @@ function UploadFile() {
         bodyFormData.append('isPublic', values.visible);
         bodyFormData.append('userId', 1);
         bodyFormData.append('fileUpload', values.upload[0].originFileObj);
-        uploadFile('api/Files/Upload', bodyFormData)
+        uploadFile(bodyFormData)
             .then((res) => { openNotificationWithIcon('success') })
             .catch((err) => { openNotificationWithIcon('error') });
     };

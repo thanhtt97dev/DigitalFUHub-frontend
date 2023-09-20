@@ -1,24 +1,29 @@
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import {
     Button,
     Form,
     Input,
-    Upload,
-    Space
+    Spin,
+    notification
+    // Upload,
+    // Space
 } from 'antd';
-import classNames from 'classnames/bind';
-import styles from './SignUp.module.scss';
+import { useNavigate } from 'react-router-dom';
+import { checkExistEmail, signUp, checkExistUsername } from '~/api/user';
+// import classNames from 'classnames/bind';
+// import styles from './SignUp.module.scss';
+import { encryptPassword, regexPattern } from '~/utils';
+// const cx = classNames.bind(styles)
 
-const cx = classNames.bind(styles)
+// const normFile = (e) => {
+//     if (Array.isArray(e)) {
+//         return e;
+//     }
+//     return e && e.fileList;
+// };
 
-const normFile = (e) => {
-    if (Array.isArray(e)) {
-        return e;
-    }
-    return e && e.fileList;
-};
-
+const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const formItemLayout = {
     labelCol: {
         xs: {
@@ -50,43 +55,117 @@ const tailFormItemLayout = {
     },
 };
 
-function SignUp() {
-    const [fileUpload, setFileUpload] = useState([]);
-    const [filePreview, setFilePreview] = useState('');
-    const [form] = Form.useForm();
-    const handleChange = async (info) => {
-        URL.revokeObjectURL(filePreview);
-        let newFileList = [...info.fileList];
-
-        // Limit the number of uploaded files
-        // Only to show two recent uploaded files, and old ones will be replaced by the new
-        newFileList = newFileList.slice(-1);
-
-        // Read from response and show file link
-        newFileList = newFileList.map((file) => {
-            if (file.response) {
-                // Component will show file.url as link
-                file.url = file.response.url;
+const validatorFields = {
+    checkExistUsername: () => ({
+        validator(_, value) {
+            if (!value) return Promise.resolve();
+            let isExist = false;
+            checkExistUsername(value)
+                .then(res => {
+                    isExist = res.data === 'Y' ? true : false;
+                })
+                .catch(err => {
+                    isExist = false;
+                });
+            if (!isExist) {
+                return Promise.resolve();
             }
-            file.response = '';
-            file.status = 'done';
-            return file;
-        });
-        setFileUpload(newFileList);
-        setFilePreview(newFileList.length > 0 ? URL.createObjectURL(newFileList[0].originFileObj) : '')
-    };
-    const props = {
-        onChange: handleChange,
-        multiple: false,
-        accept: 'image/*',
-        maxCount: 1
-    };
+            return Promise.reject(new Error('Email đã tồn tại!'));
+        },
+    }),
+    checkExistEmail: () => ({
+        validator(_, value) {
+            if (!value) return Promise.resolve();
+            let isExist = false;
+            checkExistEmail(value)
+                .then(res => {
+                    isExist = res.data === 'Y' ? true : false;
+                })
+                .catch(err => {
+                    isExist = false;
+                });
+            if (!isExist) {
+                return Promise.resolve();
+            }
+            return Promise.reject(new Error('Email đã tồn tại!'));
+        },
+    }),
+    checkFormatUsername: () => ({
+        validator(_, value) {
+            if (!value) return Promise.resolve();
+            const result = regexPattern(value, "^[a-z][a-z\\d]{6,12}$")
+            if (result) {
+                return Promise.resolve();
+            }
+            return Promise.reject(new Error('Tên tài khoản phải bắt đầu với kí tự chữ thường và có độ dài 6 - 12 kí tự!'));
+        },
+    }),
+
+    checkFormatFullname: () => ({
+        validator(_, value) {
+            if (!value) return Promise.resolve();
+            if (value.trim()) {
+                return Promise.resolve();
+            }
+            return Promise.reject(new Error('Họ tên không được trống!'));
+        },
+    }),
+    checkFormatPassword: (message) => ({
+        validator(_, value) {
+            if (!value) return Promise.resolve();
+            const result = regexPattern(value, "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,16}$")
+            if (result) {
+                return Promise.resolve();
+            }
+            return Promise.reject(new Error(message));
+        },
+    }),
+
+    checkCfPasswordMatch: (getFieldValue) => ({
+        validator(_, value) {
+            if (!value || getFieldValue('password') === value) {
+                return Promise.resolve();
+            }
+            return Promise.reject(new Error('Mật khẩu xác nhận đã nhập không khớp!'));
+        },
+    }),
+}
+
+function SignUp() {
+    const [form] = Form.useForm();
+    const [disabled, setDisabled] = useState(false);
+    const navigate = useNavigate();
+    const [api, contextHolder] = notification.useNotification();
     const onFinish = (values) => {
-        console.log(values);
+        setDisabled(true);
+        const dataBody = {
+            fullname: values.fullname,
+            password: encryptPassword(values.password),
+            confirmPassword: encryptPassword(values.confirmPassword),
+            email: values.email,
+            username: values.username
+        }
+        signUp(dataBody)
+            .then(res => {
+                setDisabled(false);
+                return navigate('/confirmEmail')
+            })
+            .catch(err => {
+                setDisabled(false);
+                openNotificationWithIcon('error');
+            })
     }
+    const openNotificationWithIcon = (type) => {
+        api[type]({
+            message: 'Đã có lỗi xảy ra vui lòng thử lại sau!',
+            description:
+                '',
+        });
+    };
 
     return (
         <>
+            {contextHolder}
             <Form
                 {...formItemLayout}
                 form={form}
@@ -99,86 +178,85 @@ function SignUp() {
                 layout="horizontal"
                 onFinish={onFinish}
                 style={{
-                    maxWidth: 800,
+                    maxWidth: 900,
                 }}
             >
-                <Form.Item label="Avatar" name='avatar'
-                    getValueFromEvent={normFile}
+
+                <Form.Item label="Họ tên" name='fullname'
                     rules={[{
                         required: true,
-                        message: 'Please upload your avatar'
+                        message: 'Họ tên không được trống!'
                     },
-                    ]}>
-                    <Upload {...props} fileList={fileUpload}>
-                        <Space wrap={true}>
-                            <div className={cx('preview-img')}>
-                                {filePreview && <img src={filePreview} alt='' />}
-                            </div>
-                            <Button icon={<UploadOutlined />}>Upload</Button>
-                        </Space>
-                    </Upload>
-                </Form.Item>
-                <Form.Item label="Fullname" name='fullname'
-                    rules={[{
-                        required: true,
-                        message: 'Please input your fullname!'
-                    }]}
+                    validatorFields.checkFormatFullname(),
+                    ]}
                 >
-                    <Input placeholder='Fullname' />
+                    <Input placeholder='Họ tên' />
+                </Form.Item>
+                <Form.Item label="Tên tài khoản" name='username'
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Tên tài khoản không được trống!'
+                        },
+                        validatorFields.checkFormatUsername(),
+                        validatorFields.checkExistUsername(),
+                    ]}
+                >
+                    <Input placeholder='Tên tài khoản' />
                 </Form.Item>
                 <Form.Item label="Email"
                     name='email'
                     rules={[
                         {
                             type: 'email',
-                            message: 'The input is not valid email!',
+                            message: 'Email nhập không hợp lệ!',
                         },
                         {
                             required: true,
-                            message: 'Please input your email!',
+                            message: 'Email không được để trống!',
                         },
+                        validatorFields.checkExistEmail(),
                     ]}
                 >
                     <Input placeholder='Email' />
                 </Form.Item>
-                <Form.Item label="Password"
+                <Form.Item label="Mật khẩu"
                     name="password"
                     hasFeedback
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your password!',
+                            message: 'Mật khẩu không để trống!',
                         },
+                        validatorFields.checkFormatPassword('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
                     ]}>
-                    <Input.Password placeholder='Password' />
+                    <Input.Password placeholder='Mật khẩu' />
                 </Form.Item>
-                <Form.Item label="Confirm Password"
+                <Form.Item label="Mật khẩu xác nhận"
                     name="confirmPassword"
                     dependencies={['password']}
                     hasFeedback
                     rules={[
                         {
                             required: true,
-                            message: 'Please input Confirm Password!',
+                            message: 'Mật khẩu xác nhận không để trống!',
                         },
-                        ({ getFieldValue }) => ({
-                            validator(_, value) {
-                                if (!value || getFieldValue('password') === value) {
-                                    return Promise.resolve();
-                                }
-                                return Promise.reject(new Error('The confirm password that you entered do not match!'));
-                            },
-                        }),
+                        ({ getFieldValue }) => validatorFields.checkCfPasswordMatch(getFieldValue),
+                        validatorFields.checkFormatPassword('Mật khẩu xác nhận chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
                     ]}>
-                    <Input.Password placeholder='Confirm Password' />
+                    <Input.Password placeholder='Mật khẩu xác nhận' />
                 </Form.Item>
 
-                <Form.Item {...tailFormItemLayout}>
-                    <Button type="primary" htmlType="submit">
-                        Submit
+                <Form.Item  {...tailFormItemLayout}>
+
+                    <Button style={{ position: 'relative' }} disabled={disabled} type="primary" htmlType="submit">
+                        Đăng ký
+                        {disabled && <Spin style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} indicator={antIcon} />}
                     </Button>
+
+
                 </Form.Item>
-            </Form>
+            </Form >
         </>
     );
 };
