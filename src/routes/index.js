@@ -11,8 +11,10 @@ import ChatBox from '~/pages/ChatBox';
 import Deposit from '~/pages/User/Deposit';
 import SignUp from '~/pages/SignUp';
 import BankAccount from '~/pages/User/Settings/BankAccount';
+import SellerLayout from '~/layouts/SellerLayout';
 
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
+import ConfirmEmail from '~/pages/ConfirmEmail';
 
 const routesConfig = [
     {
@@ -84,16 +86,26 @@ const routesConfig = [
         component: <ChatBox />
     },
     {
-        title: 'signup',
+        title: 'SignUp',
         path: '/signup',
-        layout: <NormalLayout />,
         component: <SignUp />
     },
     {
-        title: 'deposit',
+        title: 'Deposit',
         path: '/deposit',
         layout: <NormalLayout />,
         component: <Deposit />,
+    },
+    {
+        title: 'Seller',
+        path: '/seller',
+        layout: <SellerLayout />,
+        component: <></>,
+    },
+    {
+        title: 'Confirm Email',
+        path: '/confirmEmail',
+        component: <ConfirmEmail />,
     },
 ];
 export default routesConfig;

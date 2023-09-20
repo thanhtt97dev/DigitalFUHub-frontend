@@ -9,13 +9,13 @@ function Home() {
 
     const [srcAudio, setSrcAudio] = useState('')
     useEffect(() => {
-        dowloadFile('api/Files/GetFile/450049af-7813-4eb4-8430-c4ba1a40643a.mp3')
+        dowloadFile('450049af-7813-4eb4-8430-c4ba1a40643a.mp3')
             .then(function (response) {
                 var srcBlob = URL.createObjectURL(response.data)
                 setSrcAudio(srcBlob)
             })
             .catch(function (error) {
-                console.log(error);
+                // console.log(error);
             })
 
     }, [])
