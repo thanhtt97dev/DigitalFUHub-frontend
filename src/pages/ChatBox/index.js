@@ -30,30 +30,18 @@ const ChatBox = () => {
     const limit = 3
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
     const [selectedUser, setSelectedUser] = useState(initialSelectedUser);
     const messagesEndRef = useRef(null);
 
-    const [page, setPage] = useState(1)
-
-    const loadMoreData = () => {
-
-        if (loading) {
-            return;
-        }
-        setLoading(true);
-        getSenderConversations(user.id, page, limit)
+    const loadData = () => {
+        getSenderConversations(user.id)
             .then((response) => {
                 setData((prev) => [...prev, ...response.data]);
-
                 setSelectedUser(response.data[0] ?? initialSelectedUser)
-                console.log('selectedUser: ' + selectedUser)
-                setLoading(false);
             })
             .catch((errors) => {
                 console.log(errors)
-                setLoading(false);
             });
 
     };
@@ -73,10 +61,9 @@ const ChatBox = () => {
         // Start the connection
         connection.start().catch((err) => console.error(err));
 
-        loadMoreData();
+        loadData();
         connection.on("ReceiveMessage", (response) => {
             setMessages((prev) => [...prev, response])
-            scrollToBottom();
         });
 
         return () => {
@@ -169,8 +156,8 @@ const ChatBox = () => {
 
                     <InfiniteScroll
                         dataLength={data.length}
-                        next={loadMoreData}
-                        hasMore={data.length < 50}
+                        // next={loadMoreData}
+                        // hasMore={data.length < 50}
                         // loader={
                         //     <Skeleton
                         //         avatar
@@ -180,7 +167,6 @@ const ChatBox = () => {
                         //         active
                         //     />
                         // }
-                        endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
                         scrollableTarget="scrollUserChat"
                     >
                         <List
@@ -213,7 +199,7 @@ const ChatBox = () => {
                         <InfiniteScroll
                             dataLength={messages.length}
                             // next={loadMoreData}
-                            hasMore={data.length < 50}
+                            // hasMore={data.length < 50}
                             // loader={
                             //     <Skeleton
                             //         avatar

@@ -2,8 +2,8 @@ import { apiGet, apiPost } from '../defaultApi';
 // import { apiGetAuth, apiPostAuth} from '../defaultApi';
 
 
-export const getSenderConversations = (userId, page, limit) => {
-    return apiGet(`api/Chats/getSenders?userId=${userId}&page=${page}&limit=${limit}`);
+export const getSenderConversations = (userId) => {
+    return apiGet(`api/Chats/getSenders?userId=${userId}`);
 };
 
 export const getListMessage = (conversationId) => {
