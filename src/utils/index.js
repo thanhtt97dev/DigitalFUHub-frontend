@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie';
 import { format, register } from 'timeago.js';
 import jwtDecode from 'jwt-decode'
+import CryptoJS from 'crypto-js';
 
 //API
 
@@ -120,6 +121,10 @@ export const decodeGoogleCredential = (credential) => {
     return jwtDecode(credential);
 }
 
+export function encryptPassword(password) {
+    var hash = CryptoJS.SHA256(password);
+    return hash.toString(CryptoJS.enc.Hex)
+}
 
 export function ParseDateTime(inputDate) {
     const date = new Date(inputDate);
@@ -134,3 +139,8 @@ export function ParseDateTime(inputDate) {
     const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     return formattedDate;
 }
+
+export function regexPattern(value, pattern) {
+    return value.match(pattern);
+}
+

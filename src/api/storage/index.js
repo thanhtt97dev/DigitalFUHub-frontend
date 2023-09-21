@@ -1,9 +1,9 @@
 import { apiGetFile, apiPostForm } from '../defaultApi';
 
-export const dowloadFile = (url) => {
-    return apiGetFile(url);
+export const dowloadFile = (file) => {
+    return apiGetFile(`api/Storages/GetFile/${file}`);
 };
 
-export const uploadFile = (url, data) => {
-    return apiPostForm(url, data);
+export const uploadFile = (data) => {
+    return apiPostForm('api/Storages/Upload', data);
 }

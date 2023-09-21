@@ -4,7 +4,9 @@ export const login = (data, google = false) => {
     const url = google ? 'api/users/SignInhGoogle' : 'api/users/signIn'
     return apiPost(url, data);
 };
-
+export const signUp = (data) => {
+    return apiPost('api/users/SignUp', data);
+};
 export const generateAccessToken = (id, data) => {
     return apiPost(`api/users/GenerateAccessToken/${id}`, data);
 }
@@ -38,6 +40,12 @@ export const getUserByIdForAuth = (id) => {
 
 export const getUserById = (id) => {
     return apiGetAuth(`api/users/GetUserById/${id}`);
+};
+export const checkExistEmail = (email) => {
+    return apiGetAuth(`api/users/CheckExistEmail/${email}`);
+};
+export const checkExistUsername = (username) => {
+    return apiGetAuth(`api/users/CheckExistUsername/${username}`);
 };
 
 export const editUserInfo = (id, data) => {

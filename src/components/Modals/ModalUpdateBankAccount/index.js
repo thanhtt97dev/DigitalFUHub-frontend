@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Divider, notification, Modal, Button, Input, Select, Form, Space } from "antd";
 import { ExclamationCircleFilled, RedoOutlined } from "@ant-design/icons";
 
-import { BANKS_INFO, RESPONSE_CODE_NOT_ALLOW, RESPONSE_CODE_SUCCESS } from "~/constants";
-import { inquiryAccountName, updateBankAccount, testConnect } from '~/api/bank'
+import { BANKS_INFO, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { inquiryAccountName, updateBankAccount } from '~/api/bank'
 
 import classNames from 'classnames/bind';
 import styles from './ModalUpdateBankAccount.module.scss';
@@ -81,19 +81,21 @@ function ModalUpdateBankAccount({ userId }) {
         const data = { bankId: values.bankId, creditAccount: values.creditAccount }
         inquiryAccountName(data)
             .then((res) => {
-                setBankAccountName(res.data)
-                setBankAccoutRequest({
-                    userId: userId,
-                    bankId: values.bankId,
-                    creditAccount: values.creditAccount
-                })
-                setDisableInput(true)
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setBankAccoutRequest({
+                        userId: userId,
+                        bankId: values.bankId,
+                        creditAccount: values.creditAccount
+                    })
+                    setBankAccountName(res.data.result)
+                    setDisableInput(true)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
+                    openNotification("error", "Tài khoản ngân hàng không tồn tại!")
+                } else {
+                    openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
+                }
             })
             .catch((err) => {
-                if (err.response.status === 409) {
-                    openNotification("error", "Tài khoản ngân hàng không tồn tại!")
-                    return;
-                }
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
@@ -117,10 +119,11 @@ function ModalUpdateBankAccount({ userId }) {
                     setOpenModal(false)
                     openNotification("success", "Thay đổi tài khoản ngân hàng thành công!")
                     window.location.reload();
-                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ALLOW) {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
                     openNotification("error", "Mỗi lần thay đổi bạn cần chờ 15 ngày mới có thể thay đổi tài khoản khác!")
+                } else {
+                    openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
                 }
-
             })
             .catch(() => {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
