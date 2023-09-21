@@ -4,7 +4,7 @@ import { Button, Divider, notification, Modal, Input, Space, Card, Typography, C
 
 import { getUserById } from "~/api/user";
 import { getUserId } from '~/utils';
-import { ExclamationCircleFilled } from "@ant-design/icons";
+import { ExclamationCircleFilled, GooglePlusOutlined, FacebookOutlined } from "@ant-design/icons";
 
 import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user'
 import ModalSend2FaQrCode from "~/components/Modals/ModalSend2FaQrCode";
@@ -180,14 +180,21 @@ function Security() {
             <Card
                 style={{
                     width: '100%',
+                    marginBottom: 15
                 }}
             >
                 <Row className={cx('space-bottom-row')}>
-                    <Col><Title level={5}>Liên kết Google:</Title></Col>
+                    <Col><Title level={5}><GooglePlusOutlined />&nbsp;&nbsp;Liên kết Google:</Title></Col>
                     <Col><Text className={cx('ml-30')}>{userInfo.email}</Text></Col>
                 </Row>
+            </Card>
+            <Card
+                style={{
+                    width: '100%',
+                }}
+            >
                 <Row className={cx('space-bottom-row')}>
-                    <Col><Title level={5}>Liên kết Facebook:</Title></Col>
+                    <Col><Title level={5}><FacebookOutlined />&nbsp;&nbsp;Liên kết Facebook:</Title></Col>
                     <Col><Button type="primary" disabled className={cx('style-button')}>Liên kết</Button></Col>
                 </Row>
             </Card>
