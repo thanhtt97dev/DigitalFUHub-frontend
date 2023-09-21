@@ -90,8 +90,11 @@ function ModalAddBankAccount({ userId }) {
                     })
                     setBankAccountName(res.data.result)
                     setDisableInput(true)
-                } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
-                    openNotification("error", "Bạn đã liên kết bằng 1 tài khoản ngân hàng!")
+                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
+                    openNotification("error", "Bạn đã liên kết với 1 tài khoản ngân hàng khác!")
+                }
+                else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
+                    openNotification("error", "Tài khoản ngân hàng không đúng!")
                 }
                 else {
                     openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")

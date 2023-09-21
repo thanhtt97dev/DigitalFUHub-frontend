@@ -97,4 +97,4 @@ export const BANKS_INFO = [
 export const RESPONSE_CODE_SUCCESS = "00"
 export const RESPONSE_CODE_NOT_ACCEPT = "01"
 export const RESPONSE_CODE_DATA_NOT_FOUND = "02"
-export const RESPONSE_CODE_DATA_FAILD = "03"
+export const RESPONSE_CODE_FAILD = "03"
