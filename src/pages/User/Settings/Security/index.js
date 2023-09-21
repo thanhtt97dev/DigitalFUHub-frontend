@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Button, Divider, notification, Modal, Input, Space } from "antd";
+import { Button, Divider, notification, Modal, Input, Space, Card, Typography, Col, Row } from "antd";
 
 import { getUserById } from "~/api/user";
 import { getUserId } from '~/utils';
-import { CheckCircleFilled, CloseCircleFilled, ExclamationCircleFilled } from "@ant-design/icons";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 
 import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user'
 import ModalSend2FaQrCode from "~/components/Modals/ModalSend2FaQrCode";
@@ -13,6 +13,7 @@ import classNames from 'classnames/bind';
 import styles from './Security.module.scss';
 
 const cx = classNames.bind(styles)
+const { Title, Text } = Typography;
 
 function Security() {
 
@@ -34,12 +35,19 @@ function Security() {
     const [code2FA, setCode2FA] = useState("");
     const [mesage2FA, setmesage2FA] = useState("");
 
+    const [tabKey, setTabKey] = useState('tab1');
+
+    const handleTabChange = (key) => {
+        setTabKey(key);
+    };
+
     const openNotification = (type, message) => {
         api[type]({
             message: `Thông báo`,
             description: `${message}`
         });
     };
+
 
     useEffect(() => {
         if (userId === null) {
@@ -152,65 +160,106 @@ function Security() {
         setmesage2FA("");
     }
 
+
+
+    const tabList = [
+        {
+            key: 'tab1',
+            tab: 'Liên kết tài khoản',
+        },
+        {
+            key: 'tab2',
+            tab: 'Bảo mật hai lớp',
+        },
+    ];
+
+
+
+    const contentList = {
+        tab1: (<div className="accountLogin">
+            <Card
+                style={{
+                    width: '100%',
+                }}
+            >
+                <Row className={cx('space-bottom-row')}>
+                    <Col><Title level={5}>Liên kết Google:</Title></Col>
+                    <Col><Text className={cx('ml-30')}>{userInfo.email}</Text></Col>
+                </Row>
+                <Row className={cx('space-bottom-row')}>
+                    <Col><Title level={5}>Liên kết Facebook:</Title></Col>
+                    <Col><Button type="primary" disabled className={cx('style-button')}>Liên kết</Button></Col>
+                </Row>
+            </Card>
+
+        </div>),
+        tab2: (<div className="twoFactorAuthentication">
+            <Card
+                style={{
+                    width: '100%',
+                }}
+            >
+                <Row style={{ marginBottom: '5vh' }}>
+                    <Col><Title level={5}>Kích hoạt bảo mât hai lớp:</Title></Col>
+                    <Col>
+                        {user2FaStatus ?
+                            <div>
+                                <Space>
+                                    <Button
+                                        type="primary"
+                                        onClick={handleDeactivate2FA}
+                                        style={{ background: "#c00" }}
+                                        className={cx('style-button')}
+                                    >
+                                        Tắt bảo mật hai lớp
+                                    </Button>
+                                    <ModalSend2FaQrCode userId={userId} />
+                                </Space>
+                            </div>
+                            :
+                            <div>
+                                <Button
+                                    type="primary"
+                                    onClick={handleActivate2FA}
+                                    style={{ background: "#28a745" }}
+                                    loading={loading}
+                                    className={cx('style-button')}
+                                >
+                                    Kích hoạt
+                                </Button>
+                            </div>
+                        }
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <p>
+                            <li><Text strong italic>Bật bảo mật hai lớp bằng code 2FA cho tài khoản của bạn</Text>.</li>
+                            <li><Text strong italic>Mỗi khi đăng nhập hệ thống sẽ yêu cầu 1 mã 6 số được tạo từ chuỗi 2FA. Đề phòng trường hợp bạn bị lộ tài khoản và mật khẩu.</Text></li>
+                        </p>
+                    </Col>
+
+                </Row>
+
+            </Card>
+
+
+        </div>),
+    };
+
     return (
         <>
             {contextHolder}
-
-            <div className="accountLogin">
-                <h2>Liên kết tài khoản đăng nhập</h2>
-                <Divider />
-                <h4 className={cx('mb-5')}>Liên kết Google</h4>
-                <p className={cx('ml-30')}>{userInfo.email}</p>
-                <h4 className={cx('mt-5')}>Liên kết Facebook</h4>
-                <p className={cx('ml-30')}>Chưa liên kết tài khoản Facebook <Button type="primary" disabled>Liên kết</Button></p>
-
-            </div>
-
-            <div className="twoFactorAuthentication" style={{ marginTop: 40 }}>
-                <h2>Bật bảo mật hai lớp</h2>
-                <Divider />
-
-                {user2FaStatus ?
-                    <div className={cx('ml-30')}>
-                        <div>
-                            <CheckCircleFilled style={{ color: "green" }} />
-                            <span> Đã kích hoạt</span>
-                        </div>
-                        <br />
-                        <Space>
-                            <Button
-                                type="primary"
-                                onClick={handleDeactivate2FA}
-                                style={{ background: "#c00" }}
-                            >
-                                Tắt bảo mật hai lớp
-                            </Button>
-                            <ModalSend2FaQrCode userId={userId} />
-                        </Space>
-                    </div>
-                    :
-                    <div className={cx('ml-30')}>
-                        <div>
-                            <CloseCircleFilled className={cx('text-message-err')} />
-                            <span> Chưa kích hoạt</span>
-                        </div>
-                        <br />
-                        <Button
-                            type="primary"
-                            onClick={handleActivate2FA}
-                            style={{ background: "#28a745" }}
-                            loading={loading}
-                        >
-                            Kích hoạt
-                        </Button>
-                        <p>
-                            <li><i>Bật bảo mật hai lớp bằng code 2FA cho tài khoản của bạn</i>.</li>
-                            <li><i>Mỗi khi đăng nhập hệ thống sẽ yêu cầu 1 mã 6 số được tạo từ chuỗi 2FA. Đề phòng trường hợp bạn bị lộ tài khoản và mật khẩu.</i></li>
-                        </p>
-                    </div>
-                }
-            </div>
-
+            <Card
+                style={{
+                    width: '100%',
+                }}
+                tabList={tabList}
+                activeTabKey={tabKey}
+                onTabChange={handleTabChange}
+            >
+                {contentList[tabKey]}
+            </Card>
 
             <Modal
                 title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Bảo mật hai lớp</>}
