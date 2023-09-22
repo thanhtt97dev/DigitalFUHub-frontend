@@ -308,15 +308,6 @@ const ChatBox = () => {
         setNewMessage(value)
     }
 
-    // const onFinish = (values) => {
-    //     var bodyFormData = new FormData();
-    //     bodyFormData.append('isPublic', values.visible);
-    //     bodyFormData.append('userId', 1);
-    //     bodyFormData.append('fileUpload', values.upload[0].originFileObj);
-    //     uploadFile('api/Files/Upload', bodyFormData)
-    //         .then((res) => { openNotificationWithIcon('success') })
-    //         .catch((err) => { openNotificationWithIcon('error') });
-    // };
 
     useEffect(() => {
         if (selectedUser.userId === 0) return;
