@@ -98,3 +98,9 @@ export const RESPONSE_CODE_SUCCESS = "00"
 export const RESPONSE_CODE_NOT_ACCEPT = "01"
 export const RESPONSE_CODE_DATA_NOT_FOUND = "02"
 export const RESPONSE_CODE_FAILD = "03"
+
+//signal r
+
+export const SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE = "ReceiveMessage";
+export const SIGNAL_R_CHAT_HUB_RECEIVE_NOTIFICATION = "ReceiveNotification";
+export const SIGNAL_R_CHAT_HUB_RECEIVE_ALL_NOTIFICATION = "ReceiveAllNotification";
