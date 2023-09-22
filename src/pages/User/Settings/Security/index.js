@@ -182,6 +182,8 @@ function Security() {
                     width: '100%',
                     marginBottom: 15
                 }}
+                hoverable
+
             >
                 <Row className={cx('space-bottom-row')}>
                     <Col><Title level={5}><GooglePlusOutlined />&nbsp;&nbsp;Liên kết Google:</Title></Col>
@@ -192,6 +194,7 @@ function Security() {
                 style={{
                     width: '100%',
                 }}
+                hoverable
             >
                 <Row className={cx('space-bottom-row')}>
                     <Col><Title level={5}><FacebookOutlined />&nbsp;&nbsp;Liên kết Facebook:</Title></Col>
@@ -205,6 +208,7 @@ function Security() {
                 style={{
                     width: '100%',
                 }}
+                hoverable
             >
                 <Row style={{ marginBottom: '5vh' }}>
                     <Col><Title level={5}>Kích hoạt bảo mât hai lớp:</Title></Col>
@@ -264,6 +268,8 @@ function Security() {
                 tabList={tabList}
                 activeTabKey={tabKey}
                 onTabChange={handleTabChange}
+                type="inner"
+
             >
                 {contentList[tabKey]}
             </Card>

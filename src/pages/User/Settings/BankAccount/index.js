@@ -61,6 +61,8 @@ function BankAccount() {
                         width: '100%',
                         height: "60vh"
                     }}
+                    type="inner"
+
                 >
                     {getUserBankInfoSuccess ?
                         <>
