@@ -24,6 +24,8 @@ import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss'
 import moment from 'moment'
 
+import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE } from '~/constants';
+
 const cx = classNames.bind(styles);
 const { Meta } = Card;
 const { Text } = Typography;
@@ -349,7 +351,7 @@ const ChatBox = () => {
         connection.start().catch((err) => console.error(err));
 
         loadUsersChatMessage();
-        connection.on("ReceiveMessage", (response) => {
+        connection.on(SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, (response) => {
             setMessages((prev) => [...prev, response])
         });
 

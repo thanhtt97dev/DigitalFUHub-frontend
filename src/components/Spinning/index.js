@@ -1,26 +1,12 @@
 import React from "react";
 import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
 
 
-import classNames from 'classnames/bind';
-import styles from './Spinning.module.scss';
-const cx = classNames.bind(styles)
-
-const antIcon = (
-    <LoadingOutlined
-        style={{
-            fontSize: 30,
-        }}
-        spin
-    />
-);
-
-function Spinning() {
+function Spinning(props) {
     return (
-        <div className={cx("spinning-page")}>
-            <Spin indicator={antIcon} className={cx("spin")} />
-        </div>
+        <Spin style={{ top: "20%" }} tip="... Đang tải" size="large" spinning={props.spinning}>
+            {props.children}
+        </Spin>
     );
 }
 
