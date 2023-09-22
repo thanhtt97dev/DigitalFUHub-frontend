@@ -144,9 +144,13 @@ const InputMessageChat = ({ form,
     normFile,
     uploadButton,
     newMessage,
-    handleChangeNewMessage,
-    stateUploadFile,
-    handleClickUpfile }) => {
+    handleChangeNewMessage }) => {
+
+    const [isUploadFile, setIsUploadFile] = useState(false)
+
+    const handleOpenUploadFile = () => {
+        setIsUploadFile(!isUploadFile)
+    }
 
     return (
         <div className={cx('input-message-chat')}>
@@ -156,10 +160,10 @@ const InputMessageChat = ({ form,
                 onFinish={onFinish}
             >
                 {
-                    stateUploadFile ? (
+                    isUploadFile ? (
                         <Row>
                             <Col span={24}>
-                                <Form.Item name="upload" valuePropName="fileList" getValueFromEvent={normFile}>
+                                <Form.Item name="fileUpload" valuePropName="fileList" getValueFromEvent={normFile}>
                                     <Upload
                                         listType="picture-card"
                                     >
@@ -171,24 +175,22 @@ const InputMessageChat = ({ form,
                     ) : (<></>)}
                 <Row>
                     <Col span={2}>
-                        <Button style={{ marginLeft: 15 }} type="primary" shape="circle" icon={<FileImageOutlined />} size={30} onClick={handleClickUpfile} />
+                        <Button style={{ marginLeft: 15 }} type="primary" shape="circle" icon={<FileImageOutlined />} size={30} onClick={handleOpenUploadFile} />
                     </Col>
                     <Col span={22}>
-                        <Form.Item>
-                            <Input
-                                placeholder="Type a message..."
-                                value={newMessage}
-                                onChange={handleChangeNewMessage}
-                                onPressEnter={onFinish}
-                                suffix={
-                                    <Button
-                                        type="primary"
-                                        icon={<SendOutlined />}
-                                        htmlType="submit"
-                                    />
-                                }
-                            />
-                        </Form.Item>
+                        <Input
+                            placeholder="Type a message..."
+                            value={newMessage}
+                            onChange={handleChangeNewMessage}
+                            onPressEnter={onFinish}
+                            suffix={
+                                <Button
+                                    type="primary"
+                                    icon={<SendOutlined />}
+                                    htmlType="submit"
+                                />
+                            }
+                        />
                     </Col>
                 </Row>
             </Form>
@@ -206,9 +208,8 @@ const LayoutMessageChat = (props) => {
         normFile,
         uploadButton,
         newMessage,
-        handleChangeNewMessage,
-        stateUploadFile,
-        handleClickUpfile } = props.propsMessageChat
+        handleChangeNewMessage
+    } = props.propsMessageChat
 
     return (
         <Layout className={cx('layout-chat-message')}>
@@ -222,9 +223,7 @@ const LayoutMessageChat = (props) => {
                 normFile={normFile}
                 uploadButton={uploadButton}
                 newMessage={newMessage}
-                handleChangeNewMessage={handleChangeNewMessage}
-                stateUploadFile={stateUploadFile}
-                handleClickUpfile={handleClickUpfile} />
+                handleChangeNewMessage={handleChangeNewMessage} />
         </Layout>
     )
 }
@@ -244,7 +243,6 @@ const ChatBox = () => {
     const [newMessage, setNewMessage] = useState('');
     const [userChats, setuserChats] = useState([]);
     const [selectedUser, setSelectedUser] = useState(initialSelectedUser);
-    const [stateUploadFile, setStateUploadFile] = useState(false)
     const [form] = Form.useForm();
     const messagesEndRef = useRef(null);
 
@@ -267,16 +265,20 @@ const ChatBox = () => {
 
     const onFinish = (values) => {
         if (user === null || user === undefined) return;
-        // if (newMessage.length === 0) return;
+        const { fileUpload } = values
+        if ((newMessage === undefined || newMessage.length === 0) && fileUpload === undefined) return;
 
-        const request = {
-            conversationId: selectedUser.conversationId,
-            senderId: user.id,
-            recipientId: selectedUser.userId,
-            content: newMessage,
-            dateCreate: new Date(),
-            isImage: false
+        var bodyFormData = new FormData();
+        bodyFormData.append('conversationId', selectedUser.conversationI);
+        bodyFormData.append('senderId', user.id);
+        bodyFormData.append('recipientId', selectedUser.userId);
+        bodyFormData.append('content', newMessage);
+        bodyFormData.append('isImage', false);
+        for (var i = 0; i < fileUpload.length; i++) {
+            bodyFormData.append('fileUpload', fileUpload[i].originFileObj);
         }
+        bodyFormData.append('dateCreate', new Date());
+
         const messageState = {
             userId: user.id,
             conversationId: selectedUser.conversationId,
@@ -284,11 +286,9 @@ const ChatBox = () => {
             dateCreate: new Date()
         }
         setMessages([...messages, messageState])
-        sendMessage(request)
+        sendMessage(bodyFormData)
             .then(response => {
-                // Tin nhắn đã được gửi thành công đến API và xử lý ở đó.
                 setNewMessage('');
-
             })
             .catch(error => {
                 console.error(error);
@@ -304,10 +304,6 @@ const ChatBox = () => {
     const handleChangeNewMessage = (e) => {
         const { value } = e.target
         setNewMessage(value)
-    }
-
-    const handleClickUpfile = () => {
-        setStateUploadFile(!stateUploadFile)
     }
 
     // const onFinish = (values) => {
@@ -373,9 +369,7 @@ const ChatBox = () => {
         uploadButton: uploadButton,
         newMessage: newMessage,
         handleChangeNewMessage: handleChangeNewMessage,
-        normFile: normFile,
-        stateUploadFile: stateUploadFile,
-        handleClickUpfile: handleClickUpfile
+        normFile: normFile
     }
 
     return (
