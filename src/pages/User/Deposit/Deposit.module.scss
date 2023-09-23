@@ -1,0 +1,101 @@
+.deposit-container-1 {
+  background-color: #434654; 
+  color: white; 
+  display: flex; 
+  flex-direction: row; 
+}
+
+.deposit-container-2 {
+  background-color: #434654; 
+  color: white; 
+  display: flex; 
+  flex-direction: column; 
+}
+
+.part {
+  padding: 20px;
+  background-color: #434654; 
+}
+
+.qr-code img {
+  display: block;
+  margin: 0 auto;
+  width: 200px;
+  height: 200px;
+  border-radius: 10%;
+}
+
+.instruction {
+  background-color: #434654; 
+  color: white; 
+  padding: 20px; 
+  display: flex;
+}
+
+.instruction h3 {
+  color: white; 
+}
+
+.code {
+  color: #F28817;
+}
+
+.info {
+    padding-top: 20px;
+  max-width: 70%;
+}
+
+.qr-code-guide li {
+  margin: 0 0 5px 0;
+  list-style-type: none;
+  font-size: 120%;
+}
+
+.section-title {
+  font-size: 200%;
+}
+
+.note li {
+  margin: 0 0 5px 40px;
+  font-size: 120%;
+}
+
+.note-adj {
+  padding: 20px;
+}
+
+.note-adj h3 {
+  margin: 0 0 5px 0;
+  font-size: 120%;
+  color: red;
+}
+
+.note-adj p {
+  margin: 0 0 5px 0;
+  font-size: 120%;
+}
+
+.grid-container {
+    list-style-type: none;
+    gap: 20px;
+    display: grid;
+    grid-template-columns: auto auto;
+    background-color: #434654;
+    padding: 10px;
+}
+
+.grid-item {
+    color: white;
+    background-color: #202425;
+    font-size: 20px;
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    line-height: 1.6;
+}
+
+.head-grid{
+    font-size: 20px;
+}
+

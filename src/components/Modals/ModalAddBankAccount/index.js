@@ -91,7 +91,7 @@ function ModalAddBankAccount({ userId }) {
                     setBankAccountName(res.data.result)
                     setDisableInput(true)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
-                    openNotification("error", "Bạn đã liên kết bằng 1 tài khoản ngân hàng!")
+                    openNotification("error", "Tài khoản ngân hàng không tồn tại!")
                 }
                 else {
                     openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
@@ -122,7 +122,7 @@ function ModalAddBankAccount({ userId }) {
                     openNotification("success", "Thay đổi tài khoản ngân hàng thành công!")
                     window.location.reload();
                 } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
-                    openNotification("error", "Mỗi lần thay đổi bạn cần chờ 15 ngày mới có thể thay đổi tài khoản khác!")
+                    openNotification("error", "Bạn đã đăng ký 1 tài khoản ngân hàng khác!")
                 } else {
                     openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
                 }

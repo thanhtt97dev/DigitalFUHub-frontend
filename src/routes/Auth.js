@@ -1,11 +1,11 @@
 import { useLayoutEffect, useEffect, useState } from 'react';
-import { Spin } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons'
 import { useSignIn } from 'react-auth-kit';
 
 import { getUserId, getTokenInCookies, removeUserInfoInCookie } from '~/utils';
 import { getUserByIdForAuth } from '~/api/user';
 import { ADMIN_ROLE, NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
+
+import Spinning from "~/components/Spinning"
 
 function Auth(props) {
     const signIn = useSignIn();
@@ -14,8 +14,6 @@ function Auth(props) {
     const userId = getUserId();
 
     const [loading, setLoading] = useState(false);
-
-    const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
     //check user was logined
     useLayoutEffect(() => {
@@ -74,9 +72,10 @@ function Auth(props) {
 
     return (
         <>
-            <Spin tip="Loading" size="large" indicator={loadingIcon} spinning={loading}>
+            <Spinning spinning={loading}>
                 {props.children}
-            </Spin>
+            </Spinning>
+
         </>
     )
 }

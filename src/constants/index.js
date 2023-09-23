@@ -97,7 +97,10 @@ export const BANKS_INFO = [
 export const RESPONSE_CODE_SUCCESS = "00"
 export const RESPONSE_CODE_NOT_ACCEPT = "01"
 export const RESPONSE_CODE_DATA_NOT_FOUND = "02"
-export const RESPONSE_CODE_DATA_FAILD = "03"
-export const RESPONSE_CODE_CANT_CREATE = "04"
-export const RESPONSE_CODE_CANT_UPDATE = "05"
-export const RESPONSE_CODE_CANT_DELETE = "06"
+export const RESPONSE_CODE_FAILD = "03"
+
+//signal r
+
+export const SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE = "ReceiveMessage";
+export const SIGNAL_R_NOTIFICATION_HUB_RECEIVE_NOTIFICATION = "ReceiveNotification";
+export const SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION = "ReceiveAllNotification";

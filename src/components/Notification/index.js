@@ -4,6 +4,7 @@ import { BellFilled } from '@ant-design/icons';
 import { Badge, notification, Drawer, Empty, Alert } from 'antd';
 import { formatTimeAgoVN } from '~/utils';
 import connectionHub from '~/api/signalr/connectionHub';
+import { SIGNAL_R_NOTIFICATION_HUB_RECEIVE_NOTIFICATION, SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION } from '~/constants';
 
 function Notification() {
     const auth = useAuthUser();
@@ -30,13 +31,13 @@ function Notification() {
         connection.start().catch((err) => console.error(err));
 
         // Receive all notification from the server
-        connection.on('ReceiveAllNotification', (res) => {
+        connection.on(SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION, (res) => {
             const notifi = JSON.parse(res);
             setNotifications((prev) => [...notifi, ...prev]);
         });
 
         // Receive notifications from the server
-        connection.on('ReceiveNotification', (res) => {
+        connection.on(SIGNAL_R_NOTIFICATION_HUB_RECEIVE_NOTIFICATION, (res) => {
             const notifi = JSON.parse(res);
             openNotificationWithIcon('info', notifi);
             setNotifications((prev) => [notifi, ...prev]);
