@@ -102,5 +102,5 @@ export const RESPONSE_CODE_FAILD = "03"
 //signal r
 
 export const SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE = "ReceiveMessage";
-export const SIGNAL_R_CHAT_HUB_RECEIVE_NOTIFICATION = "ReceiveNotification";
-export const SIGNAL_R_CHAT_HUB_RECEIVE_ALL_NOTIFICATION = "ReceiveAllNotification";
+export const SIGNAL_R_NOTIFICATION_HUB_RECEIVE_NOTIFICATION = "ReceiveNotification";
+export const SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION = "ReceiveAllNotification";
