@@ -1,4 +1,4 @@
-import { apiGetAuth, apiPost, apiPostAuth, apiPut } from '../defaultApi';
+import { apiGet, apiGetAuth, apiPost, apiPostAuth, apiPut } from '../defaultApi';
 
 export const login = (data, google = false) => {
     const url = google ? 'api/users/SignInhGoogle' : 'api/users/signIn'
@@ -70,4 +70,11 @@ export const send2FaQrCode = (id) => {
 
 export const getCustomerBalance = (id) => {
     return apiGetAuth(`api/users/GetCustomerBalance/${id}`);
+};
+
+export const confirmEmail = (token) => {
+    return apiGet(`api/users/ConfirmEmail/${token}`);
+};
+export const generateTokenConfirmEmail = (email) => {
+    return apiGet(`api/users/GenerateTokenConfirmEmail/${email}`);
 };

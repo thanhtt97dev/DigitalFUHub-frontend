@@ -1,6 +1,7 @@
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import {
+    Alert,
     Button,
     Form,
     Input,
@@ -50,7 +51,7 @@ const tailFormItemLayout = {
         },
         sm: {
             span: 16,
-            offset: 8,
+            offset: 6, //8
         },
     },
 };
@@ -134,7 +135,8 @@ const validatorFields = {
 function SignUp() {
     const [form] = Form.useForm();
     const [disabled, setDisabled] = useState(false);
-    const navigate = useNavigate();
+    const [message, setMessage] = useState('');
+    // const navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
     const onFinish = (values) => {
         setDisabled(true);
@@ -147,8 +149,10 @@ function SignUp() {
         }
         signUp(dataBody)
             .then(res => {
+                form.resetFields();
                 setDisabled(false);
-                return navigate('/confirmEmail')
+                setMessage(`Vui lòng đi đến ${dataBody.email} để xác thực tài khoản.`);
+                // return navigate('/confirmEmail')
             })
             .catch(err => {
                 setDisabled(false);
@@ -164,24 +168,27 @@ function SignUp() {
     };
 
     return (
-        <>
+        <div style={{
+            width: '800px',
+            margin: '100px auto'
+        }}>
             {contextHolder}
             <Form
                 {...formItemLayout}
                 form={form}
-                labelCol={{
-                    span: 4,
-                }}
-                wrapperCol={{
-                    span: 14,
-                }}
-                layout="horizontal"
+                // labelCol={{
+                //     span: 4,
+                // }}
+                // wrapperCol={{
+                //     span: 14,
+                // }}
+                layout="vertical"
                 onFinish={onFinish}
                 style={{
                     maxWidth: 900,
                 }}
             >
-
+                {message && <Alert message={message} type="success" />}
                 <Form.Item label="Họ tên" name='fullname'
                     rules={[{
                         required: true,
@@ -257,7 +264,7 @@ function SignUp() {
 
                 </Form.Item>
             </Form >
-        </>
+        </div>
     );
 };
 export default SignUp;
