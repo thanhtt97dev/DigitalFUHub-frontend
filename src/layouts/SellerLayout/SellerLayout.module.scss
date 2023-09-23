@@ -1,0 +1,30 @@
+.container {
+    min-height: 100vh;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    background: #956ad6 !important;
+}
+
+.sidebar {
+    position: sticky !important;
+    // background: #956ad6 !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+}
+
+.footer {
+    text-align: center;
+    background: #956ad6;
+    margin: 16px 0 0 0;
+}
+.demo-logo-vertical {
+    height: 32px;
+    margin: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+}

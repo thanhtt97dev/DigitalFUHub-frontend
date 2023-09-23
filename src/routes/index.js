@@ -97,8 +97,8 @@ const routesConfig = [
         component: <Deposit />,
     },
     {
-        title: 'Seller',
-        path: '/seller',
+        title: 'Dashboard Seller',
+        path: '/seller/dashboard',
         layout: <SellerLayout />,
         component: <></>,
     },
