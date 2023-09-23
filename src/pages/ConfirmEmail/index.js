@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button, Form, Input, message } from 'antd';
 import { confirmEmail, generateTokenConfirmEmail } from "~/api/user";
+import NotFound from "../NotFound";
 
 function ConfirmEmail() {
     const [form] = Form.useForm();
@@ -9,7 +10,9 @@ function ConfirmEmail() {
     const [searchParams, setSearchParams] = useSearchParams()
     const navigate = useNavigate();
     const timeoutId = useRef()
-
+    if (!searchParams.get("token")) {
+        return <NotFound />
+    }
     const notification = (type, message) => {
         messageApi.open({
             type: type,
@@ -17,6 +20,7 @@ function ConfirmEmail() {
             duration: 5
         });
     };
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         const tokenParam = searchParams.get("token");
         confirmEmail(tokenParam)
