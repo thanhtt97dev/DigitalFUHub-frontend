@@ -304,13 +304,15 @@ function Security() {
             <Form
                 name="basic"
                 labelCol={{
-                    span: 8,
+                    span: 5,
                 }}
                 wrapperCol={{
-                    span: 16,
+                    span: 15,
                 }}
                 style={{
-                    maxWidth: 600,
+                    maxWidth: '100vh',
+                    margin: '0 auto',
+                    marginTop: 30
                 }}
                 initialValues={{
                     remember: true,
