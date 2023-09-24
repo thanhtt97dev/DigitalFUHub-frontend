@@ -5,7 +5,8 @@ import { getUserId, getTokenInCookies, removeUserInfoInCookie } from '~/utils';
 import { getUserByIdForAuth } from '~/api/user';
 import { ADMIN_ROLE, NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 
-import Spinning from "~/components/Spinning"
+// import Spinning from "~/components/Spinning"
+// import { Spin } from 'antd';
 
 function Auth(props) {
     const signIn = useSignIn();
@@ -72,10 +73,8 @@ function Auth(props) {
 
     return (
         <>
-            <Spinning spinning={loading}>
-                {props.children}
-            </Spinning>
-
+            {/* {loading ? <Spinning spinning={loading}><div style={{ width: '100vw', height: '100vh' }}></div></Spinning> : props.children} */}
+            {props.children}
         </>
     )
 }
