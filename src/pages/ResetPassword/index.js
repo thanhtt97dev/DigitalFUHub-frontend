@@ -41,20 +41,25 @@ function ResetPassword() {
             })
     }
     return <div style={{
-        margin: '40px auto',
-        width: '1000px'
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
     }}>
         {contextHolder}
-        <Spin spinning={loading}>
-            <Form
-                layout='vertical'
-                form={form}
-                onFinish={onFinish}
-                style={{
-                    maxWidth: '400px',
-                }}
-            >
-
+        <Form
+            layout='vertical'
+            form={form}
+            onFinish={onFinish}
+            style={{
+                maxWidth: 900,
+                width: '400px',
+                marginTop: '10rem',
+                padding: '10px'
+            }}
+        >
+            <Spin spinning={loading}>
+                <h4 style={{ textAlign: 'center', fontSize: '25px' }}>Đặt Lại Mật Khẩu</h4>
                 <Form.Item label="Email" name='email'
                     rules={[{
                         type: 'email',
@@ -66,14 +71,14 @@ function ResetPassword() {
                     }
                     ]}
                 >
-                    <Input placeholder="Nhập Email" />
+                    <Input placeholder="Nhập Email" size="large" />
                 </Form.Item>
-                <Form.Item >
-                    <Button type="primary" htmlType="submit">Gửi</Button>
+                <Form.Item style={{ textAlign: 'center' }}>
+                    <Button size="large" type="primary" htmlType="submit">Gửi</Button>
                 </Form.Item>
-            </Form>
-        </Spin>
-    </div>;
+            </Spin>
+        </Form>
+    </div >;
 }
 
 export default ResetPassword;

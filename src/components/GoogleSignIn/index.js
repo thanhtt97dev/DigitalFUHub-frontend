@@ -20,6 +20,7 @@ function GoogleSignIn({ onFinish }) {
             onSuccess={handleCredentialResponse}
             onError={handleError}
             useOneTap
+            size='large'
         />
     </>;
 }

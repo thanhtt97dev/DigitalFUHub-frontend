@@ -10,7 +10,7 @@ import {
     // Upload,
     // Space
 } from 'antd';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { checkExistEmail, signUp, checkExistUsername } from '~/api/user';
 // import classNames from 'classnames/bind';
 // import styles from './SignUp.module.scss';
@@ -25,36 +25,36 @@ import { encryptPassword, regexPattern } from '~/utils';
 // };
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
-const formItemLayout = {
-    labelCol: {
-        xs: {
-            span: 24,
-        },
-        sm: {
-            span: 8,
-        }
-    },
-    wrapperCol: {
-        xs: {
-            span: 24,
-        },
-        sm: {
-            span: 16,
-        },
-    },
-};
-const tailFormItemLayout = {
-    wrapperCol: {
-        xs: {
-            span: 24,
-            offset: 0,
-        },
-        sm: {
-            span: 16,
-            offset: 6, //8
-        },
-    },
-};
+// const formItemLayout = {
+//     labelCol: {
+//         xs: {
+//             span: 24,
+//         },
+//         sm: {
+//             span: 8,
+//         }
+//     },
+//     wrapperCol: {
+//         xs: {
+//             span: 24,
+//         },
+//         sm: {
+//             span: 16,
+//         },
+//     },
+// };
+// const tailFormItemLayout = {
+//     wrapperCol: {
+//         xs: {
+//             span: 24,
+//             offset: 0,
+//         },
+//         sm: {
+//             span: 16,
+//             offset: 6, //8
+//         },
+//     },
+// };
 
 const validatorFields = {
     checkExistUsername: () => ({
@@ -134,12 +134,12 @@ const validatorFields = {
 
 function SignUp() {
     const [form] = Form.useForm();
-    const [disabled, setDisabled] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     // const navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
     const onFinish = (values) => {
-        setDisabled(true);
+        setLoading(true);
         const dataBody = {
             fullname: values.fullname,
             password: encryptPassword(values.password),
@@ -150,12 +150,12 @@ function SignUp() {
         signUp(dataBody)
             .then(res => {
                 form.resetFields();
-                setDisabled(false);
+                setLoading(false);
                 setMessage(`Vui lòng đi đến ${dataBody.email} để xác thực tài khoản.`);
                 // return navigate('/confirmEmail')
             })
             .catch(err => {
-                setDisabled(false);
+                setLoading(false);
                 openNotificationWithIcon('error');
             })
     }
@@ -169,100 +169,101 @@ function SignUp() {
 
     return (
         <div style={{
-            width: '800px',
-            margin: '100px auto'
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
         }}>
             {contextHolder}
             <Form
-                {...formItemLayout}
+                // {...formItemLayout}
                 form={form}
-                // labelCol={{
-                //     span: 4,
-                // }}
-                // wrapperCol={{
-                //     span: 14,
-                // }}
                 layout="vertical"
                 onFinish={onFinish}
                 style={{
                     maxWidth: 900,
+                    width: '500px',
+                    padding: '10px'
                 }}
             >
-                {message && <Alert message={message} type="success" />}
-                <Form.Item label="Họ tên" name='fullname'
-                    rules={[{
-                        required: true,
-                        message: 'Họ tên không được trống!'
-                    },
-                    validatorFields.checkFormatFullname(),
-                    ]}
-                >
-                    <Input placeholder='Họ tên' />
-                </Form.Item>
-                <Form.Item label="Tên tài khoản" name='username'
-                    rules={[
-                        {
+                <Spin spinning={loading} indicator={antIcon}>
+                    <h4 style={{ textAlign: 'center', fontSize: '25px' }}>Đăng Ký</h4>
+                    {message && <Alert message={message} type="success" />}
+                    <Form.Item label="Họ tên" name='fullname'
+                        rules={[{
                             required: true,
-                            message: 'Tên tài khoản không được trống!'
+                            message: 'Họ tên không được trống!'
                         },
-                        validatorFields.checkFormatUsername(),
-                        validatorFields.checkExistUsername(),
-                    ]}
-                >
-                    <Input placeholder='Tên tài khoản' />
-                </Form.Item>
-                <Form.Item label="Email"
-                    name='email'
-                    rules={[
-                        {
-                            type: 'email',
-                            message: 'Email nhập không hợp lệ!',
-                        },
-                        {
-                            required: true,
-                            message: 'Email không được để trống!',
-                        },
-                        validatorFields.checkExistEmail(),
-                    ]}
-                >
-                    <Input placeholder='Email' />
-                </Form.Item>
-                <Form.Item label="Mật khẩu"
-                    name="password"
-                    hasFeedback
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Mật khẩu không để trống!',
-                        },
-                        validatorFields.checkFormatPassword('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
-                    ]}>
-                    <Input.Password placeholder='Mật khẩu' />
-                </Form.Item>
-                <Form.Item label="Mật khẩu xác nhận"
-                    name="confirmPassword"
-                    dependencies={['password']}
-                    hasFeedback
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Mật khẩu xác nhận không để trống!',
-                        },
-                        ({ getFieldValue }) => validatorFields.checkCfPasswordMatch(getFieldValue),
-                        validatorFields.checkFormatPassword('Mật khẩu xác nhận chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
-                    ]}>
-                    <Input.Password placeholder='Mật khẩu xác nhận' />
-                </Form.Item>
+                        validatorFields.checkFormatFullname(),
+                        ]}
+                    >
+                        <Input placeholder='Họ tên' size='large' />
+                    </Form.Item>
+                    <Form.Item label="Tên tài khoản" name='username'
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Tên tài khoản không được trống!'
+                            },
+                            validatorFields.checkFormatUsername(),
+                            validatorFields.checkExistUsername(),
+                        ]}
+                    >
+                        <Input placeholder='Tên tài khoản' size='large' />
+                    </Form.Item>
+                    <Form.Item label="Email"
+                        name='email'
+                        rules={[
+                            {
+                                type: 'email',
+                                message: 'Email nhập không hợp lệ!',
+                            },
+                            {
+                                required: true,
+                                message: 'Email không được để trống!',
+                            },
+                            validatorFields.checkExistEmail(),
+                        ]}
+                    >
+                        <Input placeholder='Email' size='large' />
+                    </Form.Item>
+                    <Form.Item label="Mật khẩu"
+                        name="password"
+                        hasFeedback
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Mật khẩu không để trống!',
+                            },
+                            validatorFields.checkFormatPassword('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
+                        ]}>
+                        <Input.Password placeholder='Mật khẩu' size='large' />
+                    </Form.Item>
+                    <Form.Item label="Mật khẩu xác nhận"
+                        name="confirmPassword"
+                        dependencies={['password']}
+                        hasFeedback
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Mật khẩu xác nhận không để trống!',
+                            },
+                            ({ getFieldValue }) => validatorFields.checkCfPasswordMatch(getFieldValue),
+                            validatorFields.checkFormatPassword('Mật khẩu xác nhận chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
+                        ]}>
+                        <Input.Password placeholder='Mật khẩu xác nhận' size='large' />
+                    </Form.Item>
 
-                <Form.Item  {...tailFormItemLayout}>
-
-                    <Button style={{ position: 'relative' }} disabled={disabled} type="primary" htmlType="submit">
-                        Đăng ký
-                        {disabled && <Spin style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} indicator={antIcon} />}
-                    </Button>
-
-
-                </Form.Item>
+                    <Form.Item
+                        // {...tailFormItemLayout}
+                        style={{ textAlign: 'center' }}
+                    >
+                        <Button size='large' type="primary" htmlType="submit">
+                            Đăng ký
+                        </Button>
+                    </Form.Item>
+                </Spin>
             </Form >
         </div>
     );

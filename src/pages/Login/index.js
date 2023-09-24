@@ -1,4 +1,3 @@
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -13,7 +12,6 @@ import GoogleSignIn from '~/components/GoogleSignIn';
 // import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 //import { ADMIN_ROLE, User_ROLE } from "~/constants"
 
-const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID
 
 function Login() {
     const signIn = useSignIn();
@@ -58,7 +56,6 @@ function Login() {
                 email: values.email,
             };
         }
-        console.log(data.password)
 
         login(data, values.google)
             .then((res) => {
@@ -102,104 +99,113 @@ function Login() {
     const onFinishFailed = (errorInfo) => { };
 
     return (
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-            <Modal
-                title={
-                    <>
-                        <WarningOutlined style={{ fontSize: 30, color: "#faad14" }} />
-                        <b> Cảnh báo</b>
-                    </>}
-                open={modalOpen}
-                onOk={onModalOk}
-                onCancel={onModalCancel}
+        <Spin spinning={loading} indicator={loadingIcon}>
+            <div style={{
+                width: '100vw',
+                height: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
             >
-                <p>Bạn có chắc đăng xuất tài khoản hiện tại không?</p>
-            </Modal>
-
-            <Form
-                name="basic"
-                labelCol={{
-                    span: 8,
-                }}
-                wrapperCol={{
-                    span: 16,
-                }}
-                style={{
-                    maxWidth: 600,
-                }}
-                initialValues={{
-                    remember: true,
-                }}
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
-                autoComplete="off"
-            >
-                <Form.Item
-                    label="Tài khoản"
-                    name="username"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Tài khoản không hợp lệ!',
-                        },
-                    ]}
+                <Modal
+                    title={
+                        <>
+                            <WarningOutlined style={{ fontSize: 30, color: "#faad14" }} />
+                            <b> Cảnh báo</b>
+                        </>}
+                    open={modalOpen}
+                    onOk={onModalOk}
+                    onCancel={onModalCancel}
                 >
-                    <Input />
-                </Form.Item>
-
-                <Form.Item
-                    label="Mật khẩu"
-                    name="password"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Mật khẩu không hợp lệ!',
-                        },
-                    ]}
+                    <p>Bạn có chắc đăng xuất tài khoản hiện tại không?</p>
+                </Modal>
+                <Form
+                    layout='vertical'
+                    // labelCol={{
+                    //     span: 8,
+                    // }}
+                    // wrapperCol={{
+                    //     span: 16,
+                    // }}
+                    style={{
+                        maxWidth: 600,
+                        width: 400,
+                        padding: 10,
+                        marginTop: '-10rem'
+                    }}
+                    initialValues={{
+                        remember: true,
+                    }}
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    autoComplete="off"
                 >
-                    <Input.Password />
-                </Form.Item>
-
-                {message !== '' ? (
+                    <h4 style={{ textAlign: 'center', fontSize: '25px' }}>Đăng Nhập</h4>
                     <Form.Item
-                        wrapperCol={{
-                            offset: 8,
-                            span: 0,
-                        }}
+                        label="Tài khoản"
+                        name="username"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Tài khoản không hợp lệ!',
+                            },
+                        ]}
                     >
-                        <span style={{ color: 'red' }}>{message}</span>
+                        <Input size='large' />
                     </Form.Item>
-                ) : (
-                    ''
-                )}
 
-                <Form.Item
-                    wrapperCol={{
-                        offset: 8,
-                        span: 16,
-                    }}
-                >
-                    <Spin spinning={loading} indicator={loadingIcon} />
-                    <Space>
-                        <Button type="primary" htmlType="submit">
-                            Đăng nhập
-                        </Button>
-                        <Link to={'/signup'}>Chưa có tài khoản?</Link>
-                        <Link to={'/resetPassword'}>Quên mật khẩu?</Link>
-                    </Space>
-                </Form.Item>
-                <Form.Item
-                    wrapperCol={{
-                        offset: 8,
-                        span: 16,
-                    }}
-                >
-                    <GoogleSignIn onFinish={onFinish} />
-                </Form.Item>
-            </Form>
+                    <Form.Item
+                        label="Mật khẩu"
+                        name="password"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Mật khẩu không hợp lệ!',
+                            },
+                        ]}
+                    >
+                        <Input.Password size='large' />
+                    </Form.Item>
+
+                    {message !== '' ? (
+                        <Form.Item
+                        // wrapperCol={{
+                        //     offset: 8,
+                        //     span: 0,
+                        // }}
+                        >
+                            <span style={{ color: 'red' }}>{message}</span>
+                        </Form.Item>
+                    ) : (
+                        ''
+                    )}
 
 
-        </GoogleOAuthProvider>
+                    <Form.Item style={{ textAlign: 'center' }}
+                    // wrapperCol={{
+                    //     offset: 8,
+                    //     span: 16,
+                    // }}
+                    >
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                            <Space.Compact style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Link to={'/resetPassword'}>Quên mật khẩu?</Link>
+                                <Link to={'/signup'}>Chưa có tài khoản?</Link>
+                            </Space.Compact>
+                            <Space.Compact >
+                                <Button size='large' type="primary" htmlType="submit">
+                                    Đăng nhập
+                                </Button>
+                            </Space.Compact>
+                        </Space>
+                    </Form.Item>
+                    <Form.Item style={{ display: 'flex', justifyContent: 'center' }}>
+                        <GoogleSignIn onFinish={onFinish} />
+                    </Form.Item>
+                </Form>
+            </div>
+        </Spin >
     );
 }
 
