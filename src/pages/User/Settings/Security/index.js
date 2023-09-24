@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Button, Divider, notification, Modal, Input, Space, Card, Typography, Col, Row } from "antd";
+import { Button, Divider, notification, Modal, Input, Space, Card, Typography, Col, Row, Form } from "antd";
 
 import { getUserById } from "~/api/user";
 import { getUserId } from '~/utils';
@@ -11,6 +11,7 @@ import ModalSend2FaQrCode from "~/components/Modals/ModalSend2FaQrCode";
 
 import classNames from 'classnames/bind';
 import styles from './Security.module.scss';
+import validator from 'validator';
 
 const cx = classNames.bind(styles)
 const { Title, Text } = Typography;
@@ -21,6 +22,7 @@ function Security() {
     const [api, contextHolder] = notification.useNotification();
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [newPassword, setNewPassword] = useState('')
 
     const userId = getUserId();
     const [userInfo, setUserInfo] = useState({});
@@ -36,6 +38,8 @@ function Security() {
     const [mesage2FA, setmesage2FA] = useState("");
 
     const [tabKey, setTabKey] = useState('tab1');
+
+    const [form] = Form.useForm();
 
     const handleTabChange = (key) => {
         setTabKey(key);
@@ -171,12 +175,14 @@ function Security() {
             key: 'tab2',
             tab: 'Bảo mật hai lớp',
         },
+        {
+            key: 'tab3',
+            tab: 'Thay đổi mật khẩu',
+        },
     ];
 
-
-
-    const contentList = {
-        tab1: (<div className="accountLogin">
+    const AccountLogin = () => (
+        <div className="accountLogin">
             <Card
                 style={{
                     width: '100%',
@@ -202,8 +208,11 @@ function Security() {
                 </Row>
             </Card>
 
-        </div>),
-        tab2: (<div className="twoFactorAuthentication">
+        </div>
+    )
+
+    const TwoFactorAuthentication = () => (
+        <div className="twoFactorAuthentication">
             <Card
                 style={{
                     width: '100%',
@@ -255,7 +264,114 @@ function Security() {
             </Card>
 
 
-        </div>),
+        </div>
+    )
+
+
+    const onFinish = (values) => {
+
+        console.log('Success:', values);
+    };
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+    };
+
+    const confirmPasswordValidator = (value) => {
+        const confirmPassword = form.getFieldValue(value.field);
+
+        if (!validator.equals(newPassword, confirmPassword)) {
+            return Promise.reject('Passwords do not match');
+        } else {
+            return Promise.resolve()
+
+        }
+    }
+
+    const newPasswordValidator = (value) => {
+        const newPassword = form.getFieldValue(value.field);
+
+        if (!validator.isLength(newPassword, { min: 3 })) {
+            return Promise.reject('Password is not strong enough. At least 3 characters');
+        } else {
+            setNewPassword(newPassword);
+            return Promise.resolve();
+        }
+    }
+
+    const ChangePassword = () => (
+        <div>
+
+            <Form
+                name="basic"
+                labelCol={{
+                    span: 8,
+                }}
+                wrapperCol={{
+                    span: 16,
+                }}
+                style={{
+                    maxWidth: 600,
+                }}
+                initialValues={{
+                    remember: true,
+                }}
+                onFinish={onFinish}
+                form={form}
+                onFinishFailed={onFinishFailed}
+                autoComplete="off"
+            >
+                <Form.Item
+                    label="New Password"
+                    name="newPassword"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please input your new password!',
+                        },
+                        {
+                            validator: newPasswordValidator
+                        }
+                    ]}
+                >
+                    <Input.Password />
+                </Form.Item>
+
+                <Form.Item
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please input your confirm password!',
+                        },
+                        {
+                            validator: confirmPasswordValidator
+                        }
+                    ]}
+                >
+                    <Input.Password />
+                </Form.Item>
+                <Form.Item
+                    wrapperCol={{
+                        offset: 8,
+                        span: 16,
+                    }}
+                >
+                    <Button type="primary" htmlType="submit">
+                        Confirm
+                    </Button>
+                </Form.Item>
+            </Form>
+
+        </div>
+    )
+
+
+
+    const contentList = {
+        tab1: (<AccountLogin />),
+        tab2: (<TwoFactorAuthentication />),
+        tab3: (<ChangePassword />)
     };
 
     return (

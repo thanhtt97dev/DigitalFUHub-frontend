@@ -46,11 +46,11 @@ function SettingsLayout({ children }) {
     return (
         <>
             <Row>
+                <Button type="primary" onClick={toggleCollapsed} style={{ marginBottom: 16, marginRight: 15 }}>
+                    {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                </Button>
                 <h1>Cài đặt</h1>
             </Row>
-            <Button type="primary" onClick={toggleCollapsed} style={{ marginBottom: 16 }}>
-                {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            </Button>
             <Layout style={{ height: '100vh' }}>
                 <Sider
                     trigger={null}
