@@ -15,6 +15,7 @@ import SellerLayout from '~/layouts/SellerLayout';
 
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ConfirmEmail from '~/pages/ConfirmEmail';
+import ResetPassword from '~/pages/ResetPassword';
 
 const routesConfig = [
     {
@@ -112,6 +113,11 @@ const routesConfig = [
         title: 'Confirm Email',
         path: '/confirmEmail',
         component: <ConfirmEmail />,
+    },
+    {
+        title: 'Reset Password',
+        path: '/resetPassword',
+        component: <ResetPassword />,
     },
 ];
 export default routesConfig;

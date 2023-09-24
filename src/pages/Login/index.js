@@ -10,6 +10,7 @@ import { login } from '~/api/user';
 import { saveDataAuthToCookies, removeDataAuthInCookies, getUser, encryptPassword } from '~/utils';
 import { ADMIN_ROLE, NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 import GoogleSignIn from '~/components/GoogleSignIn';
+// import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 //import { ADMIN_ROLE, User_ROLE } from "~/constants"
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID
@@ -48,7 +49,6 @@ function Login() {
     const onFinish = (values) => {
         setLoading(true)
         setMessage('');
-
         let data = {
             username: values.username,
             password: values.password ? encryptPassword(values.password) : null,
@@ -185,6 +185,7 @@ function Login() {
                             Đăng nhập
                         </Button>
                         <Link to={'/signup'}>Chưa có tài khoản?</Link>
+                        <Link to={'/resetPassword'}>Quên mật khẩu?</Link>
                     </Space>
                 </Form.Item>
                 <Form.Item

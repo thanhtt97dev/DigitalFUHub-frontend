@@ -78,3 +78,6 @@ export const confirmEmail = (token) => {
 export const generateTokenConfirmEmail = (email) => {
     return apiGet(`api/users/GenerateTokenConfirmEmail/${email}`);
 };
+export const resetPassword = (email) => {
+    return apiGet(`api/users/ResetPassword/${email}`);
+};
