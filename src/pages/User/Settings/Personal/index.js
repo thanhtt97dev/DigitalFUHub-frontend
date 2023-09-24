@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Image, Divider, Col, Row, Form, Input, Button, Upload, notification, Card, Avatar } from 'antd';
-import { PlusOutlined, UserOutlined } from '@ant-design/icons';
+import { Col, Row, Form, Input, Button, Upload, notification, Card, Avatar } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 
 import { getUserById, editUserInfo } from "~/api/user";
 import { getUserId } from '~/utils';
@@ -24,10 +24,9 @@ function Personal() {
     const [api, contextHolder] = notification.useNotification();
     const userId = getUserId();
     const [userInfo, setUserInfo] = useState({});
-
     const [isEditingFullName, setIsEditingFullName] = useState(false);
     const [isEditingAvatar, setIsEditingAvatar] = useState(false);
-
+    let maskEmail = '';
     //const [form] = Form.useForm();
 
     const openNotificationWithIcon = (type) => {
@@ -62,6 +61,7 @@ function Personal() {
                     twoFactorAuthentication: res.data.twoFactorAuthentication,
                     status: res.data.status ? 1 : 0,
                 });
+
             })
             .catch(() => {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
@@ -101,6 +101,11 @@ function Personal() {
     //         .catch((err) => { openNotificationWithIcon('error') });
     //     setIsEditingAvatar(false);
     // };
+
+    if (userInfo.email) {
+        const [username, domain] = userInfo.email?.split('@');
+        maskEmail = `${username?.substring(0, 2)}${'*'.repeat(username?.length - 2)}@${domain}`
+    }
 
 
     return (
@@ -171,7 +176,8 @@ function Personal() {
                             <Form.Item label="Email" labelAlign="left">
                                 <Row gutter={8}>
                                     <Col span={17}>
-                                        <Input value={userInfo.email} disabled style={{ backgroundColor: "white" }} />
+                                        {/* <Input value={userInfo.email} disabled style={{ backgroundColor: "white" }} /> */}
+                                        <Input value={maskEmail} disabled style={{ backgroundColor: "white" }} />
                                     </Col>
                                 </Row>
                             </Form.Item>

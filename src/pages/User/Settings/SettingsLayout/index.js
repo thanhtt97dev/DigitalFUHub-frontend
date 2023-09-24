@@ -17,7 +17,7 @@ const { Content, Sider } = Layout;
 const items = [
     {
         icon: UserOutlined,
-        label: 'Cài đặt tài khoản',
+        label: 'Thông tin của tôi',
         link: '/settings/personal',
     },
     {
