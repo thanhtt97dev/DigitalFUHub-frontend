@@ -10,7 +10,7 @@ import {
     // Upload,
     // Space
 } from 'antd';
-// import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { checkExistEmail, signUp, checkExistUsername } from '~/api/user';
 // import classNames from 'classnames/bind';
 // import styles from './SignUp.module.scss';
@@ -193,7 +193,7 @@ function SignUp() {
                     <Form.Item label="Họ tên" name='fullname'
                         rules={[{
                             required: true,
-                            message: 'Họ tên không được trống!'
+                            message: 'Họ tên không để trống!'
                         },
                         validatorFields.checkFormatFullname(),
                         ]}
@@ -204,7 +204,7 @@ function SignUp() {
                         rules={[
                             {
                                 required: true,
-                                message: 'Tên tài khoản không được trống!'
+                                message: 'Tên tài khoản không để trống!'
                             },
                             validatorFields.checkFormatUsername(),
                             validatorFields.checkExistUsername(),
@@ -230,7 +230,7 @@ function SignUp() {
                     </Form.Item>
                     <Form.Item label="Mật khẩu"
                         name="password"
-                        hasFeedback
+                        // hasFeedback
                         rules={[
                             {
                                 required: true,
@@ -243,18 +243,20 @@ function SignUp() {
                     <Form.Item label="Mật khẩu xác nhận"
                         name="confirmPassword"
                         dependencies={['password']}
-                        hasFeedback
+                        // hasFeedback
                         rules={[
                             {
                                 required: true,
                                 message: 'Mật khẩu xác nhận không để trống!',
                             },
                             ({ getFieldValue }) => validatorFields.checkCfPasswordMatch(getFieldValue),
-                            validatorFields.checkFormatPassword('Mật khẩu xác nhận chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
+                            // validatorFields.checkFormatPassword('Mật khẩu xác nhận chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
                         ]}>
                         <Input.Password placeholder='Mật khẩu xác nhận' size='large' />
                     </Form.Item>
-
+                    <Form.Item style={{ textAlign: 'end' }}>
+                        <Link to="/login">Đã có tài khoản?</Link>
+                    </Form.Item>
                     <Form.Item
                         // {...tailFormItemLayout}
                         style={{ textAlign: 'center' }}

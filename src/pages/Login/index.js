@@ -54,6 +54,7 @@ function Login() {
         if (values.google === true) {
             data = {
                 email: values.email,
+                fullname: values.fullname
             };
         }
 
