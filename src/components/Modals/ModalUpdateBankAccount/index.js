@@ -154,11 +154,11 @@ function ModalUpdateBankAccount({ userId }) {
 
             <Button
                 type="primary"
-                className={cx("btn-change")}
+                style={{ background: "#28a745" }}
                 size="large"
                 onClick={handleOpenModalBankAccount}
             >
-                <RedoOutlined /> Thay đổi
+                <RedoOutlined /> Thay đổi tài khoản ngân hàng
             </Button>
 
             <Modal

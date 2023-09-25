@@ -56,7 +56,7 @@ function BankAccount() {
             <Spinning spinning={!getUserBankInfoSuccess}>
                 <Card
                     title="Tài khoản ngân hàng"
-                    extra={userBank !== "" ? <></> : <><ModalAddBankAccount userId={userId} /></>}
+                    extra={userBank !== "" ? <> <ModalUpdateBankAccount userId={userId} /></> : <><ModalAddBankAccount userId={userId} /></>}
                     style={{
                         width: '100%',
                         height: "60vh"
@@ -70,14 +70,6 @@ function BankAccount() {
                                 <>
                                     <div className={cx("bank-account-info")}>
                                         <UserBankAccountInfo userBank={userBank} />
-                                        <ModalUpdateBankAccount userId={userId} />
-                                    </div>
-                                    <div className={cx('warning-info')}>
-                                        <h4 className={cx('text-message-err')}>Lưu ý:</h4>
-                                        <li><i>Thực hiện thêm tài khoản ngân hàng nhằm giúp bạn có thể rút tiền từ số dư tài khoản của bạn trong </i> <span>DigitalFUHub</span>.</li>
-                                        <li><i>Vui lòng sử dụng đúng tài khoản ngân hàng của bạn</i></li>
-                                        <li><i>Bạn hãy cân nhắc nếu muốn sử dụng tài khoản ngân hàng của người khác mà không phải của bạn</i></li>
-                                        <li><i>Chúng tôi sẽ không giải quyết những tranh chấp trong tương lai nếu bạn sử dụng tài khoản ngân hàng của người khác </i></li>
                                     </div>
                                 </>
                                 :
@@ -88,17 +80,16 @@ function BankAccount() {
                                                 <Title level={4} type="danger"> Bạn chưa thêm tài khoản ngân hàng</Title>
                                             </Space>
                                         </div>
-
-                                        <div className={cx('warning-info')}>
-                                            <h4 className={cx('text-message-err')}>Lưu ý:</h4>
-                                            <li><i>Thực hiện thêm tài khoản ngân hàng nhằm giúp bạn có thể rút tiền từ số dư tài khoản của bạn trong </i> <span>DigitalFUHub</span>.</li>
-                                            <li><i>Vui lòng sử dụng đúng tài khoản ngân hàng của bạn</i></li>
-                                            <li><i>Bạn hãy cân nhắc nếu muốn sử dụng tài khoản ngân hàng của người khác mà không phải của bạn</i></li>
-                                            <li><i>Chúng tôi sẽ không giải quyết những tranh chấp trong tương lai nếu bạn sử dụng tài khoản ngân hàng của người khác </i></li>
-                                        </div>
                                     </div>
                                 </>
                             }
+                            <div className={cx('warning-info')}>
+                                <h4 className={cx('text-message-err')}>Lưu ý:</h4>
+                                <li><i>Thực hiện thêm tài khoản ngân hàng nhằm giúp bạn có thể rút tiền từ số dư tài khoản của bạn trong </i> <span>DigitalFUHub</span>.</li>
+                                <li><i>Vui lòng sử dụng đúng tài khoản ngân hàng của bạn</i></li>
+                                <li><i>Bạn hãy cân nhắc nếu muốn sử dụng tài khoản ngân hàng của người khác mà không phải của bạn</i></li>
+                                <li><i>Chúng tôi sẽ không giải quyết những tranh chấp trong tương lai nếu bạn sử dụng tài khoản ngân hàng của người khác </i></li>
+                            </div>
                         </>
                         :
                         ""
