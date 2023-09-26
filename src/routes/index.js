@@ -16,7 +16,7 @@ import SellerLayout from '~/layouts/SellerLayout';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ConfirmEmail from '~/pages/ConfirmEmail';
 import ResetPassword from '~/pages/ResetPassword';
-import AddProduct from '~/pages/Seller/AddProduct';
+import AddProduct from '~/pages/Seller/ManageProduct/AddProduct';
 import ProductDetail from '~/pages/ProductDetail';
 import Products from '~/pages/Seller/ManageProduct/Products';
 import EditProduct from '~/pages/Seller/ManageProduct/EditProduct';

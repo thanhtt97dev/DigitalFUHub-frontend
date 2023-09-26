@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { UploadOutlined, PlusOutlined, MinusCircleOutlined, StarOutlined } from '@ant-design/icons';
-import { Button, Upload, Form, Input, Modal, Space } from 'antd';
+import { Button, Upload, Form, Input, Select, Space, InputNumber } from 'antd';
 import { ReadDataFileExcelImportProduct } from '~/utils';
 
 import AddTagProduct, { UploadImagesProduct, UploadThumbnail } from '~/components/Seller/Product/Add';
@@ -203,6 +203,11 @@ function AddProduct() {
                     </Space> */}
                     <UploadImagesProduct />
                 </Form.Item>
+                <Form.Item label="Select">
+                    <Select>
+                        <Select.Option value="demo">Demo</Select.Option>
+                    </Select>
+                </Form.Item>
                 <Form.List name="types">
                     {(fields, { add, remove }) => (
                         <>
@@ -227,7 +232,19 @@ function AddProduct() {
                                             },
                                         ]}
                                     >
-                                        <Input placeholder="Loại sản phẩm" />
+                                        <Input placeholder="Tên loại sản phẩm" />
+                                    </Form.Item>
+                                    <Form.Item
+                                        {...restField}
+                                        name={[name, 'priceProd']}
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: 'Giá loại sản phẩm không để trống',
+                                            },
+                                        ]}
+                                    >
+                                        <InputNumber min={0} placeholder="Giá loại sản phẩm" />
                                     </Form.Item>
                                     <Form.Item
                                         {...restField}
@@ -250,7 +267,7 @@ function AddProduct() {
                                     {fields.length > 1 ? (
                                         <MinusCircleOutlined onClick={() => {
                                             remove(name)
-                                            // delete index file in array
+                                            // delete file in array
                                             let newDataFile = dataFile;
                                             newDataFile.splice(name, 1)
                                             setDataFile(dataFile)
