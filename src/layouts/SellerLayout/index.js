@@ -7,6 +7,7 @@ import {
     // RightOutlined,
     // LeftOutlined,
     AreaChartOutlined,
+    CodeSandboxOutlined,
     ShopOutlined
 
 } from '@ant-design/icons';
@@ -33,7 +34,7 @@ const items = [
     {
         label: 'Quản lý sản phẩm',
         key: 'Manage products',
-        icon: <SettingOutlined />,
+        icon: <CodeSandboxOutlined />,
         children: [
             {
                 key: 'all',

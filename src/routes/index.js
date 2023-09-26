@@ -16,6 +16,7 @@ import SellerLayout from '~/layouts/SellerLayout';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ConfirmEmail from '~/pages/ConfirmEmail';
 import ResetPassword from '~/pages/ResetPassword';
+import Products from '~/pages/Seller/ManageProduct/Products';
 
 const routesConfig = [
     {
@@ -115,7 +116,7 @@ const routesConfig = [
         title: 'Seller All Products',
         path: '/seller/product/list',
         layout: <SellerLayout />,
-        component: <ConfirmEmail />,
+        component: <Products />,
         role: [SELLER_ROLE],
     },
     {
