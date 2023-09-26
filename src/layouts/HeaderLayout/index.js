@@ -9,7 +9,7 @@ import { MessageOutlined } from '@ant-design/icons';
 
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
-import { ADMIN_ROLE, CUSTOMER_ROLE } from '~/constants';
+import { ADMIN_ROLE, CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ModalRequestDeposit from '../../components/Modals/ModalRequestDeposit';
 import AccountBalance from '../../components/AccountBalance';
 
@@ -24,7 +24,7 @@ const itemsFixed = [
     {
         key: 'seller',
         label: <Link to={"/seller"}>Kênh người bán</Link>,
-        role: CUSTOMER_ROLE
+        role: SELLER_ROLE
     },
     {
         key: 'logout',
@@ -48,10 +48,7 @@ function HeaderLayout() {
             itemsCanAccses = itemsFixed.filter(x => x.role === undefined);
         } else {
             if (user.roleName === CUSTOMER_ROLE) {
-                itemsCanAccses = itemsFixed.filter(x => x.role !== ADMIN_ROLE);
-            }
-            if (user.roleName === ADMIN_ROLE) {
-                itemsCanAccses = itemsFixed.filter(x => x.role !== CUSTOMER_ROLE);
+                itemsCanAccses = itemsFixed.filter(x => x.role !== SELLER_ROLE);
             }
         }
         setItems(itemsCanAccses);
