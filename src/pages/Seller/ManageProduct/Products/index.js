@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, Select, Form, Input, Table, Tag, Spin, Space, Row, Col } from 'antd';
+import { Table } from 'antd';
 import { useAuthUser } from 'react-auth-kit'
 
 import { getAllProducts } from "~/api/seller";
