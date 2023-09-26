@@ -28,6 +28,9 @@ function Home() {
             <Link to={'/upload'}>
                 <Button type="primary">Upload</Button>
             </Link>
+            <Link to={'/productDetail'}>
+                <Button type="primary">Product Detail</Button>
+            </Link>
             <ReportUserInfo />
         </>
 
