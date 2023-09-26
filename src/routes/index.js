@@ -16,6 +16,7 @@ import SellerLayout from '~/layouts/SellerLayout';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ConfirmEmail from '~/pages/ConfirmEmail';
 import ResetPassword from '~/pages/ResetPassword';
+import AddProduct from '~/pages/Seller/AddProduct';
 
 const routesConfig = [
     {
@@ -108,6 +109,12 @@ const routesConfig = [
         path: '/seller/dashboard',
         layout: <SellerLayout />,
         component: <></>,
+    },
+    {
+        title: 'Seller | Add Product',
+        path: '/seller/product/add',
+        layout: <SellerLayout />,
+        component: <AddProduct />
     },
     {
         title: 'Confirm Email',

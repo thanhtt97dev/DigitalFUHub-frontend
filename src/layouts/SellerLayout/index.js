@@ -108,6 +108,7 @@ const App = () => {
                     style={{
                         padding: 0,
                         background: colorBgContainer,
+                        zIndex: 1024
                     }}
                 >
                     <Space size={16} style={{ display: 'flex', margin: '0 16px', alignItems: 'center', justifyContent: 'flex-end' }}>
@@ -143,11 +144,11 @@ const App = () => {
                         <Outlet />
                     </div>
                 </Content>
-                <Footer
+                {/* <Footer
                     className={cx('footer')}
                 >
                     ©{new Date().getFullYear()}
-                </Footer>
+                </Footer> */}
             </Layout>
         </Layout >
     );

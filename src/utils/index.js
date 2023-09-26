@@ -2,6 +2,7 @@ import Cookies from 'js-cookie';
 import { format, register } from 'timeago.js';
 import jwtDecode from 'jwt-decode'
 import CryptoJS from 'crypto-js';
+import { Workbook } from 'exceljs'
 
 //API
 
@@ -144,3 +145,47 @@ export function regexPattern(value, pattern) {
     return value.match(pattern);
 }
 
+export function ReadDataFileExcelImportProduct(file) {
+    const wb = new Workbook();
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onload = () => {
+        const buffer = reader.result;
+        wb.xlsx.load(buffer).then(workbook => {
+            // console.log(workbook, 'workbook instance')
+            workbook.eachSheet((sheet, id) => {
+                const data = [];
+                sheet.eachRow((row, rowIndex) => {
+                    if (rowIndex !== 1) {
+                        // console.log(row.values, rowIndex)
+                        data.push({ index: rowIndex - 1, value: row.values[1] })
+                    }
+                })
+                console.log(data);
+                return;
+            })
+        })
+
+        // wb.xlsx.readFile(buffer).then(() => {
+
+        //     const ws = wb.getWorksheet('Sheet1');
+
+        //     const c1 = ws.getColumn(1);
+
+        //     c1.eachCell(c => {
+
+        //         console.log(c.value);
+        //     });
+
+        //     const c2 = ws.getColumn(2);
+
+        //     c2.eachCell(c => {
+
+        //         console.log(c.value);
+        //     });
+        // }).catch(err => {
+        //     console.log(err.message);
+        // });
+    }
+
+}
