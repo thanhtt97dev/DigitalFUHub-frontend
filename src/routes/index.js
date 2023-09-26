@@ -129,7 +129,7 @@ const routesConfig = [
     },
     {
         title: 'Seller product detail (Edit)',
-        path: '/seller/product/:id',
+        path: '/seller/product/:productId',
         layout: <SellerLayout />,
         component: <EditProduct />,
         role: [SELLER_ROLE],
