@@ -19,10 +19,15 @@ const columns = [
     },
     {
         title: 'Tên sản phẩm',
-        dataIndex: 'productName',
+        dataIndex: 'productId',
         width: '20%',
-        onCell: (record, index) => {
-            return { rowSpan: 2 };
+        render: (productId, record) => {
+            return (
+                <Link to={`/seller/product/${productId}`} style={{ display: "flex" }}>
+                    <img src={record.thumbnail} alt="product" style={{ with: "40px", height: "60px" }} />
+                    <span>{record.productName}</span>
+                </Link>
+            )
         }
     },
     {
