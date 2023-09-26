@@ -3,7 +3,7 @@ import { UploadOutlined, PlusOutlined, MinusCircleOutlined, StarOutlined } from 
 import { Button, Upload, Form, Input, Select, Space, InputNumber } from 'antd';
 import { ReadDataFileExcelImportProduct } from '~/utils';
 
-import AddTagProduct, { UploadImagesProduct, UploadThumbnail } from '~/components/Seller/Product/Add';
+import { UploadImagesProduct, UploadThumbnail, AddTagProduct, UploadProductType } from '~/components/Seller/Product/Add';
 
 // const getBase64 = (file) =>
 //     new Promise((resolve, reject) => {
@@ -17,61 +17,60 @@ function AddProduct() {
     // const [thumbnailFile, setThumbnailFile] = useState([]);
     // const [previewThumbnailImage, setPreviewThumbnailImage] = useState('');
     // const [previewThumbnailTitle, setPreviewThumbnailTitle] = useState('');
-    const btnAddRef = useRef();
-    const btnUploadClickIndexRef = useRef();
-    const listTagProductRef = useRef([]);
-
-    console.log(listTagProductRef);
+    // const btnAddRef = useRef();
+    // const btnUploadClickIndexRef = useRef();
+    const tagsProduct = useRef([]);
+    const dataFiles = useRef([]);
     // const [previewOpen, setPreviewOpen] = useState(false);
 
     // const [fileImgProdList, setFileImgProdList] = useState([]);
     // const [previewImgProd, setPreviewImgProd] = useState('');
     // const [previewImgTitle, setPreviewpreviewImgTitle] = useState('');
 
-    const [dataFile, setDataFile] = useState([]);
-    useEffect(() => {
-        btnAddRef.current.click();
-    }, [])
+    // const [dataFile, setDataFile] = useState([]);
+    // useEffect(() => {
+    //     btnAddRef.current.click();
+    // }, [])
     // data file
-    const handleDataFileChange = (info) => {
-        let newFileList = [...info.fileList];
-        var mode = newFileList.length !== 0;
-        let uidFile = info.file.uid;
-        // onchange delete
-        if (!mode) {
-            let indexFileEqUid = -1;
-            for (let index = 0; index < dataFile.length; index++) {
-                if (dataFile[index] !== undefined && dataFile[index].uid === uidFile) {
-                    indexFileEqUid = index;
-                    break;
-                }
-            }
-            newFileList = [...dataFile];
-            newFileList.splice(indexFileEqUid, 1)
-            setDataFile([...newFileList]);
-        }
-        // onchange add
-        else {
-            // const isExist = !!(dataFile.some(v => v.uid === uidFile))
-            // if (!isExist) {
-            newFileList = newFileList.slice(-1);
-            newFileList = newFileList.map((file) => {
-                if (file.response) {
-                    file.url = file.response.url;
-                }
-                file.response = '';
-                file.status = 'done';
-                return file;
-            });
-            setDataFile(prev => {
-                prev[btnUploadClickIndexRef.current] = newFileList[0]
-                return [...prev];
-            });
-            // }
+    // const handleDataFileChange = (info) => {
+    //     let newFileList = [...info.fileList];
+    //     var mode = newFileList.length !== 0;
+    //     let uidFile = info.file.uid;
+    //     // onchange delete
+    //     if (!mode) {
+    //         let indexFileEqUid = -1;
+    //         for (let index = 0; index < dataFile.length; index++) {
+    //             if (dataFile[index] !== undefined && dataFile[index].uid === uidFile) {
+    //                 indexFileEqUid = index;
+    //                 break;
+    //             }
+    //         }
+    //         newFileList = [...dataFile];
+    //         newFileList.splice(indexFileEqUid, 1)
+    //         setDataFile([...newFileList]);
+    //     }
+    //     // onchange add
+    //     else {
+    //         // const isExist = !!(dataFile.some(v => v.uid === uidFile))
+    //         // if (!isExist) {
+    //         newFileList = newFileList.slice(-1);
+    //         newFileList = newFileList.map((file) => {
+    //             if (file.response) {
+    //                 file.url = file.response.url;
+    //             }
+    //             file.response = '';
+    //             file.status = 'done';
+    //             return file;
+    //         });
+    //         setDataFile(prev => {
+    //             prev[btnUploadClickIndexRef.current] = newFileList[0]
+    //             return [...prev];
+    //         });
+    //         // }
 
 
-        }
-    }
+    //     }
+    // }
 
     // img products
     // const handleImgProdChange = (info) => {
@@ -129,6 +128,17 @@ function AddProduct() {
     //     ReadDataFileExcelImportProduct(fileList[0].originFileObj)
     // }
 
+    const onFinish = (values) => {
+        console.log(values)
+        console.log('data file', dataFiles.current)
+        console.log('tag ', tagsProduct.current)
+    }
+    const handleTagsChange = (values) => {
+        tagsProduct.current = [...values]
+    }
+    const handleDataFileChange = (values) => {
+        dataFiles.current = [...values]
+    }
     return (
         <>
             <Form
@@ -136,167 +146,52 @@ function AddProduct() {
                 style={{
                     maxWidth: 600,
                 }}
+                onFinish={onFinish}
             >
-                <Form.Item label="Tên sản phẩm:">
-                    <Input />
+                <Form.Item name='nameProduct' label="Tên sản phẩm:"
+                    rules={[
+                        {
+                            required: true,
+                            message: "Tên sản phẩm không để trống."
+                        }
+                    ]}
+                >
+                    <Input placeholder='Tên sản phẩm' />
                 </Form.Item>
-                <Form.Item label="Ảnh đại diện sản phẩm:">
-                    <UploadThumbnail />
-                    {/* <Space direction='horizontal'>
-                        <Upload
-                            listType="picture-card"
-                            fileList={thumbnailFile}
-                            onPreview={handleThumbnailPreview}
-                            onChange={handleThumbnailChange}
-                        >
-                            {thumbnailFile.length < 1 ? <div>
-                                <PlusOutlined />
-                                <div
-                                    style={{
-                                        marginTop: 8,
-                                    }}
-                                >
-                                    Tải lên
-                                </div>
-                            </div> : null}
-                        </Upload>
-                        <Modal open={previewOpen} title={previewThumbnailTitle} footer={null} onCancel={handleCancel}>
-                            <img
-                                alt="thumbnail"
-                                style={{
-                                    width: '100%',
-                                }}
-                                src={previewThumbnailImage}
-                            />
-                        </Modal>
-                    </Space> */}
-                </Form.Item>
-                <Form.Item label="Ảnh chi tiết sản phẩm (tối đa 5 ảnh):">
-                    {/* <Space direction='horizontal'>
-                        <Upload
-                            listType="picture-card"
-                            fileList={fileImgProdList}
-                            onPreview={handleImgProdPreview}
-                            onChange={handleImgProdChange}
-                            multiple={true}
-                        >
-                            {fileImgProdList.length < 5 ? <div>
-                                <PlusOutlined />
-                                <div
-                                    style={{
-                                        marginTop: 8,
-                                    }}
-                                >
-                                    Tải lên
-                                </div>
-                            </div> : null}
-                        </Upload>
-                        <Modal open={previewOpen} title={previewImgTitle} footer={null} onCancel={handleCancel}>
-                            <img
-                                alt="thumbnail"
-                                style={{
-                                    width: '100%',
-                                }}
-                                src={previewImgProd}
-                            />
-                        </Modal>
-                    </Space> */}
-                    <UploadImagesProduct />
-                </Form.Item>
-                <Form.Item label="Select">
-                    <Select>
-                        <Select.Option value="demo">Demo</Select.Option>
+                <UploadThumbnail />
+                <UploadImagesProduct />
+                <Form.Item label="Danh mục:"
+                    rules={
+                        [{
+                            required: true,
+                            message: 'Danh mục sản phẩm không để trống.'
+                        }]}
+                >
+                    <Select placeholder="Danh mục" allowClear>
+                        <Select.Option value="1">Mạng xã hội</Select.Option>
+                        <Select.Option value="2">VPS</Select.Option>
+                        <Select.Option value="3">Khác</Select.Option>
                     </Select>
                 </Form.Item>
-                <Form.List name="types">
-                    {(fields, { add, remove }) => (
-                        <>
-                            <Form.Item label='Loại sản phẩm:' style={{ marginBottom: 0 }} />
-                            {fields.map(({ key, name, ...restField }) => (
-
-                                <Space
-                                    key={key}
-                                    style={{
-                                        display: 'flex',
-                                        marginBottom: 8,
-                                    }}
-                                    align="baseline"
-                                >
-                                    <Form.Item
-                                        {...restField}
-                                        name={[name, 'typeProd']}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Loại sản phẩm không để trống.',
-                                            },
-                                        ]}
-                                    >
-                                        <Input placeholder="Tên loại sản phẩm" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        {...restField}
-                                        name={[name, 'priceProd']}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Giá loại sản phẩm không để trống',
-                                            },
-                                        ]}
-                                    >
-                                        <InputNumber min={0} placeholder="Giá loại sản phẩm" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        {...restField}
-                                        name={[name, 'last']}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Vui lòng tải dữ liệu.',
-                                            },
-                                        ]}
-                                    >
-                                        <Space direction='horizontal' align='start'>
-                                            <Upload
-                                                onChange={handleDataFileChange}
-                                                fileList={dataFile[name] ? [dataFile[name]] : []}>
-                                                {dataFile[name] === undefined && <Button onClick={() => btnUploadClickIndexRef.current = name} icon={<UploadOutlined />}>Tải lên</Button>}
-                                            </Upload>
-                                        </Space>
-                                    </Form.Item>
-                                    {fields.length > 1 ? (
-                                        <MinusCircleOutlined onClick={() => {
-                                            remove(name)
-                                            // delete file in array
-                                            let newDataFile = dataFile;
-                                            newDataFile.splice(name, 1)
-                                            setDataFile(dataFile)
-                                        }} />
-                                    ) : null}
-
-                                </Space>
-                            ))}
-                            <Form.Item>
-                                <Button ref={btnAddRef} type="dashed" onClick={() => {
-                                    add();
-                                    setDataFile(prev => [...prev, undefined])
-                                }} block icon={<PlusOutlined />}>
-                                    Thêm
-                                </Button>
-                            </Form.Item>
-                            <Form.Item label="Nhãn:"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng tải dữ liệu.',
-                                    },
-                                ]}>
-                                <AddTagProduct ref={listTagProductRef} />
-                            </Form.Item>
-                        </>
-                    )}
-                </Form.List>
-            </Form>
+                <UploadProductType handleGetDataFileChange={handleDataFileChange} />
+                <Form.Item name='tagsProduct' label="Nhãn:"
+                    rules={[
+                        (getFieldValue) => ({
+                            validator(_, value) {
+                                if (tagsProduct.current.length > 0) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('Vui lòng nhập ít nhất 1 nhãn.'));
+                            },
+                        }),
+                    ]}
+                >
+                    <AddTagProduct handleTagsChange={handleTagsChange} />
+                </Form.Item>
+                <Form.Item>
+                    <Button type='primary' htmlType='submit'>Xác nhận</Button>
+                </Form.Item>
+            </Form >
         </>
     );
 };
