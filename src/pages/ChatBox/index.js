@@ -275,7 +275,7 @@ const ChatBox = () => {
         bodyFormData.append('senderId', user.id);
         bodyFormData.append('recipientId', selectedUser.userId);
         bodyFormData.append('content', newMessage);
-        bodyFormData.append('isImage', false);
+        bodyFormData.append('messageType', '0');
         for (var i = 0; i < fileUpload.length; i++) {
             bodyFormData.append('fileUpload', fileUpload[i].originFileObj);
         }

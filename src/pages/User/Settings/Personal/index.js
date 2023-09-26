@@ -26,7 +26,6 @@ function Personal() {
     const [userInfo, setUserInfo] = useState({});
     const [isEditingFullName, setIsEditingFullName] = useState(false);
     const [isEditingAvatar, setIsEditingAvatar] = useState(false);
-    let maskEmail = '';
     //const [form] = Form.useForm();
 
     const openNotificationWithIcon = (type) => {
@@ -102,11 +101,6 @@ function Personal() {
     //     setIsEditingAvatar(false);
     // };
 
-    if (userInfo.email) {
-        const [username, domain] = userInfo.email?.split('@');
-        maskEmail = `${username?.substring(0, 2)}${'*'.repeat(username?.length - 2)}@${domain}`
-    }
-
 
     return (
         <>
@@ -177,7 +171,7 @@ function Personal() {
                                 <Row gutter={8}>
                                     <Col span={17}>
                                         {/* <Input value={userInfo.email} disabled style={{ backgroundColor: "white" }} /> */}
-                                        <Input value={maskEmail} disabled style={{ backgroundColor: "white" }} />
+                                        <Input value={userInfo.email} disabled style={{ backgroundColor: "white" }} />
                                     </Col>
                                 </Row>
                             </Form.Item>

@@ -7,6 +7,7 @@ import {
     // RightOutlined,
     // LeftOutlined,
     AreaChartOutlined,
+    CodeSandboxOutlined,
     ShopOutlined
 
 } from '@ant-design/icons';
@@ -29,6 +30,25 @@ const items = [
         key: 'product',
         icon: <ShopOutlined />,
         // disabled: true,
+    },
+    {
+        label: 'Quản lý sản phẩm',
+        key: 'Manage products',
+        icon: <CodeSandboxOutlined />,
+        children: [
+            {
+                key: 'all',
+                label: <NavLink to={"/seller/product/list"}>Tất cả sản phẩm</NavLink>,
+            },
+            {
+                key: 'new',
+                label: <NavLink to={"/seller/product/new"}>Thêm sản phẩm</NavLink>,
+            },
+            {
+                key: 'banned',
+                label: <NavLink to={"/seller/product/banned"}>Sản phẩm vi phạm</NavLink>,
+            },
+        ],
     },
     {
         label: 'Menu đa cấp',

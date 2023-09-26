@@ -17,6 +17,9 @@ import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ConfirmEmail from '~/pages/ConfirmEmail';
 import ResetPassword from '~/pages/ResetPassword';
 import AddProduct from '~/pages/Seller/AddProduct';
+import ProductDetail from '~/pages/ProductDetail';
+import Products from '~/pages/Seller/ManageProduct/Products';
+import EditProduct from '~/pages/Seller/ManageProduct/EditProduct';
 
 const routesConfig = [
     {
@@ -103,18 +106,42 @@ const routesConfig = [
         path: '/seller',
         layout: <SellerLayout />,
         component: <></>,
+        role: [SELLER_ROLE],
     },
     {
         title: 'Dashboard Seller',
         path: '/seller/dashboard',
         layout: <SellerLayout />,
         component: <></>,
+        role: [SELLER_ROLE],
     },
     {
-        title: 'Seller | Add Product',
-        path: '/seller/product/add',
+        title: 'Seller All Products',
+        path: '/seller/product/list',
         layout: <SellerLayout />,
-        component: <AddProduct />
+        component: <Products />,
+        role: [SELLER_ROLE],
+    },
+    {
+        title: 'Seller add new product',
+        path: '/seller/product/new',
+        layout: <SellerLayout />,
+        component: <AddProduct />,
+        // role: [SELLER_ROLE],
+    },
+    {
+        title: 'Seller product detail (Edit)',
+        path: '/seller/product/:id',
+        layout: <SellerLayout />,
+        component: <EditProduct />,
+        role: [SELLER_ROLE],
+    },
+    {
+        title: 'Seller products banned',
+        path: '/seller/product/banned',
+        layout: <SellerLayout />,
+        component: <></>,
+        role: [SELLER_ROLE],
     },
     {
         title: 'Confirm Email',
@@ -126,6 +153,12 @@ const routesConfig = [
         path: '/resetPassword',
         component: <ResetPassword />,
     },
+    {
+        title: 'Product Detail',
+        path: '/productDetail',
+        layout: <NormalLayout />,
+        component: <ProductDetail />,
+    }
 ];
 export default routesConfig;
 

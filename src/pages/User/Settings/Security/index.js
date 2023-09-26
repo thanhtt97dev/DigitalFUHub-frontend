@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Button, Divider, notification, Modal, Input, Space, Card, Typography, Col, Row, Form } from "antd";
 
-import { getUserById } from "~/api/user";
+import { getUserById, checkExistUsername, editUserInfo } from "~/api/user";
 import { getUserId } from '~/utils';
 import { ExclamationCircleFilled, GooglePlusOutlined, FacebookOutlined } from "@ant-design/icons";
 
@@ -12,18 +12,26 @@ import ModalSend2FaQrCode from "~/components/Modals/ModalSend2FaQrCode";
 import classNames from 'classnames/bind';
 import styles from './Security.module.scss';
 import validator from 'validator';
+import { encryptPassword } from '~/utils';
 
 const cx = classNames.bind(styles)
 const { Title, Text } = Typography;
 
 function Security() {
-
+    const initialTabList = [
+        {
+            key: 'tab1',
+            tab: 'Liên kết tài khoản',
+        },
+        {
+            key: 'tab2',
+            tab: 'Bảo mật hai lớp',
+        }
+    ];
     const navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const [newPassword, setNewPassword] = useState('')
-
     const userId = getUserId();
     const [userInfo, setUserInfo] = useState({});
 
@@ -38,6 +46,7 @@ function Security() {
     const [mesage2FA, setmesage2FA] = useState("");
 
     const [tabKey, setTabKey] = useState('tab1');
+    const [tabList, setTabList] = useState(initialTabList);
 
     const [form] = Form.useForm();
 
@@ -66,8 +75,12 @@ function Security() {
                     roleName: res.data.roleName,
                     twoFactorAuthentication: res.data.twoFactorAuthentication,
                     status: res.data.status,
+                    username: res.data.username
                 });
                 setUser2FaStatus(res.data.twoFactorAuthentication)
+                if (res.data.username === undefined || res.data.username === "") {
+                    setTabList((prev) => [...prev, { key: 'tab3', tab: 'Kích hoạt tài khoản và mật khẩu' }])
+                }
             })
             .catch(() => {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
@@ -164,23 +177,6 @@ function Security() {
         setmesage2FA("");
     }
 
-
-
-    const tabList = [
-        {
-            key: 'tab1',
-            tab: 'Liên kết tài khoản',
-        },
-        {
-            key: 'tab2',
-            tab: 'Bảo mật hai lớp',
-        },
-        {
-            key: 'tab3',
-            tab: 'Thay đổi mật khẩu',
-        },
-    ];
-
     const AccountLogin = () => (
         <div className="accountLogin">
             <Card
@@ -269,18 +265,43 @@ function Security() {
 
 
     const onFinish = (values) => {
+        const username = values.username;
+        const newPassword = values.newPassword;
+        var bodyFormData = new FormData();
+        bodyFormData.append('username', username)
+        bodyFormData.append('password', newPassword)
 
-        console.log('Success:', values);
+        checkExistUsername(username)
+            .then((res) => {
+                if (res.data === 'Y') {
+                    openNotification("error", "Tên tài khoản đã được sử dụng, vui lòng chọn tên khác!")
+                } else {
+                    editUserInfo(userId, { username: username, password: encryptPassword(newPassword) })
+                        .then((response) => {
+                            if (response.status === 204)
+                                openNotification("success", "Kích hoạt tài khoản và mật khẩu thành công!")
+                            const tabListFilter = tabList.filter(item => item.key !== 'tab3')
+                            setTabList(tabListFilter);
+                            setTabKey('tab2')
+                        })
+                }
+            });
+
     };
+
     const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
+        console.log('On finish failed at security page:', errorInfo);
     };
 
     const confirmPasswordValidator = (value) => {
-        const confirmPassword = form.getFieldValue(value.field);
+        let newPassword = form.getFieldValue('newPassword');
+        let confirmPassword = form.getFieldValue(value.field);
+
+        newPassword = newPassword === undefined ? '' : newPassword;
+        confirmPassword = confirmPassword === undefined ? '' : confirmPassword;
 
         if (!validator.equals(newPassword, confirmPassword)) {
-            return Promise.reject('Passwords do not match');
+            return Promise.reject('Mật khẩu không trùng khớp');
         } else {
             return Promise.resolve()
 
@@ -288,17 +309,18 @@ function Security() {
     }
 
     const newPasswordValidator = (value) => {
-        const newPassword = form.getFieldValue(value.field);
+        let newPassword = form.getFieldValue(value.field);
+        newPassword = newPassword === undefined ? '' : newPassword;
 
         if (!validator.isLength(newPassword, { min: 3 })) {
-            return Promise.reject('Password is not strong enough. At least 3 characters');
+            return Promise.reject('Mật khẩu không đủ mạnh. Phải có ít nhất 3 kí tự');
         } else {
-            setNewPassword(newPassword);
             return Promise.resolve();
         }
+
     }
 
-    const ChangePassword = () => (
+    const ActiveUsernamePassword = () => (
         <div>
 
             <Form
@@ -323,12 +345,25 @@ function Security() {
                 autoComplete="off"
             >
                 <Form.Item
+                    label="Username"
+                    name="username"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Tài khoản không hợp lệ!',
+                        }
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item
                     label="New Password"
                     name="newPassword"
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your new password!',
+                            message: 'Mật khẩu không hợp lệ',
                         },
                         {
                             validator: newPasswordValidator
@@ -344,7 +379,7 @@ function Security() {
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your confirm password!',
+                            message: 'Mật khẩu không hợp lệ',
                         },
                         {
                             validator: confirmPasswordValidator
@@ -373,7 +408,7 @@ function Security() {
     const contentList = {
         tab1: (<AccountLogin />),
         tab2: (<TwoFactorAuthentication />),
-        tab3: (<ChangePassword />)
+        tab3: (<ActiveUsernamePassword />)
     };
 
     return (
