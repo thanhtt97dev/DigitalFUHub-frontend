@@ -268,9 +268,11 @@ function Security() {
     )
 
 
-    const onFinish = (values) => {
+    const onFinish = () => {
+        if (!userId) return;
+        if (newPassword === undefined || newPassword.length === 0) return;
+        var bodyFormData = new FormData();
 
-        console.log('Success:', values);
     };
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
