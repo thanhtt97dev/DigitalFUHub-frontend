@@ -110,6 +110,30 @@ const routesConfig = [
         component: <></>,
     },
     {
+        title: 'Seller All Products',
+        path: '/seller/product/list',
+        layout: <SellerLayout />,
+        component: <ConfirmEmail />,
+    },
+    {
+        title: 'Seller add new product',
+        path: '/seller/product/new',
+        layout: <SellerLayout />,
+        component: <></>,
+    },
+    {
+        title: 'Seller product detail (Edit)',
+        path: '/seller/product/:id',
+        layout: <SellerLayout />,
+        component: <></>,
+    },
+    {
+        title: 'Seller products banned',
+        path: '/seller/product/banned',
+        layout: <SellerLayout />,
+        component: <></>,
+    },
+    {
         title: 'Confirm Email',
         path: '/confirmEmail',
         component: <ConfirmEmail />,

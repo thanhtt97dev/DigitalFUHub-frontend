@@ -22,6 +22,11 @@ const itemsFixed = [
         role: CUSTOMER_ROLE
     },
     {
+        key: 'seller',
+        label: <Link to={"/seller"}>Kênh người bán</Link>,
+        role: CUSTOMER_ROLE
+    },
+    {
         key: 'logout',
         label: <Logout />,
     },
