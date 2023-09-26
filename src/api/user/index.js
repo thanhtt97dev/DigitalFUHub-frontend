@@ -1,7 +1,7 @@
 import { apiGet, apiGetAuth, apiPost, apiPostAuth, apiPut } from '../defaultApi';
 
 export const login = (data, google = false) => {
-    const url = google ? 'api/users/SignInhGoogle' : 'api/users/signIn'
+    const url = google ? 'api/users/SignInGoogle' : 'api/users/signIn'
     return apiPost(url, data);
 };
 export const signUp = (data) => {

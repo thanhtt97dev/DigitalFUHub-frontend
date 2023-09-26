@@ -31,6 +31,25 @@ const items = [
         // disabled: true,
     },
     {
+        label: 'Quản lý sản phẩm',
+        key: 'Manage products',
+        icon: <SettingOutlined />,
+        children: [
+            {
+                key: 'all',
+                label: <NavLink to={"/seller/product/list"}>Tất cả sản phẩm</NavLink>,
+            },
+            {
+                key: 'new',
+                label: <NavLink to={"/seller/product/new"}>Thêm sản phẩm</NavLink>,
+            },
+            {
+                key: 'banned',
+                label: <NavLink to={"/seller/product/banned"}>Sản phẩm vi phạm</NavLink>,
+            },
+        ],
+    },
+    {
         label: 'Menu đa cấp',
         key: 'SubMenu',
         icon: <SettingOutlined />,
