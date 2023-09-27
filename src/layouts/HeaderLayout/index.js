@@ -22,6 +22,11 @@ const itemsFixed = [
         role: CUSTOMER_ROLE
     },
     {
+        key: 'history transaction',
+        label: <Link to={"/historyTransaction"}>Lịch sử giao dịch</Link>,
+        role: CUSTOMER_ROLE
+    },
+    {
         key: 'seller',
         label: <Link to={"/seller"}>Kênh người bán</Link>,
         role: SELLER_ROLE
@@ -110,7 +115,13 @@ function HeaderLayout() {
                             <Link to={'/chatBox'}>
                                 <MessageOutlined style={{ fontSize: '20px' }} />
                             </Link>
-                            <Dropdown menu={{ items }} placement="bottom">
+                            <Dropdown
+                                menu={{ items }}
+                                placement="bottomRight"
+                                arrow={{
+                                    pointAtCenter: true,
+                                }}
+                            >
                                 <Avatar size={50} src={userAvatart} />
                             </Dropdown>
                         </>
