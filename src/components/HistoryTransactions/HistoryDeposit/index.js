@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, notification } from "antd";
+import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, notification, Select } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
 import { useAuthUser } from 'react-auth-kit'
@@ -63,11 +63,109 @@ const columns = [
         title: 'Trạng thái',
         dataIndex: 'isPay',
         width: '15%',
-        render: (() => { return <Tag color="#52c41a">Thành công</Tag> })
+        render: (paidDate, record) => {
+            return (
+                record.isPay ?
+                    <Tag color="#52c41a">Thành công</Tag>
+                    :
+                    <Tag color="##ec0b0b">Đang chờ chuyển khoản</Tag>
+            )
+        }
     },
 ];
 
 function HistoryDeposit() {
+
+    /*
+        const auth = useAuthUser()
+        const user = auth();
+        const [loading, setLoading] = useState(true)
+        const [api, contextHolder] = notification.useNotification();
+        const openNotification = (type, message) => {
+            api[type]({
+                message: `Thông báo`,
+                description: `${message}`
+            });
+        };
+    
+        const [form] = Form.useForm();
+        const [dataTable, setDataTable] = useState([]);
+        const search = useRef({
+            depositTransactionId: '',
+            fromRequestDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
+            toRequestDate: dayjs().format('M/D/YYYY'),
+            fromPaidDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
+            toPaidDate: dayjs().format('M/D/YYYY'),
+            status: 0
+        })
+    
+        const [disablePaidDateSelect, setDisablePaidDateSelect] = useState(true)
+    
+        useEffect(() => {
+            getDepositTransaction(user.id, search.current)
+                .then((res) => {
+                    if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        setDataTable(res.data.result)
+                    } else {
+                        openNotification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
+                    }
+                })
+                .catch((err) => {
+                    openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                })
+                .finally(() => {
+                    setTimeout(() => { setLoading(false) }, 500)
+                })
+    
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [])
+    
+        const initFormValues = [
+            {
+                name: 'depositTransactionId',
+                value: search.current.depositTransactionId,
+            },
+            {
+                name: 'requestDate',
+                value: [dayjs(search.current.fromPaidDate, 'M/D/YYYY'), dayjs(search.current.toPaidDate, 'M/D/YYYY')]
+            },
+            {
+                name: 'paidDate',
+                value: [dayjs(search.current.fromPaidDate, 'M/D/YYYY'), dayjs(search.current.toPaidDate, 'M/D/YYYY')]
+            },
+            {
+                name: 'status',
+                value: 0
+            },
+        ];
+    
+        const onFinish = (values) => {
+            setLoading(true);
+            if (values.date === null) {
+                openNotification("error", "Thời gian chuyển khoản không được trống!")
+                setLoading(false);
+                return;
+            }
+            setDataTable([])
+            search.current = {
+                depositTransactionId: values.depositTransactionId,
+                fromRequestDate: values.requestDate[0].$d.toLocaleDateString(),
+                toRequestDate: values.requestDate[1].$d.toLocaleDateString(),
+                fromPaidDate: values.paidDate[0].$d.toLocaleDateString(),
+                toPaidDate: values.paidDate[1].$d.toLocaleDateString(),
+                status: values.status
+            }
+        };
+    
+        const handleSelectStatus = (value) => {
+            if (value === 0 || value === 1) {
+                setDisablePaidDateSelect(false)
+            } else {
+                setDisablePaidDateSelect(true);
+            }
+            search.current = { ...search.current, status: value }
+        }
+        */
 
 
 
@@ -88,7 +186,10 @@ function HistoryDeposit() {
         depositTransactionId: '',
         fromDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
         toDate: dayjs().format('M/D/YYYY'),
+        status: 0
     });
+    const [disablePaidDateSelect, setDisablePaidDateSelect] = useState(true)
+    const [selectedStatus, setSelectedStatus] = useState(0)
 
 
 
@@ -109,12 +210,8 @@ function HistoryDeposit() {
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchData])
+    }, [])
 
-    // form.setFieldsValue({
-    //     depositTransactionId: searchData.searchData,
-    //     date: [dayjs(dayjs().subtract(3, 'day').format('M/D/YYYY'), 'M/D/YYYY'), dayjs(dayjs().format('M/D/YYYY'), 'M/D/YYYY')],
-    // });
     const initFormValues = [
         {
             name: 'depositTransactionId',
@@ -128,19 +225,44 @@ function HistoryDeposit() {
 
     const onFinish = (values) => {
         setLoading(true);
-        if (values.date === null) {
+        if (values.requestDate === null) {
             openNotification("error", "Thời gian chuyển khoản không được trống!")
             setLoading(false);
             return;
         }
+
         setDataTable([])
         setSearchData({
             depositTransactionId: values.depositTransactionId,
             fromDate: values.date[0].$d.toLocaleDateString(),
             toDate: values.date[1].$d.toLocaleDateString(),
+            status: values.status
         });
+        getDepositTransaction(user.id, searchData)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setDataTable(res.data.result)
+                } else {
+                    openNotification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
+                }
+            })
+            .catch((err) => {
+                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+            })
+            .finally(() => {
+                setTimeout(() => { setLoading(false) }, 500)
+            })
 
     };
+
+    const handleSelectStatus = (value) => {
+        if (value === 1) {
+            setDisablePaidDateSelect(false)
+        } else {
+            setDisablePaidDateSelect(true);
+        }
+        setSelectedStatus(value)
+    }
 
 
     return (
@@ -175,10 +297,18 @@ function HistoryDeposit() {
                             <Input />
                         </Form.Item>
 
-                        <Form.Item label="Thời gian chuyển khoản" labelAlign="left" name="date">
+                        <Form.Item label="Thời gian tạo yêu cầu" labelAlign="left" name="date">
                             <RangePicker locale={locale}
                                 format={"M/D/YYYY"}
                                 placement={"bottomLeft"} />
+                        </Form.Item>
+
+                        <Form.Item label="Trạng thái" labelAlign="left" name="status">
+                            <Select onChange={(value) => { handleSelectStatus(value) }} defaultValue={selectedStatus}>
+                                <Select.Option value={0}>Tất cả</Select.Option>
+                                <Select.Option value={1}>Thành công</Select.Option>
+                                <Select.Option value={2}>Đang chờ chuyển khoản</Select.Option>
+                            </Select>
                         </Form.Item>
 
                         <Form.Item style={{ position: 'absolute', top: 60, left: 550 }}>
