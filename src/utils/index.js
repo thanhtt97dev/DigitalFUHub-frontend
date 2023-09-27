@@ -145,47 +145,48 @@ export function regexPattern(value, pattern) {
     return value.match(pattern);
 }
 
-export function ReadDataFileExcelImportProduct(file) {
-    const wb = new Workbook();
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-    reader.onload = () => {
-        const buffer = reader.result;
-        wb.xlsx.load(buffer).then(workbook => {
-            // console.log(workbook, 'workbook instance')
-            workbook.eachSheet((sheet, id) => {
-                const data = [];
-                sheet.eachRow((row, rowIndex) => {
-                    if (rowIndex !== 1) {
-                        // console.log(row.values, rowIndex)
-                        data.push({ index: rowIndex - 1, value: row.values[1] })
-                    }
+export function readDataFileExcelImportProduct(file) {
+    return new Promise((resolve, reject) => {
+        const wb = new Workbook();
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onload = () => {
+            const buffer = reader.result;
+            wb.xlsx.load(buffer).then(workbook => {
+                // console.log(workbook, 'workbook instance')
+                workbook.eachSheet((sheet, id) => {
+                    let data = []
+                    sheet.eachRow((row, rowIndex) => {
+                        if (rowIndex !== 1) {
+                            data.push({ index: rowIndex - 1, value: row.values[1] })
+                        }
+                    })
+                    resolve(data);
                 })
-                console.log(data);
-                return;
+
             })
-        })
+        }
+    })
 
-        // wb.xlsx.readFile(buffer).then(() => {
+    // wb.xlsx.readFile(buffer).then(() => {
 
-        //     const ws = wb.getWorksheet('Sheet1');
+    //     const ws = wb.getWorksheet('Sheet1');
 
-        //     const c1 = ws.getColumn(1);
+    //     const c1 = ws.getColumn(1);
 
-        //     c1.eachCell(c => {
+    //     c1.eachCell(c => {
 
-        //         console.log(c.value);
-        //     });
+    //         console.log(c.value);
+    //     });
 
-        //     const c2 = ws.getColumn(2);
+    //     const c2 = ws.getColumn(2);
 
-        //     c2.eachCell(c => {
+    //     c2.eachCell(c => {
 
-        //         console.log(c.value);
-        //     });
-        // }).catch(err => {
-        //     console.log(err.message);
-        // });
-    }
-
+    //         console.log(c.value);
+    //     });
+    // }).catch(err => {
+    //     console.log(err.message);
+    // });
 }
+

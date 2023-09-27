@@ -33,19 +33,19 @@ const items = [
     },
     {
         label: 'Quản lý sản phẩm',
-        key: 'Manage products',
+        key: 'seller',
         icon: <CodeSandboxOutlined />,
         children: [
             {
-                key: 'all',
+                key: '/seller/product/list',
                 label: <NavLink to={"/seller/product/list"}>Tất cả sản phẩm</NavLink>,
             },
             {
-                key: 'new',
+                key: '/seller/product/new',
                 label: <NavLink to={"/seller/product/new"}>Thêm sản phẩm</NavLink>,
             },
             {
-                key: 'banned',
+                key: '/seller/product/banned',
                 label: <NavLink to={"/seller/product/banned"}>Sản phẩm vi phạm</NavLink>,
             },
         ],
@@ -92,13 +92,13 @@ const items = [
                 Tin nhắn
             </NavLink>
         ),
-        key: 'seller',
+        key: '/seller/message',
     },
 ];
 const App = () => {
     const location = useLocation();
     const [collapsed, setCollapsed] = useState(false);
-    const [current, setCurrent] = useState(location.pathname.split('/').length !== 3 ? 'dashboard' : location.pathname.split('/')[2]);
+    const [current, setCurrent] = useState(location.pathname);
 
     const handleClickItemSidebar = (e) => {
         setCurrent(e.key);
@@ -117,7 +117,7 @@ const App = () => {
                 <Menu
                     style={{ fontSize: '16px' }}
                     theme='dark'
-                    onClick={handleClickItemSidebar} defaultSelectedKeys={[current]} mode="inline" items={items} />
+                    onClick={handleClickItemSidebar} defaultOpenKeys={[current.split('/')[1]]} defaultSelectedKeys={[current]} mode="inline" items={items} />
                 {/* <div className='ant-layout-sider-trigger' onClick={() => setCollapsed(!collapsed)} style={{ width: `${!collapsed ? '200px' : '80px'}`, background: '#956ad6' }}>
                     {collapsed ? <RightOutlined /> : <LeftOutlined />}
                 </div> */}
@@ -128,7 +128,7 @@ const App = () => {
                     style={{
                         padding: 0,
                         background: colorBgContainer,
-                        zIndex: 1024
+                        zIndex: 990
                     }}
                 >
                     <Space size={16} style={{ display: 'flex', margin: '0 16px', alignItems: 'center', justifyContent: 'flex-end' }}>
