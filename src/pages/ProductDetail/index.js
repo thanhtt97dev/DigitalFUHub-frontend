@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Col, Row, Image, Button, Typography, Divider, Space, Spin, Tag, Skeleton } from 'antd';
+import { Col, Row, Image, Button, Typography, Divider, Spin, Tag, Skeleton, Card } from 'antd';
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss'
 import { HeartOutlined, BellOutlined, SyncOutlined, CreditCardOutlined, ShoppingCartOutlined } from '@ant-design/icons';
@@ -146,6 +146,36 @@ const ProductDescription = ({ product }) => {
     )
 }
 
+const ProductSuggestions = () => {
+    const CardProduct = () => (
+        <Card bordered={false} style={{ width: '45vh' }} bodyStyle={{ padding: 8 }}>
+            <Image style={{ borderRadius: 10, marginBottom: 7 }}
+                src="https://cdn.divineshop.vn/image/catalog/Anh-SP/Spotify/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg?hash=1658742748"
+            />
+            <Text strong>Gói gia hạn Spotify Premium 01 năm</Text>
+            <p>Card content</p>
+        </Card>
+    )
+
+    return (
+        <>
+            <Row>
+                <Col><Title level={4}>Sản phẩm liên quan</Title></Col>
+            </Row>
+            <Row>
+                <Col className={cx('grid-product-suggest')}>
+                    <CardProduct />
+                    <CardProduct />
+                    <CardProduct />
+                    <CardProduct />
+                    <CardProduct />
+                    <CardProduct />
+                </Col>
+            </Row>
+        </>
+    )
+}
+
 
 const ProductDetail = () => {
     const initialProductId = 1;
@@ -171,7 +201,7 @@ const ProductDetail = () => {
                 })
         }
 
-        //getDetailProduct();
+        getDetailProduct();
     }, [])
 
 
@@ -185,6 +215,7 @@ const ProductDetail = () => {
             <Divider />
             <ProductDescription product={product} />
             <Divider />
+            <ProductSuggestions />
         </>
     )
 }
