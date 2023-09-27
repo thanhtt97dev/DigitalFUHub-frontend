@@ -25,6 +25,10 @@ export const createDepositTransaction = (data) => {
     return apiPostAuth('api/banks/CreateDepositTransaction', data);
 };
 
+export const createWithdrawTransaction = (data) => {
+    return apiPostAuth('api/banks/CreateWithdrawTransaction', data);
+};
+
 export const getDepositTransaction = (id, data) => {
     return apiPostAuth(`api/banks/HistoryDeposit/${id}`, data);
 };

@@ -38,7 +38,6 @@ function HistoryTransactions() {
                 activeTabKey={tabKey}
                 onTabChange={handleTabChange}
                 type="inner"
-
             >
                 {contentList[tabKey]}
             </Card>

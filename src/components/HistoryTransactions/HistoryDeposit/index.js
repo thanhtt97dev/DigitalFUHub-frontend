@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, notification, Select } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
@@ -11,6 +10,7 @@ import Spinning from "~/components/Spinning";
 import { formatStringToCurrencyVND, ParseDateTime } from '~/utils/index'
 import dayjs from 'dayjs';
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
+
 
 const { RangePicker } = DatePicker;
 
@@ -68,107 +68,26 @@ const columns = [
                 record.isPay ?
                     <Tag color="#52c41a">Thành công</Tag>
                     :
-                    <Tag color="##ec0b0b">Đang chờ chuyển khoản</Tag>
+                    <Tag color="#ec0b0b">Đang chờ chuyển khoản</Tag>
+            )
+        }
+    },
+    {
+        title: '',
+        dataIndex: 'isPay',
+        width: '10%',
+        render: (isPay, record) => {
+            return (
+                isPay ?
+                    ""
+                    :
+                    <Link to={"/deposit"} state={{ amount: record.amount, code: record.code }}>Quét mã QR</Link>
             )
         }
     },
 ];
 
 function HistoryDeposit() {
-
-    /*
-        const auth = useAuthUser()
-        const user = auth();
-        const [loading, setLoading] = useState(true)
-        const [api, contextHolder] = notification.useNotification();
-        const openNotification = (type, message) => {
-            api[type]({
-                message: `Thông báo`,
-                description: `${message}`
-            });
-        };
-    
-        const [form] = Form.useForm();
-        const [dataTable, setDataTable] = useState([]);
-        const search = useRef({
-            depositTransactionId: '',
-            fromRequestDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
-            toRequestDate: dayjs().format('M/D/YYYY'),
-            fromPaidDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
-            toPaidDate: dayjs().format('M/D/YYYY'),
-            status: 0
-        })
-    
-        const [disablePaidDateSelect, setDisablePaidDateSelect] = useState(true)
-    
-        useEffect(() => {
-            getDepositTransaction(user.id, search.current)
-                .then((res) => {
-                    if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        setDataTable(res.data.result)
-                    } else {
-                        openNotification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
-                    }
-                })
-                .catch((err) => {
-                    openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
-                })
-                .finally(() => {
-                    setTimeout(() => { setLoading(false) }, 500)
-                })
-    
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [])
-    
-        const initFormValues = [
-            {
-                name: 'depositTransactionId',
-                value: search.current.depositTransactionId,
-            },
-            {
-                name: 'requestDate',
-                value: [dayjs(search.current.fromPaidDate, 'M/D/YYYY'), dayjs(search.current.toPaidDate, 'M/D/YYYY')]
-            },
-            {
-                name: 'paidDate',
-                value: [dayjs(search.current.fromPaidDate, 'M/D/YYYY'), dayjs(search.current.toPaidDate, 'M/D/YYYY')]
-            },
-            {
-                name: 'status',
-                value: 0
-            },
-        ];
-    
-        const onFinish = (values) => {
-            setLoading(true);
-            if (values.date === null) {
-                openNotification("error", "Thời gian chuyển khoản không được trống!")
-                setLoading(false);
-                return;
-            }
-            setDataTable([])
-            search.current = {
-                depositTransactionId: values.depositTransactionId,
-                fromRequestDate: values.requestDate[0].$d.toLocaleDateString(),
-                toRequestDate: values.requestDate[1].$d.toLocaleDateString(),
-                fromPaidDate: values.paidDate[0].$d.toLocaleDateString(),
-                toPaidDate: values.paidDate[1].$d.toLocaleDateString(),
-                status: values.status
-            }
-        };
-    
-        const handleSelectStatus = (value) => {
-            if (value === 0 || value === 1) {
-                setDisablePaidDateSelect(false)
-            } else {
-                setDisablePaidDateSelect(true);
-            }
-            search.current = { ...search.current, status: value }
-        }
-        */
-
-
-
     const auth = useAuthUser()
     const user = auth();
     const [loading, setLoading] = useState(true)
@@ -188,10 +107,6 @@ function HistoryDeposit() {
         toDate: dayjs().format('M/D/YYYY'),
         status: 0
     });
-    const [disablePaidDateSelect, setDisablePaidDateSelect] = useState(true)
-    const [selectedStatus, setSelectedStatus] = useState(0)
-
-
 
     useEffect(() => {
         getDepositTransaction(user.id, searchData)
@@ -210,7 +125,7 @@ function HistoryDeposit() {
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [searchData])
 
     const initFormValues = [
         {
@@ -220,6 +135,10 @@ function HistoryDeposit() {
         {
             name: 'date',
             value: [dayjs(searchData.fromDate, 'M/D/YYYY'), dayjs(searchData.toDate, 'M/D/YYYY')]
+        },
+        {
+            name: 'status',
+            value: searchData.status
         },
     ];
 
@@ -231,38 +150,14 @@ function HistoryDeposit() {
             return;
         }
 
-        setDataTable([])
         setSearchData({
             depositTransactionId: values.depositTransactionId,
             fromDate: values.date[0].$d.toLocaleDateString(),
             toDate: values.date[1].$d.toLocaleDateString(),
             status: values.status
         });
-        getDepositTransaction(user.id, searchData)
-            .then((res) => {
-                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setDataTable(res.data.result)
-                } else {
-                    openNotification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
-                }
-            })
-            .catch((err) => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
-            })
-            .finally(() => {
-                setTimeout(() => { setLoading(false) }, 500)
-            })
-
     };
 
-    const handleSelectStatus = (value) => {
-        if (value === 1) {
-            setDisablePaidDateSelect(false)
-        } else {
-            setDisablePaidDateSelect(true);
-        }
-        setSelectedStatus(value)
-    }
 
 
     return (
@@ -304,14 +199,14 @@ function HistoryDeposit() {
                         </Form.Item>
 
                         <Form.Item label="Trạng thái" labelAlign="left" name="status">
-                            <Select onChange={(value) => { handleSelectStatus(value) }} defaultValue={selectedStatus}>
+                            <Select >
                                 <Select.Option value={0}>Tất cả</Select.Option>
                                 <Select.Option value={1}>Thành công</Select.Option>
                                 <Select.Option value={2}>Đang chờ chuyển khoản</Select.Option>
                             </Select>
                         </Form.Item>
 
-                        <Form.Item style={{ position: 'absolute', top: 60, left: 550 }}>
+                        <Form.Item style={{ position: 'absolute', top: 110, left: 550 }}>
                             <Space>
                                 <Button type="primary" htmlType="submit">
                                     Tìm kiếm
@@ -320,7 +215,7 @@ function HistoryDeposit() {
                         </Form.Item>
                     </Form>
 
-                    <Table columns={columns} pagination={{ size: 10 }} dataSource={dataTable} />
+                    <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} />
                 </Card>
             </Spinning>
         </>

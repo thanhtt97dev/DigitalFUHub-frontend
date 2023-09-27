@@ -1,15 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-
+import React, { useEffect, useState } from "react";
 import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, notification, Select } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
-
+import dayjs from 'dayjs';
 import { useAuthUser } from 'react-auth-kit'
 
 import { getDepositTransaction } from '~/api/bank'
 import Spinning from "~/components/Spinning";
+import ModalRequestWithdraw from "~/components/Modals/ModalRequestWithdraw";
 import { formatStringToCurrencyVND, ParseDateTime } from '~/utils/index'
-import dayjs from 'dayjs';
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 
 const { RangePicker } = DatePicker;
@@ -68,14 +66,14 @@ const columns = [
                 record.isPay ?
                     <Tag color="#52c41a">Thành công</Tag>
                     :
-                    <Tag color="##ec0b0b">Đang chờ chuyển khoản</Tag>
+                    <Tag color="#ec0b0b">Đang chờ chuyển khoản</Tag>
             )
         }
     },
+
 ];
 
 function HistoryWithdraw() {
-
     const auth = useAuthUser()
     const user = auth();
     const [loading, setLoading] = useState(true)
@@ -91,16 +89,10 @@ function HistoryWithdraw() {
     const [dataTable, setDataTable] = useState([]);
     const [searchData, setSearchData] = useState({
         depositTransactionId: '',
-        fromRequestDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
-        toRequestDate: dayjs().format('M/D/YYYY'),
-        fromPaidDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
-        toPaidDate: dayjs().format('M/D/YYYY'),
+        fromDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
+        toDate: dayjs().format('M/D/YYYY'),
         status: 0
     });
-    const [disablePaidDateSelect, setDisablePaidDateSelect] = useState(true)
-    const [selectedStatus, setSelectedStatus] = useState(0)
-
-
 
     useEffect(() => {
         getDepositTransaction(user.id, searchData)
@@ -119,7 +111,7 @@ function HistoryWithdraw() {
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [searchData])
 
     const initFormValues = [
         {
@@ -127,12 +119,12 @@ function HistoryWithdraw() {
             value: searchData.depositTransactionId,
         },
         {
-            name: 'requestDate',
-            value: [dayjs(searchData.fromPaidDate, 'M/D/YYYY'), dayjs(searchData.toPaidDate, 'M/D/YYYY')]
+            name: 'date',
+            value: [dayjs(searchData.fromDate, 'M/D/YYYY'), dayjs(searchData.toDate, 'M/D/YYYY')]
         },
         {
-            name: 'paidDate',
-            value: [dayjs(searchData.fromPaidDate, 'M/D/YYYY'), dayjs(searchData.toPaidDate, 'M/D/YYYY')]
+            name: 'status',
+            value: searchData.status
         },
     ];
 
@@ -143,43 +135,15 @@ function HistoryWithdraw() {
             setLoading(false);
             return;
         }
-        if (selectedStatus === 1) {
 
-        }
-        setDataTable([])
         setSearchData({
             depositTransactionId: values.depositTransactionId,
-            fromRequestDate: values.requestDate[0].$d.toLocaleDateString(),
-            toRequestDate: values.requestDate[1].$d.toLocaleDateString(),
-            fromPaidDate: values.paidDate[0].$d.toLocaleDateString(),
-            toPaidDate: values.paidDate[1].$d.toLocaleDateString(),
+            fromDate: values.date[0].$d.toLocaleDateString(),
+            toDate: values.date[1].$d.toLocaleDateString(),
             status: values.status
         });
-        getDepositTransaction(user.id, searchData)
-            .then((res) => {
-                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setDataTable(res.data.result)
-                } else {
-                    openNotification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
-                }
-            })
-            .catch((err) => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
-            })
-            .finally(() => {
-                setTimeout(() => { setLoading(false) }, 500)
-            })
-
     };
 
-    const handleSelectStatus = (value) => {
-        if (value === 1) {
-            setDisablePaidDateSelect(false)
-        } else {
-            setDisablePaidDateSelect(true);
-        }
-        setSelectedStatus(value)
-    }
 
 
     return (
@@ -214,29 +178,21 @@ function HistoryWithdraw() {
                             <Input />
                         </Form.Item>
 
-                        <Form.Item label="Thời gian tạo yêu cầu" labelAlign="left" name="requestDate">
+                        <Form.Item label="Thời gian tạo yêu cầu" labelAlign="left" name="date">
                             <RangePicker locale={locale}
                                 format={"M/D/YYYY"}
                                 placement={"bottomLeft"} />
                         </Form.Item>
 
-                        <Form.Item label="Thời gian chuyển khoản" labelAlign="left" name="paidDate">
-                            <RangePicker locale={locale}
-                                format={"M/D/YYYY"}
-                                placement={"bottomLeft"}
-                                disabled={disablePaidDateSelect}
-                            />
-                        </Form.Item>
-
                         <Form.Item label="Trạng thái" labelAlign="left" name="status">
-                            <Select onChange={(value) => { handleSelectStatus(value) }} defaultValue={selectedStatus}>
+                            <Select >
                                 <Select.Option value={0}>Tất cả</Select.Option>
                                 <Select.Option value={1}>Thành công</Select.Option>
                                 <Select.Option value={2}>Đang chờ chuyển khoản</Select.Option>
                             </Select>
                         </Form.Item>
 
-                        <Form.Item style={{ position: 'absolute', top: 60, left: 550 }}>
+                        <Form.Item style={{ position: 'absolute', top: 110, left: 550 }}>
                             <Space>
                                 <Button type="primary" htmlType="submit">
                                     Tìm kiếm
@@ -244,8 +200,9 @@ function HistoryWithdraw() {
                             </Space>
                         </Form.Item>
                     </Form>
+                    <ModalRequestWithdraw userId={user.id} />
 
-                    <Table columns={columns} pagination={{ size: 10 }} dataSource={dataTable} />
+                    <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} />
                 </Card>
             </Spinning>
         </>
