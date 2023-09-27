@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react"
-import { Col, Row, Image, Button, Typography, Divider, Space, Spin, Tag } from 'antd';
+import { Col, Row, Image, Button, Typography, Divider, Space, Spin, Tag, Skeleton } from 'antd';
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss'
-import { HeartOutlined, BellOutlined, SyncOutlined } from '@ant-design/icons';
+import { HeartOutlined, BellOutlined, SyncOutlined, CreditCardOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { getProductById } from '~/api/product';
 import { formatPrice } from '~/utils'
 
@@ -66,7 +66,7 @@ const ProductVariantDetail = ({ product, productVariants, handleSelectProductVar
                 >
                     <div>
                         <Title level={3}>{product.productName} ({productVariantsSelected.name})</Title>
-                        <div style={{ display: 'flex', marginBottom: 10 }}>
+                        <div className={cx('space-div-flex')}>
                             <Text strong>Tình trạng: </Text>
                             &nbsp;&nbsp;
                             {
@@ -82,7 +82,7 @@ const ProductVariantDetail = ({ product, productVariants, handleSelectProductVar
                                 <Tags tags={product.tags} />
                             </div>
                         </div>
-                        <div style={{ display: 'flex', marginBottom: 10 }}>
+                        <div className={cx('space-div-flex')}>
                             <Title level={4}><PriceFormat price={productVariantsSelected.price} /></Title>
                             &nbsp;&nbsp;
                             <Button title="Đăng nhập và đăng ký nhận thông báo khi sản phẩm giảm giá"><BellOutlined /></Button>
@@ -90,7 +90,7 @@ const ProductVariantDetail = ({ product, productVariants, handleSelectProductVar
                             <Button title="Đăng nhập và thêm vào danh sách yêu thích"><HeartOutlined /></Button>
                         </div>
                         <div
-                            style={{ display: 'flex', marginBottom: 10, alignItems: 'center' }}
+                            className={cx('space-div-flex')}
                         >
                             <Text delete strong type="secondary"
                                 style={{ fontSize: 15 }}
@@ -102,14 +102,46 @@ const ProductVariantDetail = ({ product, productVariants, handleSelectProductVar
                             <Title level={4}>Chọn thời hạn</Title>
                             <GridItems productVariants={productVariants} handleSelectProductVariant={handleSelectProductVariant} />
                         </div>
+                        <Divider />
+                        <div
+
+                        >
+                            <Button className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
+                                Mua ngay
+                            </Button>
+                            <Button className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
+                                Thêm vào giỏ
+                            </Button>
+                        </div>
                     </div>
 
                 </Col>
-            </>) : (<div className={cx('loading-space')}>
-                <Space size="middle">
-                    <Spin size="large" />
-                </Space>
-            </div>)}
+            </>) : (<Skeleton active />)}
+        </Row>
+    )
+}
+
+
+const ProductDescription = ({ product }) => {
+    return (
+        <Row
+        >
+            {
+
+                product ? (<>
+                    <Col span={5}>
+                        <Title level={4}>Chi tiết sản phẩm</Title>
+                    </Col>
+                    <Col span={19}
+                        style={{ display: 'flex', alignItems: 'center' }}
+                    >
+                        <Text>{product.description}</Text>
+                    </Col>
+                </>) : (<>
+                    <Skeleton active />
+                </>)
+            }
+
         </Row>
     )
 }
@@ -139,7 +171,7 @@ const ProductDetail = () => {
                 })
         }
 
-        getDetailProduct();
+        //getDetailProduct();
     }, [])
 
 
@@ -150,6 +182,9 @@ const ProductDetail = () => {
                 productVariants={productVariants}
                 handleSelectProductVariant={handleSelectProductVariant}
                 productVariantsSelected={productVariantsSelected} />
+            <Divider />
+            <ProductDescription product={product} />
+            <Divider />
         </>
     )
 }
