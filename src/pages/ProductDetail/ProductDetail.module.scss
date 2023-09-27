@@ -24,3 +24,13 @@
 .grid-item {
     text-align: center;
 }
+
+.loading-space {
+    text-align: center;
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}

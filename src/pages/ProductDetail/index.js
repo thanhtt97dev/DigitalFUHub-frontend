@@ -1,19 +1,56 @@
-import React, { useState } from "react"
-import { Col, Row, Image, Button, Typography, Divider } from 'antd';
+import React, { useState, useEffect } from "react"
+import { Col, Row, Image, Button, Typography, Divider, Space, Spin, Tag } from 'antd';
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss'
-import { HeartOutlined, BellOutlined } from '@ant-design/icons';
+import { HeartOutlined, BellOutlined, SyncOutlined } from '@ant-design/icons';
+import { getProductById } from '~/api/product';
+import { formatPrice } from '~/utils'
 
 const cx = classNames.bind(styles);
-const { Title, Text, Link } = Typography;
+const { Title, Text } = Typography;
 
+const ProductVariantDetail = ({ product, productVariants, handleSelectProductVariant, productVariantsSelected }) => {
 
-const ProductDetail = () => {
-    const [product, setProduct] = useState('')
+    const TagFormat = ({ name }) => (
+        <Tag color="cyan">{name}</Tag>
+    )
+
+    const Tags = ({ tags }) => (
+        <>
+            {tags ? (
+                tags.map(item => <TagFormat key={item.tagId} name={item.tagName} />)
+            ) : (
+                <Tag icon={<SyncOutlined spin />} color="processing">
+                    loading
+                </Tag>
+            )}
+        </>
+    )
+
+    const GridItems = ({ productVariants, handleSelectProductVariant }) => (
+        <div className={cx('grid-container')}>
+            {productVariants ? (
+                productVariants.map((item) =>
+                    <div className={cx('grid-item')} key={item.productVariantId}><Button onClick={() => handleSelectProductVariant(item)}>{item.name}</Button></div>)
+            ) : (
+                <Spin />
+            )}
+        </div>
+    )
+
+    const PriceFormat = ({ price }) => {
+        const formattedPrice = formatPrice(price);
+        return formattedPrice;
+    }
+
+    const discountPrice = (price, discount) => {
+        const result = price * discount / 100
+        return (price - result)
+    }
 
     return (
-        <>
-            <Row>
+        <Row>
+            {product ? (<>
                 <Col span={10}
                     style={{ padding: 10 }}
                 >
@@ -28,35 +65,25 @@ const ProductDetail = () => {
                     style={{ padding: 10 }}
                 >
                     <div>
-                        <Title level={3}>Tài khoản nghe nhạc Spotify Premium (1 năm)</Title>
+                        <Title level={3}>{product.productName} ({productVariantsSelected.name})</Title>
                         <div style={{ display: 'flex', marginBottom: 10 }}>
                             <Text strong>Tình trạng: </Text>
                             &nbsp;&nbsp;
-                            <Text type="danger" strong>Hết hàng</Text>
+                            {
+                                productVariantsSelected.quantity > 0 ?
+                                    (<Text type="success" strong>Còn hàng</Text>)
+                                    : (<Text type="danger" strong>Hết hàng</Text>)
+                            }
                         </div>
                         <div style={{ display: 'flex', marginBottom: 20 }}>
                             <Text strong>Thể loại: </Text>
                             &nbsp;&nbsp;
                             <div>
-                                <Link href="https://ant.design" target="_blank">
-                                    App,
-                                </Link>
-                                &nbsp;
-                                <Link href="https://ant.design" target="_blank">
-                                    Giải trí,
-                                </Link>
-                                &nbsp;
-                                <Link href="https://ant.design" target="_blank">
-                                    Spotify,
-                                </Link>
-                                &nbsp;
-                                <Link href="https://ant.design">
-                                    Nghe nhạc
-                                </Link>
+                                <Tags tags={product.tags} />
                             </div>
                         </div>
                         <div style={{ display: 'flex', marginBottom: 10 }}>
-                            <Title level={4}>25.000đ</Title>
+                            <Title level={4}><PriceFormat price={productVariantsSelected.price} /></Title>
                             &nbsp;&nbsp;
                             <Button title="Đăng nhập và đăng ký nhận thông báo khi sản phẩm giảm giá"><BellOutlined /></Button>
                             &nbsp;&nbsp;
@@ -67,26 +94,62 @@ const ProductDetail = () => {
                         >
                             <Text delete strong type="secondary"
                                 style={{ fontSize: 15 }}
-                            >59.000đ</Text>
-                            <div className={cx('red-box')}><p className={cx('text-discount')}>-58%</p></div>
+                            >{<PriceFormat price={discountPrice(productVariantsSelected.price, product.discount)} />}</Text>
+                            <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
                         </div>
                         <Divider />
                         <div>
                             <Title level={4}>Chọn thời hạn</Title>
-                            <div className={cx('grid-container')}>
-                                <div className={cx('grid-item')}><Button>TK 1 Tuần</Button></div>
-                                <div className={cx('grid-item')}><Button>TK 1 Tháng</Button></div>
-                                <div className={cx('grid-item')}><Button>TK 3 Tháng</Button></div>
-                                <div className={cx('grid-item')}><Button>TK 4 Tháng</Button></div>
-                                <div className={cx('grid-item')}><Button>TK Nghe nhạc khác</Button></div>
-                                <div className={cx('grid-item')}><Button>TK 4 Tháng</Button></div>
-                                <div className={cx('grid-item')}><Button>TK 4 Tháng</Button></div>
-                            </div>
+                            <GridItems productVariants={productVariants} handleSelectProductVariant={handleSelectProductVariant} />
                         </div>
                     </div>
 
                 </Col>
-            </Row>
+            </>) : (<div className={cx('loading-space')}>
+                <Space size="middle">
+                    <Spin size="large" />
+                </Space>
+            </div>)}
+        </Row>
+    )
+}
+
+
+const ProductDetail = () => {
+    const initialProductId = 1;
+    const [product, setProduct] = useState(null)
+    const [productVariants, setProductVariants] = useState([])
+    const [productVariantsSelected, setProductVariantsSelected] = useState(null)
+
+    const handleSelectProductVariant = (item) => {
+        setProductVariantsSelected(item)
+        console.log('item is: ' + JSON.stringify(item))
+    }
+
+    useEffect(() => {
+        const getDetailProduct = () => {
+            getProductById(initialProductId)
+                .then((response) => {
+                    setProduct(response.data)
+                    setProductVariants([...response.data.productVariants])
+                    setProductVariantsSelected(response.data.productVariants[0])
+                })
+                .catch((errors) => {
+                    console.log(errors)
+                })
+        }
+
+        getDetailProduct();
+    }, [])
+
+
+    return (
+        <>
+            <ProductVariantDetail
+                product={product}
+                productVariants={productVariants}
+                handleSelectProductVariant={handleSelectProductVariant}
+                productVariantsSelected={productVariantsSelected} />
         </>
     )
 }

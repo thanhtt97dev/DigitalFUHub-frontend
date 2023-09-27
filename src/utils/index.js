@@ -241,6 +241,7 @@ export function readDataFileExcelImportProduct(file) {
         }
     })
 
+
     // wb.xlsx.readFile(buffer).then(() => {
 
     //     const ws = wb.getWorksheet('Sheet1');
@@ -261,5 +262,15 @@ export function readDataFileExcelImportProduct(file) {
     // }).catch(err => {
     //     console.log(err.message);
     // });
+}
+
+
+export function formatPrice(price) {
+    return price.toLocaleString('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+        minimumFractionDigits: 0, // Số lẻ sau dấu phẩy
+        maximumFractionDigits: 0, // Số lẻ sau dấu phẩy
+    });
 }
 
