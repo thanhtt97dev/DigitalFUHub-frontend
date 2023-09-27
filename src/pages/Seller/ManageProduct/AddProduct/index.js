@@ -158,9 +158,19 @@ function AddProduct() {
                 >
                     <Input placeholder='Tên sản phẩm' />
                 </Form.Item>
+                <Form.Item name='description' label="Mô tả:"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Mô tả sản phẩm không để trống.'
+                        }
+                    ]}
+                >
+                    <Input.TextArea rows={4} />
+                </Form.Item>
                 <UploadThumbnail />
                 <UploadImagesProduct />
-                <Form.Item label="Danh mục:"
+                <Form.Item name='category' label="Danh mục:"
                     rules={
                         [{
                             required: true,
@@ -174,7 +184,7 @@ function AddProduct() {
                     </Select>
                 </Form.Item>
                 <UploadProductType handleGetDataFileChange={handleDataFileChange} />
-                <Form.Item name='tagsProduct' label="Nhãn:"
+                <Form.Item name='tagsProduct' label="Nhãn:" required={true}
                     rules={[
                         (getFieldValue) => ({
                             validator(_, value) {

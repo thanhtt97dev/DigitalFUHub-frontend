@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { Space, Modal, Upload, Input, Tag, Tooltip, theme, Form, Button, InputNumber } from "antd";
+import { Space, Modal, Upload, Input, Tag, Tooltip, theme, Form, Button, InputNumber, Table } from "antd";
 import { PlusOutlined, MinusCircleOutlined, UploadOutlined } from "@ant-design/icons";
+import { readDataFileExcelImportProduct } from "~/utils";
 
 
 const getBase64 = (file) =>
@@ -296,8 +297,10 @@ function AddTagProduct({ handleTagsChange }) {
 
 function UploadProductType({ handleGetDataFileChange }) {
 
+    const [dataFileRead, setDataFileRead] = useState([])
     const btnAddRef = useRef();
     const btnUploadClickIndexRef = useRef();
+    const [openModal, setOpenModel] = useState(false)
 
 
     const [dataFile, setDataFile] = useState([]);
@@ -344,6 +347,14 @@ function UploadProductType({ handleGetDataFileChange }) {
 
         }
     }
+    const handlePreviewDataFile = (index) => {
+        const file = dataFile[index].originFileObj;
+        readDataFileExcelImportProduct(file)
+            .then(res => setDataFileRead(res));
+        setOpenModel(true);
+    }
+
+
     handleGetDataFileChange(dataFile);
 
     return (<Form.List name="typeProduct">
@@ -390,7 +401,7 @@ function UploadProductType({ handleGetDataFileChange }) {
                         </Form.Item>
                         <Form.Item
                             {...restField}
-                            name={[name, 'last']}
+                            name={[name, 'dataFile']}
                             rules={[
                                 {
                                     required: true,
@@ -404,7 +415,15 @@ function UploadProductType({ handleGetDataFileChange }) {
                                     fileList={dataFile[name] ? [dataFile[name]] : []}>
                                     {dataFile[name] === undefined && <Button onClick={() => btnUploadClickIndexRef.current = name} icon={<UploadOutlined />}>Tải lên</Button>}
                                 </Upload>
+                                {dataFile[name] !== undefined &&
+                                    <div onClick={(e) => {
+                                        handlePreviewDataFile(name);
+                                        e.preventDefault();
+                                    }}>Xem</div>
+                                }
+
                             </Space>
+
                         </Form.Item>
                         {fields.length > 1 ? (
                             <MinusCircleOutlined onClick={() => {
@@ -418,6 +437,15 @@ function UploadProductType({ handleGetDataFileChange }) {
 
                     </Space>
                 ))}
+                <Modal style={{
+                    height: '200px'
+                }} open={openModal} title='Xem trước dữ liệu' footer={null} onCancel={() => setOpenModel(false)}>
+                    <Table
+                        rowKey={(record) => record.uid}
+                        scroll={{
+                            y: 200,
+                        }} columns={columns} dataSource={dataFileRead} />
+                </Modal >
                 <Form.Item>
                     <Button ref={btnAddRef} type="dashed" onClick={() => {
                         add();
@@ -431,5 +459,19 @@ function UploadProductType({ handleGetDataFileChange }) {
         )}
     </Form.List>);
 }
+const columns = [
+    {
+        title: 'Số thứ tự',
+        dataIndex: 'index',
+        key: 'index',
+        render: (text, record) => <div key={record.index}>{text}</div>,
+    },
+    {
+        title: 'Dữ liệu sản phẩm',
+        dataIndex: 'value',
+        key: 'value',
+        render: (text, record) => <div key={record.index}>{text}</div>,
+    }
+];
 
 export { UploadThumbnail, UploadImagesProduct, AddTagProduct, UploadProductType };

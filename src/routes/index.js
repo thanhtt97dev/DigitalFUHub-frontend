@@ -20,6 +20,7 @@ import AddProduct from '~/pages/Seller/ManageProduct/AddProduct';
 import ProductDetail from '~/pages/ProductDetail';
 import Products from '~/pages/Seller/ManageProduct/Products';
 import EditProduct from '~/pages/Seller/ManageProduct/EditProduct';
+import HistoryTransactions from '~/pages/HistoryTransactions';
 
 const routesConfig = [
     {
@@ -100,6 +101,13 @@ const routesConfig = [
         path: '/deposit',
         layout: <NormalLayout />,
         component: <Deposit />,
+    },
+    {
+        title: 'History Transaction',
+        path: '/historyTransaction',
+        layout: <NormalLayout />,
+        component: <HistoryTransactions />,
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {
         title: 'Seller',
