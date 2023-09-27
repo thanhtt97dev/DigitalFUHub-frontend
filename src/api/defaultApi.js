@@ -21,6 +21,14 @@ const headerWithTokenForFile = () => {
         responseType: 'blob'
     };
 };
+const headerWithTokenForForm = () => {
+    return {
+        headers: {
+            Authorization: `Bearer ${getTokenInCookies()}`,
+            'Content-Type': "multipart/form-data"
+        },
+    };
+};
 
 
 
@@ -49,6 +57,10 @@ export const apiPost = async (url, data) => {
 };
 export const apiPostForm = async (url, data) => {
     const response = axios.post(url, data, { "Content-Type": "multipart/form-data" },);
+    return response;
+};
+export const apiPostAuthForm = async (url, data) => {
+    const response = axios.post(url, data, headerWithTokenForForm());
     return response;
 };
 

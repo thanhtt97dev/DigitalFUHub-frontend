@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from "react";
 import { Space, Modal, Upload, Input, Tag, Tooltip, theme, Form, Button, InputNumber, Table } from "antd";
 import { PlusOutlined, MinusCircleOutlined, UploadOutlined } from "@ant-design/icons";
 import { readDataFileExcelImportProduct } from "~/utils";
@@ -60,6 +60,7 @@ function UploadThumbnail() {
                     onPreview={handleThumbnailPreview}
                     onChange={handleThumbnailChange}
                     maxCount={1}
+                    accept="image/*"
                 >
                     {thumbnailFile.length < 1 ? <div>
                         <PlusOutlined />
@@ -134,6 +135,7 @@ function UploadImagesProduct() {
                     onChange={handleImgProdChange}
                     multiple={true}
                     maxCount={5}
+                    accept="image/*"
                 >
                     {fileImgProdList.length < 5 ? <div>
                         <PlusOutlined />
@@ -295,15 +297,23 @@ function AddTagProduct({ handleTagsChange }) {
 }
 
 
-function UploadProductType({ handleGetDataFileChange }) {
+function UploadProductType({ handleGetDataFileChange }, ref) {
 
     const [dataFileRead, setDataFileRead] = useState([])
     const btnAddRef = useRef();
     const btnUploadClickIndexRef = useRef();
     const [openModal, setOpenModel] = useState(false)
-
-
     const [dataFile, setDataFile] = useState([]);
+
+    useImperativeHandle(ref, () => {
+        return {
+            addFirstItem() {
+                btnAddRef.current.click();
+                setDataFile([])
+            }
+        }
+    })
+
     useEffect(() => {
         btnAddRef.current.click();
     }, [])
@@ -411,6 +421,7 @@ function UploadProductType({ handleGetDataFileChange }) {
                         >
                             <Space direction='horizontal' align='start'>
                                 <Upload
+                                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                                     onChange={handleDataFileChange}
                                     fileList={dataFile[name] ? [dataFile[name]] : []}>
                                     {dataFile[name] === undefined && <Button onClick={() => btnUploadClickIndexRef.current = name} icon={<UploadOutlined />}>Tải lên</Button>}
@@ -473,5 +484,5 @@ const columns = [
         render: (text, record) => <div key={record.index}>{text}</div>,
     }
 ];
-
-export { UploadThumbnail, UploadImagesProduct, AddTagProduct, UploadProductType };
+export default forwardRef(UploadProductType)
+export { UploadThumbnail, UploadImagesProduct, AddTagProduct, };

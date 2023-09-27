@@ -135,7 +135,7 @@ const routesConfig = [
         path: '/seller/product/new',
         layout: <SellerLayout />,
         component: <AddProduct />,
-        // role: [SELLER_ROLE],
+        role: [SELLER_ROLE],
     },
     {
         title: 'Seller product detail (Edit)',
