@@ -118,13 +118,77 @@ export const formatTimeAgoVN = (time) => {
     //console.log('time: ' + format('2023-08-20T10:30:00', 'hn_VN'));
 };
 
-export const decodeGoogleCredential = (credential) => {
-    return jwtDecode(credential);
-}
 
-export function encryptPassword(password) {
-    var hash = CryptoJS.SHA256(password);
-    return hash.toString(CryptoJS.enc.Hex)
+export function formatStringToCurrencyVND(number) {
+    number = number + "";
+    var length = number.length;
+    var count = 0;
+    if (length % 3 === 0) {
+        count = -1;
+    } else {
+        count = 0;
+    }
+    for (let i = length - 1; i >= 0; i--) {
+        if ((i + 1) % 3 === 0) {
+            count++
+        }
+    }
+    var result = number.split("");
+    var mod = number.length % 3;
+    var positions = [];
+    let position = 0;
+    for (let i = 0; i <= count; i++) {
+        if (mod % 3 === 0) {
+            position = 0;
+            if (i === 0) continue;
+            if (i === 1) {
+                position = i * 3;
+            } else {
+                position = i * 3 + i - 1;
+            }
+            positions.push(position);
+        } else {
+            if (i === count) continue;
+            position = 0;
+            if (i === 0) {
+                position = i * 3 + mod
+            } else {
+                position = i * 3 + mod + i
+            }
+            positions.push(position);
+        }
+    }
+    let temp;
+    for (let i = 0; i < positions.length; i++) {
+        var array = [","];
+        result = result.concat(array);
+        if (mod % 3 === 0) {
+            temp = result[positions[i]];
+            for (let j = result.length - 1; j >= 0; j--) {
+                if (j >= positions[i]) {
+                    result[j] = result[j - 1]
+                }
+            }
+            result[positions[i] - 1] = temp;
+            result[positions[i]] = ",";
+        } else {
+            temp = result[0];
+            for (let j = result.length - 1; j > mod; j--) {
+                if (j >= positions[i]) {
+                    result[j] = result[j - 1]
+                }
+            }
+
+            result[positions[i]] = ",";
+        }
+
+
+    }
+    var x = "";
+    for (let i = 0; i < result.length; i++) {
+        x += result[i];
+    }
+    return x;
 }
 
 export function ParseDateTime(inputDate) {
@@ -139,6 +203,15 @@ export function ParseDateTime(inputDate) {
 
     const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     return formattedDate;
+}
+
+export const decodeGoogleCredential = (credential) => {
+    return jwtDecode(credential);
+}
+
+export function encryptPassword(password) {
+    var hash = CryptoJS.SHA256(password);
+    return hash.toString(CryptoJS.enc.Hex)
 }
 
 export function regexPattern(value, pattern) {
