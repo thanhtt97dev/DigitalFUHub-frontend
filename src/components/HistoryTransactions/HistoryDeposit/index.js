@@ -17,7 +17,7 @@ const { RangePicker } = DatePicker;
 
 const columns = [
     {
-        title: 'Mã hóa đơn',
+        title: 'Mã giao dịch',
         dataIndex: 'depositTransactionId',
         width: '10%',
     },
@@ -188,7 +188,7 @@ function HistoryDeposit() {
                         onFinish={onFinish}
                         fields={initFormValues}
                     >
-                        <Form.Item label="Mã hóa đơn" labelAlign="left" name="depositTransactionId">
+                        <Form.Item label="Mã giao dịch" labelAlign="left" name="depositTransactionId">
                             <Input />
                         </Form.Item>
 
