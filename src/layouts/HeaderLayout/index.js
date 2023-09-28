@@ -2,16 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
 import { Layout, Image, Space, Button, Dropdown, Avatar } from 'antd';
-
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
-import { MessageOutlined } from '@ant-design/icons';
+import { MessageOutlined, ShoppingCartOutlined, WechatOutlined, BellFilled } from '@ant-design/icons';
 
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
 import { ADMIN_ROLE, CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ModalRequestDeposit from '../../components/Modals/ModalRequestDeposit';
 import AccountBalance from '../../components/AccountBalance';
+
+import classNames from 'classnames/bind';
+import styles from './HeaderLayout.module.scss';
+
+const cx = classNames.bind(styles);
 
 const { Header } = Layout;
 
@@ -76,35 +80,25 @@ function HeaderLayout() {
 
     return (
         <>
-            <Header
-                style={{
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 1,
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: '#dfe1e3',
-                    justifyContent: 'space-between',
-                }}
-            >
+            <Header className={cx("header")}>
                 <Space>
                     <Image width={60} src={logo} />
-                    <Link to={'/home'}>
-                        <h5>MelodyMix</h5>
+                    <Link to={'/home'} className={cx("link")}>
+                        <h3>DigitalFUHub</h3>
                     </Link>
-                    <Link to={"/accessdenied"}>test</Link>
                 </Space>
-
 
                 <Space size={12}>
                     {user === null ? (
                         <Space>
-                            <Link to={'/signup'}>
-                                <Button type="primary">SignUp</Button>
-                            </Link>
+                            <ShoppingCartOutlined className={cx("icon")} />
+                            <WechatOutlined className={cx("icon")} />
+                            <BellFilled className={cx("icon")} />
                             <Link to={'/Login'}>
-                                <Button type="primary">Login</Button>
+                                <Button type="primary" className={cx("button")}>Đăng nhập</Button>
+                            </Link>
+                            <Link to={'/signup'}>
+                                <Button type="primary" className={cx("button")}>Đăng ký</Button>
                             </Link>
                         </Space>
                     ) : (

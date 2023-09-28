@@ -1,0 +1,24 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: #F1F1F1;
+  justify-content: space-between;
+}
+
+.link {
+  color: #000;
+}
+
+.icon {
+  font-size: 25px;
+  padding-right: 10px;
+  padding-top: 20px;
+}
+
+.button {
+  background-color: #000;
+}
