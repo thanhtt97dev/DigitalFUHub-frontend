@@ -6,8 +6,11 @@ import {
     MenuUnfoldOutlined,
     UserOutlined,
     GlobalOutlined,
-    BankOutlined
+    BankOutlined,
+    ShopOutlined
 } from '@ant-design/icons';
+import { CUSTOMER_ROLE } from '~/constants';
+import { useAuthUser } from 'react-auth-kit';
 
 
 
@@ -30,10 +33,17 @@ const items = [
         label: 'Tài khoản ngân hàng',
         link: '/settings/bankAccount',
     },
+    {
+        icon: ShopOutlined,
+        label: 'Đăng ký bán hàng',
+        link: '/settings/registerSeller',
+        // role: CUSTOMER_ROLE
+    },
 ]
 
 function SettingsLayout({ children }) {
-
+    const auth = useAuthUser();
+    const user = auth();
     const {
         token: { colorBgContainer },
     } = theme.useToken();
@@ -64,12 +74,23 @@ function SettingsLayout({ children }) {
                         theme="light"
                         inlineCollapsed={collapsed}
                         style={{ height: "100vh" }}
-                        items={items.map((item, index) => ({
-                            key: String(index + 1),
-                            icon: React.createElement(item.icon),
-                            label: <Link to={item.link}>{item.label}</Link>,
-                        }))}
-
+                        items={items.map((item, index) => {
+                            if (!item.role) {
+                                return {
+                                    key: String(index + 1),
+                                    icon: React.createElement(item.icon),
+                                    label: <Link to={item.link}>{item.label}</Link>,
+                                }
+                            } else {
+                                if (user.role === item.role) {
+                                    return {
+                                        key: String(index + 1),
+                                        icon: React.createElement(item.icon),
+                                        label: <Link to={item.link}>{item.label}</Link>,
+                                    }
+                                }
+                            }
+                        })}
                     />
                 </Sider>
                 <Content >
