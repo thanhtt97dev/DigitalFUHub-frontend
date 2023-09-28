@@ -4,25 +4,26 @@ import locale from 'antd/es/date-picker/locale/vi_VN';
 import dayjs from 'dayjs';
 import { useAuthUser } from 'react-auth-kit'
 
-import { getDepositTransaction } from '~/api/bank'
+import { getWithdrawTransaction } from '~/api/bank'
 import Spinning from "~/components/Spinning";
 import ModalRequestWithdraw from "~/components/Modals/ModalRequestWithdraw";
 import { formatStringToCurrencyVND, ParseDateTime } from '~/utils/index'
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import DrawerWithdrawTransactionBill from "~/components/Drawers/DrawerWithdrawTransactionBill";
 
 const { RangePicker } = DatePicker;
 
 
 const columns = [
     {
-        title: 'Mã hóa đơn',
-        dataIndex: 'depositTransactionId',
-        width: '10%',
+        title: 'Mã giao dịch',
+        dataIndex: 'withdrawTransactionId',
+        width: '11%',
     },
     {
         title: 'Số tiền',
         dataIndex: 'amount',
-        width: '15%',
+        width: '20%',
         render: (amount) => {
             return (
                 <p>{formatStringToCurrencyVND(amount)} VND</p>
@@ -40,33 +41,43 @@ const columns = [
         }
     },
     {
-        title: 'Thời gian chuyển khoản',
-        dataIndex: 'paidDate',
-        width: '15%',
-        render: (paidDate, record) => {
-            return (
-                record.isPay ?
-                    <p>{ParseDateTime(paidDate)}</p>
-                    :
-                    <p>TBD</p>
-            )
-        }
+        title: 'Đơn vị thụ hưởng',
+        dataIndex: 'creditAccountName',
+        width: '20%',
     },
     {
-        title: 'Nội dung chuyển khoản',
-        dataIndex: 'code',
+        title: 'Số tài khoản',
+        dataIndex: 'creditAccount',
+        width: '15%',
+    },
+    {
+        title: 'Ngân hàng đối tác',
+        dataIndex: 'bankName',
         width: '15%',
     },
     {
         title: 'Trạng thái',
         dataIndex: 'isPay',
-        width: '15%',
+        width: '5%',
         render: (paidDate, record) => {
             return (
                 record.isPay ?
                     <Tag color="#52c41a">Thành công</Tag>
                     :
-                    <Tag color="#ec0b0b">Đang chờ chuyển khoản</Tag>
+                    <Tag color="#ecc30b">Đang xử lý yêu cầu</Tag>
+            )
+        }
+    },
+    {
+        title: '',
+        dataIndex: 'isPay',
+        width: '5%',
+        render: (isPay, record) => {
+            return (
+                isPay ?
+                    <DrawerWithdrawTransactionBill withdrawTransactionId={record.withdrawTransactionId} />
+                    :
+                    ""
             )
         }
     },
@@ -95,7 +106,7 @@ function HistoryWithdraw() {
     });
 
     useEffect(() => {
-        getDepositTransaction(user.id, searchData)
+        getWithdrawTransaction(user.id, searchData)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setDataTable(res.data.result)
@@ -130,8 +141,8 @@ function HistoryWithdraw() {
 
     const onFinish = (values) => {
         setLoading(true);
-        if (values.requestDate === null) {
-            openNotification("error", "Thời gian chuyển khoản không được trống!")
+        if (values.date === null) {
+            openNotification("error", "Thời gian tạo yêu cầu không được trống!")
             setLoading(false);
             return;
         }
@@ -174,7 +185,7 @@ function HistoryWithdraw() {
                         onFinish={onFinish}
                         fields={initFormValues}
                     >
-                        <Form.Item label="Mã hóa đơn" labelAlign="left" name="depositTransactionId">
+                        <Form.Item label="Mã giao dịch" labelAlign="left" name="depositTransactionId">
                             <Input />
                         </Form.Item>
 
@@ -188,7 +199,7 @@ function HistoryWithdraw() {
                             <Select >
                                 <Select.Option value={0}>Tất cả</Select.Option>
                                 <Select.Option value={1}>Thành công</Select.Option>
-                                <Select.Option value={2}>Đang chờ chuyển khoản</Select.Option>
+                                <Select.Option value={2}>Đang xử lý yêu cầu</Select.Option>
                             </Select>
                         </Form.Item>
 

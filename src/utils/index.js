@@ -274,3 +274,19 @@ export function formatPrice(price) {
     });
 }
 
+export const getVietnamCurrentTime = () => {
+    const currentTime = new Date();
+    const vietnamTime = new Date(currentTime.getTime() + 7 * 60 * 60 * 1000);
+    return vietnamTime.toISOString();
+}
+
+export const stringGuid = () => {
+    let str = '0123456789abcdef'
+    let result = ''
+    for (let i = 0; i < 8; i++) {
+        let index = Math.floor(Math.random() * str.length)
+        result += str[index]
+    }
+    return result
+}
+

@@ -6,7 +6,7 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 
 import { createDepositTransaction } from "~/api/bank";
 
-function ModalRequestDeposit({ userId }) {
+function ModalRequestDeposit({ userId, text, style }) {
 
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
@@ -77,8 +77,9 @@ function ModalRequestDeposit({ userId }) {
             <Button
                 onClick={() => setOpenModal(true)}
                 type="primary"
+                style={style}
             >
-                Nạp tiền
+                {text === undefined ? "Nạp tiền" : text}
             </Button>
 
 

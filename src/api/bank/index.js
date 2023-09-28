@@ -33,5 +33,11 @@ export const getDepositTransaction = (id, data) => {
     return apiPostAuth(`api/banks/HistoryDeposit/${id}`, data);
 };
 
+export const getWithdrawTransaction = (id, data) => {
+    return apiPostAuth(`api/banks/HistoryWithdraw/${id}`, data);
+};
 
+export const getWithdrawTransactionBill = (id) => {
+    return apiGetAuth(`api/banks/WithdrawTransactionBill/${id}`);
+};
 

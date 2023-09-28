@@ -4,7 +4,7 @@ import { Button } from 'antd'
 import { useAuthUser } from 'react-auth-kit'
 
 import { userInfo } from '~/api/report'
-import { stringGuid } from '~/utils/string-guid'
+import { stringGuid } from '~/utils'
 import ModelDefault from '../Modal'
 
 export const ReportUserInfo = () => {

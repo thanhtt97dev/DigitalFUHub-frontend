@@ -10,6 +10,7 @@ import Spinning from "~/components/Spinning";
 import { formatStringToCurrencyVND, ParseDateTime } from '~/utils/index'
 import dayjs from 'dayjs';
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import ModalRequestDeposit from "~/components/Modals/ModalRequestDeposit";
 
 
 const { RangePicker } = DatePicker;
@@ -17,7 +18,7 @@ const { RangePicker } = DatePicker;
 
 const columns = [
     {
-        title: 'Mã hóa đơn',
+        title: 'Mã giao dịch',
         dataIndex: 'depositTransactionId',
         width: '10%',
     },
@@ -144,8 +145,8 @@ function HistoryDeposit() {
 
     const onFinish = (values) => {
         setLoading(true);
-        if (values.requestDate === null) {
-            openNotification("error", "Thời gian chuyển khoản không được trống!")
+        if (values.date === null) {
+            openNotification("error", "Thời gian tạo yêu cầu không được trống!")
             setLoading(false);
             return;
         }
@@ -188,7 +189,7 @@ function HistoryDeposit() {
                         onFinish={onFinish}
                         fields={initFormValues}
                     >
-                        <Form.Item label="Mã hóa đơn" labelAlign="left" name="depositTransactionId">
+                        <Form.Item label="Mã giao dịch" labelAlign="left" name="depositTransactionId">
                             <Input />
                         </Form.Item>
 
@@ -214,7 +215,7 @@ function HistoryDeposit() {
                             </Space>
                         </Form.Item>
                     </Form>
-
+                    <ModalRequestDeposit userId={user.id} style={{ marginTop: "10px", marginBottom: "10px" }} text={"+ Nạp tiền"} />
                     <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} />
                 </Card>
             </Spinning>

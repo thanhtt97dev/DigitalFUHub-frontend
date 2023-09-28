@@ -14,7 +14,7 @@ import {
 } from 'antd';
 import connectionHub from '~/api/signalr/connectionHub';
 import { useAuthUser } from 'react-auth-kit';
-import { getSenderConversations, getListMessage, sendMessage } from '~/api/chat';
+import { getSenderConversations, getListMessage, sendMessage, existUserConversation } from '~/api/chat';
 import {
     SendOutlined,
     FileImageOutlined
@@ -23,6 +23,8 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss'
 import moment from 'moment'
+import { useLocation } from 'react-router-dom';
+import { getVietnamCurrentTime } from '~/utils'
 
 import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE } from '~/constants';
 
@@ -184,7 +186,6 @@ const InputMessageChat = ({ form,
                             placeholder="Type a message..."
                             value={newMessage}
                             onChange={handleChangeNewMessage}
-                            onPressEnter={onFinish}
                             suffix={
                                 <Button
                                     type="primary"
@@ -231,6 +232,8 @@ const LayoutMessageChat = (props) => {
 }
 
 const ChatBox = () => {
+    const location = useLocation();
+    let data = location.state?.data || null;
     const auth = useAuthUser();
     const user = auth();
     const initialSelectedUser = {
@@ -243,10 +246,12 @@ const ChatBox = () => {
     }
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [userChats, setuserChats] = useState([]);
+    const [userChats, setUserChats] = useState([]);
     const [selectedUser, setSelectedUser] = useState(initialSelectedUser);
+    const [loadData, setLoadData] = useState(false);
     const [form] = Form.useForm();
     const messagesEndRef = useRef(null);
+
 
     const normFile = (e) => {
         if (Array.isArray(e)) {
@@ -254,6 +259,38 @@ const ChatBox = () => {
         }
         return e?.fileList;
     };
+
+    useEffect(() => {
+        const addNewConversation = () => {
+            if (data) {
+                const { userId, shopId } = data
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                data = null;
+                existUserConversation(userId, shopId)
+                    .then((res) => {
+                        if (res.data === false) {
+                            var bodyFormData = new FormData();
+                            bodyFormData.append('conversationId', 0);
+                            bodyFormData.append('senderId', userId);
+                            bodyFormData.append('recipientId', shopId);
+                            bodyFormData.append('content', '');
+                            bodyFormData.append('messageType', '0');
+                            bodyFormData.append('dateCreate', getVietnamCurrentTime());
+                            sendMessage(bodyFormData)
+                                .then((res) => {
+                                    isLoadData()
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                });
+                        }
+                    })
+
+            }
+        }
+
+        addNewConversation();
+    }, [])
 
     const uploadButton = (
         <Button type="primary" shape="circle" icon={<FileImageOutlined />} size={30} />
@@ -266,20 +303,21 @@ const ChatBox = () => {
     // Handles
 
     const onFinish = (values) => {
+        console.log('onFinish')
         if (user === null || user === undefined) return;
         const { fileUpload } = values
         if ((newMessage === undefined || newMessage.length === 0) && fileUpload === undefined) return;
 
         var bodyFormData = new FormData();
-        bodyFormData.append('conversationId', selectedUser.conversationI);
+        bodyFormData.append('conversationId', selectedUser.conversationId);
         bodyFormData.append('senderId', user.id);
         bodyFormData.append('recipientId', selectedUser.userId);
         bodyFormData.append('content', newMessage);
         bodyFormData.append('messageType', '0');
-        for (var i = 0; i < fileUpload.length; i++) {
+        for (var i = 0; i < fileUpload?.length || 0; i++) {
             bodyFormData.append('fileUpload', fileUpload[i].originFileObj);
         }
-        bodyFormData.append('dateCreate', new Date());
+        bodyFormData.append('dateCreate', getVietnamCurrentTime());
 
         const messageState = {
             userId: user.id,
@@ -308,6 +346,11 @@ const ChatBox = () => {
         setNewMessage(value)
     }
 
+    const isLoadData = () => {
+        setLoadData(!loadData);
+    }
+
+
 
     useEffect(() => {
         if (selectedUser.userId === 0) return;
@@ -320,13 +363,15 @@ const ChatBox = () => {
 
     useEffect(scrollToBottom, [messages]);
 
-    useEffect(() => {
 
+    useEffect(() => {
         if (user === null || user === undefined) return;
+
         const loadUsersChatMessage = () => {
             getSenderConversations(user.id)
                 .then((response) => {
-                    setuserChats(response.data);
+                    const users = response.data
+                    setUserChats(users);
                     setSelectedUser(response.data[0] ?? initialSelectedUser)
                 })
                 .catch((errors) => {
@@ -344,6 +389,7 @@ const ChatBox = () => {
         loadUsersChatMessage();
         connection.on(SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, (response) => {
             setMessages((prev) => [...prev, response])
+            isLoadData()
         });
 
         return () => {
@@ -351,7 +397,7 @@ const ChatBox = () => {
             connection.stop();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [loadData]);
 
     const propsMessageChat = {
         selectedUser: selectedUser,
