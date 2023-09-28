@@ -229,7 +229,7 @@ const ProductDetail = () => {
                 productVariants={productVariants}
                 handleSelectProductVariant={handleSelectProductVariant}
                 productVariantsSelected={productVariantsSelected}
-                userId={user.id} />
+                userId={user?.id} />
             <Divider />
             <ProductDescription product={product} />
             <Divider />
