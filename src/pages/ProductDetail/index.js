@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from "react"
+import { useAuthUser } from 'react-auth-kit';
 import { Col, Row, Image, Button, Typography, Divider, Spin, Tag, Skeleton, Card } from 'antd';
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss'
-import { HeartOutlined, BellOutlined, SyncOutlined, CreditCardOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { HeartOutlined, BellOutlined, SyncOutlined, CreditCardOutlined, ShoppingCartOutlined, MessageOutlined } from '@ant-design/icons';
 import { getProductById } from '~/api/product';
 import { formatPrice } from '~/utils'
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 const { Title, Text } = Typography;
 
-const ProductVariantDetail = ({ product, productVariants, handleSelectProductVariant, productVariantsSelected }) => {
+const ProductVariantDetail = ({ product, productVariants, handleSelectProductVariant, productVariantsSelected, userId }) => {
+
+    const navigate = useNavigate()
 
     const TagFormat = ({ name }) => (
         <Tag color="cyan">{name}</Tag>
     )
+
+    const handleSendMessage = () => {
+        const data = {
+            userId: userId,
+            shopId: product.shopId
+        }
+        navigate('/chatBox', { state: { data: data } })
+    }
 
     const Tags = ({ tags }) => (
         <>
@@ -112,6 +124,9 @@ const ProductVariantDetail = ({ product, productVariants, handleSelectProductVar
                             <Button className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
                                 Thêm vào giỏ
                             </Button>
+                            <Button className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
+                                Nhắn tin
+                            </Button>
                         </div>
                     </div>
 
@@ -178,7 +193,9 @@ const ProductSuggestions = () => {
 
 
 const ProductDetail = () => {
-    const initialProductId = 1;
+    const auth = useAuthUser();
+    const user = auth();
+    const initialProductId = 2;
     const [product, setProduct] = useState(null)
     const [productVariants, setProductVariants] = useState([])
     const [productVariantsSelected, setProductVariantsSelected] = useState(null)
@@ -211,7 +228,8 @@ const ProductDetail = () => {
                 product={product}
                 productVariants={productVariants}
                 handleSelectProductVariant={handleSelectProductVariant}
-                productVariantsSelected={productVariantsSelected} />
+                productVariantsSelected={productVariantsSelected}
+                userId={user.id} />
             <Divider />
             <ProductDescription product={product} />
             <Divider />

@@ -23,6 +23,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss'
 import moment from 'moment'
+import { useLocation } from 'react-router-dom';
 
 import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE } from '~/constants';
 
@@ -231,6 +232,9 @@ const LayoutMessageChat = (props) => {
 }
 
 const ChatBox = () => {
+    const location = useLocation();
+    const data = location.state?.data || null;
+    console.log('data at chat box: ' + JSON.stringify(data))
     const auth = useAuthUser();
     const user = auth();
     const initialSelectedUser = {
@@ -243,10 +247,11 @@ const ChatBox = () => {
     }
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [userChats, setuserChats] = useState([]);
+    const [userChats, setUserChats] = useState([]);
     const [selectedUser, setSelectedUser] = useState(initialSelectedUser);
     const [form] = Form.useForm();
     const messagesEndRef = useRef(null);
+
 
     const normFile = (e) => {
         if (Array.isArray(e)) {
@@ -271,7 +276,7 @@ const ChatBox = () => {
         if ((newMessage === undefined || newMessage.length === 0) && fileUpload === undefined) return;
 
         var bodyFormData = new FormData();
-        bodyFormData.append('conversationId', selectedUser.conversationI);
+        bodyFormData.append('conversationId', selectedUser.conversationId);
         bodyFormData.append('senderId', user.id);
         bodyFormData.append('recipientId', selectedUser.userId);
         bodyFormData.append('content', newMessage);
@@ -298,6 +303,22 @@ const ChatBox = () => {
 
     };
 
+    const insertNewConversation = () => {
+        var bodyFormData = new FormData();
+        bodyFormData.append('conversationId', 0);
+        bodyFormData.append('senderId', user.id);
+        bodyFormData.append('recipientId', data.shopId);
+        bodyFormData.append('content', '');
+        bodyFormData.append('messageType', '0');
+        bodyFormData.append('dateCreate', new Date());
+        sendMessage(bodyFormData)
+            .then(response => {
+                setNewMessage('');
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
 
     const handleClickUser = (user) => {
         setSelectedUser(user)
@@ -321,12 +342,13 @@ const ChatBox = () => {
     useEffect(scrollToBottom, [messages]);
 
     useEffect(() => {
-
         if (user === null || user === undefined) return;
+
         const loadUsersChatMessage = () => {
             getSenderConversations(user.id)
                 .then((response) => {
-                    setuserChats(response.data);
+                    const users = response.data
+                    setUserChats(users);
                     setSelectedUser(response.data[0] ?? initialSelectedUser)
                 })
                 .catch((errors) => {
