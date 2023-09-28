@@ -4,7 +4,7 @@ import locale from 'antd/es/date-picker/locale/vi_VN';
 import dayjs from 'dayjs';
 import { useAuthUser } from 'react-auth-kit'
 
-import { getDepositTransaction } from '~/api/bank'
+import { getWithdrawTransaction } from '~/api/bank'
 import Spinning from "~/components/Spinning";
 import ModalRequestWithdraw from "~/components/Modals/ModalRequestWithdraw";
 import { formatStringToCurrencyVND, ParseDateTime } from '~/utils/index'
@@ -15,8 +15,8 @@ const { RangePicker } = DatePicker;
 
 const columns = [
     {
-        title: 'Mã hóa đơn',
-        dataIndex: 'depositTransactionId',
+        title: 'Mã giao dịch',
+        dataIndex: 'withdrawTransactionId',
         width: '10%',
     },
     {
@@ -66,7 +66,7 @@ const columns = [
                 record.isPay ?
                     <Tag color="#52c41a">Thành công</Tag>
                     :
-                    <Tag color="#ec0b0b">Đang chờ chuyển khoản</Tag>
+                    <Tag color="#ecc30b">Đang xử lý yêu cầu</Tag>
             )
         }
     },
@@ -95,7 +95,7 @@ function HistoryWithdraw() {
     });
 
     useEffect(() => {
-        getDepositTransaction(user.id, searchData)
+        getWithdrawTransaction(user.id, searchData)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setDataTable(res.data.result)
@@ -174,7 +174,7 @@ function HistoryWithdraw() {
                         onFinish={onFinish}
                         fields={initFormValues}
                     >
-                        <Form.Item label="Mã hóa đơn" labelAlign="left" name="depositTransactionId">
+                        <Form.Item label="Mã giao dịch" labelAlign="left" name="depositTransactionId">
                             <Input />
                         </Form.Item>
 
@@ -188,7 +188,7 @@ function HistoryWithdraw() {
                             <Select >
                                 <Select.Option value={0}>Tất cả</Select.Option>
                                 <Select.Option value={1}>Thành công</Select.Option>
-                                <Select.Option value={2}>Đang chờ chuyển khoản</Select.Option>
+                                <Select.Option value={2}>Đang xử lý yêu cầu</Select.Option>
                             </Select>
                         </Form.Item>
 
