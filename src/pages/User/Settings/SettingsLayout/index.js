@@ -37,7 +37,7 @@ const items = [
         icon: ShopOutlined,
         label: 'Đăng ký bán hàng',
         link: '/settings/registerSeller',
-        // role: CUSTOMER_ROLE
+        role: CUSTOMER_ROLE
     },
 ]
 
