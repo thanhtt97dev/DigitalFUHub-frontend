@@ -9,6 +9,7 @@ import Spinning from "~/components/Spinning";
 import ModalRequestWithdraw from "~/components/Modals/ModalRequestWithdraw";
 import { formatStringToCurrencyVND, ParseDateTime } from '~/utils/index'
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import DrawerWithdrawTransactionBill from "~/components/Drawers/DrawerWithdrawTransactionBill";
 
 const { RangePicker } = DatePicker;
 
@@ -67,6 +68,19 @@ const columns = [
                     <Tag color="#52c41a">Thành công</Tag>
                     :
                     <Tag color="#ecc30b">Đang xử lý yêu cầu</Tag>
+            )
+        }
+    },
+    {
+        title: '',
+        dataIndex: 'isPay',
+        width: '5%',
+        render: (isPay, record) => {
+            return (
+                isPay ?
+                    <DrawerWithdrawTransactionBill withdrawTransactionId={record.withdrawTransactionId} />
+                    :
+                    ""
             )
         }
     },
@@ -130,8 +144,8 @@ function HistoryWithdraw() {
 
     const onFinish = (values) => {
         setLoading(true);
-        if (values.requestDate === null) {
-            openNotification("error", "Thời gian chuyển khoản không được trống!")
+        if (values.date === null) {
+            openNotification("error", "Thời gian tạo yêu cầu không được trống!")
             setLoading(false);
             return;
         }
