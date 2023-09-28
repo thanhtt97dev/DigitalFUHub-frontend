@@ -1,18 +1,27 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, createContext, useContext } from "react"
 import { useAuthUser } from 'react-auth-kit';
-import { Col, Row, Image, Button, Typography, Divider, Spin, Tag, Skeleton, Card } from 'antd';
+import {
+    Col, Row, Image, Button, Typography, Divider, Spin, Tag, Skeleton, Card,
+    Avatar, List, Rate
+} from 'antd';
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss'
-import { HeartOutlined, BellOutlined, SyncOutlined, CreditCardOutlined, ShoppingCartOutlined, MessageOutlined } from '@ant-design/icons';
+import {
+    HeartOutlined, BellOutlined, SyncOutlined, CreditCardOutlined,
+    ShoppingCartOutlined, MessageOutlined,
+} from '@ant-design/icons';
 import { getProductById } from '~/api/product';
+import { getFeedbackByProductId } from '~/api/feedback';
 import { formatPrice } from '~/utils'
 import { useNavigate } from 'react-router-dom';
+import moment from 'moment'
 
 const cx = classNames.bind(styles);
 const { Title, Text } = Typography;
+const MyContext = createContext()
 
-const ProductVariantDetail = ({ product, productVariants, handleSelectProductVariant, productVariantsSelected, userId }) => {
-
+const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, userId }) => {
+    const product = useContext(MyContext);
     const navigate = useNavigate()
 
     const TagFormat = ({ name }) => (
@@ -137,7 +146,8 @@ const ProductVariantDetail = ({ product, productVariants, handleSelectProductVar
 }
 
 
-const ProductDescription = ({ product }) => {
+const ProductDescription = () => {
+    const product = useContext(MyContext);
     return (
         <Row
         >
@@ -172,6 +182,7 @@ const ProductSuggestions = () => {
         </Card>
     )
 
+
     return (
         <>
             <Row>
@@ -192,6 +203,76 @@ const ProductSuggestions = () => {
 }
 
 
+
+const ProductFeedback = ({ feedback }) => {
+    const product = useContext(MyContext);
+
+    const FormatFeedbackMedias = ({ feedbackMedias }) => (
+        feedbackMedias?.map((item, index) => (
+            <div style={{ padding: 5 }}>
+                <Image
+                    key={index}
+                    width={70}
+                    src={item.url}
+                />
+            </div>
+        ))
+    )
+
+    return (
+        <>
+            <Row>
+                <Col span={5}>
+                    <Title level={4}>Đánh giá sản phẩm</Title>
+                </Col>
+            </Row>
+            <div>
+                {
+                    product && feedback ? (
+                        <List
+                            itemLayout="vertical"
+                            size="large"
+                            pagination={{
+                                pageSize: 5,
+                            }}
+                            dataSource={feedback}
+                            renderItem={(item) => (
+                                <List.Item
+                                    key={item.user.email}
+                                >
+                                    <Row>
+                                        <List.Item.Meta
+                                            avatar={<Avatar size="large" src={item.user.avatar} />}
+                                            title={
+                                                <>
+                                                    <Row><span style={{ fontSize: 14 }}>{item.user.email}</span></Row>
+                                                    <Row><Rate disabled defaultValue={item.rate} style={{ fontSize: 12, width: '15vh' }} /></Row>
+                                                </>
+
+                                            }
+                                            description={moment(item.updateAt).format('HH:mm - DD/MM')}
+                                        />
+
+                                    </Row>
+                                    <Row style={{ marginLeft: '9vh', marginBottom: '2vh' }}>
+                                        {item.content}
+                                    </Row>
+                                    <Row style={{ marginLeft: '8vh' }}>
+                                        <FormatFeedbackMedias feedbackMedias={item.feedbackMedias} />
+                                    </Row>
+
+                                </List.Item>
+                            )}
+                        />
+                    ) : (<Skeleton active />)
+                }
+            </div>
+        </>
+    )
+}
+
+
+
 const ProductDetail = () => {
     const auth = useAuthUser();
     const user = auth();
@@ -199,6 +280,7 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null)
     const [productVariants, setProductVariants] = useState([])
     const [productVariantsSelected, setProductVariantsSelected] = useState(null)
+    const [feedback, setFeedback] = useState([])
 
     const handleSelectProductVariant = (item) => {
         setProductVariantsSelected(item)
@@ -219,21 +301,36 @@ const ProductDetail = () => {
         }
 
         getDetailProduct();
+
+        const getFeedbacks = () => {
+            getFeedbackByProductId(initialProductId)
+                .then((res) => {
+                    setFeedback(res.data)
+                })
+                .catch((errors) => {
+                    console.log(errors)
+                })
+        }
+
+        getFeedbacks();
     }, [])
 
 
     return (
         <>
-            <ProductVariantDetail
-                product={product}
-                productVariants={productVariants}
-                handleSelectProductVariant={handleSelectProductVariant}
-                productVariantsSelected={productVariantsSelected}
-                userId={user?.id} />
-            <Divider />
-            <ProductDescription product={product} />
-            <Divider />
-            <ProductSuggestions />
+            <MyContext.Provider value={product}>
+                <ProductVariantDetail
+                    productVariants={productVariants}
+                    handleSelectProductVariant={handleSelectProductVariant}
+                    productVariantsSelected={productVariantsSelected}
+                    userId={user?.id} />
+                <Divider />
+                <ProductDescription />
+                <Divider />
+                <ProductSuggestions />
+                <Divider />
+                <ProductFeedback feedback={feedback} />
+            </MyContext.Provider>
         </>
     )
 }
