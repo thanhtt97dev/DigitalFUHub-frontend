@@ -144,8 +144,8 @@ function HistoryDeposit() {
 
     const onFinish = (values) => {
         setLoading(true);
-        if (values.requestDate === null) {
-            openNotification("error", "Thời gian chuyển khoản không được trống!")
+        if (values.date === null) {
+            openNotification("error", "Thời gian tạo yêu cầu không được trống!")
             setLoading(false);
             return;
         }
