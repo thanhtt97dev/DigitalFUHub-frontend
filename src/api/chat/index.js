@@ -13,3 +13,7 @@ export const getListMessage = (conversationId) => {
 export const sendMessage = (data) => {
     return apiPost('api/chats/SendMessage', data);
 };
+
+export const existUserConversation = (senderId, recipientId) => {
+    return apiGet(`api/Chats/existUserConversation?senderId=${senderId}&recipientId=${recipientId}`);
+};
