@@ -12,6 +12,9 @@ import Deposit from '~/pages/User/Deposit';
 import SignUp from '~/pages/SignUp';
 import BankAccount from '~/pages/User/Settings/BankAccount';
 import SellerLayout from '~/layouts/SellerLayout';
+import PrivacyPolicy from '~/pages/Policy/PrivacyPolicy';
+import FAQ from '~/pages/Policy/FAQ';
+import WarrantPolicy from '~/pages/Policy/WarrantPolicy';
 
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ConfirmEmail from '~/pages/ConfirmEmail';
@@ -174,6 +177,24 @@ const routesConfig = [
         path: '/productDetail',
         layout: <NormalLayout />,
         component: <ProductDetail />,
-    }
+    },
+    {
+        title: 'Privacy Policy',
+        path: '/privacyPolicy',
+        layout: <NormalLayout />,
+        component: <PrivacyPolicy />,
+    },
+    {
+        title: 'Warrant Policy',
+        path: '/warrantPolicy',
+        layout: <NormalLayout />,
+        component: <WarrantPolicy />,
+    },
+    {
+        title: 'FAQ',
+        path: '/faq',
+        layout: <NormalLayout />,
+        component: <FAQ />,
+    },
 ];
 export default routesConfig;
