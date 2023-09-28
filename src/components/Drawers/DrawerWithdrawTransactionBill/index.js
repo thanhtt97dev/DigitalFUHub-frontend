@@ -5,7 +5,7 @@ import { Button, Drawer, notification, Descriptions } from "antd";
 import Spinning from "~/components/Spinning";
 import { getWithdrawTransactionBill } from '~/api/bank'
 import { RESPONSE_CODE_SUCCESS } from '~/constants'
-import { ParseDateTime } from '~/utils/index'
+import { ParseDateTime, formatStringToCurrencyVND } from '~/utils/index'
 
 function DrawerWithdrawTransactionBill({ withdrawTransactionId }) {
 
@@ -55,7 +55,7 @@ function DrawerWithdrawTransactionBill({ withdrawTransactionId }) {
                         {
                             key: '5',
                             label: 'Số tiền',
-                            children: data.debitAmount,
+                            children: <p>{formatStringToCurrencyVND(data.debitAmount)} VND</p>,
                             span: 3
                         },
                         {
@@ -95,7 +95,7 @@ function DrawerWithdrawTransactionBill({ withdrawTransactionId }) {
                 placement={"right"}
                 open={open}
                 onClose={() => { setOpen(false) }}
-                width={550}
+                width={400}
             >
                 <Spinning spinning={loading}>
                     <Descriptions layout="horizontal" items={items} />

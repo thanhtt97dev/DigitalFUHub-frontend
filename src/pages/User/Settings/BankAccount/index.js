@@ -36,13 +36,17 @@ function BankAccount() {
 
         getUserBankAccount(userId)
             .then((res) => {
-                setTimeout(() => {
-                    setUserBank(res.data)
-                    SetGetUserBankInfoSuccess(true)
-                }, 2000)
+                if (res.data.status.ok) {
+                    setUserBank(res.data.result)
+                }
             })
             .catch(() => {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    SetGetUserBankInfoSuccess(true)
+                }, 500)
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -56,7 +60,7 @@ function BankAccount() {
             <Spinning spinning={!getUserBankInfoSuccess}>
                 <Card
                     title="Tài khoản ngân hàng"
-                    extra={userBank !== "" ? <> <ModalUpdateBankAccount userId={userId} /></> : <><ModalAddBankAccount userId={userId} /></>}
+                    extra={userBank !== null ? <> <ModalUpdateBankAccount userId={userId} /></> : <><ModalAddBankAccount userId={userId} /></>}
                     style={{
                         width: '100%',
                         height: "60vh"
@@ -66,7 +70,7 @@ function BankAccount() {
                 >
                     {getUserBankInfoSuccess ?
                         <>
-                            {userBank !== "" ?
+                            {userBank !== null ?
                                 <>
                                     <div className={cx("bank-account-info")}>
                                         <UserBankAccountInfo userBank={userBank} />

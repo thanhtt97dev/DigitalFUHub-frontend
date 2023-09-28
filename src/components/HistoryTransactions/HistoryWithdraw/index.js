@@ -18,12 +18,12 @@ const columns = [
     {
         title: 'Mã giao dịch',
         dataIndex: 'withdrawTransactionId',
-        width: '10%',
+        width: '11%',
     },
     {
         title: 'Số tiền',
         dataIndex: 'amount',
-        width: '15%',
+        width: '20%',
         render: (amount) => {
             return (
                 <p>{formatStringToCurrencyVND(amount)} VND</p>
@@ -41,27 +41,24 @@ const columns = [
         }
     },
     {
-        title: 'Thời gian chuyển khoản',
-        dataIndex: 'paidDate',
-        width: '15%',
-        render: (paidDate, record) => {
-            return (
-                record.isPay ?
-                    <p>{ParseDateTime(paidDate)}</p>
-                    :
-                    <p>TBD</p>
-            )
-        }
+        title: 'Đơn vị thụ hưởng',
+        dataIndex: 'creditAccountName',
+        width: '20%',
     },
     {
-        title: 'Nội dung chuyển khoản',
-        dataIndex: 'code',
+        title: 'Số tài khoản',
+        dataIndex: 'creditAccount',
+        width: '15%',
+    },
+    {
+        title: 'Ngân hàng đối tác',
+        dataIndex: 'bankName',
         width: '15%',
     },
     {
         title: 'Trạng thái',
         dataIndex: 'isPay',
-        width: '15%',
+        width: '5%',
         render: (paidDate, record) => {
             return (
                 record.isPay ?

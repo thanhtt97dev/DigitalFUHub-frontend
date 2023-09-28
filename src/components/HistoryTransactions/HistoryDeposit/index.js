@@ -10,6 +10,7 @@ import Spinning from "~/components/Spinning";
 import { formatStringToCurrencyVND, ParseDateTime } from '~/utils/index'
 import dayjs from 'dayjs';
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import ModalRequestDeposit from "~/components/Modals/ModalRequestDeposit";
 
 
 const { RangePicker } = DatePicker;
@@ -214,7 +215,7 @@ function HistoryDeposit() {
                             </Space>
                         </Form.Item>
                     </Form>
-
+                    <ModalRequestDeposit userId={user.id} style={{ marginTop: "10px", marginBottom: "10px" }} text={"+ Nạp tiền"} />
                     <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} />
                 </Card>
             </Spinning>
