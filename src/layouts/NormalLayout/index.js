@@ -26,11 +26,15 @@ function NormalLayout(props) {
                     <div
                         style={{
                             background: colorBgContainer,
+                            padding: 30,
+                            minHeight: '92vh'
                         }}
+
                     >
                         <Outlet />
                     </div>
                 </Content>
+
                 <Footer className={cx("footer")}>
                     <div className={cx("footer-top")}>
                         <div className={cx("footer-links")}>
@@ -61,6 +65,20 @@ function NormalLayout(props) {
                     </div>
                 </Footer>
             </Layout >
+
+            {/* <div className={cx('page')}>
+                <HeaderLayout className={cx('header')} />
+                <Content className={cx('content')}>
+                    <div style={{
+                        background: colorBgContainer,
+                        width: '85%',
+                        margin: '0 auto'
+                    }}>
+                        <Outlet />
+                    </div>
+                </Content>
+                <div className="footer">Footer</div>
+            </div> */}
         </>
     );
 }

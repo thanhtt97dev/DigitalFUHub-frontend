@@ -174,7 +174,7 @@ const ProductDescription = () => {
 
 const ProductSuggestions = () => {
     const CardProduct = () => (
-        <Card bordered={false} style={{ width: '45vh' }} bodyStyle={{ padding: 8 }}>
+        <Card bordered={false} style={{ width: '42vh' }} bodyStyle={{ padding: 8 }}>
             <Image style={{ borderRadius: 10, marginBottom: 7 }}
                 src="https://cdn.divineshop.vn/image/catalog/Anh-SP/Spotify/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg?hash=1658742748"
             />

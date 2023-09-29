@@ -26,15 +26,13 @@ function HistoryTransactions() {
 
 
 
-    const [tabList, setTabList] = useState(initialTabList);
-
     return (
         <>
             <Card
                 style={{
                     width: '100%',
                 }}
-                tabList={tabList}
+                tabList={initialTabList}
                 activeTabKey={tabKey}
                 onTabChange={handleTabChange}
                 type="inner"

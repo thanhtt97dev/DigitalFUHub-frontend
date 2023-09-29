@@ -21,6 +21,7 @@ import ConfirmEmail from '~/pages/ConfirmEmail';
 import ResetPassword from '~/pages/ResetPassword';
 import AddProduct from '~/pages/Seller/ManageProduct/AddProduct';
 import ProductDetail from '~/pages/ProductDetail';
+import Cart from '~/pages/Cart';
 import Products from '~/pages/Seller/ManageProduct/Products';
 import EditProduct from '~/pages/Seller/ManageProduct/EditProduct';
 import HistoryTransactions from '~/pages/HistoryTransactions';
@@ -177,6 +178,12 @@ const routesConfig = [
         path: '/productDetail',
         layout: <NormalLayout />,
         component: <ProductDetail />,
+    },
+    {
+        title: 'Cart',
+        path: '/cart',
+        layout: <NormalLayout />,
+        component: <Cart />,
     },
     {
         title: 'Privacy Policy',
