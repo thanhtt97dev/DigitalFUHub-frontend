@@ -5,7 +5,7 @@ import { faCoins } from '@fortawesome/free-solid-svg-icons'
 import { Space } from 'antd';
 
 import { getCustomerBalance } from '~/api/user';
-import { getUserId } from '~/utils';
+import { getUserId, formatStringToCurrencyVND } from '~/utils';
 
 function AccountBalance() {
     const [balance, setBalance] = useState(0);
@@ -27,7 +27,7 @@ function AccountBalance() {
         <>
             <Space>
                 <FontAwesomeIcon icon={faCoins} style={{ fontSize: "25", color: "#e9ad03" }} />
-                <p>{balance} VND</p>
+                <p>{formatStringToCurrencyVND(balance)} VND</p>
             </Space>
         </>
     )
