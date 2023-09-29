@@ -1,55 +1,88 @@
-.layout {
-  min-height: 100vh;
-}
+// .layout {
+//     min-height: 100vh;
+// }
 
+// .footer {
+//     min-height: 15vh;
+//     background: black;
+//     padding: 2rem;
+//     color: white;
+//     text-align: center;
+// }
+
+// .container {
+//     font-size: 20px;
+//     color: white;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+// }
+
+// .item {
+//     flex-grow: 1;
+//     align-items: center;
+// }
+
+// .footer-top {
+//     display: flex;
+//     justify-content: space-between;
+// }
+
+// .footer-links {
+//     flex-basis: 33%;
+//     border-right: 1px solid #ddd;
+//     font-size: 15px;
+// }
+
+// .footer-links h3 {
+//     font-size: 1.2rem;
+//     font-weight: 500;
+//     margin-bottom: 1rem;
+// }
+
+// .footer-links ul {
+//     list-style: none;
+//     padding: 0;
+// }
+
+// .footer-links ul li {
+//     margin-bottom: 0.5rem;
+// }
+
+// .footer-links ul li a {
+//     color: white;
+//     text-decoration: none;
+// }
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+.page {
+    min-height: 100%;
+    position: relative;
+}
+.header {
+    background: #00ff0f;
+    padding: 30px;
+}
+.content {
+    padding: 20px;
+    padding-bottom: 45px;
+    /* Height+padding(top and botton) of the footer */
+    text-align: justify;
+}
 .footer {
-  min-height: 15vh;
-  background: black;
-  padding: 2rem;
-  color: white;
-  text-align: center;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 15px; /* Height of the footer */
+    background: #00ff0f;
+    padding: 10px 0; /*paddingtop+bottom 20*/
 }
 
-.container{
-  font-size: 20px;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.item {
-  flex-grow: 1;
-  align-items: center;
-}
-
-.footer-top {
-  display: flex;
-  justify-content: space-between;
-}
-
-.footer-links {
-  flex-basis: 33%;
-  border-right: 1px solid #ddd;
-  font-size: 15px;
-}
-
-.footer-links h3 {
-  font-size: 1.2rem;
-  font-weight: 500;
-  margin-bottom: 1rem;
-}
-
-.footer-links ul {
-  list-style: none;
-  padding: 0;
-}
-
-.footer-links ul li {
-  margin-bottom: .5rem;
-} 
-
-.footer-links ul li a {
-  color: white;
-  text-decoration: none;
+.content {
+    height: 100%;
 }
