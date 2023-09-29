@@ -154,13 +154,14 @@ const ProductDescription = () => {
             {
 
                 product ? (<>
-                    <Col span={5}>
+                    <Col span={24}>
                         <Title level={4}>Chi tiết sản phẩm</Title>
                     </Col>
-                    <Col span={19}
+                    <Col span={23}
+                        offset={1}
                         style={{ display: 'flex', alignItems: 'center' }}
                     >
-                        <Text>{product.description}</Text>
+                        <div dangerouslySetInnerHTML={{ __html: product.description }} />
                     </Col>
                 </>) : (<>
                     <Skeleton active />
@@ -276,7 +277,7 @@ const ProductFeedback = ({ feedback }) => {
 const ProductDetail = () => {
     const auth = useAuthUser();
     const user = auth();
-    const initialProductId = 2;
+    const initialProductId = 29;
     const [product, setProduct] = useState(null)
     const [productVariants, setProductVariants] = useState([])
     const [productVariantsSelected, setProductVariantsSelected] = useState(null)
