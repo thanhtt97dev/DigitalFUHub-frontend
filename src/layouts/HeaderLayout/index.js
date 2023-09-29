@@ -89,6 +89,7 @@ function HeaderLayout() {
                 </Space>
 
                 <Space size={12}>
+
                     {user === null ? (
                         <Space>
                             <ShoppingCartOutlined className={cx("icon")} />
@@ -120,6 +121,9 @@ function HeaderLayout() {
                             </Dropdown>
                         </>
                     )}
+                    <Link to={'/cart'}>
+                        <Button type="primary" className={cx("button")} icon={<ShoppingCartOutlined />}>Giỏ hàng</Button>
+                    </Link>
                 </Space>
             </Header>
         </>
