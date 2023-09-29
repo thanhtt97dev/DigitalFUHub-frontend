@@ -26,6 +26,7 @@ function NormalLayout(props) {
                     <div
                         style={{
                             background: colorBgContainer,
+                            minHeight: "680px"
                         }}
                     >
                         <Outlet />

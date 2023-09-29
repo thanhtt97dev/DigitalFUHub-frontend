@@ -60,13 +60,18 @@ function DrawerWithdrawTransactionBill({ withdrawTransactionId }) {
                         },
                         {
                             key: '6',
+                            label: 'Số bút toán',
+                            children: data.refNo,
+                            span: 3
+                        },
+                        {
+                            key: '7',
                             label: 'Thời gian chuyển khoản',
                             children: ParseDateTime(data.postingDate),
                             span: 3
                         },
-
                         {
-                            key: '7',
+                            key: '8',
                             label: 'Nội dung chuyển khoản',
                             children: data.description,
                             span: 3

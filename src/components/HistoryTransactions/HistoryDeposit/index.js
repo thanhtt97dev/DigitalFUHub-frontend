@@ -168,7 +168,8 @@ function HistoryDeposit() {
                 <Card
                     style={{
                         width: '100%',
-                        marginBottom: 15
+                        marginBottom: 15,
+                        minHeight: "600px"
                     }}
                     hoverable
                 >
@@ -215,7 +216,7 @@ function HistoryDeposit() {
                             </Space>
                         </Form.Item>
                     </Form>
-                    <ModalRequestDeposit userId={user.id} style={{ marginTop: "10px", marginBottom: "10px" }} text={"+ Nạp tiền"} />
+                    <ModalRequestDeposit userId={user.id} style={{ marginBottom: "5px" }} text={"+ Nạp tiền"} />
                     <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} />
                 </Card>
             </Spinning>
