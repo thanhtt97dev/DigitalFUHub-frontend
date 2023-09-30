@@ -4,10 +4,10 @@ import { Button, Drawer, notification, Descriptions } from "antd";
 
 import Spinning from "~/components/Spinning";
 import { getWithdrawTransactionBill } from '~/api/bank'
-import { RESPONSE_CODE_SUCCESS } from '~/constants'
+import { RESPONSE_CODE_BANK_WITHDRAW_BILL_NOT_FOUND, RESPONSE_CODE_SUCCESS } from '~/constants'
 import { ParseDateTime, formatStringToCurrencyVND } from '~/utils/index'
 
-function DrawerWithdrawTransactionBill({ withdrawTransactionId }) {
+function DrawerWithdrawTransactionBill({ userId, withdrawTransactionId }) {
 
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ function DrawerWithdrawTransactionBill({ withdrawTransactionId }) {
 
     const handleOpenDrawer = () => {
         setOpen(true)
-        getWithdrawTransactionBill(withdrawTransactionId)
+        getWithdrawTransactionBill({ userId, withdrawTransactionId })
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     const data = res.data.result
@@ -76,6 +76,15 @@ function DrawerWithdrawTransactionBill({ withdrawTransactionId }) {
                             children: data.description,
                             span: 3
                         },
+                    ])
+                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_WITHDRAW_BILL_NOT_FOUND) {
+                    setItems([
+                        {
+                            key: '1',
+                            children: <p>Hệ thống đang sử lý hóa đơn của bạn!<br /> Vui lòng trở lại trong khoảng 5 phút nữa!</p>,
+                            span: 3
+                        },
+
                     ])
                 } else {
                     openNotification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
