@@ -90,10 +90,11 @@ function HeaderLayout() {
 
                 <Space size={12}>
 
+                    <Link to={'/cart'}>
+                        <Button type="primary" className={cx("button")} icon={<ShoppingCartOutlined />}>Giỏ hàng</Button>
+                    </Link>
                     {user === null ? (
                         <Space>
-                            <ShoppingCartOutlined className={cx("icon")} />
-                            <WechatOutlined className={cx("icon")} />
                             <BellFilled className={cx("icon")} />
                             <Link to={'/Login'}>
                                 <Button type="primary" className={cx("button")}>Đăng nhập</Button>
@@ -108,7 +109,7 @@ function HeaderLayout() {
                             <ModalRequestDeposit userId={user.id} />
                             <Notificaion />
                             <Link to={'/chatBox'}>
-                                <MessageOutlined style={{ fontSize: '20px' }} />
+                                <WechatOutlined className={cx("icon")} />
                             </Link>
                             <Dropdown
                                 menu={{ items }}
@@ -121,9 +122,7 @@ function HeaderLayout() {
                             </Dropdown>
                         </>
                     )}
-                    <Link to={'/cart'}>
-                        <Button type="primary" className={cx("button")} icon={<ShoppingCartOutlined />}>Giỏ hàng</Button>
-                    </Link>
+
                 </Space>
             </Header>
         </>
