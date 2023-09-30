@@ -99,6 +99,7 @@ export const RESPONSE_CODE_NOT_ACCEPT = "01"
 export const RESPONSE_CODE_DATA_NOT_FOUND = "02"
 export const RESPONSE_CODE_FAILD = "03"
 
+export const RESPONSE_CODE_BANK_WITHDRAW_PAID = "BANK_01";
 //signal r
 
 export const SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE = "ReceiveMessage";

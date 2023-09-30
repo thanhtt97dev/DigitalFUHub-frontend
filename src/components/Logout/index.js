@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useSignOut } from 'react-auth-kit';
-import { Button } from 'antd';
 import { LogoutOutlined } from '@ant-design/icons';
 
 import { revokeToken } from '~/api/user';
