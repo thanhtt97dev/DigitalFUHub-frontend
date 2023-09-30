@@ -7,7 +7,7 @@ import { getWithdrawTransactionBill } from '~/api/bank'
 import { RESPONSE_CODE_BANK_WITHDRAW_BILL_NOT_FOUND, RESPONSE_CODE_SUCCESS } from '~/constants'
 import { ParseDateTime, formatStringToCurrencyVND } from '~/utils/index'
 
-function DrawerWithdrawTransactionBill({ withdrawTransactionId }) {
+function DrawerWithdrawTransactionBill({ userId, withdrawTransactionId }) {
 
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ function DrawerWithdrawTransactionBill({ withdrawTransactionId }) {
 
     const handleOpenDrawer = () => {
         setOpen(true)
-        getWithdrawTransactionBill(withdrawTransactionId)
+        getWithdrawTransactionBill({ userId, withdrawTransactionId })
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     const data = res.data.result

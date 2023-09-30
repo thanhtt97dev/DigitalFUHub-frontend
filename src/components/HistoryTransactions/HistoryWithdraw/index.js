@@ -75,7 +75,7 @@ const columns = [
         render: (isPay, record) => {
             return (
                 isPay ?
-                    <DrawerWithdrawTransactionBill withdrawTransactionId={record.withdrawTransactionId} />
+                    <DrawerWithdrawTransactionBill userId={record.userId} withdrawTransactionId={record.withdrawTransactionId} />
                     :
                     ""
             )
