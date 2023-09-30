@@ -1,13 +1,13 @@
 import React, { useState, useEffect, createContext, useContext } from "react"
 import { useAuthUser } from 'react-auth-kit';
 import {
-    Col, Row, Image, Button, Typography, Divider, Spin, Tag, Skeleton, Card,
-    Avatar, List, Rate
+    Col, Row, Image, Button, Typography, Divider, Spin, Skeleton, Card,
+    Avatar, List, Rate, InputNumber, Carousel
 } from 'antd';
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss'
 import {
-    HeartOutlined, BellOutlined, SyncOutlined, CreditCardOutlined,
+    CreditCardOutlined,
     ShoppingCartOutlined, MessageOutlined,
 } from '@ant-design/icons';
 import { getProductById } from '~/api/product';
@@ -18,15 +18,19 @@ import moment from 'moment'
 
 const cx = classNames.bind(styles);
 const { Title, Text } = Typography;
-const MyContext = createContext()
+const ProductDetailContext = createContext()
 
-const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, userId }) => {
-    const product = useContext(MyContext);
+const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected }) => {
+    const {
+        userId,
+        product
+    } = useContext(ProductDetailContext)
+    const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate()
-
-    const TagFormat = ({ name }) => (
-        <Tag color="cyan">{name}</Tag>
-    )
+    let minPrice = 0
+    let maxPrice = 0
+    let minPriceDis = 0
+    let maxPriceDis = 0
 
     const handleSendMessage = () => {
         const data = {
@@ -36,23 +40,15 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         navigate('/chatBox', { state: { data: data } })
     }
 
-    const Tags = ({ tags }) => (
-        <>
-            {tags ? (
-                tags.map(item => <TagFormat key={item.tagId} name={item.tagName} />)
-            ) : (
-                <Tag icon={<SyncOutlined spin />} color="processing">
-                    loading
-                </Tag>
-            )}
-        </>
-    )
-
     const GridItems = ({ productVariants, handleSelectProductVariant }) => (
         <div className={cx('grid-container')}>
             {productVariants ? (
                 productVariants.map((item) =>
-                    <div className={cx('grid-item')} key={item.productVariantId}><Button onClick={() => handleSelectProductVariant(item)}>{item.name}</Button></div>)
+                    <div className={cx('grid-item')} key={item.productVariantId}>
+                        {item.quantity > 0 ? (<Button onClick={() => handleSelectProductVariant(item)}>{item.name}</Button>) :
+                            (<Button disabled onClick={() => handleSelectProductVariant(item)}>{item.name}</Button>)}
+
+                    </div>)
             ) : (
                 <Spin />
             )}
@@ -64,10 +60,49 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         return formattedPrice;
     }
 
+    useEffect(() => {
+        setQuantity(1)
+    }, [handleSelectProductVariant])
+
     const discountPrice = (price, discount) => {
         const result = price * discount / 100
         return (price - result)
     }
+
+    const rangePrice = (productVariants) => {
+        const prices = productVariants?.map(variant => variant.price);
+        return [Math.min(...prices), Math.max(...prices)]
+    }
+
+
+    if (product) {
+        minPrice = rangePrice(product.productVariants)[0];
+        maxPrice = rangePrice(product.productVariants)[1];
+        minPriceDis = discountPrice(minPrice, product.discount);
+        maxPriceDis = discountPrice(maxPrice, product.discount);
+    }
+
+    const handleChangeQuantity = (value) => {
+        setQuantity(value)
+    }
+
+    const ProductMedias = ({ productMedias }) => {
+        return (
+            <Carousel autoplay>
+                {
+
+                    productMedias.map((item, index) => (
+                        <div style={{ borderRadius: 10 }} key={index}>
+                            <Image style={{ borderRadius: 10 }}
+                                src={item.url}
+                            />
+                        </div>
+                    ))
+                }
+            </Carousel>
+        )
+    }
+
 
     return (
         <Row>
@@ -76,66 +111,67 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                     style={{ padding: 10 }}
                 >
                     <div id="image-product">
-                        <Image style={{ borderRadius: 10 }}
-                            src="https://cdn.divineshop.vn/image/catalog/Anh-SP/Spotify/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg?hash=1658742748"
-                        />
-                        <Button>Xem thêm ảnh</Button>
+                        <ProductMedias productMedias={product.productMedias} />
                     </div>
                 </Col>
                 <Col span={14}
-                    style={{ padding: 10 }}
+                    style={{ padding: 15 }}
                 >
                     <div>
-                        <Title level={3}>{product.productName} ({productVariantsSelected.name})</Title>
+                        <Title level={3}>{product.productName}</Title>
                         <div className={cx('space-div-flex')}>
-                            <Text strong>Tình trạng: </Text>
-                            &nbsp;&nbsp;
-                            {
-                                productVariantsSelected.quantity > 0 ?
-                                    (<Text type="success" strong>Còn hàng</Text>)
-                                    : (<Text type="danger" strong>Hết hàng</Text>)
-                            }
-                        </div>
-                        <div style={{ display: 'flex', marginBottom: 20 }}>
-                            <Text strong>Thể loại: </Text>
-                            &nbsp;&nbsp;
-                            <div>
-                                <Tags tags={product.tags} />
-                            </div>
-                        </div>
-                        <div className={cx('space-div-flex')}>
-                            <Title level={4}><PriceFormat price={productVariantsSelected.price} /></Title>
-                            &nbsp;&nbsp;
-                            <Button title="Đăng nhập và đăng ký nhận thông báo khi sản phẩm giảm giá"><BellOutlined /></Button>
-                            &nbsp;&nbsp;
-                            <Button title="Đăng nhập và thêm vào danh sách yêu thích"><HeartOutlined /></Button>
+                            {productVariantsSelected ? (
+                                <Title level={4}><PriceFormat price={productVariantsSelected.price} /></Title>
+                            ) : (
+                                <Title level={4}>{<PriceFormat price={minPrice} />} - {<PriceFormat price={maxPrice} />}</Title>
+                            )}
                         </div>
                         <div
                             className={cx('space-div-flex')}
                         >
-                            <Text delete strong type="secondary"
-                                style={{ fontSize: 15 }}
-                            >{<PriceFormat price={discountPrice(productVariantsSelected.price, product.discount)} />}</Text>
+                            {productVariantsSelected ? (
+                                <Text delete strong type="secondary"
+                                    style={{ fontSize: 15 }}
+                                >{<PriceFormat price={discountPrice(productVariantsSelected.price, product.discount)} />}</Text>
+                            ) : (
+                                <Text delete strong type="secondary"
+                                    style={{ fontSize: 15 }}
+                                >
+                                    {<PriceFormat price={minPriceDis} />} - {<PriceFormat price={maxPriceDis} />}
+                                </Text>
+                            )}
                             <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
                         </div>
                         <Divider />
-                        <div>
-                            <Title level={4}>Chọn thời hạn</Title>
+                        <div style={{ marginBottom: 20 }}>
+                            <Title level={4}>Loại sản phẩm</Title>
                             <GridItems productVariants={productVariants} handleSelectProductVariant={handleSelectProductVariant} />
                         </div>
+                        <div className={cx('space-div-flex')}>
+                            <Text strong>Số lượng: </Text>
+                            &nbsp;&nbsp;
+                            <InputNumber min={1} max={productVariantsSelected?.quantity || product.quantity} defaultValue={1} onChange={handleChangeQuantity} value={quantity} />
+                            &nbsp;&nbsp;
+                            {productVariantsSelected ? (<Text type="secondary" strong>{productVariantsSelected.quantity} sản phẩm có sẵn</Text>)
+                                : (<Text type="secondary" strong>{product.quantity} sản phẩm có sẵn</Text>)}
+
+                        </div>
                         <Divider />
+
                         <div
 
                         >
-                            <Button className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
+
+                            <Button disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
                                 Mua ngay
                             </Button>
-                            <Button className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
+                            <Button disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
                                 Thêm vào giỏ
                             </Button>
-                            <Button className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
+                            {userId !== product.shopId ? (<Button className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
                                 Nhắn tin
-                            </Button>
+                            </Button>) : (<></>)}
+
                         </div>
                     </div>
 
@@ -147,16 +183,15 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
 
 const ProductDescription = () => {
-    const product = useContext(MyContext);
+    const { product } = useContext(ProductDetailContext);
     return (
         <Row
         >
+            <Col span={5}>
+                <Title level={4}>Chi tiết sản phẩm</Title>
+            </Col>
             {
-
                 product ? (<>
-                    <Col span={24}>
-                        <Title level={4}>Chi tiết sản phẩm</Title>
-                    </Col>
                     <Col span={23}
                         offset={1}
                         style={{ display: 'flex', alignItems: 'center' }}
@@ -206,7 +241,7 @@ const ProductSuggestions = () => {
 
 
 const ProductFeedback = ({ feedback }) => {
-    const product = useContext(MyContext);
+    const { product } = useContext(ProductDetailContext);
 
     const FormatFeedbackMedias = ({ feedbackMedias }) => (
         feedbackMedias?.map((item, index) => (
@@ -277,15 +312,19 @@ const ProductFeedback = ({ feedback }) => {
 const ProductDetail = () => {
     const auth = useAuthUser();
     const user = auth();
-    const initialProductId = 29;
+    const userId = user.id;
+    const initialProductId = 3;
     const [product, setProduct] = useState(null)
     const [productVariants, setProductVariants] = useState([])
     const [productVariantsSelected, setProductVariantsSelected] = useState(null)
     const [feedback, setFeedback] = useState([])
 
     const handleSelectProductVariant = (item) => {
-        setProductVariantsSelected(item)
-        console.log('item is: ' + JSON.stringify(item))
+        if (productVariantsSelected === item) {
+            setProductVariantsSelected(null)
+        } else {
+            setProductVariantsSelected(item)
+        }
     }
 
     useEffect(() => {
@@ -294,7 +333,6 @@ const ProductDetail = () => {
                 .then((response) => {
                     setProduct(response.data)
                     setProductVariants([...response.data.productVariants])
-                    setProductVariantsSelected(response.data.productVariants[0])
                 })
                 .catch((errors) => {
                     console.log(errors)
@@ -316,22 +354,26 @@ const ProductDetail = () => {
         getFeedbacks();
     }, [])
 
+    const initialDataContext = {
+        userId,
+        product
+    }
+
 
     return (
         <>
-            <MyContext.Provider value={product}>
+            <ProductDetailContext.Provider value={initialDataContext}>
                 <ProductVariantDetail
                     productVariants={productVariants}
                     handleSelectProductVariant={handleSelectProductVariant}
-                    productVariantsSelected={productVariantsSelected}
-                    userId={user?.id} />
+                    productVariantsSelected={productVariantsSelected} />
                 <Divider />
                 <ProductDescription />
                 <Divider />
                 <ProductSuggestions />
                 <Divider />
                 <ProductFeedback feedback={feedback} />
-            </MyContext.Provider>
+            </ProductDetailContext.Provider>
         </>
     )
 }
