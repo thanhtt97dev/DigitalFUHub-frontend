@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useSignOut } from 'react-auth-kit';
 import { Button } from 'antd';
+import { LogoutOutlined } from '@ant-design/icons';
 
 import { revokeToken } from '~/api/user';
 import { getJwtId, removeDataAuthInCookies, getUser } from '~/utils';
@@ -33,7 +34,11 @@ function Logout() {
         }, 100)
     };
 
-    return <Button onClick={hanldeLogout}>Sign Out</Button>;
+    return (
+        <p onClick={hanldeLogout} style={{ color: "#f5222d" }}>
+            <LogoutOutlined /> Đăng xuất
+        </p>
+    );
 }
 
 export default Logout;

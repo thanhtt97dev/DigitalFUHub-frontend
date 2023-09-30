@@ -11,7 +11,6 @@ function Deposit() {
     const location = useLocation();
 
     const [code, setCode] = useState("");
-    const [amount, setAmount] = useState("");
     const [qrCode, setQrCode] = useState("");
 
     useEffect(() => {
@@ -20,7 +19,6 @@ function Deposit() {
             return navigate("/home");
         }
         setCode(location.state.code);
-        setAmount(location.state.amount);
         const bankCodeInfo = `&amount=${location.state.amount}&addInfo=${location.state.code}`;
         setQrCode(BANK_ACCOUNT_IMAGE_SRC + bankCodeInfo);
         // eslint-disable-next-line react-hooks/exhaustive-deps

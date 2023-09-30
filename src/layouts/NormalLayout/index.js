@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 import { Layout, theme } from 'antd';
 import { FacebookOutlined, InstagramOutlined, TwitterCircleFilled } from '@ant-design/icons';
