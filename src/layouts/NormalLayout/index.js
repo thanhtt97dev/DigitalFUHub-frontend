@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 import { Layout, theme } from 'antd';
 import { FacebookOutlined, InstagramOutlined, TwitterCircleFilled } from '@ant-design/icons';
@@ -20,24 +20,22 @@ function NormalLayout(props) {
 
     return (
         <>
-            {/* <Layout className={cx("layout")}>
+            <Layout className={cx("layout")}>
                 <HeaderLayout />
                 <Content>
                     <div
                         style={{
                             background: colorBgContainer,
-                            width: '85%',
-                            margin: '0 auto',
                             padding: 30,
-                            minHeight: '90vh'
+                            minHeight: '92vh'
                         }}
 
                     >
                         <Outlet />
                     </div>
-                </Content> */}
+                </Content>
 
-            {/* <Footer className={cx("footer")}>
+                <Footer className={cx("footer")}>
                     <div className={cx("footer-top")}>
                         <div className={cx("footer-links")}>
                             <h2>Liên Hệ</h2><br />
@@ -65,10 +63,10 @@ function NormalLayout(props) {
                             </ul>
                         </div>
                     </div>
-                </Footer> 
-            </Layout >*/}
+                </Footer>
+            </Layout >
 
-            <div className={cx('page')}>
+            {/* <div className={cx('page')}>
                 <HeaderLayout className={cx('header')} />
                 <Content className={cx('content')}>
                     <div style={{
@@ -80,7 +78,7 @@ function NormalLayout(props) {
                     </div>
                 </Content>
                 <div className="footer">Footer</div>
-            </div>
+            </div> */}
         </>
     );
 }

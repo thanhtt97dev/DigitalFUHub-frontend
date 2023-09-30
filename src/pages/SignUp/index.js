@@ -1,4 +1,4 @@
-import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import {
     Alert,

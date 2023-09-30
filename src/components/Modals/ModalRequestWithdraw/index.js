@@ -6,7 +6,7 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import { createWithdrawTransaction, getUserBankAccount } from "~/api/bank";
 import { getCustomerBalance } from '~/api/user'
 
-function ModalRequestWithdraw({ userId }) {
+function ModalRequestWithdraw({ userId, text, style }) {
 
     const [api, contextHolder] = notification.useNotification();
 
@@ -108,12 +108,11 @@ function ModalRequestWithdraw({ userId }) {
             <Button
                 onClick={handleOpenModal}
                 type="primary"
-                style={{ marginTop: "10px", marginBottom: "10px" }}
+                style={style}
                 loading={btnLoading}
             >
-                + Tạo yêu cầu rút tiền
+                {text === undefined ? "+ Tạo yêu cầu rút tiền" : text}
             </Button>
-
 
             <Modal
                 title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Yêu cầu rút tiền</>}

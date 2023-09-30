@@ -4,8 +4,8 @@ export const getAllProducts = (id) => {
     return apiGetAuth(`api/sellers/GetAllProduct/${id}`);
 };
 
-export const getProductVariants = (id) => {
-    return apiGetAuth(`api/sellers/GetProductVariants/${id}`);
+export const getProductById = (userId, productId) => {
+    return apiGetAuth(`api/sellers/${userId}/GetProduct/${productId}`);
 };
 
 export const addProduct = (formData) => {

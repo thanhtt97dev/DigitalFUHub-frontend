@@ -192,11 +192,11 @@ const ProductDescription = () => {
             </Col>
             {
                 product ? (<>
-
-                    <Col span={19}
+                    <Col span={23}
+                        offset={1}
                         style={{ display: 'flex', alignItems: 'center' }}
                     >
-                        <Text>{product.description}</Text>
+                        <div dangerouslySetInnerHTML={{ __html: product.description }} />
                     </Col>
                 </>) : (<>
                     <Skeleton active />

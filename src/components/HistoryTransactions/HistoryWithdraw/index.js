@@ -164,7 +164,8 @@ function HistoryWithdraw() {
                 <Card
                     style={{
                         width: '100%',
-                        marginBottom: 15
+                        marginBottom: 15,
+                        minHeight: "600px"
                     }}
                     hoverable
                 >
@@ -211,7 +212,7 @@ function HistoryWithdraw() {
                             </Space>
                         </Form.Item>
                     </Form>
-                    <ModalRequestWithdraw userId={user.id} />
+                    <ModalRequestWithdraw userId={user.id} style={{ marginBottom: "5px" }} />
 
                     <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} />
                 </Card>

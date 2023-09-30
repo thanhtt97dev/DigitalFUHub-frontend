@@ -4,11 +4,14 @@ import { useAuthUser } from 'react-auth-kit';
 import { Layout, Image, Space, Button, Dropdown, Avatar } from 'antd';
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
-import { MessageOutlined, ShoppingCartOutlined, WechatOutlined, BellFilled } from '@ant-design/icons';
+import {
+    MessageOutlined, ShoppingCartOutlined, WechatOutlined, BellFilled,
+    SettingOutlined, CreditCardOutlined, ShopOutlined
+} from '@ant-design/icons';
 
 import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
-import { ADMIN_ROLE, CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
+import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ModalRequestDeposit from '../../components/Modals/ModalRequestDeposit';
 import AccountBalance from '../../components/AccountBalance';
 
@@ -22,24 +25,31 @@ const { Header } = Layout;
 const itemsFixed = [
     {
         key: 'settings',
-        label: <Link to={"/settings"}>Cài đặt</Link>,
-        role: CUSTOMER_ROLE
+        label: <Link to={"/settings"}><><SettingOutlined /> Cài đặt</></Link>,
+        roles: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {
         key: 'history transaction',
-        label: <Link to={"/historyTransaction"}>Lịch sử giao dịch</Link>,
-        role: CUSTOMER_ROLE
+        label: <Link to={"/historyTransaction"}><CreditCardOutlined /> Lịch sử giao dịch</Link>,
+        roles: [CUSTOMER_ROLE, SELLER_ROLE]
+    },
+    {
+        key: 'registerSeller',
+        label: <Link to={"/settings/registerSeller"}><ShopOutlined /> Đăng ký bán hàng</Link>,
+        roles: [CUSTOMER_ROLE]
     },
     {
         key: 'seller',
-        label: <Link to={"/seller"}>Kênh người bán</Link>,
-        role: SELLER_ROLE
+        label: <Link to={"/seller"}><ShopOutlined /> Kênh người bán</Link>,
+        roles: [SELLER_ROLE]
     },
     {
         key: 'logout',
         label: <Logout />,
+        roles: [CUSTOMER_ROLE, SELLER_ROLE]
     },
 ];
+
 
 function HeaderLayout() {
 
@@ -52,14 +62,8 @@ function HeaderLayout() {
     useEffect(() => {
 
         var itemsCanAccses = itemsFixed;
-        if (user === null) return;
-        if (user.roleName === undefined) {
-            itemsCanAccses = itemsFixed.filter(x => x.role === undefined);
-        } else {
-            if (user.roleName === CUSTOMER_ROLE) {
-                itemsCanAccses = itemsFixed.filter(x => x.role !== SELLER_ROLE);
-            }
-        }
+        if (user === null || user === undefined) return;
+        itemsCanAccses = itemsFixed.filter(x => x.roles.includes(user.roleName));
         setItems(itemsCanAccses);
         return () => {
             setItems([]);

@@ -88,6 +88,12 @@ function SettingsLayout({ children }) {
                                         icon: React.createElement(item.icon),
                                         label: <Link to={item.link}>{item.label}</Link>,
                                     }
+                                } else {
+                                    return {
+                                        key: String(index + 1),
+                                        icon: React.createElement(item.icon),
+                                        label: <Link to={item.link}>{item.label}</Link>,
+                                    }
                                 }
                             }
                         })}

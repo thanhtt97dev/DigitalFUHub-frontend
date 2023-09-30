@@ -17,7 +17,7 @@ import classNames from 'classnames/bind';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
 
 const items = [
     {
