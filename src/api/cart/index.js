@@ -7,3 +7,7 @@ export const addProductToCart = (data) => {
 export const getCart = (userId, productVariantId) => {
     return apiGetAuth(`api/Carts/GetCart?userId=${userId}&productVariantId=${productVariantId}`);
 };
+
+export const getCartsByUserId = (userId) => {
+    return apiGetAuth(`api/Carts/GetCartsByUserId/${userId}`);
+};
