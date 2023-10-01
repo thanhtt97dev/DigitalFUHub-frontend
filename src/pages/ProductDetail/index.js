@@ -2,7 +2,7 @@ import React, { useState, useEffect, createContext, useContext } from "react"
 import { useAuthUser } from 'react-auth-kit';
 import {
     Col, Row, Image, Button, Typography, Divider, Spin, Skeleton, Card,
-    Avatar, List, Rate, InputNumber, Carousel
+    Avatar, List, Rate, InputNumber, Carousel, notification, Modal
 } from 'antd';
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss'
@@ -11,6 +11,7 @@ import {
     ShoppingCartOutlined, MessageOutlined,
 } from '@ant-design/icons';
 import { getProductById } from '~/api/product';
+import { addProductToCart, getCart } from '~/api/cart';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { formatPrice } from '~/utils'
 import { useNavigate } from 'react-router-dom';
@@ -20,12 +21,35 @@ const cx = classNames.bind(styles);
 const { Title, Text } = Typography;
 const ProductDetailContext = createContext()
 
+const ModelNotifyQuantity = ({ isModalNotifyQuantityOpen, handleOk, quantity }) => (
+    <Modal
+        open={isModalNotifyQuantityOpen}
+        closable={false}
+        maskClosable={false}
+        footer={[
+            <Button key="submit" type="primary" onClick={handleOk}>
+                OK
+            </Button>,
+
+        ]}
+    >
+        <p>Sản phẩm này đang có số lượng <strong>{quantity}</strong> trong giỏ hàng của bạn</p>
+        <p>Không thể thêm số lượng đã chọn vào giỏ hàng vì đã vượt quá số lượng sản phẩm có sẵn</p>
+    </Modal>
+)
+
+
 const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected }) => {
     const {
         userId,
-        product
+        product,
+        openNotification
     } = useContext(ProductDetailContext)
     const [quantity, setQuantity] = useState(1);
+    const [quantityProductSelectedInCart, setquantityProductSelectedInCart] = useState(0);
+    const [isModalNotifyQuantityOpen, setIsModalNotifyQuantityOpen] = useState(false);
+    const [isClickBuyNow, setIsClickBuyNow] = useState(false);
+
     const navigate = useNavigate()
     let minPrice = 0
     let maxPrice = 0
@@ -39,6 +63,13 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         }
         navigate('/chatBox', { state: { data: data } })
     }
+
+    const showModalNotifyQuantity = () => {
+        setIsModalNotifyQuantityOpen(true);
+    };
+    const handleOk = () => {
+        setIsModalNotifyQuantityOpen(false);
+    };
 
     const GridItems = ({ productVariants, handleSelectProductVariant }) => (
         <div className={cx('grid-container')}>
@@ -103,6 +134,59 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         )
     }
 
+    const handleAddProductToCart = () => {
+        if (!productVariantsSelected) {
+            openNotification("error", "Vui lòng chọn loại sản phẩm")
+            return;
+        }
+
+        getCart(userId, productVariantsSelected.productVariantId)
+            .then((res) => {
+                if (res.data) {
+                    const cart = res.data;
+                    const quantityPurchased = quantity + cart.quantity
+                    if (quantityPurchased > productVariantsSelected.quantity) {
+                        setquantityProductSelectedInCart(cart.quantity)
+                        showModalNotifyQuantity()
+                    } else {
+                        funcAddProductToCart();
+                    }
+                } else {
+                    funcAddProductToCart();
+                }
+            }).catch((errors => {
+                console.log(errors)
+            }))
+
+
+
+
+
+    }
+
+    const funcAddProductToCart = () => {
+        const dataAddToCart = {
+            userId: userId,
+            productVariantId: productVariantsSelected.productVariantId,
+            quantity: quantity
+        }
+
+        addProductToCart(dataAddToCart)
+            .then((res) => {
+                if (res.status === 200) {
+                    if (!isClickBuyNow) {
+                        openNotification("success", "Sản phẩm đã được thêm vào trong giỏ hàng của bạn")
+                    } else {
+                        navigate("/cart")
+                    }
+                }
+            })
+            .catch((errors) => {
+                console.log(errors)
+                openNotification("error", "Có lỗi xảy ra trong quá trình thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!")
+            })
+    }
+
 
     return (
         <Row>
@@ -162,10 +246,10 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
                         >
 
-                            <Button disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
+                            <Button onClick={() => { setIsClickBuyNow(true); handleAddProductToCart() }} disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
                                 Mua ngay
                             </Button>
-                            <Button disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
+                            <Button onClick={() => { setIsClickBuyNow(false); handleAddProductToCart(); }} disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
                                 Thêm vào giỏ
                             </Button>
                             {userId !== product.shopId ? (<Button className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
@@ -176,6 +260,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                     </div>
 
                 </Col>
+                <ModelNotifyQuantity isModalNotifyQuantityOpen={isModalNotifyQuantityOpen} handleOk={handleOk} quantity={quantityProductSelectedInCart} />
             </>) : (<Skeleton active />)}
         </Row>
     )
@@ -313,11 +398,19 @@ const ProductDetail = () => {
     const auth = useAuthUser();
     const user = auth();
     const userId = user.id;
-    const initialProductId = 3;
+    const initialProductId = 1;
     const [product, setProduct] = useState(null)
     const [productVariants, setProductVariants] = useState([])
     const [productVariantsSelected, setProductVariantsSelected] = useState(null)
     const [feedback, setFeedback] = useState([])
+    const [api, contextHolder] = notification.useNotification();
+
+    const openNotification = (type, message) => {
+        api[type]({
+            message: `Thông báo`,
+            description: `${message}`
+        });
+    };
 
     const handleSelectProductVariant = (item) => {
         if (productVariantsSelected === item) {
@@ -356,12 +449,14 @@ const ProductDetail = () => {
 
     const initialDataContext = {
         userId,
-        product
+        product,
+        openNotification
     }
 
 
     return (
         <>
+            {contextHolder}
             <ProductDetailContext.Provider value={initialDataContext}>
                 <ProductVariantDetail
                     productVariants={productVariants}
