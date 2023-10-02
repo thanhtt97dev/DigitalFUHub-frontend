@@ -280,6 +280,11 @@ export const getVietnamCurrentTime = () => {
     return vietnamTime.toISOString();
 }
 
+export function discountPrice(price, discount) {
+    const result = price * discount / 100
+    return (price - result)
+}
+
 export const stringGuid = () => {
     let str = '0123456789abcdef'
     let result = ''

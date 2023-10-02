@@ -48,7 +48,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     const [quantity, setQuantity] = useState(1);
     const [quantityProductSelectedInCart, setquantityProductSelectedInCart] = useState(0);
     const [isModalNotifyQuantityOpen, setIsModalNotifyQuantityOpen] = useState(false);
-    const [isClickBuyNow, setIsClickBuyNow] = useState(false);
 
     const navigate = useNavigate()
     let minPrice = 0
@@ -134,7 +133,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         )
     }
 
-    const handleAddProductToCart = () => {
+    const handleAddProductToCart = async (isBuyNow) => {
         if (!productVariantsSelected) {
             openNotification("error", "Vui lòng chọn loại sản phẩm")
             return;
@@ -149,35 +148,31 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                         setquantityProductSelectedInCart(cart.quantity)
                         showModalNotifyQuantity()
                     } else {
-                        funcAddProductToCart();
+                        funcAddProductToCart(isBuyNow);
                     }
                 } else {
-                    funcAddProductToCart();
+                    funcAddProductToCart(isBuyNow);
                 }
             }).catch((errors => {
                 console.log(errors)
             }))
-
-
-
-
-
     }
 
-    const funcAddProductToCart = () => {
+    const funcAddProductToCart = (isBuyNow) => {
         const dataAddToCart = {
             userId: userId,
             productVariantId: productVariantsSelected.productVariantId,
             quantity: quantity
         }
 
+
         addProductToCart(dataAddToCart)
             .then((res) => {
                 if (res.status === 200) {
-                    if (!isClickBuyNow) {
+                    if (!isBuyNow) {
                         openNotification("success", "Sản phẩm đã được thêm vào trong giỏ hàng của bạn")
                     } else {
-                        navigate("/cart")
+                        navigate('/cart')
                     }
                 }
             })
@@ -185,6 +180,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                 console.log(errors)
                 openNotification("error", "Có lỗi xảy ra trong quá trình thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!")
             })
+
     }
 
 
@@ -246,10 +242,10 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
                         >
 
-                            <Button onClick={() => { setIsClickBuyNow(true); handleAddProductToCart() }} disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
+                            <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
                                 Mua ngay
                             </Button>
-                            <Button onClick={() => { setIsClickBuyNow(false); handleAddProductToCart(); }} disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
+                            <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
                                 Thêm vào giỏ
                             </Button>
                             {userId !== product.shopId ? (<Button className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
