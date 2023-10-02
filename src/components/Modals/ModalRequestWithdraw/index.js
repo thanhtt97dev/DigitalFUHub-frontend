@@ -6,7 +6,7 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import { createWithdrawTransaction, getUserBankAccount } from "~/api/bank";
 import { getCustomerBalance } from '~/api/user'
 
-function ModalRequestWithdraw({ userId, text, style }) {
+function ModalRequestWithdraw({ userId, text, style, callBack }) {
 
     const [api, contextHolder] = notification.useNotification();
 
@@ -48,7 +48,6 @@ function ModalRequestWithdraw({ userId, text, style }) {
         setConfirmLoading(true);
         createWithdrawTransaction(data)
             .then((res) => {
-                console.log(res)
                 setOpenModal(false)
                 openNotification("success", "Tạo yêu cầu rút tiền thành công!")
                 //window.location.reload();
@@ -57,6 +56,7 @@ function ModalRequestWithdraw({ userId, text, style }) {
                 openNotification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
             }).finally(() => {
                 setTimeout(() => {
+                    callBack();
                     setConfirmLoading(false);
                 }, 500);
             })
