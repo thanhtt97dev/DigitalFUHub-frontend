@@ -5,7 +5,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { getProductById } from "~/api/seller";
 import Spinning from "~/components/Spinning";
 
-import { Card, Button, Input, Form, theme, notification, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Row } from 'antd';
+import { Card, Button, Input, Form, theme, notification, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip } from 'antd';
 import { PlusOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
 import { getUserId, readDataFileExcelImportProduct } from "~/utils";
 import { getAllCategory } from "~/api/category";
@@ -36,15 +36,10 @@ const getBase64 = (file) =>
 
 function EditProduct() {
     const { productId } = useParams();
-    const [loading, setLoading] = useState(false);
-    const [descriptionValue, setDescriptionValue] = useState('');
-    // const [thumbnailFile, setThumbnailFile] = useState([]);
-    // const [fileImgProdList, setFileImgProdList] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [previewDataFileExcel, setPreviewDataFileExcel] = useState([])
-    const btnAddRef = useRef();
     const btnUploadRef = useRef();
     const [openModal, setOpenModel] = useState(false)
-    const [excelFileList, setExcelFileList] = useState([]);
     const [tags, setTags] = useState([]);
     const [inputVisible, setInputVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
@@ -69,18 +64,8 @@ function EditProduct() {
     const [previewImageTitle, setPreviewImageTitle] = useState('');
     const [previewOpen, setPreviewOpen] = useState(false);
 
-    // const handlePreviewImage = async (file) => {
-    //     if (!file.url && !file.preview) {
-    //         file.preview = await getBase64(file.originFileObj);
-    //     }
-    //     setPreviewImage(file.url || file.preview);
-    //     setPreviewOpen(true);
-    //     setPreviewImageTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
-    // };
 
     const handleCancel = () => setPreviewOpen(false);
-
-    // const dataFiles = useRef([]);
 
     const [api, contextHolder] = notification.useNotification();
 
@@ -90,34 +75,33 @@ function EditProduct() {
     const [productImagesSrc, setProductImagesSrc] = useState([]);
     const [productCategory, setProductCategory] = useState(1);
     const [productDiscount, setProductDiscount] = useState(0);
+    const [productVariants, setProductVariants] = useState([])
+    const [stateInit, setStateInit] = useState(true)
+    const btnAddRef = useRef();
 
     // get product
     useEffect(() => {
-        setLoading(true);
         getProductById(getUserId(), productId)
             .then(async (res) => {
-                setLoading(false);
                 if (res.data.status.responseCode === "00") {
                     const { productName, description, categoryId, discount, thumbnail, productMedias, tags, productVariants } = res.data.result;
                     setProductName(productName);
                     setProductDescription(description);
-                    setProductCategory(parseInt(categoryId))
+                    setProductCategory(parseInt(categoryId));
                     setProductDiscount(parseInt(discount));
-                    setProductThumbnailSrc([{ src: thumbnail, file: null }])
-                    setProductImagesSrc(productMedias.map(v => ({ src: v.url, file: null })
-                    ))
+                    setProductThumbnailSrc([{ src: thumbnail, file: null }]);
+                    setProductImagesSrc(productMedias.map(v => ({ src: v.url, file: null })));
                     setTags(tags.map((value, inex) => value.tagName));
+                    setProductVariants(productVariants.map((value, index) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, data: value.assetInformation, file: undefined })));
                 }
             })
             .catch((err) => {
-                setLoading(false);
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // get list categories
     useEffect(() => {
-        setLoading(true);
         getAllCategory()
             .then((res) => {
                 setLoading(false);
@@ -129,6 +113,17 @@ function EditProduct() {
                 setLoading(false);
             })
     }, [])
+    // init item product variant old when visit page
+    useEffect(() => {
+        if (!loading) {
+            for (let index = 0; index < productVariants.length; index++) {
+                btnAddRef.current.click();
+            }
+            setStateInit(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loading])
+
     // notification
     const openNotificationWithIcon = (type, description) => {
         api[type]({
@@ -160,14 +155,9 @@ function EditProduct() {
         setProductImagesSrc([...newArrays]);
     };
 
-
-    // add first box input product variants when visit page
-    // useEffect(() => {
-    //     btnAddRef.current.click();
-    // }, [])
-
-    // handle data file excel change
+    // handle data file excel change of product variants
     const handleDataFileChange = (info) => {
+        console.log(info);
         let newFileList = [...info.fileList];
         var mode = newFileList.length !== 0;
         let uidFile = info.file.uid;
@@ -175,16 +165,15 @@ function EditProduct() {
         // delete file
         if (!mode) {
             let indexFileEqUid = -1;
-            for (let index = 0; index < excelFileList.length; index++) {
-                if (excelFileList[index] !== undefined && excelFileList[index].uid === uidFile) {
+            for (let index = 0; index < productVariants.length; index++) {
+                if (productVariants[index].file !== undefined && productVariants[index].file.uid === uidFile) {
                     indexFileEqUid = index;
                     break;
                 }
             }
-            newFileList = [...excelFileList];
-            newFileList[indexFileEqUid] = undefined;
-            // newFileList.splice(indexFileEqUid, 1)
-            setExcelFileList([...newFileList]);
+            newFileList = [...productVariants];
+            newFileList[indexFileEqUid].file = undefined;
+            setProductVariants([...newFileList]);
         }
         // upload file
         else {
@@ -197,14 +186,15 @@ function EditProduct() {
                 file.status = 'done';
                 return file;
             });
-            setExcelFileList(prev => {
-                prev[btnUploadRef.current] = newFileList[0]
+            setProductVariants(prev => {
+                prev[btnUploadRef.current].file = newFileList[0]
                 return [...prev];
             });
         }
     }
+    // handle preview data file excel import
     const handlePreviewDataFileExcel = (index) => {
-        const file = excelFileList[index].originFileObj;
+        const file = productVariants[index].file.originFileObj;
         readDataFileExcelImportProduct(file)
             .then(res => setPreviewDataFileExcel(res));
         setOpenModel(true);
@@ -237,27 +227,9 @@ function EditProduct() {
 
     // submit form
     const onFinish = (values) => {
-        setLoading(true);
-        let formData = new FormData();
-        values.productImages.fileList.forEach((file, index) => {
-            formData.append(`images`, file.originFileObj);
-        });
-        values.productVariants.forEach((value, index) => {
-            formData.append(`nameVariants`, value.typeProd);
-            formData.append(`priceVariants`, value.priceProd);
-            formData.append(`dataVariants`, excelFileList[index].originFileObj);
-
-        });
-        tags.forEach((value, index) => {
-            formData.append(`tags`, value);
-        });
-
-        formData.append('productName', values.nameProduct);
-        formData.append('userId', getUserId());
-        formData.append('description', descriptionValue);
-        formData.append('category', values.category);
-        formData.append('discount', values.discount);
-        formData.append('thumbnail', values.thumbnailProduct.file.originFileObj);
+        // setLoading(true);
+        console.log(values)
+        console.log(productVariants)
     }
 
     return (
@@ -275,6 +247,7 @@ function EditProduct() {
                 </Modal >
 
                 <Form
+                    form={form}
                     fields={[
                         {
                             name: ["nameProduct"],
@@ -326,7 +299,7 @@ function EditProduct() {
                             }}
                             onChange={(event, editor) => {
                                 const data = editor.getData();
-                                setDescriptionValue(data);
+                                setProductDescription(data);
                             }}
                             onBlur={(event, editor) => {
                             }}
@@ -466,7 +439,8 @@ function EditProduct() {
                     </Form.Item>
 
                     {/* <UploadProductType handleGetDataFileChange={handleDataFileChange} ref={btnAddItem} /> */}
-                    <Form.List name="productVariants">
+                    <Form.List name="productVariants"
+                    >
                         {(fields, { add, remove }) => (
                             <>
                                 <Space direction='horizontal'>
@@ -490,34 +464,44 @@ function EditProduct() {
                                             extra={fields.length > 1 ? (
                                                 <CloseOutlined onClick={() => {
                                                     remove(name)
-                                                    // delete file in array
-                                                    let newDataFile = excelFileList;
-                                                    newDataFile.splice(name, 1)
-                                                    setExcelFileList(newDataFile)
+                                                    let newData = productVariants;
+                                                    newData.splice(name, 1)
+                                                    setProductVariants(newData)
                                                 }} />
                                             ) : null}
                                         >
                                             <Form.Item
                                                 {...restField}
-                                                name={[name, 'typeProd']}
+                                                name={[name, 'nameVariant']}
                                                 rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Loại sản phẩm không để trống.',
-                                                    },
+                                                    (getFieldValue) => ({
+                                                        validator(_, value) {
+                                                            if (value.trim()) {
+                                                                return Promise.resolve();
+                                                            }
+                                                            return Promise.reject(new Error('Tên loại sản phẩm không để trống.'));
+                                                        },
+                                                    }),
                                                 ]}
+                                                initialValue={productVariants[name]?.nameVariant}
                                             >
                                                 <Input placeholder="Tên loại sản phẩm" />
+
                                             </Form.Item>
                                             <Form.Item
                                                 {...restField}
-                                                name={[name, 'priceProd']}
+                                                name={[name, 'price']}
                                                 rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Giá loại sản phẩm không để trống',
-                                                    },
+                                                    (getFieldValue) => ({
+                                                        validator(_, value) {
+                                                            if (value) {
+                                                                return Promise.resolve();
+                                                            }
+                                                            return Promise.reject(new Error('Giá loại sản phẩm không để trống.'));
+                                                        },
+                                                    }),
                                                 ]}
+                                                initialValue={productVariants[name]?.price}
                                             >
                                                 <InputNumber style={{ width: '100%' }} min={0} addonAfter="VNĐ" placeholder="Giá loại sản phẩm" />
                                             </Form.Item>
@@ -529,7 +513,7 @@ function EditProduct() {
                                                 rules={[
                                                     (getFieldValue) => ({
                                                         validator(_, value) {
-                                                            if (excelFileList[name] !== undefined) {
+                                                            if (productVariants[name]?.data !== undefined || productVariants[name]?.file !== undefined) {
                                                                 return Promise.resolve();
                                                             }
                                                             return Promise.reject(new Error('Vui lòng tải dữ liệu.'));
@@ -537,23 +521,31 @@ function EditProduct() {
                                                     }),
                                                 ]}
                                             >
+
                                                 <Space direction='horizontal' align='start'>
+                                                    {productVariants[name]?.data
+                                                        &&
+                                                        <Button type='primary' onClick={(e) => {
+                                                            const data = productVariants[name]?.data.map((value, index) => ({ index: index + 1, value: value.asset }))
+                                                            setPreviewDataFileExcel(data)
+                                                            setOpenModel(true)
+                                                        }}>Dữ liệu hiện tại</Button>
+                                                    }
+
                                                     <Upload
                                                         beforeUpload={false}
                                                         accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                                                         onChange={handleDataFileChange}
-                                                        fileList={excelFileList[name] ? [excelFileList[name]] : []}>
-                                                        {excelFileList[name] === undefined && <Button onClick={() => btnUploadRef.current = name} icon={<UploadOutlined />}>Tải lên</Button>}
+                                                        fileList={productVariants[name]?.file ? [productVariants[name]?.file] : []}>
+                                                        {productVariants[name]?.file === undefined && <Button onClick={() => btnUploadRef.current = name} icon={<UploadOutlined />}>Tải lên</Button>}
                                                     </Upload>
-                                                    {excelFileList[name] !== undefined &&
+                                                    {productVariants[name]?.file !== undefined &&
                                                         <Button type='primary' onClick={(e) => {
                                                             handlePreviewDataFileExcel(name);
                                                             e.preventDefault();
                                                         }}>Xem trước dữ liệu</Button>
                                                     }
-
                                                 </Space>
-
                                             </Form.Item>
                                         </Card>
                                     </Space>
@@ -569,13 +561,15 @@ function EditProduct() {
                                 </Modal >
                                 <Form.Item>
                                     <Button ref={btnAddRef} type="dashed" onClick={() => {
+                                        if (!stateInit) {
+                                            const dataItem = { id: 0, nameVariant: '', price: '', data: undefined, file: undefined }
+                                            setProductVariants(prev => [...prev, dataItem])
+                                        }
                                         add();
-                                        setExcelFileList(prev => [...prev, undefined])
                                     }} block icon={<PlusOutlined />}>
                                         Thêm
                                     </Button>
                                 </Form.Item>
-
                             </>
                         )}
                     </Form.List>
@@ -651,6 +645,7 @@ function EditProduct() {
             </Spinning >
         </>
     );
+
 }
 
 export default EditProduct;

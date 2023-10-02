@@ -155,6 +155,24 @@ function HistoryWithdraw() {
         });
     };
 
+    const handleSearchDataTable = () => {
+        setLoading(true);
+        getWithdrawTransaction(user.id, searchData)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setDataTable(res.data.result)
+                } else {
+                    openNotification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
+                }
+            })
+            .catch((err) => {
+                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+            })
+            .finally(() => {
+                setTimeout(() => { setLoading(false) }, 500)
+            })
+    }
+
 
 
     return (
@@ -212,7 +230,7 @@ function HistoryWithdraw() {
                             </Space>
                         </Form.Item>
                     </Form>
-                    <ModalRequestWithdraw userId={user.id} style={{ marginBottom: "5px" }} />
+                    <ModalRequestWithdraw userId={user.id} callBack={() => handleSearchDataTable()} style={{ marginBottom: "5px" }} />
 
                     <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} />
                 </Card>
