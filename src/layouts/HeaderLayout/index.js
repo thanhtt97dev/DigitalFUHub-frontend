@@ -5,7 +5,7 @@ import { Layout, Image, Space, Button, Dropdown, Avatar } from 'antd';
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
 import {
-    MessageOutlined, ShoppingCartOutlined, WechatOutlined, BellFilled,
+    MessageOutlined, ShoppingCartOutlined, MessageFilled, BellFilled,
     SettingOutlined, CreditCardOutlined, ShopOutlined
 } from '@ant-design/icons';
 
@@ -93,27 +93,29 @@ function HeaderLayout() {
                 </Space>
 
                 <Space size={12}>
-
-                    <Link to={'/cart'}>
-                        <Button type="primary" className={cx("button")} icon={<ShoppingCartOutlined />}>Giỏ hàng</Button>
-                    </Link>
                     {user === null ? (
-                        <Space>
-                            <BellFilled className={cx("icon")} />
-                            <Link to={'/Login'}>
-                                <Button type="primary" className={cx("button")}>Đăng nhập</Button>
-                            </Link>
-                            <Link to={'/signup'}>
-                                <Button type="primary" className={cx("button")}>Đăng ký</Button>
-                            </Link>
-                        </Space>
+                        <>
+                            <Space>
+                                <BellFilled className={cx("icon")} />
+                                <Link to={'/Login'}>
+                                    <Button type="primary" className={cx("button")}>Đăng nhập</Button>
+                                </Link>
+                                <Link to={'/signup'}>
+                                    <Button type="primary" className={cx("button")}>Đăng ký</Button>
+                                </Link>
+                            </Space>
+                        </>
                     ) : (
                         <>
                             <AccountBalance />
-                            <ModalRequestDeposit userId={user.id} />
+                            <ModalRequestDeposit userId={user.id} style={{ background: 'black' }} />
+                            <Link to={'/cart'}>
+                                <Button type="primary" className={cx("button")} icon={<ShoppingCartOutlined />}>Giỏ hàng</Button>
+                            </Link>
+
                             <Notificaion />
                             <Link to={'/chatBox'}>
-                                <WechatOutlined className={cx("icon")} />
+                                <MessageFilled className={cx("icon")} />
                             </Link>
                             <Dropdown
                                 menu={{ items }}
@@ -126,7 +128,6 @@ function HeaderLayout() {
                             </Dropdown>
                         </>
                     )}
-
                 </Space>
             </Header>
         </>
