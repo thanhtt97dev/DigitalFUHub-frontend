@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
 import { Card } from "antd";
-import HistoryDeposit from "~/components/HistoryTransactions/HistoryDeposit";
-import HistoryWithdraw from "~/components/HistoryTransactions/HistoryWithdraw";
+import HistoryDeposit from "./HistoryDeposit";
+import HistoryWithdraw from "./HistoryWithdraw";
 
 function HistoryTransactions() {
     const initialTabList = [

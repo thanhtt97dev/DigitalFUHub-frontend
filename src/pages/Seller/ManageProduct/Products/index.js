@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Table } from 'antd';
+import { Table, Card } from 'antd';
 import { useAuthUser } from 'react-auth-kit'
 
 import { getAllProducts } from "~/api/seller";
@@ -114,7 +114,16 @@ function Products() {
 
     return <>
         <Spinning spinning={loading}>
-            <Table columns={columns} pagination={{ size: 10 }} dataSource={dataTable} />
+            <Card
+                style={{
+                    width: '100%',
+                    minHeight: "690px"
+                }}
+                hoverable
+                title="Tất cả sản phẩm"
+            >
+                <Table columns={columns} pagination={{ size: 10 }} dataSource={dataTable} />
+            </Card>
         </Spinning>
     </>
 }
