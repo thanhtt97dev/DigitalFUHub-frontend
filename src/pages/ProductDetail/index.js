@@ -14,7 +14,7 @@ import { getProductById } from '~/api/product';
 import { addProductToCart, getCart } from '~/api/cart';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { formatPrice } from '~/utils'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment'
 
 const cx = classNames.bind(styles);
@@ -394,7 +394,8 @@ const ProductDetail = () => {
     const auth = useAuthUser();
     const user = auth();
     const userId = user.id;
-    const initialProductId = 1;
+    const { id } = useParams();
+    const initialProductId = id;
     const [product, setProduct] = useState(null)
     const [productVariants, setProductVariants] = useState([])
     const [productVariantsSelected, setProductVariantsSelected] = useState(null)

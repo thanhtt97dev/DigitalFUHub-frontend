@@ -18,11 +18,17 @@ const cx = classNames.bind(styles);
 
 const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice, balance }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalBuyOpen, setIsModalBuyOpen] = useState(false);
     const [productVariantsIdSelected, setProductVariantsIdSelected] = useState(0);
 
     const showModal = () => {
         setIsModalOpen(true);
     };
+
+    const showModalBuy = () => {
+        setIsModalBuyOpen(true);
+    };
+
     const handleOk = () => {
         setIsModalOpen(false);
         const newCarts = carts.filter(c => c.productVariantId !== productVariantsIdSelected)
@@ -46,9 +52,18 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                 openNotification("error", "Có lỗi trong quá trình xóa, vui lòng thử lại sau")
             })
     };
+
+
+    const handleBuyOk = () => {
+        setIsModalBuyOpen(false);
+
+    }
+
+
     const handleCancel = () => {
         setIsModalOpen(false);
     };
+
 
     const handleOnChangeCheckbox = (values) => {
         const cartFilter = carts.filter(c => values.includes(c.productVariantId))
@@ -63,6 +78,13 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
 
 
         setTotalPrice({ originPrice: totalOriginPrice, discountPrice: totalDiscountPrice });
+    }
+
+    const handleBuy = () => {
+        if (balance < totalPrice.discountPrice) {
+            showModalBuy()
+            return
+        }
     }
 
     return (<>
@@ -115,7 +137,7 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                             <Text>Tổng giá trị phải thanh toán:</Text>
                             <Text strong>{totalPrice.discountPrice}</Text>
                         </div>
-                        <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block>
+                        <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block onClick={handleBuy}>
                             Mua hàng
                         </Button>
                     </Card>
@@ -123,6 +145,20 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
             </Row>
             <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                 <p>Bạn có muốn xóa sản phẩm này khỏi giỏ hàng không?</p>
+            </Modal>
+
+            <Modal
+                open={isModalBuyOpen}
+                closable={false}
+                maskClosable={false}
+                footer={[
+                    <Button key="submit" type="primary" onClick={handleBuyOk}>
+                        OK
+                    </Button>,
+
+                ]}
+            >
+                <p>Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản</p>
             </Modal>
         </>) : (<Title level={4}>Không có sản phẩm nào trong giỏ hàng</Title>)}
 
