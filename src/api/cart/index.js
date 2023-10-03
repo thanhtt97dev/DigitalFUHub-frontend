@@ -1,4 +1,4 @@
-import { apiPostAuth, apiGetAuth, apiDelete } from '../defaultApi';
+import { apiPostAuth, apiGetAuth } from '../defaultApi';
 
 export const addProductToCart = (data) => {
     return apiPostAuth(`api/Carts/addProductToCart`, data);
@@ -13,5 +13,5 @@ export const getCartsByUserId = (userId) => {
 };
 
 export const deleteCart = (data) => {
-    return apiDelete(`api/Carts/DeleteCart`, data);
+    return apiPostAuth(`api/Carts/DeleteCart`, data);
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import {
-    Button, message, Steps, theme, Row, Col,
+    Button, Row, Col,
     Image, Typography, InputNumber, Modal,
     notification, Checkbox, Divider
 } from 'antd';
@@ -16,27 +16,6 @@ const { Title, Text } = Typography;
 const cx = classNames.bind(styles);
 
 
-// const CartItem = ({ item, setProductVariantsIdSelected, showModal }) => (
-//     <Card title={item.shopName}>
-//         <Row>
-//             <Col>
-//                 <Checkbox value={item.price}></Checkbox>
-//                 <Image
-//                     width={100}
-//                     src={item.product.thumbnail}
-//                 />
-//             </Col>
-//             <Col offset={1}><Title level={5}>{item.product.productName}</Title></Col>
-//             <Col offset={1}><Text type="secondary">Variant: {item.productVariantName}</Text></Col>
-//             <Col offset={1}><Text>{item.priceDiscount}</Text></Col>
-//             <Col offset={1}><InputNumber min={1} defaultValue={item.quantity} /></Col>
-//             <Col offset={1}><Text>{item.price}</Text></Col>
-//             <Col offset={1}><Button onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModal() }}>Delete</Button></Col>
-//         </Row>
-
-//     </Card>
-// )
-
 const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice, balance }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [productVariantsIdSelected, setProductVariantsIdSelected] = useState(0);
@@ -47,10 +26,15 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
     const handleOk = () => {
         setIsModalOpen(false);
         const newCarts = carts.filter(c => c.productVariantId !== productVariantsIdSelected)
-        deleteCart({ userId: newCarts.userId, productVariantId: newCarts.productVariantId })
+
+        const dataDelete = {
+            userId: newCarts[0].userId,
+            productVariantId: newCarts[0].productVariantId
+        }
+
+        deleteCart(dataDelete)
             .then((res) => {
                 if (res.data.ok === true) {
-                    console.log('res.data = ' + JSON.stringify(res.data));
                     updateCarts(newCarts)
                     openNotification("success", "Xóa sản phẩm thành công")
                 } else {
@@ -102,7 +86,7 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                                         <Col offset={1}><Text>{item.productVariant.priceDiscount}</Text></Col>
                                         <Col offset={1}><InputNumber min={1} max={item.productVariant.quantity} defaultValue={item.quantity} /></Col>
                                         <Col offset={1}><Text>{item.productVariant.price}</Text></Col>
-                                        <Col offset={1}><Button onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModal() }}>Delete</Button></Col>
+                                        <Col offset={1}><Button onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModal() }}>Xóa</Button></Col>
                                     </Row>
 
                                 </Card>
@@ -131,16 +115,8 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                             <Text>Tổng giá trị phải thanh toán:</Text>
                             <Text strong>{totalPrice.discountPrice}</Text>
                         </div>
-                        <div className={cx('space-div-flex')}>
-                            <Text>Số dư hiện tại:</Text>
-                            <Text strong>{balance}</Text>
-                        </div>
-                        <div className={cx('space-div-flex')}>
-                            <Text>Số tiền cần nạp thêm:</Text>
-                            <Text strong>{totalPrice.discountPrice - balance}</Text>
-                        </div>
-                        <Button type="primary" block>
-                            Nạp thêm vào tài khoản
+                        <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block>
+                            Mua hàng
                         </Button>
                     </Card>
                 </Col>
@@ -167,8 +143,6 @@ const Cart = () => {
         discountPrice: 0
     }
     const [carts, setCarts] = useState([])
-    const { token } = theme.useToken();
-    const [current, setCurrent] = useState(0);
     const [api, contextHolder] = notification.useNotification();
     const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
     const [balance, setBalance] = useState(0);
@@ -184,46 +158,6 @@ const Cart = () => {
         setCarts(cart);
     }
 
-    const steps = [
-        {
-            title: 'Giỏ hàng',
-            content: <Carts
-                carts={carts}
-                updateCarts={updateCarts}
-                openNotification={openNotification}
-                setTotalPrice={setTotalPrice}
-                totalPrice={totalPrice}
-                balance={balance} />,
-        },
-        {
-            title: 'Xác nhận',
-            content: 'Second-content',
-        },
-        {
-            title: 'Thanh toán',
-            content: 'Last-content',
-        },
-    ];
-    const next = () => {
-        setCurrent(current + 1);
-    };
-    const prev = () => {
-        setCurrent(current - 1);
-    };
-    const items = steps.map((item) => ({
-        key: item.title,
-        title: item.title,
-    }));
-
-    const contentStyle = {
-        lineHeight: '260px',
-        textAlign: 'center',
-        color: token.colorTextTertiary,
-        backgroundColor: token.colorFillAlter,
-        borderRadius: token.borderRadiusLG,
-        border: `1px dashed ${token.colorBorder}`,
-        marginTop: 16,
-    };
 
     useEffect(() => {
         getCartsByUserId(userId)
@@ -254,38 +188,13 @@ const Cart = () => {
     return (
         <>
             {contextHolder}
-            <Steps current={current} items={items} />
-
-            <div style={contentStyle}>
-                {steps[current].content}
-            </div>
-
-            {/* <div
-                style={{
-                    marginTop: 24,
-                }}
-            >
-                {current < steps.length - 1 && (
-                    <Button type="primary" onClick={() => next()}>
-                        Next
-                    </Button>
-                )}
-                {current === steps.length - 1 && (
-                    <Button type="primary" onClick={() => message.success('Processing complete!')}>
-                        Done
-                    </Button>
-                )}
-                {current > 0 && (
-                    <Button
-                        style={{
-                            margin: '0 8px',
-                        }}
-                        onClick={() => prev()}
-                    >
-                        Previous
-                    </Button>
-                )}
-            </div> */}
+            <Carts
+                carts={carts}
+                updateCarts={updateCarts}
+                openNotification={openNotification}
+                setTotalPrice={setTotalPrice}
+                totalPrice={totalPrice}
+                balance={balance} />
         </>
     )
 }
