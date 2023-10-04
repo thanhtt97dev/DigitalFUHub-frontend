@@ -259,54 +259,11 @@ function AddProduct() {
                     hoverable
                     title="Thêm sản phẩm"
                 >
-<<<<<<< HEAD
-                    <Form.Item name='nameProduct' label="Tên sản phẩm:"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Tên sản phẩm không để trống."
-                            }
-                        ]}
-                    >
-                        <Input placeholder='Tên sản phẩm' />
-                    </Form.Item>
-                    <Form.Item name='description' label="Mô tả:"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Mô tả sản phẩm không để trống.'
-                            }
-                        ]}
-                    >
-                        {/* <Input.TextArea rows={4} /> */}
-                        {/* <CKEditorContext context={Context}> */}
-                        <CKEditor
-                            editor={ClassicEditor}
-                            data=""
-                            // config={{
-                            //     toolbar: ['undo', 'redo', '|', 'heading', '|', 'bold', 'italic', 'underline', '|', 'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor', '|', 'link', 'blockQuote', 'bulletedList', 'decreaseIndent', 'increaseIndent', 'numberedList']
-                            // }}
-                            // onReady={editor => {
-                            //     // You can store the "editor" and use when it is needed.
-                            //     console.log('Editor is ready to use!', editor);
-                            // }}
-                            onChange={(event, editor) => {
-                                const data = editor.getData();
-                                // console.log({ event, editor, data });
-                                setDescriptionValue(data);
-                            }}
-                            onBlur={(event, editor) => {
-                                // console.log('Blur.', editor);
-                            }}
-                            onFocus={(event, editor) => {
-                                // console.log('Focus.', editor);
-=======
                     <Modal open={previewOpen} title={previewImageTitle} footer={null} onCancel={handleCancel}>
                         <img
                             alt="thumbnail"
                             style={{
                                 width: '100%',
->>>>>>> e29916fdac78ec676a72306dce58b21682e87f8a
                             }}
                             src={previewImage}
                         />
