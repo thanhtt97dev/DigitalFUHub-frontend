@@ -1,9 +1,10 @@
-import { useEffect, useState, useRef, useLayoutEffect } from "react";
+import { useEffect, useState, useRef, useLayoutEffect, useContext } from "react";
 import { useParams } from 'react-router-dom';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { getProductById } from "~/api/seller";
+import { editProduct, getProductById } from "~/api/seller";
 import Spinning from "~/components/Spinning";
+import { NotificationContext } from '~/context/NotificationContext';
 
 import { Card, Button, Input, Form, theme, notification, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip } from 'antd';
 import { PlusOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
@@ -35,6 +36,7 @@ const getBase64 = (file) =>
     });
 
 function EditProduct() {
+    const notification = useContext(NotificationContext);
     const { productId } = useParams();
     const [loading, setLoading] = useState(true);
     const [previewDataFileExcel, setPreviewDataFileExcel] = useState([])
@@ -59,16 +61,10 @@ function EditProduct() {
     };
     const [form] = Form.useForm();
     const [categories, setCategories] = useState([]);
-
     const [previewImage, setPreviewImage] = useState('');
     const [previewImageTitle, setPreviewImageTitle] = useState('');
     const [previewOpen, setPreviewOpen] = useState(false);
-
-
     const handleCancel = () => setPreviewOpen(false);
-
-    const [api, contextHolder] = notification.useNotification();
-
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState('');
     const [productThumbnailSrc, setProductThumbnailSrc] = useState([]);
@@ -123,14 +119,6 @@ function EditProduct() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading])
-
-    // notification
-    const openNotificationWithIcon = (type, description) => {
-        api[type]({
-            message: '',
-            description: `${description}`
-        });
-    };
 
     // handle upload thumbnail
     const handleThumbnailChange = async (info) => {
@@ -227,14 +215,60 @@ function EditProduct() {
 
     // submit form
     const onFinish = (values) => {
-        // setLoading(true);
+        setLoading(true);
         console.log(values)
         console.log(productVariants)
+        let formData = new FormData();
+        formData.append('productId', productId);
+        formData.append('userId', getUserId());
+        formData.append('productName', values.productName);
+        formData.append('productDescription', productDescription);
+        formData.append('discount', values.discount);
+        formData.append('productThumbnail', productThumbnailSrc.file ? productThumbnailSrc.file : null);
+        productImagesSrc.forEach((value, index) => {
+            if (value.file) {
+                formData.append('productImagesUpdate', value.file);
+            } else {
+                formData.append('productImagesOld', value.src);
+            }
+        });
+        tags.forEach((tag, index) => {
+            formData.append('tags', tag);
+        })
+
+        productVariants.forEach((variant, index) => {
+            // add new variant
+            if (variant.data === undefined && variant.file !== undefined) {
+                formData.append('productVariantNameNew', values.productVariants[index].nameVariant);
+                formData.append('productVariantPriceNew', values.productVariants[index].price);
+                formData.append('productVariantFileNew', variant.file.originFileObj);
+            }
+            // update variant
+            else {
+                formData.append('productVariantIdUpdate', variant.id);
+                formData.append('productVariantNameUpdate', values.productVariants[index].nameVariant);
+                formData.append('productVariantPriceUpdate', values.productVariants[index].price);
+                formData.append('productVariantFileUpdate', variant.file ? variant.file.originFileObj : null);
+            }
+        })
+        editProduct(productId, formData)
+            .then(res => {
+                setLoading(false);
+                if (res.data.status.codeResponse === '00') {
+                    notification('success', 'Cập nhật sản phẩm thành công.');
+                } else {
+                    notification('error', 'Cập nhật sản phẩm thất bại.');
+                }
+            })
+            .catch(err => {
+                setLoading(false);
+                notification('error', 'Đã có lỗi xảy ra.');
+            })
+
     }
 
     return (
         <>
-            {contextHolder}
             <Spinning spinning={loading}>
                 <Modal open={previewOpen} title={previewImageTitle} footer={null} onCancel={handleCancel}>
                     <img
