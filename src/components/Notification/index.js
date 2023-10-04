@@ -62,7 +62,7 @@ function Notification() {
         <>
             {contextHolder}
             <Badge size="small" count={notifications.length} onClick={showDrawer}>
-                <BellFilled style={{ fontSize: 30 }} />
+                <BellFilled style={{ fontSize: '25px', paddingTop: '20px' }} />
             </Badge>
             <Drawer
                 style={{ overflowY: 'scroll' }}

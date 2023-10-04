@@ -175,7 +175,7 @@ const routesConfig = [
     },
     {
         title: 'Product Detail',
-        path: '/productDetail',
+        path: '/product/:id',
         layout: <NormalLayout />,
         component: <ProductDetail />,
     },

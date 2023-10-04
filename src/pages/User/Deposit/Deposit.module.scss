@@ -3,6 +3,7 @@
   color: white; 
   display: flex; 
   flex-direction: row; 
+  padding-left: 20px;
 }
 
 .deposit-container-2 {
@@ -10,6 +11,7 @@
   color: white; 
   display: flex; 
   flex-direction: column; 
+  padding-left: 23px;
 }
 
 .part {
@@ -28,7 +30,8 @@
 .instruction {
   background-color: #434654; 
   color: white; 
-  padding: 20px; 
+  padding-top: 30px; 
+  padding-left: 30px; 
   display: flex;
 }
 
@@ -41,7 +44,7 @@
 }
 
 .info {
-    padding-top: 20px;
+  padding-top: 20px;
   max-width: 70%;
 }
 

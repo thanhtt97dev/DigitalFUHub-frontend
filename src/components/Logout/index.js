@@ -28,7 +28,7 @@ function Logout() {
             userInfo = getUser();
             if (userInfo === null || userInfo === undefined) {
                 clearInterval(getUserInfoInterval);
-                return navigate('/login');
+                return navigate('/home');
             }
         }, 100)
     };

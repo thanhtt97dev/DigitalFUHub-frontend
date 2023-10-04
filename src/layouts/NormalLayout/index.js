@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 import { Layout, theme } from 'antd';
 import { FacebookOutlined, InstagramOutlined, TwitterCircleFilled } from '@ant-design/icons';
@@ -18,6 +18,9 @@ function NormalLayout(props) {
         token: { colorBgContainer },
     } = theme.useToken();
 
+    const location = useLocation();
+    const isDepositPage = location.pathname === '/deposit';
+
     return (
         <>
             <Layout className={cx("layout")}>
@@ -25,11 +28,12 @@ function NormalLayout(props) {
                 <Content>
                     <div
                         style={{
-                            background: colorBgContainer,
-                            padding: 30,
-                            minHeight: '92vh'
+                            background: isDepositPage ? '#343541' : colorBgContainer,
+                            paddingRight: 30,
+                            paddingLeft: 30,
+                            paddingTop: isDepositPage ? 0 : 30,
+                            paddingBottom: isDepositPage ? 0 : 30,
                         }}
-
                     >
                         <Outlet />
                     </div>
@@ -65,20 +69,6 @@ function NormalLayout(props) {
                     </div>
                 </Footer>
             </Layout >
-
-            {/* <div className={cx('page')}>
-                <HeaderLayout className={cx('header')} />
-                <Content className={cx('content')}>
-                    <div style={{
-                        background: colorBgContainer,
-                        width: '85%',
-                        margin: '0 auto'
-                    }}>
-                        <Outlet />
-                    </div>
-                </Content>
-                <div className="footer">Footer</div>
-            </div> */}
         </>
     );
 }
