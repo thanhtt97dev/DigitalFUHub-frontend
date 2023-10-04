@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { PlusOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, InputNumber, Upload, Modal, notification, Table, Space, theme, Tag, Tooltip, Card } from 'antd';
+import { Button, Form, Input, Select, InputNumber, Upload, Modal, Table, Space, theme, Tag, Tooltip, Card } from 'antd';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Spinning from '~/components/Spinning';
+import { NotificationContext } from '~/context/NotificationContext';
 
 import { getUserId, readDataFileExcelImportProduct } from '~/utils';
 import { addProduct } from '~/api/seller';
@@ -34,6 +35,7 @@ const getBase64 = (file) =>
     });
 
 function AddProduct() {
+    const notification = useContext(NotificationContext);
     const [descriptionValue, setDescriptionValue] = useState('');
     const [thumbnailFile, setThumbnailFile] = useState([]);
     const [fileImgProdList, setFileImgProdList] = useState([]);
@@ -80,7 +82,6 @@ function AddProduct() {
 
     // const dataFiles = useRef([]);
 
-    const [api, contextHolder] = notification.useNotification();
 
     // get list categories
     useEffect(() => {
@@ -94,14 +95,6 @@ function AddProduct() {
 
             })
     }, [])
-
-    // notification
-    const openNotificationWithIcon = (type, description) => {
-        api[type]({
-            message: '',
-            description: `${description}`
-        });
-    };
 
     // handle upload thumbnail
 
@@ -238,7 +231,7 @@ function AddProduct() {
             .then((res) => {
                 setLoading(false);
                 if (res.data.status.responseCode === "00") {
-                    openNotificationWithIcon('success', "Thêm sản phẩm mới thành công.");
+                    notification('success', "Thêm sản phẩm mới thành công.");
                     form.resetFields();
                     setTags([]);
                     setThumbnailFile([]);
@@ -246,18 +239,17 @@ function AddProduct() {
                     setExcelFileList([]);
                     btnAddRef.current.click();
                 } else {
-                    openNotificationWithIcon('error', "Thêm sản phẩm mới thất bại.");
+                    notification('error', "Thêm sản phẩm mới thất bại.");
                 }
             })
             .catch((err) => {
                 setLoading(false);
-                openNotificationWithIcon('error', "Đã có lỗi xảy ra vui lòng thử lại sau.");
+                notification('error', "Đã có lỗi xảy ra vui lòng thử lại sau.");
             })
     }
 
     return (
         <>
-            {contextHolder}
             <Spinning spinning={loading}>
                 <Card
                     style={{
@@ -267,11 +259,54 @@ function AddProduct() {
                     hoverable
                     title="Thêm sản phẩm"
                 >
+<<<<<<< HEAD
+                    <Form.Item name='nameProduct' label="Tên sản phẩm:"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Tên sản phẩm không để trống."
+                            }
+                        ]}
+                    >
+                        <Input placeholder='Tên sản phẩm' />
+                    </Form.Item>
+                    <Form.Item name='description' label="Mô tả:"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Mô tả sản phẩm không để trống.'
+                            }
+                        ]}
+                    >
+                        {/* <Input.TextArea rows={4} /> */}
+                        {/* <CKEditorContext context={Context}> */}
+                        <CKEditor
+                            editor={ClassicEditor}
+                            data=""
+                            // config={{
+                            //     toolbar: ['undo', 'redo', '|', 'heading', '|', 'bold', 'italic', 'underline', '|', 'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor', '|', 'link', 'blockQuote', 'bulletedList', 'decreaseIndent', 'increaseIndent', 'numberedList']
+                            // }}
+                            // onReady={editor => {
+                            //     // You can store the "editor" and use when it is needed.
+                            //     console.log('Editor is ready to use!', editor);
+                            // }}
+                            onChange={(event, editor) => {
+                                const data = editor.getData();
+                                // console.log({ event, editor, data });
+                                setDescriptionValue(data);
+                            }}
+                            onBlur={(event, editor) => {
+                                // console.log('Blur.', editor);
+                            }}
+                            onFocus={(event, editor) => {
+                                // console.log('Focus.', editor);
+=======
                     <Modal open={previewOpen} title={previewImageTitle} footer={null} onCancel={handleCancel}>
                         <img
                             alt="thumbnail"
                             style={{
                                 width: '100%',
+>>>>>>> e29916fdac78ec676a72306dce58b21682e87f8a
                             }}
                             src={previewImage}
                         />
