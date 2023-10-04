@@ -13,9 +13,6 @@ const columns = [
         title: 'Id',
         dataIndex: 'productId',
         width: '5%',
-        onCell: (_, index) => ({
-            rowSpan: 3
-        }),
     },
     {
         title: 'Tên sản phẩm',
@@ -24,7 +21,7 @@ const columns = [
         render: (productId, record) => {
             return (
                 <Link to={`/seller/product/${productId}`} style={{ display: "flex" }}>
-                    <img src={record.thumbnail} alt="product" style={{ with: "40px", height: "60px" }} />
+                    <img src={record.thumbnail} alt="product" style={{ with: "40px", height: "60px", marginRight: "10px" }} />
                     <span>{record.productName}</span>
                 </Link>
             )

@@ -3,7 +3,7 @@ import { useSignOut } from 'react-auth-kit';
 import { LogoutOutlined } from '@ant-design/icons';
 
 import { revokeToken } from '~/api/user';
-import { getJwtId, removeDataAuthInCookies, getUser } from '~/utils';
+import { getJwtId, removeDataAuthInCookies } from '~/utils';
 
 function Logout() {
     const signOut = useSignOut();
@@ -23,14 +23,7 @@ function Logout() {
                 console.log(err);
             });
 
-        let userInfo;
-        var getUserInfoInterval = setInterval(() => {
-            userInfo = getUser();
-            if (userInfo === null || userInfo === undefined) {
-                clearInterval(getUserInfoInterval);
-                return navigate('/home');
-            }
-        }, 100)
+        return navigate('/home');
     };
 
     return (
