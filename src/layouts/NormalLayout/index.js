@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 
-import { Layout, theme } from 'antd';
+import { Layout } from 'antd';
 import { FacebookOutlined, InstagramOutlined, TwitterCircleFilled } from '@ant-design/icons';
 
 import HeaderLayout from '~/layouts/HeaderLayout';
@@ -14,9 +14,6 @@ const cx = classNames.bind(styles);
 const { Content, Footer } = Layout;
 
 function NormalLayout(props) {
-    const {
-        token: { colorBgContainer },
-    } = theme.useToken();
 
     const location = useLocation();
     const isDepositPage = location.pathname === '/deposit';
@@ -28,7 +25,7 @@ function NormalLayout(props) {
                 <Content>
                     <div
                         style={{
-                            background: isDepositPage ? '#343541' : colorBgContainer,
+                            background: isDepositPage ? '#343541' : '#F3F4F6',
                             paddingRight: 30,
                             paddingLeft: 30,
                             paddingTop: isDepositPage ? 0 : 30,

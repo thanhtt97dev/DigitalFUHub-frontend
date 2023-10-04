@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
-import { Layout, Image, Space, Button, Dropdown, Avatar } from 'antd';
+import { Layout, Image, Space, Button, Dropdown, Avatar, Input } from 'antd';
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
 import {
@@ -21,6 +21,8 @@ import styles from './HeaderLayout.module.scss';
 const cx = classNames.bind(styles);
 
 const { Header } = Layout;
+
+const { Search } = Input;
 
 const itemsFixed = [
     {
@@ -59,6 +61,8 @@ function HeaderLayout() {
     const [items, setItems] = useState([]);
     const [userAvatart, setUserAvatart] = useState(null);
 
+    const onSearch = (value, _e, info) => console.log(info?.source, value);
+
     useEffect(() => {
 
         var itemsCanAccses = itemsFixed;
@@ -84,26 +88,35 @@ function HeaderLayout() {
 
     return (
         <>
-            <Header className={cx("header")}>
-                <Space>
+            <div className={cx("header1")} />
+            <Header className={cx("header2")}>
+                <Space className={cx("item1")}>
                     <Image width={60} src={logo} />
                     <Link to={'/home'} className={cx("link")}>
                         <h3>DigitalFUHub</h3>
                     </Link>
                 </Space>
 
-                <Space size={12}>
+                <Space className={cx("item2")}>
+                    <Search
+                        className={cx("search")}
+                        placeholder="Tìm kiếm sản phẩm"
+                        allowClear
+                        enterButton={<Button style={{ backgroundColor: 'black', color: 'white' }}>Search</Button>}
+                        onSearch={onSearch}
+                    />
+                </Space>
+
+                <Space className={cx("item3")}>
                     {user === null ? (
                         <>
-                            <Space>
-                                <BellFilled className={cx("icon")} />
-                                <Link to={'/Login'}>
-                                    <Button type="primary" className={cx("button")}>Đăng nhập</Button>
-                                </Link>
-                                <Link to={'/signup'}>
-                                    <Button type="primary" className={cx("button")}>Đăng ký</Button>
-                                </Link>
-                            </Space>
+                            <BellFilled className={cx("icon")} />
+                            <Link to={'/Login'}>
+                                <Button type="primary" className={cx("button")}>Đăng nhập</Button>
+                            </Link>
+                            <Link to={'/signup'}>
+                                <Button type="primary" className={cx("button")}>Đăng ký</Button>
+                            </Link>
                         </>
                     ) : (
                         <>
