@@ -326,9 +326,9 @@ const ProductFeedback = ({ feedback }) => {
 
     const FormatFeedbackMedias = ({ feedbackMedias }) => (
         feedbackMedias?.map((item, index) => (
-            <div style={{ padding: 5 }}>
+            <div style={{ padding: 5 }} key={index}>
                 <Image
-                    key={index}
+
                     width={70}
                     src={item.url}
                 />

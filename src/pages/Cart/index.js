@@ -11,7 +11,7 @@ import { addOrder } from '~/api/order';
 import { updateAccountBalance } from '~/api/user';
 import classNames from 'classnames/bind';
 import styles from './Cart.module.scss';
-import { formatPrice, getUserId } from '~/utils';
+import { formatPrice, getUserId, getVietnamCurrentTime } from '~/utils';
 import { getCustomerBalance } from '~/api/user';
 
 const { Title, Text } = Typography;
@@ -27,7 +27,7 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
 
 
     const showModalConfirmDelete = () => {
-        isModalConfirmDelete(true);
+        setIsModalConfirmDelete(true);
     };
 
     const showModalNotifyBalance = () => {
@@ -70,17 +70,34 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
     }
 
     const handleOkConfirmBuy = () => {
+        debugger
+        console.log('cartSelected: ' + JSON.stringify(cartSelected[0]));
 
-        console.log('cartSelected: ' + cartSelected);
+        const lstDataOrder = cartSelected.map((c) => ({
+            userId: getUserId(),
+            productVariantId: c.productVariantId,
+            businessFeeId: 1,
+            quantity: c.quantity,
+            price: c.productVariant.priceDiscount,
+            orderDate: getVietnamCurrentTime(),
+            totalAmount: (c.productVariant.priceDiscount * c.quantity),
+            isFeedback: false
+        }));
         const newAccountBalance = balance - totalPrice.discountPrice
-        updateAccountBalance(getUserId(), { accountBalance: newAccountBalance })
+        addOrder(lstDataOrder)
             .then((res) => {
-                openNotification("success", "Cập nhật balance thành công")
-            }).catch((errors) => {
-                console.log(errors)
+                if (res.status === 200) {
+                    updateAccountBalance(getUserId(), { accountBalance: newAccountBalance })
+                        .then((res) => {
+                            openNotification("success", "Thanh toán đơn hàng thành công")
+                        }).catch((errors) => {
+                            console.log(errors)
+                        })
+                    setIsModalConfirmBuy(false);
+                }
+            }).catch((error) => {
+                console.log(error)
             })
-        setIsModalConfirmBuy(false);
-
     }
 
     const handleCancelConfirmBuy = () => {
@@ -97,11 +114,13 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
         const cartFilter = carts.filter(c => values.includes(c.productVariantId))
 
         const totalOriginPrice = cartFilter.reduce((accumulator, currentValue) => {
-            return accumulator + currentValue.productVariant.price;
+            return accumulator + (currentValue.productVariant.price * currentValue.quantity);
         }, 0);
 
+
+
         const totalDiscountPrice = cartFilter.reduce((accumulator, currentValue) => {
-            return accumulator + currentValue.productVariant.priceDiscount;
+            return accumulator + (currentValue.productVariant.priceDiscount * currentValue.quantity);
         }, 0);
 
         setTotalPrice({ originPrice: totalOriginPrice, discountPrice: totalDiscountPrice });
@@ -134,10 +153,10 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                                         </Col>
                                         <Col offset={1}><Title level={5}>{item.product.productName}</Title></Col>
                                         <Col offset={1}><Text type="secondary">Variant: {item.productVariant.productVariantName}</Text></Col>
-                                        <Col offset={1}><Text>{item.productVariant.price}</Text></Col>
+                                        <Col offset={1}><Text type="secondary" delete>{formatPrice(item.productVariant.price)}</Text></Col>
                                         <Col offset={1}><InputNumber min={1} max={item.productVariant.quantity} defaultValue={item.quantity} /></Col>
 
-                                        <Col offset={1}><Text>{item.productVariant.priceDiscount}</Text></Col>
+                                        <Col offset={1}><Text>{formatPrice(item.productVariant.priceDiscount)}</Text></Col>
                                         <Col offset={1}><Button onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModalConfirmDelete() }}>Xóa</Button></Col>
                                     </Row>
 
@@ -155,17 +174,17 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                     >
                         <Title level={5} className={cx('space-div-flex')}>Thanh toán</Title>
                         <div className={cx('space-div-flex')}>
-                            <Text>Tổng tiền hàng:</Text>
-                            <Text strong>{totalPrice.originPrice}</Text>
+                            <Text>Tổng tiền hàng:</Text>&nbsp;
+                            <Text strong>{formatPrice(totalPrice.originPrice)}</Text>
                         </div>
                         <div className={cx('space-div-flex')}>
-                            <Text>Giảm giá sản phẩm:</Text>
-                            <Text strong>- {totalPrice.originPrice - totalPrice.discountPrice}</Text>
+                            <Text>Giảm giá sản phẩm:</Text>&nbsp;
+                            <Text strong>- {formatPrice(totalPrice.originPrice - totalPrice.discountPrice)}</Text>
                         </div>
                         <Divider />
                         <div className={cx('space-div-flex')}>
-                            <Text>Tổng giá trị phải thanh toán:</Text>
-                            <Text strong>{totalPrice.discountPrice}</Text>
+                            <Text>Tổng giá trị phải thanh toán:</Text>&nbsp;
+                            <Text strong>{formatPrice(totalPrice.discountPrice)}</Text>
                         </div>
                         <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block onClick={handleBuy}>
                             Mua hàng
