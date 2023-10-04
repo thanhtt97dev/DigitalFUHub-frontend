@@ -83,16 +83,17 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
             totalAmount: (c.productVariant.priceDiscount * c.quantity),
             isFeedback: false
         }));
-        const newAccountBalance = balance - totalPrice.discountPrice
+        //const newAccountBalance = balance - totalPrice.discountPrice
         addOrder(lstDataOrder)
             .then((res) => {
                 if (res.status === 200) {
-                    updateAccountBalance(getUserId(), { accountBalance: newAccountBalance })
-                        .then((res) => {
-                            openNotification("success", "Thanh toán đơn hàng thành công")
-                        }).catch((errors) => {
-                            console.log(errors)
-                        })
+                    // updateAccountBalance(getUserId(), { accountBalance: newAccountBalance })
+                    //     .then((res) => {
+                    //         openNotification("success", "Thanh toán đơn hàng thành công")
+                    //     }).catch((errors) => {
+                    //         console.log(errors)
+                    //     })
+                    openNotification("success", "Thanh toán đơn hàng thành công")
                     setIsModalConfirmBuy(false);
                 }
             }).catch((error) => {
