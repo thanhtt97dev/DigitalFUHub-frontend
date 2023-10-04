@@ -31,7 +31,8 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
 
     const handleOk = () => {
         setIsModalOpen(false);
-        const newCarts = carts.filter(c => c.productVariantId !== productVariantsIdSelected)
+        debugger
+        const newCarts = carts.filter(c => c.productVariantId === productVariantsIdSelected)
 
         const dataDelete = {
             userId: newCarts[0].userId,
