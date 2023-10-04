@@ -55,12 +55,19 @@ export const apiPost = async (url, data) => {
     const response = axios.post(url, data);
     return response;
 };
+
 export const apiPostForm = async (url, data) => {
     const response = axios.post(url, data, { "Content-Type": "multipart/form-data" },);
     return response;
 };
+
 export const apiPostAuthForm = async (url, data) => {
     const response = axios.post(url, data, headerWithTokenForForm());
+    return response;
+};
+
+export const apiPutAuthForm = async (url, data) => {
+    const response = axios.put(url, data, headerWithTokenForForm());
     return response;
 };
 

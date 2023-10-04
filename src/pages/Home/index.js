@@ -4,9 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from 'antd';
 
 import { ReportUserInfo } from '~/components/Report'
-
 function Home() {
-
     const [srcAudio, setSrcAudio] = useState('')
     useEffect(() => {
         dowloadFile('450049af-7813-4eb4-8430-c4ba1a40643a.mp3')
@@ -17,7 +15,6 @@ function Home() {
             .catch(function (error) {
                 // console.log(error);
             })
-
     }, [])
     return (
         <>
