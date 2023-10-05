@@ -1,17 +1,17 @@
 import { useEffect, useState, useRef, useLayoutEffect, useContext } from "react";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { editProduct, getProductById } from "~/api/seller";
 import Spinning from "~/components/Spinning";
 import { NotificationContext } from '~/context/NotificationContext';
 
-import { Card, Button, Input, Form, theme, notification, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip } from 'antd';
+import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip } from 'antd';
 import { PlusOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
 import { getUserId, readDataFileExcelImportProduct } from "~/utils";
 import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
-
+import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 const columns = [
     {
         title: 'Số thứ tự',
@@ -59,6 +59,7 @@ function EditProduct() {
         background: token.colorBgContainer,
         borderStyle: 'dashed',
     };
+    const navigate = useNavigate();
     const [form] = Form.useForm();
     const [categories, setCategories] = useState([]);
     const [previewImage, setPreviewImage] = useState('');
@@ -74,9 +75,10 @@ function EditProduct() {
     const [productVariants, setProductVariants] = useState([])
     const [stateInit, setStateInit] = useState(true)
     const btnAddRef = useRef();
+    const showItemRef = useRef(false);
 
     // get product
-    useEffect(() => {
+    useLayoutEffect(() => {
         getProductById(getUserId(), productId)
             .then(async (res) => {
                 if (res.data.status.responseCode === "00") {
@@ -97,7 +99,7 @@ function EditProduct() {
     }, [])
 
     // get list categories
-    useEffect(() => {
+    useLayoutEffect(() => {
         getAllCategory()
             .then((res) => {
                 setLoading(false);
@@ -111,7 +113,8 @@ function EditProduct() {
     }, [])
     // init item product variant old when visit page
     useEffect(() => {
-        if (!loading) {
+        if (!loading && !showItemRef.current) {
+            showItemRef.current = true;
             for (let index = 0; index < productVariants.length; index++) {
                 btnAddRef.current.click();
             }
@@ -145,7 +148,6 @@ function EditProduct() {
 
     // handle data file excel change of product variants
     const handleDataFileChange = (info) => {
-        console.log(info);
         let newFileList = [...info.fileList];
         var mode = newFileList.length !== 0;
         let uidFile = info.file.uid;
@@ -216,18 +218,17 @@ function EditProduct() {
     // submit form
     const onFinish = (values) => {
         setLoading(true);
-        console.log(values)
-        console.log(productVariants)
         let formData = new FormData();
         formData.append('productId', productId);
         formData.append('userId', getUserId());
-        formData.append('productName', values.productName);
+        formData.append('productName', values.nameProduct);
         formData.append('productDescription', productDescription);
         formData.append('discount', values.discount);
-        formData.append('productThumbnail', productThumbnailSrc.file ? productThumbnailSrc.file : null);
+        formData.append('categoryId', values.category);
+        formData.append('productThumbnail', productThumbnailSrc[0]?.file ? productThumbnailSrc[0]?.file : null);
         productImagesSrc.forEach((value, index) => {
             if (value.file) {
-                formData.append('productImagesUpdate', value.file);
+                formData.append('productImagesNew', value.file);
             } else {
                 formData.append('productImagesOld', value.src);
             }
@@ -254,15 +255,17 @@ function EditProduct() {
         editProduct(productId, formData)
             .then(res => {
                 setLoading(false);
-                if (res.data.status.codeResponse === '00') {
+                if (res.data.status.responseCode === '00') {
                     notification('success', 'Cập nhật sản phẩm thành công.');
                 } else {
                     notification('error', 'Cập nhật sản phẩm thất bại.');
                 }
+                return navigate('/seller/product/list')
             })
             .catch(err => {
                 setLoading(false);
                 notification('error', 'Đã có lỗi xảy ra.');
+                return navigate('/seller/product/list')
             })
 
     }
@@ -285,8 +288,7 @@ function EditProduct() {
                         width: '100%',
                         minHeight: "690px"
                     }}
-                    hoverable
-                    title="Chỉnh sửa sản phẩm"
+                    title="Cập nhật sản phẩm"
                 >
                     <Form
                         form={form}
@@ -307,7 +309,8 @@ function EditProduct() {
                         ]}
                         layout="vertical"
                         style={{
-                            maxWidth: 600,
+                            maxWidth: '100%',
+                            padding: '0 20%'
                         }}
                         onFinish={onFinish}
                     >
@@ -336,8 +339,6 @@ function EditProduct() {
                                     toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', 'blockQuote', 'bulletedList', 'numberedList', 'outdent', 'indent', '|', 'undo', 'redo',]
                                 }}
                                 onReady={editor => {
-                                    // You can store the "editor" and use when it is needed.
-                                    // console.log('Editor is ready to use!', editor);
                                 }}
                                 onChange={(event, editor) => {
                                     const data = editor.getData();
@@ -486,9 +487,11 @@ function EditProduct() {
                             {(fields, { add, remove }) => (
                                 <>
                                     <Space direction='horizontal'>
-                                        <Form.Item label='Loại sản phẩm:' style={{ marginBottom: -30 }}
+                                        <Form.Item label={<div>Loại sản phẩm: (<a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a>)</div>} style={{ marginBottom: -30, display: 'flex' }}
                                             required={true}
-                                        />
+                                        >
+                                        </Form.Item>
+
                                     </Space>
                                     {fields.map(({ key, name, ...restField }) => (
 
@@ -527,7 +530,7 @@ function EditProduct() {
                                                     ]}
                                                     initialValue={productVariants[name]?.nameVariant}
                                                 >
-                                                    <Input placeholder="Tên loại sản phẩm" />
+                                                    <Input placeholder="Tên loại sản phẩm" disabled={!!productVariants[name]?.nameVariant} />
 
                                                 </Form.Item>
                                                 <Form.Item

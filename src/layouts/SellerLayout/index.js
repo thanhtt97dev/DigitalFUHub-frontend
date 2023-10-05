@@ -1,29 +1,56 @@
 import React, { useState } from 'react';
 import {
-
+    MenuUnfoldOutlined,
+    MenuFoldOutlined,
     AreaChartOutlined,
-    StockOutlined
+    StockOutlined,
+    SettingOutlined,
+    CreditCardOutlined,
+    ShopOutlined,
+    BellOutlined,
+    MailOutlined
 
 } from '@ant-design/icons';
-import { Layout, Menu, Space, theme, Avatar } from 'antd';
+import { Layout, Menu, Space, theme, Avatar, Button, Row, Col, Dropdown, Badge, Card } from 'antd';
 import styles from './SellerLayout.module.scss'
 import classNames from 'classnames/bind';
 import { Link, Outlet } from 'react-router-dom';
 import logo from '~/assets/images/fpt-logo.jpg'
+import Logout from '~/components/Logout';
 
 const cx = classNames.bind(styles);
-const { Content, Sider } = Layout;
+const { Content, Sider, Header } = Layout;
 
 const items = [
+
+    {
+        key: 'settings',
+        label: <Link to={"/settings"}>Cài đặt</Link>,
+        icon: <SettingOutlined />,
+    },
+    {
+        key: 'history transaction',
+        label: <Link to={"/historyTransaction"}>Lịch sử giao dịch</Link>,
+        icon: <CreditCardOutlined />,
+    },
+    {
+        key: 'logout',
+        label: <Logout />,
+    },
+];
+
+
+
+const menuItems = [
     {
         label: <Link to=''>Thống kê</Link>,
         key: 'dashboard',
-        icon: <AreaChartOutlined />,
+        icon: <AreaChartOutlined className={cx('menu-icon')} />,
     },
     {
         label: 'Quản lý sản phẩm',
         key: 'seller/product',
-        icon: <StockOutlined />,
+        icon: <StockOutlined className={cx('menu-icon')} />,
         children: [
             {
                 key: '/seller/product/list',
@@ -43,20 +70,19 @@ const items = [
 const SellerLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
 
-    const {
-        token: { colorBgContainer },
-    } = theme.useToken();
+    // const {
+    //     token: { colorBgContainer },
+    // } = theme.useToken();
+
     return (
-        <Layout className={cx('container')}
-        >
-            <Sider className={cx('sidebar')}
-                collapsible
-                collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}
-                style={{ background: "#f1f1f1" }}
+        <Layout className={cx('container')}>
+            <Sider className={cx('sider')} trigger={null} collapsible collapsed={collapsed} width={260} collapsedWidth={100}
+                style={{
+
+                }}
             >
                 <div className={cx('header-logo')}>
                     <Space>
-                        <Avatar src={logo} size="large" />
                         <Link to={'/home'} className={cx("link")}>
                             <h3>DigitalFUHub</h3>
                         </Link>
@@ -65,23 +91,63 @@ const SellerLayout = () => {
                 <Menu
                     className={cx("menu")}
                     defaultSelectedKeys={['dashboard']}
-                    mode="inline" items={items} />
+                    mode="inline" items={menuItems} />
             </Sider>
             <Layout>
+                <Header id='header' className={cx('header')}>
+                    <Row align="middle" justify="center">
+                        <Col span={2}>
+                            <Button
+                                type="text"
+                                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                                onClick={() => setCollapsed(!collapsed)}
+                                style={{
+                                    fontSize: '16px',
+                                    width: 64,
+                                    height: 64,
+                                }}
+                            />
+                        </Col>
 
-                <Content className={cx("content")}>
-                    <div
-                        style={{
-                            padding: 5,
-                            minHeight: 650,
-                            background: colorBgContainer,
-                        }}
-                    >
-                        <Outlet />
-                    </div>
+                        <Col span={22}>
+                            <Row gutter={[40, 0]} justify="end" align="middle">
+                                <Col >
+                                    <Badge count={10} size="small">
+                                        <BellOutlined style={{
+                                            fontSize: '20px'
+                                        }} />
+                                    </Badge>
+                                </Col>
+                                <Col>
+                                    <Badge count={12} size="small">
+                                        <MailOutlined style={{
+                                            fontSize: '20px',
+                                        }} />
+                                    </Badge>
+                                </Col>
+                                <Col align="center" style={{
+                                    marginTop: '-0.5rem'
+                                }}>
+                                    <Dropdown
+                                        menu={{ items }}
+                                        placement="bottomRight"
+                                        arrow={{
+                                            pointAtCenter: true,
+                                        }}
+                                    >
+                                        <Avatar src={logo} size="large" />
+                                    </Dropdown>
+                                </Col>
+                            </Row>
+
+                        </Col>
+                    </Row>
+                </Header>
+                <Content className={cx('content')}>
+                    <Outlet />
                 </Content>
             </Layout>
-        </Layout >
+        </Layout>
     );
 };
 export default SellerLayout;

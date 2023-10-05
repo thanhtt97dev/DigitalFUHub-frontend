@@ -230,7 +230,7 @@ export function readDataFileExcelImportProduct(file) {
                 workbook.eachSheet((sheet, id) => {
                     let data = []
                     sheet.eachRow((row, rowIndex) => {
-                        if (rowIndex !== 1) {
+                        if (rowIndex !== 1 && (row.values[1] + '').trim()) {
                             data.push({ index: rowIndex - 1, value: row.values[1] })
                         }
                     })
@@ -240,28 +240,6 @@ export function readDataFileExcelImportProduct(file) {
             })
         }
     })
-
-
-    // wb.xlsx.readFile(buffer).then(() => {
-
-    //     const ws = wb.getWorksheet('Sheet1');
-
-    //     const c1 = ws.getColumn(1);
-
-    //     c1.eachCell(c => {
-
-    //         console.log(c.value);
-    //     });
-
-    //     const c2 = ws.getColumn(2);
-
-    //     c2.eachCell(c => {
-
-    //         console.log(c.value);
-    //     });
-    // }).catch(err => {
-    //     console.log(err.message);
-    // });
 }
 
 

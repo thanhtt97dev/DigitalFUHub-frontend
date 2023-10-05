@@ -126,7 +126,7 @@ const routesConfig = [
         path: '/seller',
         layout: <SellerLayout />,
         component: <></>,
-        role: [SELLER_ROLE],
+        // role: [SELLER_ROLE],
     },
     {
         title: 'Dashboard Seller',
