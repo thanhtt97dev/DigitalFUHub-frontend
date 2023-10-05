@@ -7,9 +7,11 @@ import {
 import { useAuthUser } from 'react-auth-kit';
 import { Card } from 'antd';
 import { getCartsByUserId, deleteCart } from '~/api/cart';
+import { addOrder } from '~/api/order';
+import { updateAccountBalance } from '~/api/user';
 import classNames from 'classnames/bind';
 import styles from './Cart.module.scss';
-import { formatPrice } from '~/utils';
+import { formatPrice, getUserId, getVietnamCurrentTime } from '~/utils';
 import { getCustomerBalance } from '~/api/user';
 
 const { Title, Text } = Typography;
@@ -17,26 +19,33 @@ const cx = classNames.bind(styles);
 
 
 const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice, balance }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isModalBuyOpen, setIsModalBuyOpen] = useState(false);
+    const [isModalConfirmDelete, setIsModalConfirmDelete] = useState(false);
+    const [isModalNotifyBalance, setIsModalNotifyBalance] = useState(false);
+    const [isModalConfirmBuy, setIsModalConfirmBuy] = useState(false);
     const [productVariantsIdSelected, setProductVariantsIdSelected] = useState(0);
+    const [cartSelected, setCartSelected] = useState([]);
 
-    const showModal = () => {
-        setIsModalOpen(true);
+
+    const showModalConfirmDelete = () => {
+        setIsModalConfirmDelete(true);
     };
 
-    const showModalBuy = () => {
-        setIsModalBuyOpen(true);
+    const showModalNotifyBalance = () => {
+        setIsModalNotifyBalance(true);
     };
 
-    const handleOk = () => {
-        setIsModalOpen(false);
-        debugger
-        const newCarts = carts.filter(c => c.productVariantId === productVariantsIdSelected)
+    const showModalConfirmBuy = () => {
+        setIsModalConfirmBuy(true);
+    };
+
+    const handleAcceptDelete = () => {
+        setIsModalConfirmDelete(false);
+        const findCart = carts.find(c => c.productVariantId === productVariantsIdSelected)
+        const newCarts = carts.filter(c => c.productVariantId !== findCart.productVariantId)
 
         const dataDelete = {
-            userId: newCarts[0].userId,
-            productVariantId: newCarts[0].productVariantId
+            userId: findCart.userId,
+            productVariantId: findCart.productVariantId
         }
 
         deleteCart(dataDelete)
@@ -55,14 +64,50 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
     };
 
 
-    const handleBuyOk = () => {
-        setIsModalBuyOpen(false);
+    const handleOkNotifyBalance = () => {
+        setIsModalNotifyBalance(false);
 
     }
 
+    const handleOkConfirmBuy = () => {
+        debugger
+        console.log('cartSelected: ' + JSON.stringify(cartSelected[0]));
 
-    const handleCancel = () => {
-        setIsModalOpen(false);
+        const lstDataOrder = cartSelected.map((c) => ({
+            userId: getUserId(),
+            productVariantId: c.productVariantId,
+            businessFeeId: 1,
+            quantity: c.quantity,
+            price: c.productVariant.priceDiscount,
+            orderDate: getVietnamCurrentTime(),
+            totalAmount: (c.productVariant.priceDiscount * c.quantity),
+            isFeedback: false
+        }));
+        //const newAccountBalance = balance - totalPrice.discountPrice
+        addOrder(lstDataOrder)
+            .then((res) => {
+                if (res.status === 200) {
+                    // updateAccountBalance(getUserId(), { accountBalance: newAccountBalance })
+                    //     .then((res) => {
+                    //         openNotification("success", "Thanh toán đơn hàng thành công")
+                    //     }).catch((errors) => {
+                    //         console.log(errors)
+                    //     })
+                    openNotification("success", "Thanh toán đơn hàng thành công")
+                    setIsModalConfirmBuy(false);
+                }
+            }).catch((error) => {
+                console.log(error)
+            })
+    }
+
+    const handleCancelConfirmBuy = () => {
+        setIsModalConfirmBuy(false);
+    };
+
+
+    const handleCancelConfirmDelete = () => {
+        setIsModalConfirmDelete(false);
     };
 
 
@@ -70,22 +115,25 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
         const cartFilter = carts.filter(c => values.includes(c.productVariantId))
 
         const totalOriginPrice = cartFilter.reduce((accumulator, currentValue) => {
-            return accumulator + currentValue.productVariant.price;
+            return accumulator + (currentValue.productVariant.price * currentValue.quantity);
         }, 0);
+
+
 
         const totalDiscountPrice = cartFilter.reduce((accumulator, currentValue) => {
-            return accumulator + currentValue.productVariant.priceDiscount;
+            return accumulator + (currentValue.productVariant.priceDiscount * currentValue.quantity);
         }, 0);
 
-
         setTotalPrice({ originPrice: totalOriginPrice, discountPrice: totalDiscountPrice });
+        setCartSelected([...cartFilter])
     }
 
     const handleBuy = () => {
         if (balance < totalPrice.discountPrice) {
-            showModalBuy()
+            showModalNotifyBalance()
             return
         }
+        showModalConfirmBuy()
     }
 
     return (<>
@@ -106,10 +154,11 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                                         </Col>
                                         <Col offset={1}><Title level={5}>{item.product.productName}</Title></Col>
                                         <Col offset={1}><Text type="secondary">Variant: {item.productVariant.productVariantName}</Text></Col>
-                                        <Col offset={1}><Text>{item.productVariant.priceDiscount}</Text></Col>
+                                        <Col offset={1}><Text type="secondary" delete>{formatPrice(item.productVariant.price)}</Text></Col>
                                         <Col offset={1}><InputNumber min={1} max={item.productVariant.quantity} defaultValue={item.quantity} /></Col>
-                                        <Col offset={1}><Text>{item.productVariant.price}</Text></Col>
-                                        <Col offset={1}><Button onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModal() }}>Xóa</Button></Col>
+
+                                        <Col offset={1}><Text>{formatPrice(item.productVariant.priceDiscount)}</Text></Col>
+                                        <Col offset={1}><Button onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModalConfirmDelete() }}>Xóa</Button></Col>
                                     </Row>
 
                                 </Card>
@@ -126,17 +175,17 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                     >
                         <Title level={5} className={cx('space-div-flex')}>Thanh toán</Title>
                         <div className={cx('space-div-flex')}>
-                            <Text>Tổng tiền hàng:</Text>
-                            <Text strong>{totalPrice.originPrice}</Text>
+                            <Text>Tổng tiền hàng:</Text>&nbsp;
+                            <Text strong>{formatPrice(totalPrice.originPrice)}</Text>
                         </div>
                         <div className={cx('space-div-flex')}>
-                            <Text>Giảm giá sản phẩm:</Text>
-                            <Text strong>- {totalPrice.originPrice - totalPrice.discountPrice}</Text>
+                            <Text>Giảm giá sản phẩm:</Text>&nbsp;
+                            <Text strong>- {formatPrice(totalPrice.originPrice - totalPrice.discountPrice)}</Text>
                         </div>
                         <Divider />
                         <div className={cx('space-div-flex')}>
-                            <Text>Tổng giá trị phải thanh toán:</Text>
-                            <Text strong>{totalPrice.discountPrice}</Text>
+                            <Text>Tổng giá trị phải thanh toán:</Text>&nbsp;
+                            <Text strong>{formatPrice(totalPrice.discountPrice)}</Text>
                         </div>
                         <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block onClick={handleBuy}>
                             Mua hàng
@@ -144,22 +193,26 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                     </Card>
                 </Col>
             </Row>
-            <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Modal title="Basic Modal" open={isModalConfirmDelete} onOk={handleAcceptDelete} onCancel={handleCancelConfirmDelete}>
                 <p>Bạn có muốn xóa sản phẩm này khỏi giỏ hàng không?</p>
             </Modal>
 
             <Modal
-                open={isModalBuyOpen}
+                open={isModalNotifyBalance}
                 closable={false}
                 maskClosable={false}
                 footer={[
-                    <Button key="submit" type="primary" onClick={handleBuyOk}>
+                    <Button key="submit" type="primary" onClick={handleOkNotifyBalance}>
                         OK
                     </Button>,
 
                 ]}
             >
                 <p>Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản</p>
+            </Modal>
+
+            <Modal title="Thông báo" open={isModalConfirmBuy} onOk={handleOkConfirmBuy} onCancel={handleCancelConfirmBuy}>
+                <p>Bạn có muốn thanh toán đơn hàng này với giá <strong>{formatPrice(totalPrice.discountPrice)}</strong> không?</p>
             </Modal>
         </>) : (<Title level={4}>Không có sản phẩm nào trong giỏ hàng</Title>)}
 

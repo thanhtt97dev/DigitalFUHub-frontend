@@ -10,19 +10,6 @@
     text-align: center;
 }
 
-.container {
-    font-size: 20px;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.item {
-    flex-grow: 1;
-    align-items: center;
-}
-
 .footer-top {
     display: flex;
     justify-content: space-between;
@@ -54,35 +41,3 @@
     text-decoration: none;
 }
 
-// html,
-// body {
-//     margin: 0;
-//     padding: 0;
-//     height: 100%;
-// }
-// .page {
-//     min-height: 100%;
-//     position: relative;
-// }
-// .header {
-//     background: #00ff0f;
-//     padding: 30px;
-// }
-// .content {
-//     padding: 20px;
-//     padding-bottom: 45px;
-//     /* Height+padding(top and botton) of the footer */
-//     text-align: justify;
-// }
-// .footer {
-//     position: absolute;
-//     bottom: 0;
-//     width: 100%;
-//     height: 15px; /* Height of the footer */
-//     background: #00ff0f;
-//     padding: 10px 0; /*paddingtop+bottom 20*/
-// }
-
-// .content {
-//     height: 100%;
-// }

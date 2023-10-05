@@ -81,3 +81,7 @@ export const generateTokenConfirmEmail = (email) => {
 export const resetPassword = (email) => {
     return apiGet(`api/users/ResetPassword/${email}`);
 };
+
+export const updateAccountBalance = (id, data) => {
+    return apiPut(`api/Users/UpdateBalance/${id}`, data);
+};

@@ -1,12 +1,12 @@
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    width: 100%;
+.header1 {
+    padding: 15px;
+    background-color: #000;
+}
+
+.header2 {
     display: flex;
     align-items: center;
-    background: #f1f1f1;
-    justify-content: space-between;
+    background: white;
 }
 
 .link {
@@ -21,4 +21,26 @@
 
 .button {
     background-color: #000;
+}
+
+.search {
+    width: 33vw;
+    padding-top: 15px;
+}
+
+.item1{
+    width: 33vw;
+    align-items: center;
+}
+
+.item2{
+    width: 33vw;
+    align-items: center;
+}
+
+.item3{
+    width: 33vw;
+    display: flex;
+    justify-content: flex-end; 
+    flex-direction: row;
 }
