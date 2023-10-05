@@ -8,7 +8,7 @@ import { NotificationContext } from '~/context/NotificationContext';
 
 import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip } from 'antd';
 import { PlusOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
-import { getUserId, readDataFileExcelImportProduct } from "~/utils";
+import { getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
 import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
@@ -46,6 +46,8 @@ function EditProduct() {
     const [inputVisible, setInputVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const inputRef = useRef(null);
+    const indexBtnViewOldDataRef = useRef(null);
+    const typeButtonViewOldOrNewRef = useRef(null);
 
     const { token } = theme.useToken();
     const tagInputStyle = {
@@ -75,7 +77,7 @@ function EditProduct() {
     const [productVariants, setProductVariants] = useState([])
     const [stateInit, setStateInit] = useState(true)
     const btnAddRef = useRef();
-    const showItemRef = useRef(false);
+    // const showItemRef = useRef(false);
 
     // get product
     useLayoutEffect(() => {
@@ -113,13 +115,17 @@ function EditProduct() {
     }, [])
     // init item product variant old when visit page
     useEffect(() => {
-        if (!loading && !showItemRef.current) {
-            showItemRef.current = true;
-            for (let index = 0; index < productVariants.length; index++) {
-                btnAddRef.current.click();
+        let idInterval = setInterval(() => {
+            if (!loading && productVariants.length > 0 && btnAddRef.current && stateInit) {
+                // showItemRef.current = true;
+                // console.log(productVariants.length);
+                for (let index = 0; index < productVariants.length; index++) {
+                    btnAddRef.current?.click();
+                }
+                clearInterval(idInterval)
+                setStateInit(false);
             }
-            setStateInit(false);
-        }
+        }, 500)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading])
 
@@ -268,6 +274,16 @@ function EditProduct() {
                 return navigate('/seller/product/list')
             })
 
+    }
+    const handleDownloadDataOld = async () => {
+        const buffer = await writeDataToExcel(productVariants[indexBtnViewOldDataRef.current]?.data)
+        let blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        let link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = "NewSheet.xlsx";
+        link.click();
+        URL.revokeObjectURL(link.href);
+        link.remove();
     }
 
     return (
@@ -573,13 +589,16 @@ function EditProduct() {
                                                             <Button type='primary' onClick={(e) => {
                                                                 const data = productVariants[name]?.data.map((value, index) => ({ index: index + 1, value: value.asset }))
                                                                 setPreviewDataFileExcel(data)
+                                                                typeButtonViewOldOrNewRef.current = 1;
+                                                                indexBtnViewOldDataRef.current = name;
                                                                 setOpenModel(true)
-                                                            }}>Dữ liệu hiện tại</Button>
+                                                            }}>Dữ liệu cũ</Button>
                                                         }
 
                                                         <Upload
                                                             beforeUpload={false}
-                                                            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                                            // accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                                             onChange={handleDataFileChange}
                                                             fileList={productVariants[name]?.file ? [productVariants[name]?.file] : []}>
                                                             {productVariants[name]?.file === undefined && <Button onClick={() => btnUploadRef.current = name} icon={<UploadOutlined />}>Tải lên</Button>}
@@ -587,8 +606,9 @@ function EditProduct() {
                                                         {productVariants[name]?.file !== undefined &&
                                                             <Button type='primary' onClick={(e) => {
                                                                 handlePreviewDataFileExcel(name);
+                                                                typeButtonViewOldOrNewRef.current = 2;
                                                                 e.preventDefault();
-                                                            }}>Xem trước dữ liệu</Button>
+                                                            }}>Xem dữ liệu mới</Button>
                                                         }
                                                     </Space>
                                                 </Form.Item>
@@ -597,7 +617,8 @@ function EditProduct() {
                                     ))}
                                     <Modal style={{
                                         height: '200px'
-                                    }} open={openModal} title='Xem trước dữ liệu' footer={null} onCancel={() => setOpenModel(false)}>
+                                        // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                                    }} open={openModal} title={productVariants[indexBtnViewOldDataRef.current]?.data && typeButtonViewOldOrNewRef.current === 1 ? <div>Dữ liệu cũ <a onClick={handleDownloadDataOld}>tải xuống</a></div> : 'Xem trước dữ liệu'} footer={null} onCancel={() => setOpenModel(false)}>
                                         <Table
                                             rowKey={(record) => record.index}
                                             scroll={{
