@@ -9,6 +9,7 @@ import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 import { getUserId, readDataFileExcelImportProduct } from '~/utils';
 import { addProduct } from '~/api/seller';
 import { getAllCategory } from '~/api/category';
+import { useNavigate } from 'react-router-dom';
 
 const columns = [
     {
@@ -67,6 +68,7 @@ function AddProduct() {
     const [previewImage, setPreviewImage] = useState('');
     const [previewImageTitle, setPreviewImageTitle] = useState('');
     const [previewOpen, setPreviewOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handlePreviewImage = async (file) => {
         if (!file.url && !file.preview) {
@@ -230,19 +232,21 @@ function AddProduct() {
                 setLoading(false);
                 if (res.data.status.responseCode === "00") {
                     notification('success', "Thêm sản phẩm mới thành công.");
-                    form.resetFields();
-                    setTags([]);
-                    setThumbnailFile([]);
-                    setFileImgProdList([]);
-                    setExcelFileList([]);
-                    btnAddRef.current.click();
+                    // form.resetFields();
+                    // setTags([]);
+                    // setThumbnailFile([]);
+                    // setFileImgProdList([]);
+                    // setExcelFileList([]);
+                    // btnAddRef.current.click();
                 } else {
                     notification('error', "Thêm sản phẩm mới thất bại.");
                 }
+                return navigate('/seller/product/list')
             })
             .catch((err) => {
                 setLoading(false);
-                notification('error', "Đã có lỗi xảy ra vui lòng thử lại sau.");
+                notification('error', "Đã có lỗi xảy ra.");
+                return navigate('/seller/product/list')
             })
     }
 
