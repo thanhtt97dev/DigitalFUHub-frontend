@@ -13,6 +13,7 @@ import vpn from '~/assets/images/home/VPN.png';
 
 import classNames from 'classnames/bind';
 import styles from './Home.module.scss';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -35,41 +36,41 @@ function Home() {
                         <li><Button type="text" block>Google Play, iTunes</Button></li>
                     </div>
                     <div className={cx("grid2")}>
-                        <a href="/product/1">
-                            <img src={autodeck} />
-                        </a>
+                        <Link to="/product/1">
+                            <img src={autodeck} alt='img' />
+                        </Link>
                     </div>
                     <div>
-                        <a href="/product/1">
-                            <img src={vpn} />
-                        </a>
+                        <Link to="/product/1">
+                            <img src={vpn} alt='img' />
+                        </Link>
                     </div>
                     <div>
-                        <a href="/product/1">
-                            <img src={spotify} />
-                        </a>
+                        <Link to="/product/1">
+                            <img src={spotify} alt='img' />
+                        </Link>
                     </div>
                 </div>
                 <div className={cx("grid-container")}>
                     <div>
-                        <a href="/product/1">
-                            <img src={microsoft} />
-                        </a>
+                        <Link to="/product/1">
+                            <img src={microsoft} alt='img' />
+                        </Link>
                     </div>
                     <div>
-                        <a href="/product/1">
-                            <img src={gpt} />
-                        </a>
+                        <aLink to="/product/1">
+                            <img src={gpt} alt='img' />
+                        </aLink>
                     </div>
                     <div>
-                        <a href="/product/1">
-                            <img src={steam} />
-                        </a>
+                        <Link to="/product/1">
+                            <img src={steam} alt='img' />
+                        </Link>
                     </div>
                     <div>
-                        <a href="/product/1">
-                            <img src={gmail} />
-                        </a>
+                        <Link to="/product/1">
+                            <img src={gmail} alt='img' />
+                        </Link>
                     </div>
                 </div>
             </div>
