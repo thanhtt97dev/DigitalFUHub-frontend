@@ -9,7 +9,7 @@ import {
     BankOutlined,
     ShopOutlined
 } from '@ant-design/icons';
-import { CUSTOMER_ROLE } from '~/constants';
+import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import { useAuthUser } from 'react-auth-kit';
 
 
@@ -22,22 +22,25 @@ const items = [
         icon: UserOutlined,
         label: 'Thông tin của tôi',
         link: '/settings/personal',
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {
         icon: GlobalOutlined,
         label: 'Bảo mật',
         link: '/settings/security',
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {
         icon: BankOutlined,
         label: 'Tài khoản ngân hàng',
         link: '/settings/bankAccount',
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {
         icon: ShopOutlined,
         label: 'Đăng ký bán hàng',
         link: '/settings/registerSeller',
-        role: CUSTOMER_ROLE
+        role: [CUSTOMER_ROLE]
     },
 ]
 
@@ -75,25 +78,11 @@ function SettingsLayout({ children }) {
                         inlineCollapsed={collapsed}
                         style={{ height: "100vh" }}
                         items={items.map((item, index) => {
-                            if (!item.role) {
+                            if (item.role.includes(user.roleName)) {
                                 return {
                                     key: String(index + 1),
                                     icon: React.createElement(item.icon),
                                     label: <Link to={item.link}>{item.label}</Link>,
-                                }
-                            } else {
-                                if (user.role === item.role) {
-                                    return {
-                                        key: String(index + 1),
-                                        icon: React.createElement(item.icon),
-                                        label: <Link to={item.link}>{item.label}</Link>,
-                                    }
-                                } else {
-                                    return {
-                                        key: String(index + 1),
-                                        icon: React.createElement(item.icon),
-                                        label: <Link to={item.link}>{item.label}</Link>,
-                                    }
                                 }
                             }
                         })}
