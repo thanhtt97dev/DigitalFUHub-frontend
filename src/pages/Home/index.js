@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Button } from 'antd';
+import { Button, Table } from 'antd';
 import { AlignLeftOutlined } from '@ant-design/icons';
+
+import { useAuthUser } from 'react-auth-kit'
+import { getAllProducts } from "~/api/product";
 
 import autodeck from '~/assets/images/home/AutoDesk.png';
 import gmail from '~/assets/images/home/gmail.png';
@@ -17,11 +20,63 @@ import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
+const rows = [
+    {
+        dataIndex: 'productId',
+        render: (productId, record) => {
+            return (
+                <a to={`/product/${productId}`}>
+                    <img src={gpt} />
+                </a>
+            )
+        }
+    },
+    {
+        dataIndex: 'productId',
+        render: (productId, record) => {
+            return (
+                <a to={`/product/${productId}`}>
+                    <span>{record.productName}</span>
+                </a>
+            )
+        }
+    },
+    {
+        dataIndex: 'productVariants',
+        render: ((productVariants) => {
+            return (
+                <>
+                    {productVariants.map((variant, index) => (
+                        <p key={index}>{variant.price}</p>
+                    ))
+                    }
+                </>
+            )
+        }),
+        width: '15%',
+    }
+];
+
 function Home() {
+    const auth = useAuthUser()
+    const user = auth();
+
+    const [dataTable, setDataTable] = useState([]);
+
+    useEffect(() => {
+        getAllProducts(user.id)
+            .then((res) => {
+                setDataTable(res.data);
+            })
+            .catch((err) => {
+
+            })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     return (
         <>
             <div className={cx("header")}>
-                <div className={cx("grid-container")}>
+                <div className={cx("grid-container-1")}>
                     <div className={cx("grid1")}>
                         <li><div><AlignLeftOutlined /> Danh mục sản phẩm</div></li>
                         <li><Button type="text" block>Giải trí</Button></li>
@@ -51,7 +106,7 @@ function Home() {
                         </Link>
                     </div>
                 </div>
-                <div className={cx("grid-container")}>
+                <div className={cx("grid-container-1")}>
                     <div>
                         <Link to="/product/1">
                             <img src={microsoft} alt='img' />
@@ -72,6 +127,39 @@ function Home() {
                             <img src={gmail} alt='img' />
                         </Link>
                     </div>
+                </div>
+            </div>
+
+            <div className={cx("body")}>
+                <h2>Từ Khóa Nổi Bật</h2>
+                <div className={cx("grid2-container")}>
+                    <a href="/home">
+                        <div className={cx("grid2-item")} style={{ backgroundColor: '#3D5A80' }}>Làm việc</div>
+                    </a>
+                    <a href="/home">
+                        <div className={cx("grid2-item")} style={{ backgroundColor: '#98C1D8' }}>Giải trí</div>
+                    </a>
+                    <a href="/home">
+                        <div className={cx("grid2-item")} style={{ backgroundColor: '#EE6C4D' }}>Học Tập</div>
+                    </a>
+                    <a href="/home">
+                        <div className={cx("grid2-item")} style={{ backgroundColor: '#293241' }}>Spotify</div>
+                    </a>
+                    <a href="/home">
+                        <div className={cx("grid2-item")} style={{ backgroundColor: '#545B67' }}>Wallet</div>
+                    </a>
+                    <a href="/home">
+                        <div className={cx("grid2-item")} style={{ backgroundColor: '#767C85' }}>Youtube</div>
+                    </a>
+                </div>
+
+                <h2>Sản phẩm nổi bật</h2>
+                <p>Danh sách những sản phẩm theo xu hướng mà có thể bạn sẽ thích</p>
+                <div className={cx("grid-container-2")}>
+                    <Table className={cx("grid-item")} rows={rows} dataSource={dataTable} />
+                </div>
+                <div className={cx("smore")}>
+                    <a >Xem thêm</a>
                 </div>
             </div>
         </>

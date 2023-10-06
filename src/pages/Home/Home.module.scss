@@ -1,10 +1,11 @@
+//header
 .header {
     padding-left: 15%;
     padding-right: 15%;
     background-color: #F3F4F6;
 }
 
-.grid-container {
+.grid-container-1 {
     display: grid;
     grid-template-columns: auto auto auto auto;
     column-gap: 20px;
@@ -12,7 +13,7 @@
     padding-bottom: 20px;
 }
 
-.grid-container img {
+.grid-container-1 img {
     border-radius: 2%;
     width: 100%;
     height: 100%;
@@ -35,4 +36,59 @@
 .grid2 {
     grid-row: 1 / span 2;
     grid-column: 2 / span 2;
+}
+
+//boby
+.body {
+    padding-left: 15%;
+    padding-right: 15%;
+    background-color: #F3F4F6;
+}
+
+.body h2 {
+    padding-top: 30px;
+    padding-bottom: 5px;
+}
+
+.grid-container-2 {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    column-gap: 15px;
+    row-gap: 15px;
+    padding: 10px;
+}
+
+.grid-container-2 .grid-item {
+    padding-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.grid-container-2 .grid-item img {
+    border-radius: 2%;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 10px;
+}
+
+.smore{
+    width: 100%;
+    font-size: 20px;
+    text-align: center;
+}
+
+.grid2-container {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto;
+    column-gap: 15px;
+    row-gap: 15px;
+    padding: 10px;
+}
+
+.grid2-item {
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    color: white;
 }
