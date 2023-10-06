@@ -20,43 +20,6 @@ import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-const rows = [
-    {
-        dataIndex: 'productId',
-        render: (productId, record) => {
-            return (
-                <a to={`/product/${productId}`}>
-                    <img src={gpt} />
-                </a>
-            )
-        }
-    },
-    {
-        dataIndex: 'productId',
-        render: (productId, record) => {
-            return (
-                <a to={`/product/${productId}`}>
-                    <span>{record.productName}</span>
-                </a>
-            )
-        }
-    },
-    {
-        dataIndex: 'productVariants',
-        render: ((productVariants) => {
-            return (
-                <>
-                    {productVariants.map((variant, index) => (
-                        <p key={index}>{variant.price}</p>
-                    ))
-                    }
-                </>
-            )
-        }),
-        width: '15%',
-    }
-];
-
 function Home() {
     const auth = useAuthUser()
     const user = auth();
@@ -76,7 +39,7 @@ function Home() {
     return (
         <>
             <div className={cx("header")}>
-                <div className={cx("grid-container-1")}>
+                <div className={cx("grid1-container")}>
                     <div className={cx("grid1")}>
                         <li><div><AlignLeftOutlined /> Danh mục sản phẩm</div></li>
                         <li><Button type="text" block>Giải trí</Button></li>
@@ -106,7 +69,7 @@ function Home() {
                         </Link>
                     </div>
                 </div>
-                <div className={cx("grid-container-1")}>
+                <div className={cx("grid1-container")}>
                     <div>
                         <Link to="/product/1">
                             <img src={microsoft} alt='img' />
@@ -132,34 +95,69 @@ function Home() {
 
             <div className={cx("body")}>
                 <h2>Từ Khóa Nổi Bật</h2>
-                <div className={cx("grid2-container")}>
+                <div className={cx("grid2-container1")}>
                     <a href="/home">
-                        <div className={cx("grid2-item")} style={{ backgroundColor: '#3D5A80' }}>Làm việc</div>
+                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#3D5A80' }}>Làm việc</div>
                     </a>
                     <a href="/home">
-                        <div className={cx("grid2-item")} style={{ backgroundColor: '#98C1D8' }}>Giải trí</div>
+                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#98C1D8' }}>Giải trí</div>
                     </a>
                     <a href="/home">
-                        <div className={cx("grid2-item")} style={{ backgroundColor: '#EE6C4D' }}>Học Tập</div>
+                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#EE6C4D' }}>Học Tập</div>
                     </a>
                     <a href="/home">
-                        <div className={cx("grid2-item")} style={{ backgroundColor: '#293241' }}>Spotify</div>
+                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#293241' }}>Spotify</div>
                     </a>
                     <a href="/home">
-                        <div className={cx("grid2-item")} style={{ backgroundColor: '#545B67' }}>Wallet</div>
+                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#545B67' }}>Wallet</div>
                     </a>
                     <a href="/home">
-                        <div className={cx("grid2-item")} style={{ backgroundColor: '#767C85' }}>Youtube</div>
+                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#767C85' }}>Youtube</div>
                     </a>
                 </div>
 
                 <h2>Sản phẩm nổi bật</h2>
-                <p>Danh sách những sản phẩm theo xu hướng mà có thể bạn sẽ thích</p>
-                <div className={cx("grid-container-2")}>
-                    <Table className={cx("grid-item")} rows={rows} dataSource={dataTable} />
-                </div>
-                <div className={cx("smore")}>
-                    <a >Xem thêm</a>
+                <p>Danh sách những sản phẩm theo xu hướng mà có thể bạn sẽ thích</p><br />
+                <div className={cx("grid2-container2")}>
+                    {dataTable.map((item) => (
+                        <div key={item.productId}>
+                            <div>
+                                <Link className={cx("grid2-item2")} to={`/product/${item.productId}`}>
+                                    <img
+                                        src={item.thumbnail}
+                                    />
+                                </Link>
+                                <Link className={cx("grid2-item2")} to={`/product/${item.productId}`}>
+                                    <span className={cx("name")}>{item.productName}</span>
+                                </Link>
+                                <div className={cx("grid2-item2")}>
+                                    {item.productVariants.map((variant, index) => (
+                                        <div key={index}>
+                                            <p>
+                                                <span>
+                                                    {new Intl.NumberFormat('vi-VN', {
+                                                        style: 'currency',
+                                                        currency: 'VND',
+                                                    }).format(variant.price - (variant.price * (item.discount / 100)))}
+                                                </span>
+                                                &nbsp;
+                                                &nbsp;
+                                                <del>
+                                                    {new Intl.NumberFormat('vi-VN', {
+                                                        style: 'currency',
+                                                        currency: 'VND',
+                                                    }).format(variant.price)}
+                                                </del>
+                                                &nbsp;
+                                                &nbsp;
+                                                <span className={cx("discount")}>-{item.discount}%</span>
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </>
