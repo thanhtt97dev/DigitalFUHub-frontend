@@ -48,6 +48,17 @@ const menuItems = [
         icon: <AreaChartOutlined className={cx('menu-icon')} />,
     },
     {
+        label: 'Quản lý đơn hàng',
+        key: 'seller/order',
+        icon: <StockOutlined className={cx('menu-icon')} />,
+        children: [
+            {
+                key: '/seller/order/list',
+                label: <Link to={"/seller/order/list"}>Lịch sử đơn hàng</Link>,
+            },
+        ],
+    },
+    {
         label: 'Quản lý sản phẩm',
         key: 'seller/product',
         icon: <StockOutlined className={cx('menu-icon')} />,

@@ -24,6 +24,7 @@ import ProductDetail from '~/pages/ProductDetail';
 import Cart from '~/pages/Cart';
 import Products from '~/pages/Seller/ManageProduct/Products';
 import EditProduct from '~/pages/Seller/ManageProduct/EditProduct';
+import Orders from '~/pages/Seller/ManageOrder/Orders';
 import HistoryTransactions from '~/pages/HistoryTransactions';
 import RegisterSeller from '~/pages/User/Settings/RegisterSeller';
 
@@ -126,7 +127,7 @@ const routesConfig = [
         path: '/seller',
         layout: <SellerLayout />,
         component: <></>,
-        // role: [SELLER_ROLE],
+        role: [SELLER_ROLE],
     },
     {
         title: 'Dashboard Seller',
@@ -147,7 +148,7 @@ const routesConfig = [
         path: '/seller/product/new',
         layout: <SellerLayout />,
         component: <AddProduct />,
-        // role: [SELLER_ROLE],
+        role: [SELLER_ROLE],
     },
     {
         title: 'Seller product detail (Edit)',
@@ -161,6 +162,13 @@ const routesConfig = [
         path: '/seller/product/banned',
         layout: <SellerLayout />,
         component: <></>,
+        role: [SELLER_ROLE],
+    },
+    {
+        title: 'Seller orders',
+        path: '/seller/order/list',
+        layout: <SellerLayout />,
+        component: <Orders />,
         role: [SELLER_ROLE],
     },
     {
