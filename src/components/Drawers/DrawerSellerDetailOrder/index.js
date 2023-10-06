@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Drawer, Row, Space, Tag } from 'antd';
+import { Button, Col, Drawer, Row, Space, Table, Tag } from 'antd';
 import { getOrderDetail } from '~/api/seller';
 import {
     RESPONSE_CODE_SUCCESS,
@@ -11,6 +11,7 @@ import {
     ORDER_SELLER_VIOLATES
 } from "~/constants";
 import { ParseDateTime, formatStringToCurrencyVND } from '~/utils';
+import Column from 'antd/es/table/Column';
 
 
 function DrawerSellerDetailOrder({ orderId, isOpen, setOpenDrawer }) {
@@ -34,17 +35,17 @@ function DrawerSellerDetailOrder({ orderId, isOpen, setOpenDrawer }) {
     };
     const getTagStatus = (statusId) => {
         if (statusId === ORDER_WAIT_CONFIRMATION) {
-            return <Tag color="#108ee9">Chờ xác nhận</Tag>
+            return <Tag style={{ fontSize: '16px' }} color="#108ee9">Chờ xác nhận</Tag>
         } else if (statusId === ORDER_CONFIRMED) {
-            return <Tag color="#87d068">Đã xác nhận</Tag>
+            return <Tag style={{ fontSize: '16px' }} color="#87d068">Đã xác nhận</Tag>
         } else if (statusId === ORDER_COMPLAINT) {
-            return <Tag color="#c6e329">Khiếu nại</Tag>
+            return <Tag style={{ fontSize: '16px' }} color="#c6e329">Khiếu nại</Tag>
         } else if (statusId === ORDER_DISPUTE) {
-            return <Tag color="#ffaa01">Tranh chấp</Tag>
+            return <Tag style={{ fontSize: '16px' }} color="#ffaa01">Tranh chấp</Tag>
         } else if (statusId === ORDER_REJECT_COMPLAINT) {
-            return <Tag color="#ca01ff">Từ chối khiếu nại</Tag>
+            return <Tag style={{ fontSize: '16px' }} color="#ca01ff">Từ chối khiếu nại</Tag>
         } else if (statusId === ORDER_SELLER_VIOLATES) {
-            return <Tag color="#f50">Người bán vi phạm</Tag>
+            return <Tag style={{ fontSize: '16px' }} color="#f50">Người bán vi phạm</Tag>
         }
     }
     return (
@@ -64,65 +65,54 @@ function DrawerSellerDetailOrder({ orderId, isOpen, setOpenDrawer }) {
                     </Space>
                 }
             >
-                <Row>
-                    <Col span={6} offset={1}><label>Mã đơn </label></Col>
-                    <Col span={10}>
-                        <div>: {order?.orderId}</div>
+                <Row gutter={[8, 8]}>
+                    <Col span={6} offset={1}><label style={{ fontSize: '16px' }}>Mã đơn </label></Col>
+                    <Col span={17}>
+                        <div style={{ fontSize: '16px' }}>: {order?.orderId}</div>
                     </Col>
-                </Row>
-                <Row>
-                    <Col span={6} offset={1}><label>Email </label></Col>
-                    <Col span={10}>
-                        <div>: {order?.emailCustomer}</div>
+                    <Col span={6} offset={1}><label style={{ fontSize: '16px' }}>Email </label></Col>
+                    <Col span={17}>
+                        <div style={{ fontSize: '16px' }}>: {order?.emailCustomer}</div>
                     </Col>
-                </Row>
-                <Row>
-                    <Col span={6} offset={1}><label>Thời gian đặt </label></Col>
-                    <Col span={10}>
-                        <div>: {ParseDateTime(order?.orderDate)}</div>
+                    <Col span={6} offset={1}><label style={{ fontSize: '16px' }}>Thời gian đặt </label></Col>
+                    <Col span={17}>
+                        <div style={{ fontSize: '16px' }}>: {ParseDateTime(order?.orderDate)}</div>
                     </Col>
-                </Row>
-                <Row>
-                    <Col span={6} offset={1}><label>Trạng thái </label></Col>
-                    <Col span={10}>
+                    <Col span={6} offset={1}><label style={{ fontSize: '16px' }}>Trạng thái </label></Col>
+                    <Col span={17}>
                         : {getTagStatus(order?.orderStatusId)}
                     </Col>
+                    <Col span={10} offset={1}><label style={{ fontSize: '16px' }}>Thông tin sản phẩm: </label></Col>
+                    <Col offset={1}>
+                        <Row gutter={[8, 8]}>
+                            <Col span={4} >
+                                <div style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    borderRadius: '8px',
+                                    overflow: 'hidden'
+                                }}>
+                                    <img src={order?.thumbnail} style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover'
+                                    }} alt='' />
+                                </div>
+                            </Col>
+                            <Col span={5} offset={1}><span style={{ fontSize: '16px' }}>{order?.productName}</span></Col>
+                            <Col span={5} offset={1}>
+                                <span style={{ fontSize: '16px' }}>{order?.productVariantName}</span>
+                            </Col>
+                            <Col span={2} offset={1}>
+                                <span style={{ fontSize: '16px' }}>x{order?.quantity}</span>
+                            </Col>
+                            <Col span={4} offset={1}>
+                                <span style={{ fontSize: '16px' }}>{formatStringToCurrencyVND(order?.price * order?.quantity)}VNĐ</span>
+                            </Col>
+                        </Row>
+                    </Col>
                 </Row>
-                <Row>
-                    <Col span={6} offset={1}><label>Các sản phẩm: </label></Col>
-                </Row>
-                {order?.products.map((value, index) => (
-                    <Row key={index} gutter={[8, 8]}>
-                        <Col offset={1}>
-                            <div style={{
-                                width: '40px',
-                                height: '40px',
-                            }}>
-                                <img src={value.thumbnail} style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover'
-                                }} alt='' />
-                            </div>
-                        </Col>
-                        <Col offset={1}><span>{value.productName}</span></Col>
-                        <Col offset={1}>
-                            {value.productVariants.map((v, i) => (
-                                <div key={i}>{v.name}</div>
-                            ))}
-                        </Col>
-                        <Col offset={1}>
-                            {value.productVariants.map((v, i) => (
-                                <div key={i}>x{v.quantity}</div>
-                            ))}
-                        </Col>
-                        <Col offset={1}>
-                            {value.productVariants.map((v, i) => (
-                                <div key={i}>{formatStringToCurrencyVND(v.price)}VNĐ</div>
-                            ))}
-                        </Col>
-                    </Row>
-                ))}
+
             </Drawer>
         </>
     );
