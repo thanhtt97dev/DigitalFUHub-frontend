@@ -77,6 +77,7 @@ function EditProduct() {
     const [productVariants, setProductVariants] = useState([])
     const [stateInit, setStateInit] = useState(true)
     const btnAddRef = useRef();
+    const idIntervalRef = useRef();
     // const showItemRef = useRef(false);
 
     // get product
@@ -116,7 +117,8 @@ function EditProduct() {
     }, [])
     // init item product variant old when visit page
     useEffect(() => {
-        let idInterval = setInterval(() => {
+        idIntervalRef.current = setInterval(() => {
+            console.log(loading);
             if (!loading && productVariants.length > 0 && btnAddRef.current && stateInit) {
                 // showItemRef.current = true;
                 // console.log(productVariants.length);
@@ -124,9 +126,10 @@ function EditProduct() {
                     btnAddRef.current?.click();
                 }
                 setStateInit(false);
-                clearInterval(idInterval)
+                clearInterval(idIntervalRef.current)
             }
         }, 500)
+        return () => { clearInterval(idIntervalRef.current) }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading])
 
