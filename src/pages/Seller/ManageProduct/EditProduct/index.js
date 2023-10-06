@@ -92,7 +92,8 @@ function EditProduct() {
                     setProductThumbnailSrc([{ src: thumbnail, file: null }]);
                     setProductImagesSrc(productMedias.map(v => ({ src: v.url, file: null })));
                     setTags(tags.map((value, inex) => value.tagName));
-                    setProductVariants(productVariants.map((value, index) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, data: value.assetInformation, file: undefined })));
+                    setProductVariants(productVariants.map((value, index) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, data: value.assetInformations, file: undefined })));
+                    console.log(productVariants);
                 }
             })
             .catch((err) => {
