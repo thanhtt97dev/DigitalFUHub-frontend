@@ -122,8 +122,8 @@ function EditProduct() {
                 for (let index = 0; index < productVariants.length; index++) {
                     btnAddRef.current?.click();
                 }
-                clearInterval(idInterval)
                 setStateInit(false);
+                clearInterval(idInterval)
             }
         }, 500)
         // eslint-disable-next-line react-hooks/exhaustive-deps
