@@ -21,13 +21,13 @@ import { Link } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
 function Home() {
-    const auth = useAuthUser()
-    const user = auth();
+    // const auth = useAuthUser()
+    // const user = auth();
 
     const [dataTable, setDataTable] = useState([]);
 
     useEffect(() => {
-        getAllProducts(user.id)
+        getAllProducts()
             .then((res) => {
                 setDataTable(res.data);
             })
