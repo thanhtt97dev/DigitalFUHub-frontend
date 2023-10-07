@@ -1,10 +1,11 @@
+//header
 .header {
     padding-left: 15%;
     padding-right: 15%;
     background-color: #F3F4F6;
 }
 
-.grid-container {
+.grid1-container {
     display: grid;
     grid-template-columns: auto auto auto auto;
     column-gap: 20px;
@@ -12,7 +13,7 @@
     padding-bottom: 20px;
 }
 
-.grid-container img {
+.grid1-container img {
     border-radius: 2%;
     width: 100%;
     height: 100%;
@@ -35,4 +36,69 @@
 .grid2 {
     grid-row: 1 / span 2;
     grid-column: 2 / span 2;
+}
+
+//boby
+.body {
+    padding-left: 15%;
+    padding-right: 15%;
+    background-color: #F3F4F6;
+}
+
+.body h2 {
+    padding-top: 30px;
+    padding-bottom: 5px;
+}
+
+.grid2-container1 {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto;
+    column-gap: 15px;
+    row-gap: 15px;
+    padding: 10px;
+}
+
+.grid2-item1 {
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    color: white;
+}
+
+.grid2-container2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    column-gap: 15px;
+    row-gap: 20px;
+}
+
+.grid2-item2 {
+    font-size: 15px;
+}
+
+.grid2-item2 img {
+    border-radius: 2%;
+    width: 100%;
+    height: auto;
+    padding-bottom: 5px;
+}
+
+.grid2-item2 p {
+    padding-top: 10px;
+    font-weight: 700;
+}
+
+.grid2-item2 del {
+    color: gray;
+}
+
+.discount {
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: red;
+}
+
+.name {
+    color: black;
 }

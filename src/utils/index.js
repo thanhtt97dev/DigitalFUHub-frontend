@@ -242,6 +242,41 @@ export function readDataFileExcelImportProduct(file) {
     })
 }
 
+export async function writeDataToExcel(data) {
+
+    const wb = new Workbook();
+    const ws = wb.addWorksheet('Sheet1');
+
+    const columns = [
+        {
+            key: 'name',
+            header: `Thông Tin\n(tài khoản/mật khẩu)\n(1)`,
+            width: 40,
+            style: {
+                font: {
+                    size: 12,
+                    bold: true,
+                    name: 'Times New Roman'
+                },
+                alignment: {
+                    vertical: 'middle',
+                    horizontal: 'center',
+                    wrapText: true
+                }
+            }
+        },
+    ];
+    ws.columns = columns;
+    data.forEach((v) => {
+        let row = ws.addRow([v.asset]);
+        row.font = {
+            size: 12,
+            name: 'Times New Roman'
+        }
+
+    });
+    return await wb.xlsx.writeBuffer();
+}
 
 export function formatPrice(price) {
     return price.toLocaleString('vi-VN', {

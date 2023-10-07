@@ -17,3 +17,9 @@ export const editProduct = (productId, formData) => {
 export const registerSeller = (data) => {
     return apiPostAuth('api/Sellers/Register', data);
 }
+export const getSellerOrders = (data) => {
+    return apiPostAuth('api/Sellers/Orders', data);
+};
+export const getOrderDetail = (orderId) => {
+    return apiGetAuth(`api/Sellers/Orders/${orderId}`);
+}

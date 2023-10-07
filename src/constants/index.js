@@ -111,3 +111,11 @@ export const SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION = "ReceiveAllNot
 // Cart Status
 export const CART_RESPONSE_CODE_SUCCESS = "0";
 export const CART_RESPONSE_CODE_INVALID_QUANTITY = "1";
+
+// status order
+export const ORDER_WAIT_CONFIRMATION = 1;
+export const ORDER_CONFIRMED = 2;
+export const ORDER_COMPLAINT = 3;
+export const ORDER_DISPUTE = 4;
+export const ORDER_REJECT_COMPLAINT = 5;
+export const ORDER_SELLER_VIOLATES = 6;
