@@ -26,6 +26,8 @@ function Home() {
 
     const [dataTable, setDataTable] = useState([]);
 
+    const [visibleProducts, setVisibleProducts] = useState(8);
+
     useEffect(() => {
         getAllProducts(user.id)
             .then((res) => {
@@ -119,13 +121,11 @@ function Home() {
                 <h2>Sản phẩm nổi bật</h2>
                 <p>Danh sách những sản phẩm theo xu hướng mà có thể bạn sẽ thích</p><br />
                 <div className={cx("grid2-container2")}>
-                    {dataTable.map((item) => (
+                    {dataTable.slice(0, visibleProducts).map((item) => (
                         <div key={item.productId}>
                             <div>
                                 <Link className={cx("grid2-item2")} to={`/product/${item.productId}`}>
-                                    <img
-                                        src={item.thumbnail}
-                                    />
+                                    <img src={item.thumbnail} /><br />
                                 </Link>
                                 <Link className={cx("grid2-item2")} to={`/product/${item.productId}`}>
                                     <span className={cx("name")}>{item.productName}</span>
@@ -159,6 +159,14 @@ function Home() {
                         </div>
                     ))}
                 </div>
+                {visibleProducts < dataTable.length && (
+                    <>
+                        <div className="border-top"></div>
+                        <div className={cx("load-more-button")}>
+                            <a onClick={() => setVisibleProducts(visibleProducts + 8)}>Xem thêm</a>
+                        </div>
+                    </>
+                )}
             </div>
         </>
     );

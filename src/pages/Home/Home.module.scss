@@ -78,9 +78,10 @@
 
 .grid2-item2 img {
     border-radius: 2%;
-    width: 100%;
-    height: auto;
+    width: 300px;
+    height: 150px;
     padding-bottom: 5px;
+    object-fit: cover;
 }
 
 .grid2-item2 p {
@@ -101,4 +102,13 @@
 
 .name {
     color: black;
+}
+
+.load-more-button {
+    color: black;
+    text-align: center;
+    font-size: large;
+    padding-top: 20px;
+    border-top: 1px solid gray; 
+    margin-top: 10px; 
 }
