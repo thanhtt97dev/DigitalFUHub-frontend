@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-import { Button, Table } from 'antd';
+import { Button } from 'antd';
 import { AlignLeftOutlined } from '@ant-design/icons';
 
-import { useAuthUser } from 'react-auth-kit'
 import { getAllProducts } from "~/api/product";
 
 import autodeck from '~/assets/images/home/AutoDesk.png';
@@ -21,8 +20,6 @@ import { Link } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
 function Home() {
-    // const auth = useAuthUser()
-    // const user = auth();
 
     const [dataTable, setDataTable] = useState([]);
 
@@ -38,28 +35,53 @@ function Home() {
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    const [isGridVisible, setIsGridVisible] = useState(true);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 1400) {
+                setIsGridVisible(false);
+            } else {
+                setIsGridVisible(true);
+            }
+        };
+
+        handleResize();
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     return (
         <>
             <div className={cx("header")}>
                 <div className={cx("grid1-container")}>
-                    <div className={cx("grid1")}>
-                        <li><div><AlignLeftOutlined /> Danh mục sản phẩm</div></li>
-                        <li><Button type="text" block>Giải trí</Button></li>
-                        <li><Button type="text" block>Làm việc</Button></li>
-                        <li><Button type="text" block>Học tập</Button></li>
-                        <li><Button type="text" block>Game Steam</Button></li>
-                        <li><Button type="text" block>EA Games</Button></li>
-                        <li><Button type="text" block>Windows, Office</Button></li>
-                        <li><Button type="text" block>Google Drive</Button></li>
-                        <li><Button type="text" block>Steam Wallet</Button></li>
-                        <li><Button type="text" block>Gói Data Mobile</Button></li>
-                        <li><Button type="text" block>Google Play, iTunes</Button></li>
-                    </div>
+                    {isGridVisible && (
+                        <div className={cx("grid1")}>
+                            <li><div><AlignLeftOutlined /> Danh mục sản phẩm</div></li>
+                            <li><Button type="text" block>Giải trí</Button></li>
+                            <li><Button type="text" block>Làm việc</Button></li>
+                            <li><Button type="text" block>Học tập</Button></li>
+                            <li><Button type="text" block>Game Steam</Button></li>
+                            <li><Button type="text" block>EA Games</Button></li>
+                            <li><Button type="text" block>Windows, Office</Button></li>
+                            <li><Button type="text" block>Google Drive</Button></li>
+                            <li><Button type="text" block>Steam Wallet</Button></li>
+                            <li><Button type="text" block>Gói Data Mobile</Button></li>
+                            <li><Button type="text" block>Google Play, iTunes</Button></li>
+                        </div>
+                    )}
                     <div className={cx("grid2")}>
                         <Link to="/product/1">
                             <img src={autodeck} alt='img' />
                         </Link>
                     </div>
+                </div>
+                <div className={cx("grid1-container")}>
                     <div>
                         <Link to="/product/1">
                             <img src={vpn} alt='img' />
@@ -70,8 +92,6 @@ function Home() {
                             <img src={spotify} alt='img' />
                         </Link>
                     </div>
-                </div>
-                <div className={cx("grid1-container")}>
                     <div>
                         <Link to="/product/1">
                             <img src={microsoft} alt='img' />
@@ -96,27 +116,31 @@ function Home() {
             </div>
 
             <div className={cx("body")}>
-                <h2>Từ Khóa Nổi Bật</h2>
-                <div className={cx("grid2-container1")}>
-                    <a href="/home">
-                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#3D5A80' }}>Làm việc</div>
-                    </a>
-                    <a href="/home">
-                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#98C1D8' }}>Giải trí</div>
-                    </a>
-                    <a href="/home">
-                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#EE6C4D' }}>Học Tập</div>
-                    </a>
-                    <a href="/home">
-                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#293241' }}>Spotify</div>
-                    </a>
-                    <a href="/home">
-                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#545B67' }}>Wallet</div>
-                    </a>
-                    <a href="/home">
-                        <div className={cx("grid2-item1")} style={{ backgroundColor: '#767C85' }}>Youtube</div>
-                    </a>
-                </div>
+                {isGridVisible && (
+                    <>
+                        <h2>Từ Khóa Nổi Bật</h2>
+                        <div className={cx("grid2-container1")}>
+                            <a href="/home">
+                                <div className={cx("grid2-item1")} style={{ backgroundColor: '#3D5A80' }}>Làm việc</div>
+                            </a>
+                            <a href="/home">
+                                <div className={cx("grid2-item1")} style={{ backgroundColor: '#98C1D8' }}>Giải trí</div>
+                            </a>
+                            <a href="/home">
+                                <div className={cx("grid2-item1")} style={{ backgroundColor: '#EE6C4D' }}>Học Tập</div>
+                            </a>
+                            <a href="/home">
+                                <div className={cx("grid2-item1")} style={{ backgroundColor: '#293241' }}>Spotify</div>
+                            </a>
+                            <a href="/home">
+                                <div className={cx("grid2-item1")} style={{ backgroundColor: '#545B67' }}>Wallet</div>
+                            </a>
+                            <a href="/home">
+                                <div className={cx("grid2-item1")} style={{ backgroundColor: '#767C85' }}>Youtube</div>
+                            </a>
+                        </div>
+                    </>
+                )}
 
                 <h2>Sản phẩm nổi bật</h2>
                 <p>Danh sách những sản phẩm theo xu hướng mà có thể bạn sẽ thích</p><br />
@@ -142,15 +166,19 @@ function Home() {
                                                 </span>
                                                 &nbsp;
                                                 &nbsp;
-                                                <del>
-                                                    {new Intl.NumberFormat('vi-VN', {
-                                                        style: 'currency',
-                                                        currency: 'VND',
-                                                    }).format(variant.price)}
-                                                </del>
-                                                &nbsp;
-                                                &nbsp;
-                                                <span className={cx("discount")}>-{item.discount}%</span>
+                                                {item.discount > 0 && (
+                                                    <>
+                                                        <del>
+                                                            {new Intl.NumberFormat('vi-VN', {
+                                                                style: 'currency',
+                                                                currency: 'VND',
+                                                            }).format(variant.price)}
+                                                        </del>
+                                                        &nbsp;
+                                                        &nbsp;
+                                                        <span className={cx("discount")}>-{item.discount}%</span>
+                                                    </>
+                                                )}
                                             </p>
                                         </div>
                                     ))}

@@ -26,11 +26,17 @@
 .search {
     width: 33vw;
     padding-top: 15px;
+    padding-right: 15px;
+    padding-left: 15px;
 }
 
 .item1{
     width: 33vw;
     align-items: center;
+}
+
+.item1 img {
+    padding-top: 25px;
 }
 
 .item2{
