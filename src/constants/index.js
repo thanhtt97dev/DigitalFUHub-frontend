@@ -107,3 +107,7 @@ export const RESPONSE_CODE_BANK_WITHDRAW_BILL_NOT_FOUND = "BANK_03";
 export const SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE = "ReceiveMessage";
 export const SIGNAL_R_NOTIFICATION_HUB_RECEIVE_NOTIFICATION = "ReceiveNotification";
 export const SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION = "ReceiveAllNotification";
+
+// Cart Status
+export const CART_RESPONSE_CODE_SUCCESS = "0";
+export const CART_RESPONSE_CODE_INVALID_QUANTITY = "1";

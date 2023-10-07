@@ -8,7 +8,7 @@ import { useAuthUser } from 'react-auth-kit';
 import { Card } from 'antd';
 import { getCartsByUserId, deleteCart } from '~/api/cart';
 import { addOrder } from '~/api/order';
-import { updateAccountBalance } from '~/api/user';
+// import { updateAccountBalance } from '~/api/user';
 import classNames from 'classnames/bind';
 import styles from './Cart.module.scss';
 import { formatPrice, getUserId, getVietnamCurrentTime } from '~/utils';
@@ -139,14 +139,26 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
     return (<>
         {carts.length > 0 ? (<>
             <Row>
-                <Col span={18}>
+                <Col span={18} style={{ padding: 5 }}>
                     <Checkbox.Group onChange={handleOnChangeCheckbox} style={{ display: 'block' }}>
+                        <Card bodyStyle={{ padding: 20 }} style={{ marginBottom: 10 }}>
+                            <Row style={{ height: '3vh' }}>
+                                <Col><Checkbox></Checkbox></Col>
+                                <Col offset={5}>Sản phẩm</Col>
+                                <Col offset={7}>Đơn giá</Col>
+                                <Col offset={1}>Số Lượng</Col>
+                                <Col offset={2}>Số Tiền</Col>
+                                <Col offset={1}>Thao Tác</Col>
+                            </Row>
+                        </Card>
                         {
                             carts.map((item, index) => (
-                                <Card title={item.shopName} key={index}>
+                                <Card hoverable title={item.shopName} key={index} bodyStyle={{ padding: 20 }} headStyle={{ padding: 0, paddingLeft: 100 }}>
                                     <Row>
-                                        <Col>
+                                        <Col >
                                             <Checkbox value={item.productVariantId}></Checkbox>
+                                        </Col>
+                                        <Col offset={1}>
                                             <Image
                                                 width={100}
                                                 src={item.product.thumbnail}
@@ -156,7 +168,6 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                                         <Col offset={1}><Text type="secondary">Variant: {item.productVariant.productVariantName}</Text></Col>
                                         <Col offset={1}><Text type="secondary" delete>{formatPrice(item.productVariant.price)}</Text></Col>
                                         <Col offset={1}><InputNumber min={1} max={item.productVariant.quantity} defaultValue={item.quantity} /></Col>
-
                                         <Col offset={1}><Text>{formatPrice(item.productVariant.priceDiscount)}</Text></Col>
                                         <Col offset={1}><Button onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModalConfirmDelete() }}>Xóa</Button></Col>
                                     </Row>
@@ -166,25 +177,25 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                         }
                     </Checkbox.Group>
                 </Col>
-                <Col span={6}>
+                <Col span={6} style={{ padding: 5 }}>
                     <Card
                         style={{
                             width: '100%',
-                            height: '70vh'
+                            height: '55vh',
                         }}
                     >
-                        <Title level={5} className={cx('space-div-flex')}>Thanh toán</Title>
+                        <Title level={4} className={cx('space-div-flex')}>Thanh toán</Title>
                         <div className={cx('space-div-flex')}>
-                            <Text>Tổng tiền hàng:</Text>&nbsp;
+                            <Text style={{}}>Tổng tiền hàng:</Text>&nbsp;&nbsp;
                             <Text strong>{formatPrice(totalPrice.originPrice)}</Text>
                         </div>
                         <div className={cx('space-div-flex')}>
-                            <Text>Giảm giá sản phẩm:</Text>&nbsp;
+                            <Text>Giảm giá sản phẩm:</Text>&nbsp;&nbsp;
                             <Text strong>- {formatPrice(totalPrice.originPrice - totalPrice.discountPrice)}</Text>
                         </div>
                         <Divider />
-                        <div className={cx('space-div-flex')}>
-                            <Text>Tổng giá trị phải thanh toán:</Text>&nbsp;
+                        <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
+                            <Text>Tổng giá trị phải thanh toán:</Text>&nbsp;&nbsp;
                             <Text strong>{formatPrice(totalPrice.discountPrice)}</Text>
                         </div>
                         <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block onClick={handleBuy}>
