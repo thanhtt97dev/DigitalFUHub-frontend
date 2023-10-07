@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Carousel } from 'antd';
+import { Carousel, Image } from 'antd';
 import classNames from 'classnames/bind';
 
 import styles from './CarouselCustom.module.scss';
@@ -23,7 +23,7 @@ function CarouselCustom({ data, style, callback }) {
                 style={style}
             >
                 {data.map((x) => {
-                    return <img src={x} alt='product-img' />
+                    return <Image src={x} alt='product-img' />
                 })}
             </Carousel>
             <button

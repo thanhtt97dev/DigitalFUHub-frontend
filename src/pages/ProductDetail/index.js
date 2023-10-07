@@ -1,8 +1,9 @@
 import React, { useState, useEffect, createContext, useContext } from "react"
-import { useAuthUser } from 'react-auth-kit';
+import { getUserId } from '~/utils';
 import {
-    Col, Row, Image, Button, Typography, Divider, Spin, Skeleton, Card,
-    Avatar, List, Rate, InputNumber, Carousel, notification, Modal
+    Col, Row, Image, Button, Typography, Divider, Spin, Skeleton,
+    Avatar, List, Rate, InputNumber, Carousel, notification, Modal,
+    Radio
 } from 'antd';
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss'
@@ -11,17 +12,18 @@ import {
     ShoppingCartOutlined, MessageOutlined,
 } from '@ant-design/icons';
 import { getProductById } from '~/api/product';
-import { addProductToCart, getCart } from '~/api/cart';
+import { addProductToCart } from '~/api/cart';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { formatPrice } from '~/utils'
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import moment from 'moment'
+import { CART_RESPONSE_CODE_INVALID_QUANTITY } from '~/constants'
 
 const cx = classNames.bind(styles);
 const { Title, Text } = Typography;
 const ProductDetailContext = createContext()
 
-const ModelNotifyQuantity = ({ isModalNotifyQuantityOpen, handleOk, quantity }) => (
+const ModelNotifyQuantity = ({ isModalNotifyQuantityOpen, handleOk, content }) => (
     <Modal
         open={isModalNotifyQuantityOpen}
         closable={false}
@@ -33,21 +35,20 @@ const ModelNotifyQuantity = ({ isModalNotifyQuantityOpen, handleOk, quantity }) 
 
         ]}
     >
-        <p>Sản phẩm này đang có số lượng <strong>{quantity}</strong> trong giỏ hàng của bạn</p>
-        <p>Không thể thêm số lượng đã chọn vào giỏ hàng vì đã vượt quá số lượng sản phẩm có sẵn</p>
+        <p>{content}</p>
     </Modal>
 )
 
 
 const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected }) => {
+    const userId = getUserId();
     const {
-        userId,
         product,
         openNotification
     } = useContext(ProductDetailContext)
     const [quantity, setQuantity] = useState(1);
-    const [quantityProductSelectedInCart, setquantityProductSelectedInCart] = useState(0);
     const [isModalNotifyQuantityOpen, setIsModalNotifyQuantityOpen] = useState(false);
+    const [contentProductInvalidQuantity, setContentProductInvalidQuantity] = useState('')
 
     const navigate = useNavigate()
     let minPrice = 0
@@ -56,6 +57,10 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     let maxPriceDis = 0
 
     const handleSendMessage = () => {
+        const userId = getUserId();
+        if (!userId) {
+            navigate('/login')
+        }
         const data = {
             userId: userId,
             shopId: product.shopId
@@ -66,6 +71,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     const showModalNotifyQuantity = () => {
         setIsModalNotifyQuantityOpen(true);
     };
+
     const handleOk = () => {
         setIsModalNotifyQuantityOpen(false);
     };
@@ -75,9 +81,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
             {productVariants ? (
                 productVariants.map((item) =>
                     <div className={cx('grid-item')} key={item.productVariantId}>
-                        {item.quantity > 0 ? (<Button onClick={() => handleSelectProductVariant(item)}>{item.name}</Button>) :
-                            (<Button disabled onClick={() => handleSelectProductVariant(item)}>{item.name}</Button>)}
-
+                        <Button disabled={item.quantity > 0 ? false : true} type={productVariantsSelected ? (productVariantsSelected === item ? 'primary' : 'default') : ('default')} onClick={() => handleSelectProductVariant(item)}>{item.name}</Button>
                     </div>)
             ) : (
                 <Spin />
@@ -116,63 +120,61 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         setQuantity(value)
     }
 
+
+    const imageStyle = {
+        height: '50vh',
+        borderRadius: 5
+    };
+
+
     const ProductMedias = ({ productMedias }) => {
         return (
-            <Carousel autoplay>
+            <Carousel autoplay style={{ width: '100%', height: '50vh' }}>
                 {
-
                     productMedias.map((item, index) => (
-                        <div style={{ borderRadius: 10 }} key={index}>
-                            <Image style={{ borderRadius: 10 }}
-                                src={item.url}
-                            />
+                        <div id="container-image" key={index} >
+                            <div style={{ width: '100%', textAlign: 'center' }}>
+                                <Image
+                                    style={imageStyle}
+                                    src={item.url}
+                                />
+                            </div>
                         </div>
                     ))
                 }
-            </Carousel>
+            </Carousel >
         )
     }
 
     const handleAddProductToCart = async (isBuyNow) => {
+        const userId = getUserId();
+        if (!userId) {
+            navigate('/login')
+        }
         if (!productVariantsSelected) {
             openNotification("error", "Vui lòng chọn loại sản phẩm")
             return;
         }
 
-        getCart(userId, productVariantsSelected.productVariantId)
-            .then((res) => {
-                if (res.data) {
-                    const cart = res.data;
-                    const quantityPurchased = quantity + cart.quantity
-                    if (quantityPurchased > productVariantsSelected.quantity) {
-                        setquantityProductSelectedInCart(cart.quantity)
-                        showModalNotifyQuantity()
-                    } else {
-                        funcAddProductToCart(isBuyNow);
-                    }
-                } else {
-                    funcAddProductToCart(isBuyNow);
-                }
-            }).catch((errors => {
-                console.log(errors)
-            }))
-    }
-
-    const funcAddProductToCart = (isBuyNow) => {
         const dataAddToCart = {
             userId: userId,
             productVariantId: productVariantsSelected.productVariantId,
             quantity: quantity
         }
 
-
         addProductToCart(dataAddToCart)
             .then((res) => {
                 if (res.status === 200) {
-                    if (!isBuyNow) {
-                        openNotification("success", "Sản phẩm đã được thêm vào trong giỏ hàng của bạn")
+                    const data = res.data
+                    if (data.responseCode === CART_RESPONSE_CODE_INVALID_QUANTITY && data.ok === false) {
+                        setContentProductInvalidQuantity(data.message);
+                        showModalNotifyQuantity();
                     } else {
-                        navigate('/cart')
+                        if (!isBuyNow) {
+                            openNotification("success", "Sản phẩm đã được thêm vào trong giỏ hàng của bạn")
+                        } else {
+                            navigate('/cart')
+                        }
                     }
                 }
             })
@@ -180,7 +182,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                 console.log(errors)
                 openNotification("error", "Có lỗi xảy ra trong quá trình thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!")
             })
-
     }
 
 
@@ -190,20 +191,24 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                 <Col span={10}
                     style={{ padding: 10 }}
                 >
-                    <div id="image-product">
-                        <ProductMedias productMedias={product.productMedias} />
-                    </div>
+                    <ProductMedias productMedias={product.productMedias} />
                 </Col>
                 <Col span={14}
                     style={{ padding: 15 }}
                 >
                     <div>
                         <Title level={3}>{product.productName}</Title>
+                        <Divider />
                         <div className={cx('space-div-flex')}>
                             {productVariantsSelected ? (
                                 <Title level={4}><PriceFormat price={productVariantsSelected.price} /></Title>
                             ) : (
-                                <Title level={4}>{<PriceFormat price={minPrice} />} - {<PriceFormat price={maxPrice} />}</Title>
+                                <>
+                                    {
+                                        product.productVariants.length > 1 ? (<Title level={4}>{<PriceFormat price={minPrice} />} - {<PriceFormat price={maxPrice} />}</Title>)
+                                            : (product.productVariants.length === 1 ? <Title level={4}>{<PriceFormat price={product.productVariants[0].price} />}</Title> : <></>)
+                                    }
+                                </>
                             )}
                         </div>
                         <div
@@ -214,18 +219,31 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                     style={{ fontSize: 15 }}
                                 >{<PriceFormat price={discountPrice(productVariantsSelected.price, product.discount)} />}</Text>
                             ) : (
-                                <Text delete strong type="secondary"
-                                    style={{ fontSize: 15 }}
-                                >
-                                    {<PriceFormat price={minPriceDis} />} - {<PriceFormat price={maxPriceDis} />}
-                                </Text>
+
+                                <>
+                                    {
+                                        product.productVariants.length > 1 ? (<Text delete strong type="secondary"
+                                            style={{ fontSize: 15 }}
+                                        >
+                                            {<PriceFormat price={minPriceDis} />} - {<PriceFormat price={maxPriceDis} />}
+                                        </Text>)
+                                            : (product.productVariants.length === 1 ? <Text delete>{<PriceFormat price={discountPrice(product.productVariants[0].price, product.discount)} />}</Text> : <></>)
+                                    }
+                                </>
+
                             )}
                             <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
+                        </div>
+                        <div className={cx('space-div-flex')}>
+                            <Text>Tên shop:</Text>
+                            <Button type="link">{product.shopName}</Button>
                         </div>
                         <Divider />
                         <div style={{ marginBottom: 20 }}>
                             <Title level={4}>Loại sản phẩm</Title>
-                            <GridItems productVariants={productVariants} handleSelectProductVariant={handleSelectProductVariant} />
+                            <Radio.Group>
+                                <GridItems productVariants={productVariants} handleSelectProductVariant={handleSelectProductVariant} />
+                            </Radio.Group>
                         </div>
                         <div className={cx('space-div-flex')}>
                             <Text strong>Số lượng: </Text>
@@ -241,22 +259,29 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                         <div
 
                         >
-
-                            <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
-                                Mua ngay
-                            </Button>
-                            <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={product.quantity > 0 ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
-                                Thêm vào giỏ
-                            </Button>
-                            {userId !== product.shopId ? (<Button className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
-                                Nhắn tin
-                            </Button>) : (<></>)}
-
+                            {
+                                userId ? (<>
+                                    <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={product.quantity <= 0 || userId === product.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
+                                        Mua ngay
+                                    </Button>
+                                    <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={product.quantity <= 0 || userId === product.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
+                                        Thêm vào giỏ
+                                    </Button>
+                                    <Button disabled={userId !== product.shopId ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
+                                        Nhắn tin
+                                    </Button>
+                                </>) : (<>
+                                    <Title level={5} className={cx('margin-element')}>Vui lòng đăng nhập để mua hàng, hoặc liên lạc với chủ shop.</Title>
+                                    <Link to={'/Login'}>
+                                        <Button type="primary" className={cx("button", "margin-element")}>Đăng nhập</Button>
+                                    </Link>
+                                </>)
+                            }
                         </div>
                     </div>
 
                 </Col>
-                <ModelNotifyQuantity isModalNotifyQuantityOpen={isModalNotifyQuantityOpen} handleOk={handleOk} quantity={quantityProductSelectedInCart} />
+                <ModelNotifyQuantity isModalNotifyQuantityOpen={isModalNotifyQuantityOpen} handleOk={handleOk} content={contentProductInvalidQuantity} />
             </>) : (<Skeleton active />)}
         </Row>
     )
@@ -288,38 +313,6 @@ const ProductDescription = () => {
     )
 }
 
-const ProductSuggestions = () => {
-    const CardProduct = () => (
-        <Card bordered={false} style={{ width: '42vh' }} bodyStyle={{ padding: 8 }}>
-            <Image style={{ borderRadius: 10, marginBottom: 7 }}
-                src="https://cdn.divineshop.vn/image/catalog/Anh-SP/Spotify/Divine-Shop-Goi-Gia-Han-Spotify-1-Nam-40567.jpg?hash=1658742748"
-            />
-            <Text strong>Gói gia hạn Spotify Premium 01 năm</Text>
-            <p>Card content</p>
-        </Card>
-    )
-
-
-    return (
-        <>
-            <Row>
-                <Col><Title level={4}>Sản phẩm liên quan</Title></Col>
-            </Row>
-            <Row>
-                <Col className={cx('grid-product-suggest')}>
-                    <CardProduct />
-                    <CardProduct />
-                    <CardProduct />
-                    <CardProduct />
-                    <CardProduct />
-                    <CardProduct />
-                </Col>
-            </Row>
-        </>
-    )
-}
-
-
 
 const ProductFeedback = ({ feedback }) => {
     const { product } = useContext(ProductDetailContext);
@@ -328,7 +321,6 @@ const ProductFeedback = ({ feedback }) => {
         feedbackMedias?.map((item, index) => (
             <div style={{ padding: 5 }} key={index}>
                 <Image
-
                     width={70}
                     src={item.url}
                 />
@@ -391,9 +383,6 @@ const ProductFeedback = ({ feedback }) => {
 
 
 const ProductDetail = () => {
-    const auth = useAuthUser();
-    const user = auth();
-    const userId = user.id;
     const { id } = useParams();
     const initialProductId = id;
     const [product, setProduct] = useState(null)
@@ -401,6 +390,7 @@ const ProductDetail = () => {
     const [productVariantsSelected, setProductVariantsSelected] = useState(null)
     const [feedback, setFeedback] = useState([])
     const [api, contextHolder] = notification.useNotification();
+    const navigate = useNavigate()
 
     const openNotification = (type, message) => {
         api[type]({
@@ -421,7 +411,12 @@ const ProductDetail = () => {
         const getDetailProduct = () => {
             getProductById(initialProductId)
                 .then((response) => {
-                    setProduct(response.data)
+                    const data = response.data;
+                    debugger
+                    if (!data) {
+                        navigate('/notFound');
+                    }
+                    setProduct(data)
                     setProductVariants([...response.data.productVariants])
                 })
                 .catch((errors) => {
@@ -442,10 +437,10 @@ const ProductDetail = () => {
         }
 
         getFeedbacks();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const initialDataContext = {
-        userId,
         product,
         openNotification
     }
@@ -462,7 +457,6 @@ const ProductDetail = () => {
                 <Divider />
                 <ProductDescription />
                 <Divider />
-                <ProductSuggestions />
                 <Divider />
                 <ProductFeedback feedback={feedback} />
             </ProductDetailContext.Provider>

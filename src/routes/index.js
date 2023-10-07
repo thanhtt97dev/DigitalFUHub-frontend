@@ -8,6 +8,7 @@ import SettingsLayout from '~/pages/User/Settings/SettingsLayout';
 import Personal from '~/pages/User/Settings/Personal';
 import Security from '~/pages/User/Settings/Security';
 import ChatBox from '~/pages/ChatBox';
+import NotFound from '~/pages/NotFound';
 import Deposit from '~/pages/User/Deposit';
 import SignUp from '~/pages/SignUp';
 import BankAccount from '~/pages/User/Settings/BankAccount';
@@ -39,6 +40,12 @@ const routesConfig = [
         path: '/accessDenied',
         layout: <NormalLayout />,
         component: <AccessDenied />,
+    },
+    {
+        title: 'not found',
+        path: '/notFound',
+        layout: <NormalLayout />,
+        component: <NotFound />,
     },
     {
         title: 'home',
