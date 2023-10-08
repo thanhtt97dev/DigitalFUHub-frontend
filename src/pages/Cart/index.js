@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import {
     Button, Row, Col,
     Image, Typography, InputNumber, Modal,
-    notification, Checkbox, Divider, List
+    notification, Checkbox, Divider, List,
+    Input
 } from 'antd';
 import { useAuthUser } from 'react-auth-kit';
 import { Card } from 'antd';
@@ -24,6 +25,7 @@ import moment from 'moment'
 
 const { Title, Text } = Typography;
 const cx = classNames.bind(styles);
+const { Search } = Input;
 
 
 
@@ -307,6 +309,10 @@ const Cart = () => {
         }
     }
 
+    const onSearch = () => {
+
+    }
+
     const checkAll = cartSelected.length === carts.length
     const indeterminate = cartSelected.length > 0 && cartSelected.length < carts.length;
 
@@ -413,6 +419,14 @@ const Cart = () => {
                     onCancel={handleCancelChooseCoupon}
                 >
                     <Spinning spinning={!isCouponInfoSuccess}>
+                        <Search
+                            placeholder="Nhập mã Code"
+                            allowClear
+                            enterButton="Tìm kiếm"
+                            size="large"
+                            onSearch={onSearch}
+                            className={cx('margin-bottom-item')}
+                        />
                         <div
                             id="scrollableDiv"
                             style={{
