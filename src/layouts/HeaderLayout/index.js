@@ -52,7 +52,6 @@ const itemsFixed = [
     },
 ];
 
-
 function HeaderLayout() {
 
     const auth = useAuthUser();
@@ -85,16 +84,39 @@ function HeaderLayout() {
         }
     }, [user])
 
+    const [isGridVisible, setIsGridVisible] = useState(true);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 1100) {
+                setIsGridVisible(false);
+            } else {
+                setIsGridVisible(true);
+            }
+        };
+
+        handleResize();
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     return (
         <>
             <div className={cx("header1")} />
             <Header className={cx("header2")}>
                 <Space className={cx("item1")}>
-                    <Image width={60} src={logo} />
-                    <Link to={'/home'} className={cx("link")}>
-                        <h3>DigitalFUHub</h3>
+                    <Link to={'/home'}>
+                        <img width={60} src={logo} />
                     </Link>
+                    {isGridVisible && (
+                        <Link to={'/home'} className={cx("link")}>
+                            <h3>DigitalFUHub</h3>
+                        </Link>
+                    )}
                 </Space>
 
                 <Space className={cx("item2")}>
@@ -102,8 +124,8 @@ function HeaderLayout() {
                         className={cx("search")}
                         placeholder="Tìm kiếm sản phẩm"
                         allowClear
-                        enterButton={<Button style={{ backgroundColor: 'black', color: 'white' }}>Search</Button>}
-                        onSearch={onSearch}
+                        onPressEnter={(e) => onSearch(e.target.value)}
+                        onSearch={(e) => onSearch(e.target.value)}
                     />
                 </Space>
 
@@ -120,12 +142,15 @@ function HeaderLayout() {
                         </>
                     ) : (
                         <>
-                            <AccountBalance />
-                            <ModalRequestDeposit userId={user.id} style={{ background: 'black' }} />
+                            {isGridVisible && (
+                                <>
+                                    <AccountBalance />
+                                    <ModalRequestDeposit userId={user.id} style={{ background: 'black' }} />
+                                </>
+                            )}
                             <Link to={'/cart'}>
-                                <Button type="primary" className={cx("button")} icon={<ShoppingCartOutlined />}>Giỏ hàng</Button>
+                                <ShoppingCartOutlined className={cx("icon")} />
                             </Link>
-
                             <Notificaion />
                             <Link to={'/chatBox'}>
                                 <MessageFilled className={cx("icon")} />

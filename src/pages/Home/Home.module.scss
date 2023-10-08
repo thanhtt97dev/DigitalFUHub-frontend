@@ -7,7 +7,7 @@
 
 .grid1-container {
     display: grid;
-    grid-template-columns: auto auto auto auto;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     column-gap: 20px;
     row-gap: 20px;
     padding-bottom: 20px;
@@ -25,7 +25,7 @@
     border-radius: 2%;
     list-style: none;
     grid-row: 1 / span 2;
-    width: 250px;
+    width: auto;
 }
 
 .grid1 div {
@@ -35,7 +35,7 @@
 
 .grid2 {
     grid-row: 1 / span 2;
-    grid-column: 2 / span 2;
+    grid-column: 1 / span 2;
 }
 
 //boby
@@ -78,9 +78,10 @@
 
 .grid2-item2 img {
     border-radius: 2%;
-    width: 100%;
-    height: auto;
+    width: 300px;
+    height: 150px;
     padding-bottom: 5px;
+    object-fit: cover;
 }
 
 .grid2-item2 p {
@@ -101,4 +102,13 @@
 
 .name {
     color: black;
+}
+
+.load-more-button {
+    color: black;
+    text-align: center;
+    font-size: large;
+    padding-top: 20px;
+    border-top: 1px solid gray; 
+    margin-top: 10px; 
 }

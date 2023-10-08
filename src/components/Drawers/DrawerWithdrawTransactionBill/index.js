@@ -4,7 +4,11 @@ import { Button, Drawer, notification, Descriptions } from "antd";
 
 import Spinning from "~/components/Spinning";
 import { getWithdrawTransactionBill } from '~/api/bank'
-import { RESPONSE_CODE_BANK_WITHDRAW_BILL_NOT_FOUND, RESPONSE_CODE_SUCCESS } from '~/constants'
+import {
+    RESPONSE_CODE_SUCCESS,
+    RESPONSE_CODE_BANK_WITHDRAW_BILL_NOT_FOUND,
+    RESPONSE_CODE_BANK_WITHDRAW_REJECT
+} from '~/constants'
 import { ParseDateTime, formatStringToCurrencyVND } from '~/utils/index'
 
 function DrawerWithdrawTransactionBill({ userId, withdrawTransactionId }) {
@@ -25,7 +29,30 @@ function DrawerWithdrawTransactionBill({ userId, withdrawTransactionId }) {
         setOpen(true)
         getWithdrawTransactionBill({ userId, withdrawTransactionId })
             .then((res) => {
-                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                if (res.data.status.responseCode === RESPONSE_CODE_BANK_WITHDRAW_BILL_NOT_FOUND) {
+                    setItems([
+                        {
+                            key: '1',
+                            children: <p>Hệ thống đang sử lý hóa đơn của bạn!<br /> Vui lòng trở lại trong khoảng 5 phút nữa!</p>,
+                            span: 3
+                        },
+
+                    ])
+                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_WITHDRAW_REJECT) {
+                    setItems([
+                        {
+                            key: '1',
+                            children: <b style={{ color: "red" }}>Yêu cầu rút tiền của bạn đã bị từ chối<br /></b>,
+                            span: 3
+                        },
+                        {
+                            key: '2',
+                            label: 'Lý do:',
+                            children: res.data.result,
+                            span: 3
+                        },
+                    ])
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     const data = res.data.result
                     setItems([
                         {
@@ -77,17 +104,9 @@ function DrawerWithdrawTransactionBill({ userId, withdrawTransactionId }) {
                             span: 3
                         },
                     ])
-                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_WITHDRAW_BILL_NOT_FOUND) {
-                    setItems([
-                        {
-                            key: '1',
-                            children: <p>Hệ thống đang sử lý hóa đơn của bạn!<br /> Vui lòng trở lại trong khoảng 5 phút nữa!</p>,
-                            span: 3
-                        },
-
-                    ])
                 } else {
-                    openNotification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
+                    console.log(res.data.status.responseCode === RESPONSE_CODE_BANK_WITHDRAW_REJECT)
+                    //openNotification("error", "haha")
                 }
             })
             .catch((err) => {
