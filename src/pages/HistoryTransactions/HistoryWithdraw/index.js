@@ -8,7 +8,12 @@ import { getWithdrawTransaction } from '~/api/bank'
 import Spinning from "~/components/Spinning";
 import ModalRequestWithdraw from "~/components/Modals/ModalRequestWithdraw";
 import { formatStringToCurrencyVND, ParseDateTime } from '~/utils/index'
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import {
+    RESPONSE_CODE_SUCCESS,
+    WITHDRAW_TRANSACTION_IN_PROCESSING,
+    WITHDRAW_TRANSACTION_PAID,
+    WITHDRAW_TRANSACTION_REJECT,
+} from "~/constants";
 import DrawerWithdrawTransactionBill from "~/components/Drawers/DrawerWithdrawTransactionBill";
 
 const { RangePicker } = DatePicker;
@@ -18,7 +23,7 @@ const columns = [
     {
         title: 'Mã giao dịch',
         dataIndex: 'withdrawTransactionId',
-        width: '11%',
+        width: '9%',
     },
     {
         title: 'Số tiền',
@@ -33,7 +38,7 @@ const columns = [
     {
         title: 'Thời gian tạo yêu cầu',
         dataIndex: 'requestDate',
-        width: '15%',
+        width: '13%',
         render: (requestDate) => {
             return (
                 <p>{ParseDateTime(requestDate)}</p>
@@ -57,28 +62,30 @@ const columns = [
     },
     {
         title: 'Trạng thái',
-        dataIndex: 'isPay',
-        width: '5%',
-        render: (paidDate, record) => {
-            return (
-                record.isPay ?
-                    <Tag color="#52c41a">Thành công</Tag>
-                    :
-                    <Tag color="#ecc30b">Đang xử lý yêu cầu</Tag>
-            )
+        dataIndex: 'withdrawTransactionStatusId',
+        width: '7%',
+        render: (withdrawTransactionStatusId, record) => {
+            if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_IN_PROCESSING) {
+                return <Tag color="#ecc30b">Đang xử lý yêu cầu</Tag>
+            } else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_PAID) {
+                return <Tag color="#52c41a">Thành công</Tag>
+            } else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_REJECT) {
+                return <Tag color="red">Từ chối</Tag>
+            }
         }
     },
     {
         title: '',
-        dataIndex: 'isPay',
+        dataIndex: 'withdrawTransactionStatusId',
         width: '5%',
-        render: (isPay, record) => {
-            return (
-                isPay ?
-                    <DrawerWithdrawTransactionBill userId={record.userId} withdrawTransactionId={record.withdrawTransactionId} />
-                    :
-                    ""
-            )
+        render: (withdrawTransactionStatusId, record) => {
+            if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_PAID ||
+                withdrawTransactionStatusId === WITHDRAW_TRANSACTION_REJECT) {
+                return <DrawerWithdrawTransactionBill userId={record.userId} withdrawTransactionId={record.withdrawTransactionId} />
+            } else {
+                return ""
+            }
+
         }
     },
 
@@ -217,8 +224,9 @@ function HistoryWithdraw() {
                         <Form.Item label="Trạng thái" labelAlign="left" name="status">
                             <Select >
                                 <Select.Option value={0}>Tất cả</Select.Option>
-                                <Select.Option value={1}>Thành công</Select.Option>
-                                <Select.Option value={2}>Đang xử lý yêu cầu</Select.Option>
+                                <Select.Option value={1}>Đang xử lý yêu cầu</Select.Option>
+                                <Select.Option value={2}>Thành công</Select.Option>
+                                <Select.Option value={3}>Từ chối</Select.Option>
                             </Select>
                         </Form.Item>
 
