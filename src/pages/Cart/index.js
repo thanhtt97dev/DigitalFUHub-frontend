@@ -2,28 +2,112 @@ import React, { useEffect, useState } from 'react'
 import {
     Button, Row, Col,
     Image, Typography, InputNumber, Modal,
-    notification, Checkbox, Divider
+    notification, Checkbox, Divider, List
 } from 'antd';
 import { useAuthUser } from 'react-auth-kit';
 import { Card } from 'antd';
 import { getCartsByUserId, deleteCart } from '~/api/cart';
 import { addOrder } from '~/api/order';
+import { getCoupons } from '~/api/coupon';
 // import { updateAccountBalance } from '~/api/user';
 import classNames from 'classnames/bind';
 import styles from './Cart.module.scss';
-import { formatPrice, getUserId, getVietnamCurrentTime } from '~/utils';
+import Spinning from "~/components/Spinning";
+import { discountPrice, formatPrice, getUserId, getVietnamCurrentTime } from '~/utils';
 import { getCustomerBalance } from '~/api/user';
+import {
+    CopyrightOutlined,
+    DeleteOutlined,
+    PlusOutlined
+} from '@ant-design/icons';
+import moment from 'moment'
 
 const { Title, Text } = Typography;
 const cx = classNames.bind(styles);
 
 
-const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice, balance }) => {
+
+
+const Cart = () => {
+    const auth = useAuthUser();
+    const user = auth();
+    const userId = user.id;
+    const initialTotalPrice = {
+        originPrice: 0,
+        discountPrice: 0
+    }
+    const [carts, setCarts] = useState([])
+    const [api, contextHolder] = notification.useNotification();
+    const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
+    const [balance, setBalance] = useState(0);
     const [isModalConfirmDelete, setIsModalConfirmDelete] = useState(false);
     const [isModalNotifyBalance, setIsModalNotifyBalance] = useState(false);
+    const [isCouponInfoSuccess, setIsCouponInfoSuccess] = useState(false);
     const [isModalConfirmBuy, setIsModalConfirmBuy] = useState(false);
+    const [isModalChooseCoupon, setIsModalChooseCoupon] = useState(false);
     const [productVariantsIdSelected, setProductVariantsIdSelected] = useState(0);
     const [cartSelected, setCartSelected] = useState([]);
+    const [coupons, setCoupons] = useState([]);
+    const [chooseCoupons, setChooseCoupons] = useState([]);
+
+    const openNotification = (type, message) => {
+        api[type]({
+            message: `Thông báo`,
+            description: `${message}`
+        });
+    };
+
+    const addCoupon = (coupon) => {
+        const chooseCouponsFind = chooseCoupons.find(c => c.couponId === coupon.couponId)
+        if (!chooseCouponsFind) {
+            setChooseCoupons((prev) => [...prev, coupon])
+        }
+    }
+
+    const deleteCoupon = (coupon) => {
+        const chooseCouponsFind = chooseCoupons.find(c => c.couponId === coupon.couponId)
+        if (chooseCouponsFind) {
+            const newChooseCoupons = chooseCoupons.filter(c => c.couponId !== coupon.couponId)
+            setChooseCoupons([...newChooseCoupons])
+            // setDeleteCoupons((prev) => [...prev, coupon])
+        }
+
+    }
+
+
+    const updateCarts = (cart) => {
+        setCarts(cart);
+    }
+
+    const getDataCoupons = (shopId, productVariantId) => {
+        const productVariantFind = cartSelected.find(c => c.productVariantId === productVariantId)
+        if (!productVariantFind) {
+            openNotification("error", "Vui lòng chọn sản phẩm để thêm mã giảm giá của Shop")
+            return;
+        }
+
+        const existCoupons = cartSelected.find(c => c.productVariantId === productVariantId)?.coupons
+        if (existCoupons) {
+            setChooseCoupons([...existCoupons])
+        }
+
+        getCoupons(shopId)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    setCoupons(data);
+                    setIsModalChooseCoupon(true)
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setIsCouponInfoSuccess(true)
+                }, 500)
+            })
+    }
 
 
     const showModalConfirmDelete = () => {
@@ -53,6 +137,7 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
                 if (res.data.ok === true) {
                     updateCarts(newCarts)
                     openNotification("success", "Xóa sản phẩm thành công")
+                    setProductVariantsIdSelected(0)
                 } else {
                     openNotification("error", "Có lỗi trong quá trình xóa, vui lòng thử lại sau")
                 }
@@ -69,10 +154,31 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
 
     }
 
-    const handleOkConfirmBuy = () => {
-        debugger
-        console.log('cartSelected: ' + JSON.stringify(cartSelected[0]));
+    const handleOkChooseCoupon = () => {
+        const newCarts = carts.map((cart) => {
+            if (cart.productVariantId === productVariantsIdSelected) {
+                return { ...cart, coupons: [...chooseCoupons] }
+            }
 
+            return cart
+        })
+        setCarts([...newCarts])
+
+        const newCartsSelected = cartSelected.map((cart) => {
+            if (cart.productVariantId === productVariantsIdSelected) {
+                return { ...cart, coupons: [...chooseCoupons] }
+            }
+
+            return cart
+        })
+        setCartSelected([...newCartsSelected])
+
+        calculatorPrice(newCartsSelected);
+        setChooseCoupons([])
+        setIsModalChooseCoupon(false);
+    }
+
+    const handleOkConfirmBuy = () => {
         const lstDataOrder = cartSelected.map((c) => ({
             userId: getUserId(),
             productVariantId: c.productVariantId,
@@ -83,16 +189,9 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
             totalAmount: (c.productVariant.priceDiscount * c.quantity),
             isFeedback: false
         }));
-        //const newAccountBalance = balance - totalPrice.discountPrice
         addOrder(lstDataOrder)
             .then((res) => {
                 if (res.status === 200) {
-                    // updateAccountBalance(getUserId(), { accountBalance: newAccountBalance })
-                    //     .then((res) => {
-                    //         openNotification("success", "Thanh toán đơn hàng thành công")
-                    //     }).catch((errors) => {
-                    //         console.log(errors)
-                    //     })
                     openNotification("success", "Thanh toán đơn hàng thành công")
                     setIsModalConfirmBuy(false);
                 }
@@ -101,31 +200,60 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
             })
     }
 
+    const handleCancelChooseCoupon = () => {
+        setIsModalChooseCoupon(false);
+    };
+
     const handleCancelConfirmBuy = () => {
         setIsModalConfirmBuy(false);
     };
 
 
     const handleCancelConfirmDelete = () => {
+        setProductVariantsIdSelected(0)
         setIsModalConfirmDelete(false);
     };
 
+    const calculatorPrice = (values) => {
+        if (values.length > 0) {
+            const totalOriginPrice = values.reduce((accumulator, currentValue) => {
+                return accumulator + (currentValue.productVariant.price * currentValue.quantity);
+            }, 0);
+
+
+            const totalDiscountPrice = values.reduce((accumulator, currentValue) => {
+                return accumulator + (currentValue.productVariant.priceDiscount * currentValue.quantity);
+            }, 0);
+
+
+            const finalOriginPrice = values.reduce((newOriginPrice, { coupons }) => {
+                coupons.map((c) => {
+                    return newOriginPrice -= c.priceDiscount
+                })
+                return newOriginPrice
+            }, totalOriginPrice)
+
+            const finalDiscountPrice = values.reduce((newDiscountPrice, { coupons }) => {
+                coupons.map((c) => {
+                    return newDiscountPrice -= c.priceDiscount
+                })
+
+                return newDiscountPrice
+            }, totalDiscountPrice)
+
+            setTotalPrice({ originPrice: finalOriginPrice, discountPrice: finalDiscountPrice });
+        } else {
+            setTotalPrice({ originPrice: 0, discountPrice: 0 });
+        }
+
+    }
+
 
     const handleOnChangeCheckbox = (values) => {
+        debugger
         const cartFilter = carts.filter(c => values.includes(c.productVariantId))
-
-        const totalOriginPrice = cartFilter.reduce((accumulator, currentValue) => {
-            return accumulator + (currentValue.productVariant.price * currentValue.quantity);
-        }, 0);
-
-
-
-        const totalDiscountPrice = cartFilter.reduce((accumulator, currentValue) => {
-            return accumulator + (currentValue.productVariant.priceDiscount * currentValue.quantity);
-        }, 0);
-
-        setTotalPrice({ originPrice: totalOriginPrice, discountPrice: totalDiscountPrice });
         setCartSelected([...cartFilter])
+        calculatorPrice(cartFilter)
     }
 
     const handleBuy = () => {
@@ -136,139 +264,23 @@ const Carts = ({ carts, updateCarts, openNotification, setTotalPrice, totalPrice
         showModalConfirmBuy()
     }
 
-    return (<>
-        {carts.length > 0 ? (<>
-            <Row>
-                <Col span={18} style={{ padding: 5 }}>
-                    <Checkbox.Group onChange={handleOnChangeCheckbox} style={{ display: 'block' }}>
-                        <Card bodyStyle={{ padding: 20 }} style={{ marginBottom: 10 }}>
-                            <Row style={{ height: '3vh' }}>
-                                <Col><Checkbox></Checkbox></Col>
-                                <Col offset={5}>Sản phẩm</Col>
-                                <Col offset={7}>Đơn giá</Col>
-                                <Col offset={1}>Số Lượng</Col>
-                                <Col offset={2}>Số Tiền</Col>
-                                <Col offset={1}>Thao Tác</Col>
-                            </Row>
-                        </Card>
-                        {
-                            carts.map((item, index) => (
-                                <Card hoverable title={item.shopName} key={index} bodyStyle={{ padding: 20 }} headStyle={{ padding: 0, paddingLeft: 100 }}>
-                                    <Row>
-                                        <Col >
-                                            <Checkbox value={item.productVariantId}></Checkbox>
-                                        </Col>
-                                        <Col offset={1}>
-                                            <Image
-                                                width={100}
-                                                src={item.product.thumbnail}
-                                            />
-                                        </Col>
-                                        <Col offset={1}><Title level={5}>{item.product.productName}</Title></Col>
-                                        <Col offset={1}><Text type="secondary">Variant: {item.productVariant.productVariantName}</Text></Col>
-                                        <Col offset={1}><Text type="secondary" delete>{formatPrice(item.productVariant.price)}</Text></Col>
-                                        <Col offset={1}><InputNumber min={1} max={item.productVariant.quantity} defaultValue={item.quantity} /></Col>
-                                        <Col offset={1}><Text>{formatPrice(item.productVariant.priceDiscount)}</Text></Col>
-                                        <Col offset={1}><Button onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModalConfirmDelete() }}>Xóa</Button></Col>
-                                    </Row>
-
-                                </Card>
-                            ))
-                        }
-                    </Checkbox.Group>
-                </Col>
-                <Col span={6} style={{ padding: 5 }}>
-                    <Card
-                        style={{
-                            width: '100%',
-                            height: '55vh',
-                        }}
-                    >
-                        <Title level={4} className={cx('space-div-flex')}>Thanh toán</Title>
-                        <div className={cx('space-div-flex')}>
-                            <Text style={{}}>Tổng tiền hàng:</Text>&nbsp;&nbsp;
-                            <Text strong>{formatPrice(totalPrice.originPrice)}</Text>
-                        </div>
-                        <div className={cx('space-div-flex')}>
-                            <Text>Giảm giá sản phẩm:</Text>&nbsp;&nbsp;
-                            <Text strong>- {formatPrice(totalPrice.originPrice - totalPrice.discountPrice)}</Text>
-                        </div>
-                        <Divider />
-                        <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
-                            <Text>Tổng giá trị phải thanh toán:</Text>&nbsp;&nbsp;
-                            <Text strong>{formatPrice(totalPrice.discountPrice)}</Text>
-                        </div>
-                        <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block onClick={handleBuy}>
-                            Mua hàng
-                        </Button>
-                    </Card>
-                </Col>
-            </Row>
-            <Modal title="Basic Modal" open={isModalConfirmDelete} onOk={handleAcceptDelete} onCancel={handleCancelConfirmDelete}>
-                <p>Bạn có muốn xóa sản phẩm này khỏi giỏ hàng không?</p>
-            </Modal>
-
-            <Modal
-                open={isModalNotifyBalance}
-                closable={false}
-                maskClosable={false}
-                footer={[
-                    <Button key="submit" type="primary" onClick={handleOkNotifyBalance}>
-                        OK
-                    </Button>,
-
-                ]}
-            >
-                <p>Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản</p>
-            </Modal>
-
-            <Modal title="Thông báo" open={isModalConfirmBuy} onOk={handleOkConfirmBuy} onCancel={handleCancelConfirmBuy}>
-                <p>Bạn có muốn thanh toán đơn hàng này với giá <strong>{formatPrice(totalPrice.discountPrice)}</strong> không?</p>
-            </Modal>
-        </>) : (<Title level={4}>Không có sản phẩm nào trong giỏ hàng</Title>)}
-
-    </>
-
-
-
-    )
-}
-
-
-const Cart = () => {
-    const auth = useAuthUser();
-    const user = auth();
-    const userId = user.id;
-    const initialTotalPrice = {
-        originPrice: 0,
-        discountPrice: 0
-    }
-    const [carts, setCarts] = useState([])
-    const [api, contextHolder] = notification.useNotification();
-    const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
-    const [balance, setBalance] = useState(0);
-
-    const openNotification = (type, message) => {
-        api[type]({
-            message: `Thông báo`,
-            description: `${message}`
-        });
-    };
-
-    const updateCarts = (cart) => {
-        setCarts(cart);
-    }
-
 
     useEffect(() => {
         getCartsByUserId(userId)
             .then((res) => {
                 const data = res.data;
-                setCarts(data)
+                const dataMap = data.map((item) => ({
+                    ...item,
+                    'coupons': []
+                }));
+
+                setCarts(dataMap)
+                console.log(JSON.stringify(dataMap[1]))
             })
             .catch((errors) => {
                 console.log(errors)
             })
+
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -286,18 +298,164 @@ const Cart = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    const handleCheckAll = (e) => {
+        if (e.target.checked) {
+            setCartSelected(carts);
+            calculatorPrice(carts)
+        } else {
+            setCartSelected([]);
+            calculatorPrice([])
+        }
+    }
+
+    const checkAll = cartSelected.length === carts.length
+    const indeterminate = cartSelected.length > 0 && cartSelected.length < carts.length;
+
     return (
         <>
             {contextHolder}
-            <Carts
-                carts={carts}
-                updateCarts={updateCarts}
-                openNotification={openNotification}
-                setTotalPrice={setTotalPrice}
-                totalPrice={totalPrice}
-                balance={balance} />
+            {carts.length > 0 ? (<>
+                <Row>
+                    <Col span={18} style={{ padding: 5 }}>
+
+                        <Card bodyStyle={{ padding: 20 }} style={{ marginBottom: 10 }}>
+                            <Row style={{ height: '3vh' }}>
+                                <Col><Checkbox indeterminate={indeterminate} onChange={handleCheckAll} checked={checkAll}></Checkbox></Col>
+                                <Col offset={5}>Sản phẩm</Col>
+                                <Col offset={7}>Đơn giá</Col>
+                                <Col offset={1}>Số Lượng</Col>
+                                <Col offset={2}>Số Tiền</Col>
+                                <Col offset={1}>Thao Tác</Col>
+                            </Row>
+                        </Card>
+                        <Checkbox.Group onChange={handleOnChangeCheckbox} style={{ display: 'block' }}>
+                            {
+                                carts.map((item, index) => (
+                                    <Card hoverable title={item.shopName} key={index} bodyStyle={{ padding: 20 }} headStyle={{ padding: 0, paddingLeft: 100 }} style={{ marginBottom: 10 }}>
+                                        <Row className={cx('margin-bottom-item')}>
+                                            <Col >
+                                                <Checkbox value={item.productVariantId}></Checkbox>
+                                            </Col>
+                                            <Col offset={1}>
+                                                <Image
+                                                    width={100}
+                                                    src={item.product.thumbnail}
+                                                />
+                                            </Col>
+                                            <Col offset={1}><Title level={5}>{item.product.productName}</Title></Col>
+                                            <Col offset={1}><Text type="secondary">Loại: {item.productVariant.productVariantName}</Text></Col>
+                                            <Col offset={1}><Text type="secondary" delete>{formatPrice(item.productVariant.price)}</Text></Col>
+                                            <Col offset={1}><InputNumber min={1} max={item.productVariant.quantity} defaultValue={item.quantity} /></Col>
+                                            <Col offset={1}><Text>{formatPrice(item.productVariant.priceDiscount)}</Text></Col>
+                                            <Col offset={1}><Button icon={<DeleteOutlined />} danger onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModalConfirmDelete() }}>Xóa</Button></Col>
+                                        </Row>
+                                        <Row>
+                                            <Col offset={1}><Button type="link" onClick={() => { setProductVariantsIdSelected(item.productVariantId); getDataCoupons(item.shopId, item.productVariantId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
+                                        </Row>
+
+                                    </Card>
+                                ))
+                            }
+                        </Checkbox.Group>
+                    </Col>
+                    <Col span={6} style={{ padding: 5 }}>
+                        <Card
+                            style={{
+                                width: '100%',
+                                height: '55vh',
+                            }}
+                        >
+                            <Title level={4} className={cx('space-div-flex')}>Thanh toán</Title>
+                            <div className={cx('space-div-flex')}>
+                                <Text style={{}}>Tổng tiền hàng:</Text>&nbsp;&nbsp;
+                                <Text strong>{formatPrice(totalPrice.originPrice)}</Text>
+                            </div>
+                            <div className={cx('space-div-flex')}>
+                                <Text>Giảm giá sản phẩm:</Text>&nbsp;&nbsp;
+                                <Text strong>- {formatPrice(totalPrice.originPrice - totalPrice.discountPrice)}</Text>
+                            </div>
+                            <Divider />
+                            <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
+                                <Text>Tổng giá trị phải thanh toán:</Text>&nbsp;&nbsp;
+                                <Text strong>{formatPrice(totalPrice.discountPrice)}</Text>
+                            </div>
+                            <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block onClick={handleBuy}>
+                                Mua hàng
+                            </Button>
+                        </Card>
+                    </Col>
+                </Row>
+                <Modal title="Basic Modal" open={isModalConfirmDelete} onOk={handleAcceptDelete} onCancel={handleCancelConfirmDelete}>
+                    <p>Bạn có muốn xóa sản phẩm này khỏi giỏ hàng không?</p>
+                </Modal>
+
+                <Modal
+                    open={isModalNotifyBalance}
+                    closable={false}
+                    maskClosable={false}
+                    footer={[
+                        <Button key="submit" type="primary" onClick={handleOkNotifyBalance}>
+                            OK
+                        </Button>,
+
+                    ]}
+                >
+                    <p>Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản</p>
+                </Modal>
+
+                <Modal title="Thông báo" open={isModalConfirmBuy} onOk={handleOkConfirmBuy} onCancel={handleCancelConfirmBuy}>
+                    <p>Bạn có muốn thanh toán đơn hàng này với giá <strong>{formatPrice(totalPrice.discountPrice)}</strong> không?</p>
+                </Modal>
+
+                <Modal
+                    title="Mã giảm giá của Shop"
+                    open={isModalChooseCoupon}
+                    onOk={handleOkChooseCoupon}
+                    onCancel={handleCancelChooseCoupon}
+                >
+                    <Spinning spinning={!isCouponInfoSuccess}>
+                        <div
+                            id="scrollableDiv"
+                            style={{
+                                height: 400,
+                                overflow: 'auto',
+                                padding: '0 16px',
+                                border: '1px solid rgba(140, 140, 140, 0.35)',
+                            }}
+                        >
+
+                            <List
+                                dataSource={coupons}
+                                renderItem={(item) => (
+                                    <List.Item key={item.email}>
+                                        <List.Item.Meta
+                                            title={<a href="https://ant.design">{item.couponName}</a>}
+                                            description={(<><p>Giảm {formatPrice(item.priceDiscount)} -
+                                                {moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
+                                                    (<Text type="danger"> HSD: {moment(item.endDate).format('DD.MM.YYYY')} (Sắp hết hạn)</Text>)
+                                                    : (<> HSD: {moment(item.endDate).format('DD.MM.YYYY')}</>)}</p></>)}
+                                        />
+                                        <div>
+                                            {
+                                                chooseCoupons.find(c => c.couponId === item.couponId) ? (<Button icon={<DeleteOutlined />} onClick={() => { deleteCoupon(item) }} type="primary" danger>
+                                                    Xóa
+                                                </Button>) : (<Button icon={<PlusOutlined />} type="primary" onClick={() => addCoupon(item)}>Sử dụng</Button>)
+                                            }
+                                        </div>
+                                    </List.Item>
+                                )}
+                            />
+
+                        </div>
+
+
+                    </Spinning>
+                </Modal>
+            </>) : (<Title level={4}>Không có sản phẩm nào trong giỏ hàng</Title>)
+            }
         </>
     )
 }
 
 export default Cart
+
