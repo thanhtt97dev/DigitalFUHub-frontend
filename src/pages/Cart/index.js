@@ -250,7 +250,6 @@ const Cart = () => {
 
 
     const handleOnChangeCheckbox = (values) => {
-        debugger
         const cartFilter = carts.filter(c => values.includes(c.productVariantId))
         setCartSelected([...cartFilter])
         calculatorPrice(cartFilter)
