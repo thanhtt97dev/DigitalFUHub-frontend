@@ -7,7 +7,8 @@ import {
     UserOutlined,
     GlobalOutlined,
     BankOutlined,
-    ShopOutlined
+    ShopOutlined,
+    ShoppingOutlined
 } from '@ant-design/icons';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import { useAuthUser } from 'react-auth-kit';
@@ -37,11 +38,18 @@ const items = [
         role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {
+        icon: ShoppingOutlined,
+        label: 'Lịch sử mua hàng',
+        link: '/history/order',
+        role: [CUSTOMER_ROLE, SELLER_ROLE]
+    },
+    {
         icon: ShopOutlined,
         label: 'Đăng ký bán hàng',
         link: '/settings/registerSeller',
         role: [CUSTOMER_ROLE]
     },
+
 ]
 
 function SettingsLayout({ children }) {
@@ -64,11 +72,12 @@ function SettingsLayout({ children }) {
                 </Button>
                 <h1>Cài đặt</h1>
             </Row>
-            <Layout style={{ height: '100vh' }}>
+            <Layout style={{ minHeight: '100vh' }}>
                 <Sider
                     trigger={null}
                     collapsedWidth={0}
                     collapsed={collapsed}
+                    style={{ minHeight: '100vh', background: 'white' }}
                 >
                     <Menu
                         defaultSelectedKeys={['1']}
@@ -76,7 +85,7 @@ function SettingsLayout({ children }) {
                         mode="vertical"
                         theme="light"
                         inlineCollapsed={collapsed}
-                        style={{ height: "100vh" }}
+                        style={{ minHeight: "100vh" }}
                         items={items.map((item, index) => {
                             if (item.role.includes(user.roleName)) {
                                 return {
@@ -89,7 +98,7 @@ function SettingsLayout({ children }) {
                     />
                 </Sider>
                 <Content >
-                    <div style={{ padding: 12, height: '100vh', background: colorBgContainer }}>
+                    <div style={{ padding: 12, minHeight: '100vh', background: colorBgContainer }}>
                         {/* <Outlet /> */}
                         {children}
                     </div>

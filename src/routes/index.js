@@ -28,6 +28,7 @@ import EditProduct from '~/pages/Seller/ManageProduct/EditProduct';
 import Orders from '~/pages/Seller/ManageOrder/Orders';
 import HistoryTransactions from '~/pages/HistoryTransactions';
 import RegisterSeller from '~/pages/User/Settings/RegisterSeller';
+import HistoryOrder from '~/pages/HistoryOrder';
 
 const routesConfig = [
     {
@@ -177,6 +178,13 @@ const routesConfig = [
         layout: <SellerLayout />,
         component: <Orders />,
         role: [SELLER_ROLE],
+    },
+    {
+        title: 'History Order',
+        path: '/history/order',
+        layout: <NormalLayout />,
+        component: <SettingsLayout><HistoryOrder /></SettingsLayout>,
+        role: [SELLER_ROLE, CUSTOMER_ROLE]
     },
     {
         title: 'Confirm Email',
