@@ -1,11 +1,13 @@
 import { Col, Empty, Row } from "antd";
 import CardOrderItem from "../CardOrderItem";
-import { useEffect, useState, useLayoutEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getUserId } from "~/utils";
-import { getOrders } from "~/api/order";
+import { editStatusOrder, getOrders } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { NotificationContext } from "~/context/NotificationContext";
 
 function AllOrder({ status = 0, loading, setLoading }) {
+    const notification = useContext(NotificationContext);
     const [paramSearch, setParamSearch] = useState({
         userId: getUserId(),
         limit: 5,
@@ -14,7 +16,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
     });
     const [orders, setOrders] = useState([]);
     const [nextOffset, setNextOffset] = useState(0)
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (nextOffset !== -1) {
             // call api
             getOrders(paramSearch)
@@ -50,6 +52,55 @@ function AllOrder({ status = 0, loading, setLoading }) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    const handleOrderComplaint = (orderId, shopId) => {
+        // call api
+        const dataBody = {
+            userId: getUserId(),
+            shopId: shopId,
+            orderId: orderId,
+            statusId: 3
+        }
+        editStatusOrder(dataBody)
+            .then(res => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setOrders(prev => {
+                        const order = prev.find((value) => value.orderId === orderId);
+                        order.statusId = dataBody.statusId
+                        console.log(prev)
+                        return [...prev]
+                    })
+                } else {
+                    notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                }
+            })
+            .catch(err => {
+                notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+            })
+    }
+
+    const handleOrderComplete = (orderId, shopId) => {
+        // call api
+        const dataBody = {
+            userId: getUserId(),
+            shopId: shopId,
+            orderId: orderId,
+            statusId: 2
+        }
+        editStatusOrder(dataBody)
+            .then(res => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setOrders(prev => {
+                        const order = prev.find((value) => value.orderId === orderId);
+                        order.statusId = dataBody.statusId
+                        return [...prev]
+                    })
+                } else {
+                    notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                }
+            })
+            .catch(err => { notification("error", "Thất bại", "Đã có lỗi xảy ra.") })
+    }
     return (<div >
         {!loading ?
             orders.length > 0 ?
@@ -71,6 +122,8 @@ function AllOrder({ status = 0, loading, setLoading }) {
                                 discount={v.discount}
                                 couponDiscount={v.couponDiscount}
                                 isFeedback={v.isFeedback}
+                                onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
+                                onOrderComplaint={() => handleOrderComplaint(v.orderId, v.shopId)}
                             />
                         </Col>
                     })}

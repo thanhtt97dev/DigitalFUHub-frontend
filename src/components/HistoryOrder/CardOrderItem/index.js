@@ -27,20 +27,26 @@ function CardOrderItem({
     status,
     discount,
     couponDiscount,
-    isFeedback }) {
+    isFeedback,
+    onOrderComplete = () => { },
+    onOrderComplaint = () => { }
+}) {
 
     const getButtonsStatus = (statusId) => {
         if (statusId === ORDER_WAIT_CONFIRMATION) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Button danger>Khiếu nại</Button>
+                    <Button danger onClick={onOrderComplaint}>Khiếu nại</Button>
                 </Col>
                 <Col>
-                    <Button type="primary">Xác nhận</Button>
+                    <Button type="primary" onClick={onOrderComplete}>Xác nhận</Button>
                 </Col>
             </Row>
         } else if (statusId === ORDER_CONFIRMED) {
             return <Row justify="end" gutter={[8]}>
+                <Col>
+                    <Button type="primary" onClick={onOrderComplete}>Đánh giá</Button>
+                </Col>
                 <Col>
                     <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
                 </Col>
@@ -51,7 +57,7 @@ function CardOrderItem({
                     <Tag icon={<SyncOutlined size={16} spin />} style={{ fontSize: 14, height: 32, lineHeight: 2.2 }} color="warning">Đang khiếu nại</Tag>
                 </Col>
                 <Col>
-                    <Button type="primary">Xác nhận</Button>
+                    <Button type="primary" onClick={onOrderComplete}>Xác nhận</Button>
                 </Col>
             </Row>
         } else if (statusId === ORDER_DISPUTE) {
@@ -82,6 +88,16 @@ function CardOrderItem({
             </Col>
             <Col>
                 <Title level={5}>{shopname}</Title>
+            </Col>
+            <Col>
+                <Title level={5}>
+                    <Button
+                        type="default"
+                        size="small"
+                        icon={<ShopOutlined />}
+                    >
+                        Xem cửa hàng
+                    </Button></Title>
             </Col>
         </Row>}
         bordered={true}

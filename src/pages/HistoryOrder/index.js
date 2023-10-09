@@ -1,12 +1,5 @@
-import { Card, Spin, Tabs } from "antd";
+import { Card, Spin } from "antd";
 import { useState } from "react";
-// import AllOrder from "~/components/HistoryOrder/AllOrder";
-// import OrdersConfirmed from "~/components/HistoryOrder/OrdersComfirmed";
-// import OrdersComplaint from "~/components/HistoryOrder/OrdersComplaint";
-// import OrdersDispute from "~/components/HistoryOrder/OrdersDispute";
-// import OrdersRefund from "~/components/HistoryOrder/OrdersRefund";
-// import OrdersRejectComplaint from "~/components/HistoryOrder/OrdersRejectComplaint";
-// import OrdersWaitConfirm from "~/components/HistoryOrder/OrdersWaitConfirm";
 
 import {
     AllOrder,

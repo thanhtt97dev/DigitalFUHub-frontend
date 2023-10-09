@@ -63,7 +63,7 @@ function OrdersDispute({ status, loading, setLoading }) {
                                 quantity={v.quantity}
                                 shopId={v.shopId}
                                 shopname={v.shopName}
-                                variantName={v.ProductVariantName}
+                                variantName={v.productVariantName}
                                 thumbnail={v.thumbnail}
                                 status={v.statusId}
                                 discount={v.discount}
