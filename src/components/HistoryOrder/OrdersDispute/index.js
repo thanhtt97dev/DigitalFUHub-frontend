@@ -5,12 +5,12 @@ import { getUserId } from "~/utils";
 import { getOrders } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 
-function Refund({ status }) {
+function OrdersDispute({ status, loading, setLoading }) {
     const [paramSearch, setParamSearch] = useState({
         userId: getUserId(),
         limit: 5,
         offset: 0,
-        statusId: 0
+        statusId: status
     });
     const [orders, setOrders] = useState([]);
     const [nextOffset, setNextOffset] = useState(0)
@@ -25,6 +25,12 @@ function Refund({ status }) {
                     }
                 })
                 .catch(err => { })
+            if (loading) {
+                const idTimeout = setTimeout(() => {
+                    setLoading(false);
+                    clearTimeout(idTimeout)
+                }, 300)
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [paramSearch])
@@ -42,14 +48,37 @@ function Refund({ status }) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-    return (<>
-        <Row gutter={[0, 16]} style={{ padding: '0 20px' }}>
-            {new Array(3).fill(null).map((_, i) => {
-                const id = String(i + 1);
-                return <Col span={24}><CardOrderItem key={id} /></Col>
-            })}
-        </Row>
-    </>);
+    return (<div>
+        {!loading ?
+            orders.length > 0 ?
+                <Row gutter={[0, 16]} style={{ padding: '0 50px' }}>
+                    {orders.map((v, i) => {
+                        const id = String(i + 1);
+                        return <Col span={24}>
+                            <CardOrderItem key={id}
+                                orderId={v.orderId}
+                                productName={v.productName}
+                                productId={v.productId}
+                                price={v.price}
+                                quantity={v.quantity}
+                                shopId={v.shopId}
+                                shopname={v.shopName}
+                                variantName={v.ProductVariantName}
+                                thumbnail={v.thumbnail}
+                                status={v.statusId}
+                                discount={v.discount}
+                                couponDiscount={v.couponDiscount}
+                                isFeedback={v.isFeedback}
+                            />
+                        </Col>
+                    })}
+                </Row>
+                :
+                <Empty />
+            :
+            null
+        }
+    </div>);
 }
 
-export default Refund;
+export default OrdersDispute;

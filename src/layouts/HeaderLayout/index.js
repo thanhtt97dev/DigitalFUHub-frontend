@@ -6,7 +6,7 @@ import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
 import {
     MessageOutlined, ShoppingCartOutlined, MessageFilled, BellFilled,
-    SettingOutlined, CreditCardOutlined, ShopOutlined
+    SettingOutlined, CreditCardOutlined, ShopOutlined, ShoppingOutlined
 } from '@ant-design/icons';
 
 import logo from '~/assets/images/Logo.png';
@@ -28,6 +28,11 @@ const itemsFixed = [
     {
         key: 'settings',
         label: <Link to={"/settings"}><><SettingOutlined /> Cài đặt</></Link>,
+        roles: [CUSTOMER_ROLE, SELLER_ROLE]
+    },
+    {
+        key: 'history orders',
+        label: <Link to={"/history/order"}><ShoppingOutlined /> Lịch sử mua hàng</Link>,
         roles: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {

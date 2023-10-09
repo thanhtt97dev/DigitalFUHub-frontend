@@ -1,11 +1,11 @@
-import { Col, Empty, Row } from "antd";
 import CardOrderItem from "../CardOrderItem";
-import { useEffect, useState, useLayoutEffect } from "react";
+import { Col, Empty, Row } from "antd";
+import { useEffect, useState } from "react";
 import { getUserId } from "~/utils";
 import { getOrders } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 
-function AllOrder({ status = 0, loading, setLoading }) {
+function OrdersConfirmed({ status, loading, setLoading }) {
     const [paramSearch, setParamSearch] = useState({
         userId: getUserId(),
         limit: 5,
@@ -14,12 +14,11 @@ function AllOrder({ status = 0, loading, setLoading }) {
     });
     const [orders, setOrders] = useState([]);
     const [nextOffset, setNextOffset] = useState(0)
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (nextOffset !== -1) {
             // call api
             getOrders(paramSearch)
                 .then(res => {
-
                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         setOrders(res.data.result.orders);
                         setNextOffset(res.data.result.nextOffset);
@@ -31,7 +30,6 @@ function AllOrder({ status = 0, loading, setLoading }) {
                     setLoading(false);
                     clearTimeout(idTimeout)
                 }, 300)
-
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,7 +48,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-    return (<div >
+    return (<div>
         {!loading ?
             orders.length > 0 ?
                 <Row gutter={[0, 16]} style={{ padding: '0 50px' }}>
@@ -65,7 +63,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
                                 quantity={v.quantity}
                                 shopId={v.shopId}
                                 shopname={v.shopName}
-                                variantName={v.productVariantName}
+                                variantName={v.ProductVariantName}
                                 thumbnail={v.thumbnail}
                                 status={v.statusId}
                                 discount={v.discount}
@@ -77,11 +75,9 @@ function AllOrder({ status = 0, loading, setLoading }) {
                 </Row>
                 :
                 <Empty />
-            :
-            null
+            : null
         }
-
     </div>);
 }
 
-export default AllOrder;
+export default OrdersConfirmed;
