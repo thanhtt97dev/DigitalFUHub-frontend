@@ -28,7 +28,7 @@ const columns = [
     {
         title: 'Số tiền',
         dataIndex: 'amount',
-        width: '20%',
+        width: '15%',
         render: (amount) => {
             return (
                 <p>{formatStringToCurrencyVND(amount)} VND</p>
