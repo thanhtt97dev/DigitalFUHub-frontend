@@ -6,3 +6,7 @@ export const addOrder = (data) => {
 export const getOrders = (data) => {
     return apiPostAuth(`api/Orders/All`, data);
 };
+
+export const editStatusOrder = (data) => {
+    return apiPostAuth(`api/Orders/Edit/Status`, data);
+};
