@@ -1,15 +1,20 @@
-import React, { useLayoutEffect, useState } from "react";
-import { Divider, notification, Modal, Button, Input } from "antd";
+import React, { useLayoutEffect, useState, useContext } from "react";
+import { Divider, Modal, Button, Input } from "antd";
 
 import { ExclamationCircleFilled } from "@ant-design/icons";
 
 import { createWithdrawTransaction, getUserBankAccount } from "~/api/bank";
 import { getCustomerBalance } from '~/api/user'
+import { NotificationContext } from '~/context/NotificationContext';
+import {
+    RESPONSE_CODE_SUCCESS,
+    RESPONSE_CODE_DATA_NOT_FOUND,
+    RESPONSE_CODE_NOT_ACCEPT
+} from '~/constants'
 
 function ModalRequestWithdraw({ userId, text, style, callBack }) {
 
-    const [api, contextHolder] = notification.useNotification();
-
+    const notification = useContext(NotificationContext);
     const [openModal, setOpenModal] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [btnLoading, setBtnLoading] = useState(false)
@@ -20,14 +25,14 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
 
     useLayoutEffect(() => {
         if (userId === null) {
-            openNotification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
+            notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
         }
         getCustomerBalance(userId)
             .then((res) => {
                 setCustomerBalance(res.data)
             })
             .catch((err) => {
-                openNotification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
+                notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId])
@@ -49,11 +54,16 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
         createWithdrawTransaction(data)
             .then((res) => {
                 setOpenModal(false)
-                openNotification("success", "Tạo yêu cầu rút tiền thành công!")
-                //window.location.reload();
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    notification("success", "Tạo yêu cầu rút tiền thành công!")
+                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
+                    notification("success", "Tạo yêu cầu rút tiền thành công!")
+                } else {
+                    notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
+                }
             })
             .catch(() => {
-                openNotification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
+                notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
             }).finally(() => {
                 setTimeout(() => {
                     callBack();
@@ -74,12 +84,6 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
         }
     }
 
-    const openNotification = (type, message) => {
-        api[type]({
-            message: `Thông báo`,
-            description: `${message}`
-        });
-    };
 
     const handleOpenModal = () => {
         setBtnLoading(true)
@@ -87,13 +91,13 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
         getUserBankAccount(userId)
             .then((res) => {
                 if (!res.data.status.ok) {
-                    openNotification("info", "Bạn chưa thực hiện liên kết tài khoản ngân hàng với DigitalFUHub!")
+                    notification("info", "Bạn chưa thực hiện liên kết tài khoản ngân hàng với DigitalFUHub!")
                 } else {
                     setOpenModal(true)
                 }
             })
             .catch(() => {
-                openNotification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
+                notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
             })
             .finally(() => {
                 setTimeout(() => { setBtnLoading(false) }, 500)
@@ -103,8 +107,6 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
 
     return (
         <>
-            {contextHolder}
-
             <Button
                 onClick={handleOpenModal}
                 type="primary"
