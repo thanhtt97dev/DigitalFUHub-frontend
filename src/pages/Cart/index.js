@@ -42,6 +42,7 @@ const Cart = () => {
     const [api, contextHolder] = notification.useNotification();
     const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
     const [balance, setBalance] = useState(0);
+    const [inputCouponCode, setInputCouponCode] = useState('')
     const [isModalConfirmDelete, setIsModalConfirmDelete] = useState(false);
     const [isModalNotifyBalance, setIsModalNotifyBalance] = useState(false);
     const [isCouponInfoSuccess, setIsCouponInfoSuccess] = useState(false);
@@ -81,34 +82,17 @@ const Cart = () => {
         setCarts(cart);
     }
 
-    const getDataCoupons = (shopId, productVariantId) => {
+    const getCouponShop = (productVariantId) => {
         const productVariantFind = cartSelected.find(c => c.productVariantId === productVariantId)
         if (!productVariantFind) {
             openNotification("error", "Vui lòng chọn sản phẩm để thêm mã giảm giá của Shop")
             return;
         }
-
         const existCoupons = cartSelected.find(c => c.productVariantId === productVariantId)?.coupons
         if (existCoupons) {
             setChooseCoupons([...existCoupons])
         }
-
-        getCoupons(shopId)
-            .then((res) => {
-                if (res.status === 200) {
-                    const data = res.data;
-                    setCoupons(data);
-                    setIsModalChooseCoupon(true)
-                }
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-            .finally(() => {
-                setTimeout(() => {
-                    setIsCouponInfoSuccess(true)
-                }, 500)
-            })
+        setIsModalChooseCoupon(true)
     }
 
 
@@ -310,7 +294,31 @@ const Cart = () => {
     }
 
     const onSearch = () => {
+        if (!inputCouponCode) {
+            openNotification("error", "Vui lòng nhập Code để tìm kiếm mã giảm giá")
+            return;
+        }
+        setIsCouponInfoSuccess(true)
+        const cartFind = cartSelected.find(c => c.productVariantId === productVariantsIdSelected)
+        getCoupons(cartFind.shopId, inputCouponCode)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    setCoupons(data);
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setIsCouponInfoSuccess(false)
+                }, 500)
+            })
+    }
 
+    const handleChangeInputCode = (e) => {
+        setInputCouponCode(e.target.value)
     }
 
     const checkAll = cartSelected.length === carts.length
@@ -355,7 +363,7 @@ const Cart = () => {
                                             <Col offset={1}><Button icon={<DeleteOutlined />} danger onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModalConfirmDelete() }}>Xóa</Button></Col>
                                         </Row>
                                         <Row>
-                                            <Col offset={1}><Button type="link" onClick={() => { setProductVariantsIdSelected(item.productVariantId); getDataCoupons(item.shopId, item.productVariantId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
+                                            <Col offset={1}><Button type="link" onClick={() => { setProductVariantsIdSelected(item.productVariantId); getCouponShop(item.productVariantId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
                                         </Row>
 
                                     </Card>
@@ -418,13 +426,15 @@ const Cart = () => {
                     onOk={handleOkChooseCoupon}
                     onCancel={handleCancelChooseCoupon}
                 >
-                    <Spinning spinning={!isCouponInfoSuccess}>
+                    <Spinning spinning={isCouponInfoSuccess}>
                         <Search
                             placeholder="Nhập mã Code"
                             allowClear
                             enterButton="Tìm kiếm"
                             size="large"
                             onSearch={onSearch}
+                            value={inputCouponCode}
+                            onChange={handleChangeInputCode}
                             className={cx('margin-bottom-item')}
                         />
                         <div
@@ -436,7 +446,6 @@ const Cart = () => {
                                 border: '1px solid rgba(140, 140, 140, 0.35)',
                             }}
                         >
-
                             <List
                                 dataSource={coupons}
                                 renderItem={(item) => (
