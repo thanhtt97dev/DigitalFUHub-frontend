@@ -56,6 +56,7 @@ const Cart = () => {
         discountPrice: 0
     }
     const [carts, setCarts] = useState([])
+    const [isLoadCart, setIsLoadCart] = useState(false)
     const [api, contextHolder] = notification.useNotification();
     const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
     const [balance, setBalance] = useState(0);
@@ -200,6 +201,16 @@ const Cart = () => {
                 if (res.status === 200) {
                     openNotification("success", "Thanh toán đơn hàng thành công")
                     setIsModalConfirmBuy(false);
+                    cartSelected.map(item => {
+                        return deleteCart({ userId: item.userId, productVariantId: item.productVariantId })
+                            .catch((errors) => {
+                                console.log(errors)
+                            });
+                    })
+                    // const newCarts = carts.filter(item => !cartSelected?.some(itemSelect => itemSelect.productVariantId === item.productVariantId))
+                    // setCartSelected(newCarts)
+                    setCartSelected([])
+                    setIsLoadCart(!isLoadCart)
                 }
             }).catch((error) => {
                 console.log(error)
@@ -306,7 +317,7 @@ const Cart = () => {
 
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [isLoadCart])
 
     useEffect(() => {
         getCustomerBalance(userId)
@@ -536,7 +547,7 @@ const Cart = () => {
 
                     </Spinning>
                 </Modal>
-            </>) : (<Title level={4}>Không có sản phẩm nào trong giỏ hàng</Title>)
+            </>) : (<Title style={{ textAlign: 'center' }} level={4}>Không có sản phẩm nào trong giỏ hàng</Title>)
             }
         </>
     )
