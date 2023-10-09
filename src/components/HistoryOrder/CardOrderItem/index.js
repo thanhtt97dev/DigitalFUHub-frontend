@@ -32,8 +32,8 @@ function CardOrderItem({
     onOrderComplaint = () => { }
 }) {
 
-    const getButtonsStatus = (statusId) => {
-        if (statusId === ORDER_WAIT_CONFIRMATION) {
+    const getButtonsStatus = () => {
+        if (status === ORDER_WAIT_CONFIRMATION) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Button danger onClick={onOrderComplaint}>Khiếu nại</Button>
@@ -42,16 +42,18 @@ function CardOrderItem({
                     <Button type="primary" onClick={onOrderComplete}>Xác nhận</Button>
                 </Col>
             </Row>
-        } else if (statusId === ORDER_CONFIRMED) {
+        } else if (status === ORDER_CONFIRMED) {
             return <Row justify="end" gutter={[8]}>
-                <Col>
-                    <Button type="primary" onClick={onOrderComplete}>Đánh giá</Button>
-                </Col>
+                {!isFeedback &&
+                    <Col>
+                        <Button type="primary">Đánh giá</Button>
+                    </Col>
+                }
                 <Col>
                     <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
                 </Col>
             </Row>
-        } else if (statusId === ORDER_COMPLAINT) {
+        } else if (status === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Tag icon={<SyncOutlined size={16} spin />} style={{ fontSize: 14, height: 32, lineHeight: 2.2 }} color="warning">Đang khiếu nại</Tag>
@@ -60,19 +62,19 @@ function CardOrderItem({
                     <Button type="primary" onClick={onOrderComplete}>Xác nhận</Button>
                 </Col>
             </Row>
-        } else if (statusId === ORDER_DISPUTE) {
+        } else if (status === ORDER_DISPUTE) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
                 </Col>
             </Row>
-        } else if (statusId === ORDER_REJECT_COMPLAINT) {
+        } else if (status === ORDER_REJECT_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Tag color="red" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Từ chối khiếu nại</Tag>
                 </Col>
             </Row>
-        } else if (statusId === ORDER_SELLER_REFUNDED) {
+        } else if (status === ORDER_SELLER_REFUNDED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Tag color="cyan" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
@@ -171,7 +173,7 @@ function CardOrderItem({
 
             </Col>
             <Col span={24}>
-                {getButtonsStatus(status)}
+                {getButtonsStatus()}
             </Col>
         </Row>
 
