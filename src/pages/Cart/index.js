@@ -193,10 +193,7 @@ const Cart = () => {
             productVariantId: c.productVariantId,
             businessFeeId: 1,
             quantity: c.quantity,
-            price: c.productVariant.priceDiscount,
-            orderDate: getVietnamCurrentTime(),
-            totalAmount: (c.productVariant.priceDiscount * c.quantity),
-            isFeedback: false
+            coupons: c.coupons.map((coupon) => coupon.couponCode)
         }));
         addOrder(lstDataOrder)
             .then((res) => {
@@ -378,6 +375,7 @@ const Cart = () => {
             })
     }
 
+    console.log('cart: ' + JSON.stringify(cartSelected[0]))
 
     return (
         <>
