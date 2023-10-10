@@ -206,6 +206,7 @@ function AddProduct() {
 
     // submit form
     const onFinish = (values) => {
+        console.log(values);
         setLoading(true);
         let formData = new FormData();
         values.productImages.fileList.forEach((file, index) => {
@@ -279,330 +280,331 @@ function AddProduct() {
                         }}
                         onFinish={onFinish}
                     >
-                        <div id='product-name'>
-                            <Form.Item name='nameProduct' label="Tên sản phẩm:"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Tên sản phẩm không để trống."
-                                    }
-                                ]}
+                        <Form.Item name='nameProduct' label="Tên sản phẩm:" required
+                            rules={[
+                                (getFieldValue) => ({
+                                    validator(_, value) {
+                                        const data = value === undefined ? '' : value.trim();
+                                        if (data.trim()) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error('Tên sản phẩm không để trống.'));
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input placeholder='Tên sản phẩm' />
+                        </Form.Item>
+                        <Form.Item name='description' label="Mô tả:" required
+                            rules={[
+                                (getFieldValue) => ({
+                                    validator(_, value) {
+                                        if (descriptionValue.trim()) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error('Mô tả sản phẩm không để trống.'));
+                                    },
+                                }),
+                            ]}
+                        >
+                            <CKEditor
+                                editor={ClassicEditor}
+                                data=""
+                                config={{
+                                    toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', 'blockQuote', 'bulletedList', 'numberedList', 'outdent', 'indent', '|', 'undo', 'redo',]
+                                }}
+                                onReady={editor => {
+                                }}
+                                onChange={(event, editor) => {
+                                    const data = editor.getData();
+                                    // console.log({ event, editor, data });
+                                    setDescriptionValue(data);
+                                }}
+                                onBlur={(event, editor) => {
+                                    // console.log('Blur.', editor);
+                                }}
+                                onFocus={(event, editor) => {
+                                    // console.log('Focus.', editor);
+                                }}
+                            />
+                        </Form.Item>
+                        <Form.Item name='thumbnailProduct' label='Ảnh đại diện sản phẩm:'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Ảnh đại diện sản phẩm không để trống.'
+                                }
+                            ]}
+                        >
+                            <Upload
+                                beforeUpload={false}
+                                listType="picture-card"
+                                fileList={thumbnailFile}
+                                onPreview={handlePreviewImage}
+                                onChange={handleThumbnailChange}
+                                maxCount={1}
+                                accept=".png, .jpeg, .jpg"
                             >
-                                <Input placeholder='Tên sản phẩm' />
-                            </Form.Item>
-                        </div>
-                        <div id='product-description'>
-                            <Form.Item name='description' label="Mô tả:"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Mô tả sản phẩm không để trống.'
-                                    }
-                                ]}
+                                {thumbnailFile.length < 1 ? <div>
+                                    <PlusOutlined />
+                                    <div
+                                        style={{
+                                            marginTop: 8,
+                                        }}
+                                    >
+                                        Tải lên
+                                    </div>
+                                </div> : null}
+                            </Upload>
+                        </Form.Item>
+                        <Form.Item name='productImages' label='Ảnh chi tiết sản phẩm (tối đa 5 ảnh):'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Ảnh chi tiết sản phẩm không để trống.'
+                                }
+                            ]}
+                        >
+                            <Upload
+                                beforeUpload={false}
+                                listType="picture-card"
+                                fileList={fileImgProdList}
+                                onPreview={handlePreviewImage}
+                                onChange={handleImgProdChange}
+                                multiple={true}
+                                maxCount={5}
+                                accept=".png, .jpeg, .jpg"
                             >
-                                <CKEditor
-                                    editor={ClassicEditor}
-                                    data=""
-                                    config={{
-                                        toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', 'blockQuote', 'bulletedList', 'numberedList', 'outdent', 'indent', '|', 'undo', 'redo',]
-                                    }}
-                                    onReady={editor => {
-                                    }}
-                                    onChange={(event, editor) => {
-                                        const data = editor.getData();
-                                        // console.log({ event, editor, data });
-                                        setDescriptionValue(data);
-                                    }}
-                                    onBlur={(event, editor) => {
-                                        // console.log('Blur.', editor);
-                                    }}
-                                    onFocus={(event, editor) => {
-                                        // console.log('Focus.', editor);
-                                    }}
-                                />
-                            </Form.Item>
-                        </div>
-                        <div id='product-thumbnail'>
-                            <Form.Item name='thumbnailProduct' label='Ảnh đại diện sản phẩm:'
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Ảnh đại diện sản phẩm không để trống.'
-                                    }
-                                ]}
-                            >
-                                <Upload
-                                    beforeUpload={false}
-                                    listType="picture-card"
-                                    fileList={thumbnailFile}
-                                    onPreview={handlePreviewImage}
-                                    onChange={handleThumbnailChange}
-                                    maxCount={1}
-                                    accept=".png, .jpeg, .jpg"
-                                >
-                                    {thumbnailFile.length < 1 ? <div>
-                                        <PlusOutlined />
-                                        <div
-                                            style={{
-                                                marginTop: 8,
-                                            }}
-                                        >
-                                            Tải lên
-                                        </div>
-                                    </div> : null}
-                                </Upload>
-                            </Form.Item>
-                        </div>
-                        <div id='product-images'>
-                            <Form.Item name='productImages' label='Ảnh chi tiết sản phẩm (tối đa 5 ảnh):'
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Ảnh chi tiết sản phẩm không để trống.'
-                                    }
-                                ]}
-                            >
-                                <Upload
-                                    beforeUpload={false}
-                                    listType="picture-card"
-                                    fileList={fileImgProdList}
-                                    onPreview={handlePreviewImage}
-                                    onChange={handleImgProdChange}
-                                    multiple={true}
-                                    maxCount={5}
-                                    accept=".png, .jpeg, .jpg"
-                                >
-                                    {fileImgProdList.length < 5 ? <div>
-                                        <PlusOutlined />
-                                        <div
-                                            style={{
-                                                marginTop: 8,
-                                            }}
-                                        >
-                                            Tải lên
-                                        </div>
-                                    </div> : null}
-                                </Upload>
-                            </Form.Item>
-                        </div>
-                        <div id='product-discount'>
-                            <Form.Item name='discount' label="Giảm giá:"
-                                rules={
-                                    [{
-                                        required: true,
-                                        message: 'Giảm giá sản phẩm không để trống.'
-                                    }]}
-                            >
-                                <InputNumber style={{ width: '100%' }} placeholder='giảm giá' addonAfter="%" min={0} max={100} />
-                            </Form.Item>
-                        </div>
-                        <div id='product-category'>
-                            <Form.Item name='category' label="Danh mục:"
-                                rules={
-                                    [{
-                                        required: true,
-                                        message: 'Danh mục sản phẩm không để trống.'
-                                    }]}
-                            >
-                                <Select placeholder="Danh mục" allowClear>
-                                    {categories.map((value, index) =>
-                                        <Select.Option key={index} value={value.categoryId}>{value.categoryName}</Select.Option>
-                                    )}
-                                </Select>
-                            </Form.Item>
-                        </div>
-                        <div id='product-variants'>
-                            <Form.List name="productVariants"
-                                initialValue={[{
-                                    typeProd: '',
-                                    priceProd: ''
+                                {fileImgProdList.length < 5 ? <div>
+                                    <PlusOutlined />
+                                    <div
+                                        style={{
+                                            marginTop: 8,
+                                        }}
+                                    >
+                                        Tải lên
+                                    </div>
+                                </div> : null}
+                            </Upload>
+                        </Form.Item>
+                        <Form.Item name='discount' label="Giảm giá:"
+                            rules={
+                                [{
+                                    required: true,
+                                    message: 'Giảm giá sản phẩm không để trống.'
                                 }]}
-                            >
-                                {(fields, { add, remove }) => (
-                                    <>
-                                        <Space direction='horizontal'>
-                                            <Form.Item label={<div>Loại sản phẩm: (<a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a>)</div>} style={{ marginBottom: -30 }}
-                                                required={true}
-                                            />
-                                        </Space>
-                                        {fields.map(({ key, name, ...restField }) => (
-
-                                            <Space
-                                                key={key}
-                                                style={{
-                                                    // display: 'flex',
-                                                    display: 'block',
-                                                    marginBottom: 8,
-                                                }}
-                                                align="baseline"
-                                            >
-                                                <Card style={{ width: '100%' }}
-                                                    title={`Phân loại ${name + 1}`}
-                                                    extra={fields.length > 1 ? (
-                                                        <CloseOutlined onClick={() => {
-                                                            remove(name)
-                                                            // delete file in array
-                                                            let newDataFile = excelFileList;
-                                                            newDataFile.splice(name, 1)
-                                                            setExcelFileList(newDataFile)
-                                                        }} />
-                                                    ) : null}
-                                                >
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'typeProd']}
-                                                        rules={[
-                                                            {
-                                                                required: true,
-                                                                message: 'Loại sản phẩm không để trống.',
-                                                            },
-                                                        ]}
-                                                    >
-                                                        <Input placeholder="Tên loại sản phẩm" />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        {...restField}
-                                                        name={[name, 'priceProd']}
-                                                        rules={[
-                                                            {
-                                                                required: true,
-                                                                message: 'Giá loại sản phẩm không để trống',
-                                                            },
-                                                        ]}
-                                                    >
-                                                        <InputNumber style={{ width: '100%' }} min={0} addonAfter="VNĐ" placeholder="Giá loại sản phẩm" />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        {...restField}
-                                                        required={true}
-                                                        name={[name, 'dataFile']}
-                                                        validateTrigger={["onBlur", "onFocus", "onInput", "onChange", "onMouseEnter", "onMouseLeave", "onMouseOver"]}
-                                                        rules={[
-                                                            (getFieldValue) => ({
-                                                                validator(_, value) {
-                                                                    if (excelFileList[name] !== undefined) {
-                                                                        return Promise.resolve();
-                                                                    }
-                                                                    return Promise.reject(new Error('Vui lòng tải dữ liệu.'));
-                                                                },
-                                                            }),
-                                                        ]}
-                                                    >
-                                                        <Space direction='horizontal' align='start'>
-                                                            <Upload
-                                                                beforeUpload={false}
-                                                                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                                                                onChange={handleDataFileChange}
-                                                                fileList={excelFileList[name] ? [excelFileList[name]] : []}>
-                                                                {excelFileList[name] === undefined && <Button onClick={() => btnUploadRef.current = name} icon={<UploadOutlined />}>Tải lên</Button>}
-                                                            </Upload>
-                                                            {excelFileList[name] !== undefined &&
-                                                                <Button type='primary' onClick={(e) => {
-                                                                    handlePreviewDataFileExcel(name);
-                                                                    e.preventDefault();
-                                                                }}>Xem trước dữ liệu</Button>
-                                                            }
-
-                                                        </Space>
-
-                                                    </Form.Item>
-                                                </Card>
-                                            </Space>
-                                        ))}
-                                        <Modal style={{
-                                            height: '200px'
-                                        }} open={openModal} title='Xem trước dữ liệu' footer={null} onCancel={() => setOpenModel(false)}>
-                                            <Table
-                                                rowKey={(record) => record.index}
-                                                scroll={{
-                                                    y: 200,
-                                                }} columns={columns} dataSource={previewDataFileExcel} />
-                                        </Modal >
-                                        <Form.Item>
-                                            <Button ref={btnAddRef} type="dashed" onClick={() => {
-                                                add();
-                                                setExcelFileList(prev => [...prev, undefined])
-                                            }} block icon={<PlusOutlined />}>
-                                                Thêm
-                                            </Button>
-                                        </Form.Item>
-
-                                    </>
+                        >
+                            <InputNumber style={{ width: '100%' }} placeholder='giảm giá' addonAfter="%" min={0} max={100} />
+                        </Form.Item>
+                        <Form.Item name='category' label="Danh mục:"
+                            rules={
+                                [{
+                                    required: true,
+                                    message: 'Danh mục sản phẩm không để trống.'
+                                }]}
+                        >
+                            <Select placeholder="Danh mục" allowClear>
+                                {categories.map((value, index) =>
+                                    <Select.Option key={index} value={value.categoryId}>{value.categoryName}</Select.Option>
                                 )}
-                            </Form.List>
-                        </div>
-                        <div id='product-tags'>
-                            <Form.Item name='tagsProduct' label="Nhãn:" required={true}
+                            </Select>
+                        </Form.Item>
+                        <Form.List name="productVariants"
+                            initialValue={[{
+                                typeProd: '',
+                                priceProd: ''
+                            }]}
+                        >
+                            {(fields, { add, remove }) => (
+                                <>
+                                    <Space direction='horizontal'>
+                                        <Form.Item label={<div>Loại sản phẩm: (<a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a>)</div>} style={{ marginBottom: -30 }}
+                                            required={true}
+                                        />
+                                    </Space>
+                                    {fields.map(({ key, name, ...restField }) => (
 
-                                validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
-                                rules={
-                                    [
-                                        (getFieldValue) => ({
-                                            validator(_, value) {
-                                                if (tags.length > 0) {
-                                                    return Promise.resolve();
-                                                }
-                                                return Promise.reject(new Error('Vui lòng nhập ít nhất 1 nhãn.'));
-                                            },
-                                        }),
-                                    ]}
-                            >
-                                {/* <AddTagProduct handleTagsChange={handleTagsChange} /> */}
-                                < Space size={[0, 8]} wrap >
-                                    {
-                                        tags.map((tag, index) => {
-                                            const isLongTag = tag.length > 20;
-                                            const tagElem = (
-                                                <Tag
-                                                    key={tag}
-                                                    color="#87d068"
-                                                    closable={index !== -1}
-                                                    style={{
-                                                        userSelect: 'none',
-                                                        padding: '6px', fontSize: '16px'
-                                                    }}
-                                                    onClose={() => handleClose(tag)}
+                                        <Space
+                                            key={key}
+                                            style={{
+                                                // display: 'flex',
+                                                display: 'block',
+                                                marginBottom: 8,
+                                            }}
+                                            align="baseline"
+                                        >
+                                            <Card style={{ width: '100%' }}
+                                                title={`Phân loại ${name + 1}`}
+                                                extra={fields.length > 1 ? (
+                                                    <CloseOutlined onClick={() => {
+                                                        remove(name)
+                                                        // delete file in array
+                                                        let newDataFile = excelFileList;
+                                                        newDataFile.splice(name, 1)
+                                                        setExcelFileList(newDataFile)
+                                                    }} />
+                                                ) : null}
+                                            >
+                                                <Form.Item
+                                                    {...restField}
+                                                    name={[name, 'typeProd']}
+                                                    rules={[
+                                                        (getFieldValue) => ({
+                                                            validator(_, value) {
+                                                                const data = value === undefined ? '' : value.trim();
+                                                                console.log(value);
+                                                                if (data.trim()) {
+                                                                    return Promise.resolve();
+                                                                }
+                                                                return Promise.reject(new Error('Loại sản phẩm không để trống.'));
+                                                            },
+                                                        }),
+                                                    ]}
                                                 >
-                                                    <span
-                                                    >
-                                                        {isLongTag ? `${tag.slice(0, 20)}...` : tag}
-                                                    </span>
-                                                </Tag>
-                                            );
-                                            return isLongTag ? (
-                                                <Tooltip title={tag} key={tag}>
-                                                    {tagElem}
-                                                </Tooltip>
-                                            ) : (
-                                                tagElem
-                                            );
-                                        })
-                                    }
-                                    {
-                                        inputVisible ? (
-                                            <Input
-                                                ref={inputRef}
-                                                type="text"
-                                                size="medium"
-                                                style={{ ...tagInputStyle, fontSize: '16px', padding: '6px' }}
-                                                value={inputValue}
-                                                onChange={handleInputChange}
-                                                onBlur={handleInputConfirm}
-                                                onPressEnter={handleInputConfirm}
-                                            />
-                                        ) : (
-                                            <Tag style={{ ...tagPlusStyle, padding: '6px', fontSize: '16px' }} icon={<PlusOutlined />} onClick={showInput}>
-                                                Thêm nhãn
+                                                    <Input placeholder="Tên loại sản phẩm" />
+                                                </Form.Item>
+                                                <Form.Item
+                                                    {...restField}
+                                                    name={[name, 'priceProd']}
+                                                    rules={[
+                                                        (getFieldValue) => ({
+                                                            validator(_, value) {
+                                                                if (value) {
+                                                                    return Promise.resolve();
+                                                                }
+                                                                return Promise.reject(new Error('Giá loại sản phẩm không để trống.'));
+                                                            },
+                                                        }),
+                                                    ]}
+                                                >
+                                                    <InputNumber style={{ width: '100%' }} min={0} addonAfter="VNĐ" placeholder="Giá loại sản phẩm" />
+                                                </Form.Item>
+                                                <Form.Item
+                                                    {...restField}
+                                                    required={true}
+                                                    name={[name, 'dataFile']}
+                                                    validateTrigger={["onBlur", "onFocus", "onInput", "onChange", "onMouseEnter", "onMouseLeave", "onMouseOver"]}
+                                                    rules={[
+                                                        (getFieldValue) => ({
+                                                            validator(_, value) {
+                                                                if (excelFileList[name] !== undefined) {
+                                                                    return Promise.resolve();
+                                                                }
+                                                                return Promise.reject(new Error('Vui lòng tải dữ liệu.'));
+                                                            },
+                                                        }),
+                                                    ]}
+                                                >
+                                                    <Space direction='horizontal' align='start'>
+                                                        <Upload
+                                                            beforeUpload={false}
+                                                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                                            onChange={handleDataFileChange}
+                                                            fileList={excelFileList[name] ? [excelFileList[name]] : []}>
+                                                            {excelFileList[name] === undefined && <Button onClick={() => btnUploadRef.current = name} icon={<UploadOutlined />}>Tải lên</Button>}
+                                                        </Upload>
+                                                        {excelFileList[name] !== undefined &&
+                                                            <Button type='primary' onClick={(e) => {
+                                                                handlePreviewDataFileExcel(name);
+                                                                e.preventDefault();
+                                                            }}>Xem trước dữ liệu</Button>
+                                                        }
+
+                                                    </Space>
+
+                                                </Form.Item>
+                                            </Card>
+                                        </Space>
+                                    ))}
+                                    <Modal style={{
+                                        height: '200px'
+                                    }} open={openModal} title='Xem trước dữ liệu' footer={null} onCancel={() => setOpenModel(false)}>
+                                        <Table
+                                            rowKey={(record) => record.index}
+                                            scroll={{
+                                                y: 200,
+                                            }} columns={columns} dataSource={previewDataFileExcel} />
+                                    </Modal >
+                                    <Form.Item>
+                                        <Button ref={btnAddRef} type="dashed" onClick={() => {
+                                            add();
+                                            setExcelFileList(prev => [...prev, undefined])
+                                        }} block icon={<PlusOutlined />}>
+                                            Thêm
+                                        </Button>
+                                    </Form.Item>
+
+                                </>
+                            )}
+                        </Form.List>
+                        <Form.Item name='tagsProduct' label="Nhãn:" required={true}
+
+                            validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
+                            rules={
+                                [
+                                    (getFieldValue) => ({
+                                        validator(_, value) {
+                                            if (tags.length > 0) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject(new Error('Vui lòng nhập ít nhất 1 nhãn.'));
+                                        },
+                                    }),
+                                ]}
+                        >
+                            {/* <AddTagProduct handleTagsChange={handleTagsChange} /> */}
+                            < Space size={[0, 8]} wrap >
+                                {
+                                    tags.map((tag, index) => {
+                                        const isLongTag = tag.length > 20;
+                                        const tagElem = (
+                                            <Tag
+                                                key={tag}
+                                                color="#87d068"
+                                                closable={index !== -1}
+                                                style={{
+                                                    userSelect: 'none',
+                                                    padding: '6px', fontSize: '16px'
+                                                }}
+                                                onClose={() => handleClose(tag)}
+                                            >
+                                                <span
+                                                >
+                                                    {isLongTag ? `${tag.slice(0, 20)}...` : tag}
+                                                </span>
                                             </Tag>
-                                        )}
-                                </Space>
-                            </Form.Item>
-                        </div>
-                        <div id='button'>
-                            <Form.Item style={{ textAlign: 'center' }}>
-                                <Button type='primary' size='large' htmlType='submit'>Xác nhận</Button>
-                            </Form.Item>
-                        </div>
+                                        );
+                                        return isLongTag ? (
+                                            <Tooltip title={tag} key={tag}>
+                                                {tagElem}
+                                            </Tooltip>
+                                        ) : (
+                                            tagElem
+                                        );
+                                    })
+                                }
+                                {
+                                    inputVisible ? (
+                                        <Input
+                                            ref={inputRef}
+                                            type="text"
+                                            size="medium"
+                                            style={{ ...tagInputStyle, fontSize: '16px', padding: '6px' }}
+                                            value={inputValue}
+                                            onChange={handleInputChange}
+                                            onBlur={handleInputConfirm}
+                                            onPressEnter={handleInputConfirm}
+                                        />
+                                    ) : (
+                                        <Tag style={{ ...tagPlusStyle, padding: '6px', fontSize: '16px' }} icon={<PlusOutlined />} onClick={showInput}>
+                                            Thêm nhãn
+                                        </Tag>
+                                    )}
+                            </Space>
+                        </Form.Item>
+                        <Form.Item style={{ textAlign: 'center' }}>
+                            <Button type='primary' size='large' htmlType='submit'>Xác nhận</Button>
+                        </Form.Item>
                     </Form >
                 </Card>
             </Spinning >

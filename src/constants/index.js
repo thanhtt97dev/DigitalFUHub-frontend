@@ -127,3 +127,8 @@ export const ORDER_SELLER_REFUNDED = 4;
 export const ORDER_DISPUTE = 5;
 export const ORDER_REJECT_COMPLAINT = 6;
 export const ORDER_SELLER_VIOLATES = 7;
+
+// product status
+export const PRODUCT_ACTIVE = 1;
+export const PRODUCT_BAN = 2;
+export const PRODUCT_HIDE = 3;

@@ -58,10 +58,10 @@ const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 const validatorFields = {
     checkExistUsername: () => ({
-        validator(_, value) {
+        async validator(_, value) {
             if (!value) return Promise.resolve();
             let isExist = false;
-            checkExistUsername(value)
+            await checkExistUsername(value)
                 .then(res => {
                     isExist = res.data === 'Y' ? true : false;
                 })
@@ -75,10 +75,10 @@ const validatorFields = {
         },
     }),
     checkExistEmail: () => ({
-        validator(_, value) {
+        async validator(_, value) {
             if (!value) return Promise.resolve();
             let isExist = false;
-            checkExistEmail(value)
+            await checkExistEmail(value)
                 .then(res => {
                     isExist = res.data === 'Y' ? true : false;
                 })
@@ -191,21 +191,34 @@ function SignUp() {
                     <h4 style={{ textAlign: 'center', fontSize: '25px' }}>Đăng Ký</h4>
                     {message && <Alert message={message} type="success" />}
                     <Form.Item label="Họ tên" name='fullname'
-                        rules={[{
-                            required: true,
-                            message: 'Họ tên không để trống!'
-                        },
-                        validatorFields.checkFormatFullname(),
+                        required
+                        rules={[
+                            (getFieldValue) => ({
+                                validator(_, value) {
+                                    const data = value === undefined ? '' : value.trim();
+                                    if (data) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error('Họ tên không để trống!'));
+                                },
+                            }),
+                            validatorFields.checkFormatFullname(),
                         ]}
                     >
                         <Input placeholder='Họ tên' size='large' />
                     </Form.Item>
                     <Form.Item label="Tên tài khoản" name='username'
+                        required
                         rules={[
-                            {
-                                required: true,
-                                message: 'Tên tài khoản không để trống!'
-                            },
+                            (getFieldValue) => ({
+                                validator(_, value) {
+                                    const data = value === undefined ? '' : value.trim();
+                                    if (data) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error('Tên tài khoản không để trống!'));
+                                },
+                            }),
                             validatorFields.checkFormatUsername(),
                             validatorFields.checkExistUsername(),
                         ]}
@@ -213,16 +226,22 @@ function SignUp() {
                         <Input placeholder='Tên tài khoản' size='large' />
                     </Form.Item>
                     <Form.Item label="Email"
+                        required
                         name='email'
                         rules={[
                             {
                                 type: 'email',
                                 message: 'Email nhập không hợp lệ!',
                             },
-                            {
-                                required: true,
-                                message: 'Email không được để trống!',
-                            },
+                            (getFieldValue) => ({
+                                validator(_, value) {
+                                    const data = value === undefined ? '' : value.trim();
+                                    if (data) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error('Email không được để trống!'));
+                                },
+                            }),
                             validatorFields.checkExistEmail(),
                         ]}
                     >
@@ -230,12 +249,18 @@ function SignUp() {
                     </Form.Item>
                     <Form.Item label="Mật khẩu"
                         name="password"
+                        required
                         // hasFeedback
                         rules={[
-                            {
-                                required: true,
-                                message: 'Mật khẩu không để trống!',
-                            },
+                            (getFieldValue) => ({
+                                validator(_, value) {
+                                    const data = value === undefined ? '' : value.trim();
+                                    if (data) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error('Mật khẩu không để trống!'));
+                                },
+                            }),
                             validatorFields.checkFormatPassword('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
                         ]}>
                         <Input.Password placeholder='Mật khẩu' size='large' />
@@ -243,12 +268,18 @@ function SignUp() {
                     <Form.Item label="Mật khẩu xác nhận"
                         name="confirmPassword"
                         dependencies={['password']}
+                        required
                         // hasFeedback
                         rules={[
-                            {
-                                required: true,
-                                message: 'Mật khẩu xác nhận không để trống!',
-                            },
+                            (getFieldValue) => ({
+                                validator(_, value) {
+                                    const data = value === undefined ? '' : value.trim();
+                                    if (data) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error('Mật khẩu xác nhận không để trống!'));
+                                },
+                            }),
                             ({ getFieldValue }) => validatorFields.checkCfPasswordMatch(getFieldValue),
                             // validatorFields.checkFormatPassword('Mật khẩu xác nhận chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
                         ]}>

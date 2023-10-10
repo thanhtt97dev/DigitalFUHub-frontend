@@ -41,11 +41,11 @@ export const getUserByIdForAuth = (id) => {
 export const getUserById = (id) => {
     return apiGetAuth(`api/users/GetUserById/${id}`);
 };
-export const checkExistEmail = (email) => {
-    return apiGetAuth(`api/users/CheckExistEmail/${email}`);
+export const checkExistEmail = async (email) => {
+    return await apiGetAuth(`api/users/CheckExistEmail/${email}`);
 };
-export const checkExistUsername = (username) => {
-    return apiGetAuth(`api/users/CheckExistUsername/${username}`);
+export const checkExistUsername = async (username) => {
+    return await apiGetAuth(`api/users/CheckExistUsername/${username}`);
 };
 
 export const editUserInfo = (id, data) => {
