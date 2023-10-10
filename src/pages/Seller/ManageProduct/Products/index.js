@@ -10,7 +10,7 @@ import Spinning from "~/components/Spinning";
 
 const columns = [
     {
-        title: 'Id',
+        title: 'Mã',
         dataIndex: 'productId',
         width: '5%',
     },

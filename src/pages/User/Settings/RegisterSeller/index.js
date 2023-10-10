@@ -1,57 +1,76 @@
-import { Card, Row, Col, Form, Input, Button, notification } from "antd";
-import { getUserId, removeUserInfoInCookie } from "~/utils";
+import { Card, Row, Col, Form, Input, Button } from "antd";
+import { getUserId } from "~/utils";
 import { registerSeller } from "~/api/seller";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Spinning from "~/components/Spinning";
 import { useSignOut } from "react-auth-kit";
 import { removeDataAuthInCookies } from '~/utils';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { checkExistShopName } from "~/api/shop";
+import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { NotificationContext } from "~/context/NotificationContext";
+
+const validatorFields = {
+    checkExistShopName: () => ({
+        async validator(_, value) {
+            const data = value === undefined ? '' : value.trim();
+            if (!data.trim()) return Promise.resolve();
+            let isExist = false;
+            await checkExistShopName(data)
+                .then((res) => {
+                    isExist = res.data.status.responseCode === RESPONSE_CODE_SUCCESS ? false : true;
+                })
+                .catch((err) => {
+                    isExist = true;
+                });
+            if (isExist === false) {
+                return Promise.resolve();
+            }
+            return Promise.reject(new Error('Tên cửa hàng không hợp lệ.'));
+        },
+    })
+}
+
 
 function RegisterSeller() {
+    const notification = useContext(NotificationContext);
     const signOut = useSignOut()
     const [form] = Form.useForm();
-    const [api, contextHolder] = notification.useNotification();
-    const [disable, setDisable] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [shopDescription, setShopDescription] = useState('');
+
     const navigate = useNavigate()
-    const openNotificationWithIcon = (type, description) => {
-        api[type]({
-            message: '',
-            description: `${description}`
-        });
-    };
+
     const onFinish = (values) => {
         setLoading(true);
         const data = {
             shopName: values.shopName,
-            shopDescription: values.shopDescription,
+            shopDescription: shopDescription,
             userId: getUserId()
         }
+        console.log(data);
         registerSeller(data)
             .then(res => {
                 setLoading(false);
                 if (res.data.status.responseCode === "00") {
-                    setDisable(true)
-                    openNotificationWithIcon('success', "Đăng ký thành công vui lòng đăng nhập lại.");
-                    const idTimeout = setTimeout(() => {
-                        clearTimeout(idTimeout);
-                        removeDataAuthInCookies();
-                        signOut();
-                        return navigate('/login');
-                    }, 2000)
+                    notification('success', "Thành công", "Đăng ký thành công vui lòng đăng nhập lại.");
+                    removeDataAuthInCookies();
+                    signOut();
+                    return navigate('/login');
+
                 } else {
-                    openNotificationWithIcon('error', res.data.status.message);
+                    notification('error', "Thất bại", res.data.status.message);
                 }
             })
             .catch(err => {
                 setLoading(false);
-                console.log(err);
-                openNotificationWithIcon('error', "Đã có lỗi xảy ra vui lòng thử lại sau.");
+                notification('error', "Thất bại", "Đã có lỗi xảy ra vui lòng thử lại sau.");
             })
     }
     return (
         <Spinning spinning={loading}>
-            {contextHolder}
             <Card
                 title="Đăng ký người bán hàng"
                 style={{
@@ -62,7 +81,6 @@ function RegisterSeller() {
                 <Row>
                     <Col span={20} offset={1}>
                         <Form
-                            disabled={disable}
                             onFinish={onFinish}
                             form={form}
                             labelCol={{
@@ -71,30 +89,58 @@ function RegisterSeller() {
                             wrapperCol={{
                                 span: 14,
                             }}
-                            name="control-hooks"
+                            // name="control-hooks"
                             labelWrap
                         >
-                            <Form.Item name='shopName' label="Tên cửa hàng"
+                            <Form.Item name='shopName' label="Tên cửa hàng" required
                                 rules={[
-                                    {
-                                        required: true,
-                                        message: "Tên cửa hàng không để trống."
-                                    }
+                                    () => ({
+                                        validator(_, value) {
+                                            const data = value === undefined ? '' : value.trim();
+                                            if (data) {
+                                                return Promise.resolve();
+                                            } else {
+                                                return Promise.reject(new Error('Tên cửa hàng không để trống.'));
+                                            }
+                                        },
+                                    }),
+                                    validatorFields.checkExistShopName(),
                                 ]}
                             >
                                 <Input />
                             </Form.Item>
-                            <Form.Item name='shopDescription' label="Mô tả cửa hàng"
+
+                            <Form.Item name='shopDescription' label="Mô tả cửa hàng:" required
                                 rules={[
-                                    {
-                                        required: true,
-                                        message: "Mô tả cửa hàng không để trống."
-                                    }
-                                ]}>
-                                <Input.TextArea rows={4} />
+                                    (getFieldValue) => ({
+                                        validator(_, value) {
+                                            if (shopDescription.trim()) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject(new Error('Mô tả cửa hàng không để trống.'));
+                                        },
+                                    }),
+                                ]}
+                            >
+                                <CKEditor
+                                    editor={ClassicEditor}
+                                    data={shopDescription}
+                                    config={{
+                                        toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', 'blockQuote', 'bulletedList', 'numberedList', 'outdent', 'indent', '|', 'undo', 'redo',]
+                                    }}
+                                    onReady={editor => {
+                                    }}
+                                    onChange={(event, editor) => {
+                                        const data = editor.getData();
+                                        setShopDescription(data);
+                                    }}
+                                    onBlur={(event, editor) => {
+                                    }}
+                                    onFocus={(event, editor) => {
+                                    }}
+                                />
                             </Form.Item>
                             <Form.Item
-
                                 wrapperCol={{
                                     span: 14,
                                     offset: 6

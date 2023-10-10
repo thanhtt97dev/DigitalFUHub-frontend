@@ -5,7 +5,7 @@ export const getAllProducts = (id) => {
 };
 
 export const getProductById = (userId, productId) => {
-    return apiGetAuth(`api/sellers/${userId}/GetProduct/${productId}`);
+    return apiGetAuth(`api/sellers/${userId}/Product/${productId}`);
 };
 
 export const addProduct = (formData) => {

@@ -98,9 +98,9 @@ function Home() {
                         </Link>
                     </div>
                     <div>
-                        <aLink to="/product/1">
+                        <Link to="/product/1">
                             <img src={gpt} alt='img' />
-                        </aLink>
+                        </Link>
                     </div>
                     <div>
                         <Link to="/product/1">

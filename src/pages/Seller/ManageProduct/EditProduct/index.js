@@ -77,7 +77,7 @@ function EditProduct() {
     const [productVariants, setProductVariants] = useState([])
     const [stateInit, setStateInit] = useState(true)
     const btnAddRef = useRef();
-    const idIntervalRef = useRef();
+    // const idIntervalRef = useRef();
     // const showItemRef = useRef(false);
 
     // get product
@@ -85,7 +85,7 @@ function EditProduct() {
         getProductById(getUserId(), productId)
             .then(async (res) => {
                 if (res.data.status.responseCode === "00") {
-                    const { productName, description, categoryId, discount, thumbnail, productMedias, tags, productVariants } = res.data.result;
+                    const { productName, description, categoryId, discount, thumbnail, productMedias, tags, productVariants, productStatusId } = res.data.result;
                     setProductName(productName);
                     setProductDescription(description);
                     setProductCategory(parseInt(categoryId));
@@ -94,7 +94,6 @@ function EditProduct() {
                     setProductImagesSrc(productMedias.map(v => ({ src: v.url, file: null })));
                     setTags(tags.map((value, inex) => value.tagName));
                     setProductVariants(productVariants.map((value, index) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, data: value.assetInformations, file: undefined })));
-                    console.log(productVariants);
                 }
             })
             .catch((err) => {
@@ -117,21 +116,21 @@ function EditProduct() {
     }, [])
     // init item product variant old when visit page
     useEffect(() => {
-        idIntervalRef.current = setInterval(() => {
-            console.log(loading);
-            if (!loading && productVariants.length > 0 && btnAddRef.current && stateInit) {
-                // showItemRef.current = true;
-                // console.log(productVariants.length);
-                for (let index = 0; index < productVariants.length; index++) {
-                    btnAddRef.current?.click();
-                }
-                setStateInit(false);
-                clearInterval(idIntervalRef.current)
+        // idIntervalRef.current = setInterval(() => {
+        // console.log(loading);
+        if (!loading && productVariants.length > 0 && btnAddRef.current && stateInit) {
+            // showItemRef.current = true;
+            // console.log(productVariants.length);
+            for (let index = 0; index < productVariants.length; index++) {
+                btnAddRef.current?.click();
             }
-        }, 500)
-        return () => { clearInterval(idIntervalRef.current) }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loading])
+            setStateInit(false);
+            // clearInterval(idIntervalRef.current)
+        }
+        // }, 500)
+        // return () => { clearInterval(idIntervalRef.current) }
+
+    }, [loading, productVariants.length, stateInit])
 
     // handle upload thumbnail
     const handleThumbnailChange = async (info) => {
@@ -325,7 +324,6 @@ function EditProduct() {
                                 name: ["category"],
                                 value: productCategory,
                             },
-
                         ]}
                         layout="vertical"
                         style={{
@@ -334,22 +332,31 @@ function EditProduct() {
                         }}
                         onFinish={onFinish}
                     >
-                        <Form.Item name='nameProduct' label="Tên sản phẩm:"
+                        <Form.Item name='nameProduct' label="Tên sản phẩm:" required
                             rules={[
-                                {
-                                    required: true,
-                                    message: "Tên sản phẩm không để trống."
-                                }
+                                (getFieldValue) => ({
+                                    validator(_, value) {
+                                        const data = value === undefined ? '' : value.trim();
+                                        if (data.trim()) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error('Tên sản phẩm không để trống.'));
+                                    },
+                                }),
                             ]}
                         >
                             <Input placeholder='Tên sản phẩm' />
                         </Form.Item>
-                        <Form.Item name='description' label="Mô tả:"
+                        <Form.Item name='description' label="Mô tả:" required
                             rules={[
-                                {
-                                    required: true,
-                                    message: 'Mô tả sản phẩm không để trống.'
-                                }
+                                (getFieldValue) => ({
+                                    validator(_, value) {
+                                        if (productDescription.trim()) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error('Mô tả sản phẩm không để trống.'));
+                                    },
+                                }),
                             ]}
                         >
                             <CKEditor
@@ -373,6 +380,7 @@ function EditProduct() {
                         </Form.Item>
                         {/* <UploadThumbnail /> */}
                         <Form.Item name='thumbnailProduct' label='Ảnh đại diện sản phẩm:' required
+                            validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={[
                                 (getFieldValue) => ({
                                     validator(_, value) {
@@ -424,6 +432,7 @@ function EditProduct() {
                         {/* <UploadImagesProduct /> */}
 
                         <Form.Item name='productImages' label='Ảnh chi tiết sản phẩm (tối đa 5 ảnh):' required
+                            validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={[
                                 (getFieldValue) => ({
                                     validator(_, value) {
@@ -541,7 +550,8 @@ function EditProduct() {
                                                     rules={[
                                                         (getFieldValue) => ({
                                                             validator(_, value) {
-                                                                if (value.trim()) {
+                                                                const data = value === undefined ? '' : value.trim();
+                                                                if (data.trim()) {
                                                                     return Promise.resolve();
                                                                 }
                                                                 return Promise.reject(new Error('Tên loại sản phẩm không để trống.'));

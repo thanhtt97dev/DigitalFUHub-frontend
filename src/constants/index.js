@@ -131,3 +131,8 @@ export const ORDER_SELLER_VIOLATES = 7;
 export const RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY = "ORDER_01";
 export const RESPONSE_CODE_ORDER_COUPON_USED = "ORDER_02";
 export const RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE = "ORDER_03";
+
+// product status
+export const PRODUCT_ACTIVE = 1;
+export const PRODUCT_BAN = 2;
+export const PRODUCT_HIDE = 3;
