@@ -74,7 +74,7 @@ function CardOrderItem({
                     <Tag color="red" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Từ chối khiếu nại</Tag>
                 </Col>
             </Row>
-        } else if (status === ORDER_SELLER_REFUNDED) {
+        } else if (status === ORDER_SELLER_REFUNDED || status === ORDER_SELLER_VIOLATES) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Tag color="cyan" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
