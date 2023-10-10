@@ -7,3 +7,17 @@
 .margin-bottom-item {
     margin-bottom: 15px;
 }
+
+.input-num {
+    width: 50px;
+    text-align: center;
+}
+
+.numeric-input .ant-tooltip-inner {
+    min-width: 32px;
+    min-height: 37px;
+}
+
+.numeric-input .numeric-input-title {
+    font-size: 14px;
+}

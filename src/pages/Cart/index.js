@@ -1,36 +1,27 @@
-import React, { useEffect, useState } from 'react'
-import {
-    Button, Row, Col,
-    Image, Typography, InputNumber, Modal,
-    notification, Checkbox, Divider, List,
-    Input
-} from 'antd';
-import { useAuthUser } from 'react-auth-kit';
-import { Card } from 'antd';
-import { getCartsByUserId, deleteCart, updateCart } from '~/api/cart';
+import moment from 'moment';
 import { addOrder } from '~/api/order';
-import { getCoupons } from '~/api/coupon';
-import {
-    CART_RESPONSE_CODE_INVALID_QUANTITY, CART_RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY,
-    CART_RESPONSE_CODE_SUCCESS
-} from '~/constants'
-import classNames from 'classnames/bind';
 import styles from './Cart.module.scss';
+import { Link } from 'react-router-dom';
+import classNames from 'classnames/bind';
+import { getCoupons } from '~/api/coupon';
 import Spinning from "~/components/Spinning";
-import { formatPrice, getUserId, getVietnamCurrentTime } from '~/utils';
+import { useAuthUser } from 'react-auth-kit';
 import { getCustomerBalance } from '~/api/user';
+import React, { useEffect, useState } from 'react';
+import { getCartsByUserId, deleteCart, updateCart } from '~/api/cart';
+import { formatPrice, getUserId, getVietnamCurrentTime } from '~/utils';
+import { CopyrightOutlined, DeleteOutlined, PlusOutlined, ShopOutlined } from '@ant-design/icons';
+import { Button, Row, Col, Image, Typography, Modal, notification, Checkbox, Divider, List, Input, Card } from 'antd';
 import {
-    CopyrightOutlined,
-    DeleteOutlined,
-    PlusOutlined
-} from '@ant-design/icons';
-import moment from 'moment'
+    CART_RESPONSE_CODE_INVALID_QUANTITY, CART_RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, CART_RESPONSE_CODE_SUCCESS,
+    RESPONSE_CODE_ORDER_COUPON_USED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_SUCCESS
+} from '~/constants';
 
+const { Search } = Input;
 const { Title, Text } = Typography;
 const cx = classNames.bind(styles);
-const { Search } = Input;
 
-const ModelNotifyQuantity = ({ isModelState, setIsModelState, content }) => (
+const ModelNotify = ({ isModelState, setIsModelState, content }) => (
     <Modal
         open={isModelState}
         closable={false}
@@ -39,7 +30,6 @@ const ModelNotifyQuantity = ({ isModelState, setIsModelState, content }) => (
             <Button key="submit" type="primary" onClick={() => { setIsModelState(false); }}>
                 OK
             </Button>,
-
         ]}
     >
         <p>{content}</p>
@@ -74,6 +64,8 @@ const Cart = () => {
     const [chooseCoupons, setChooseCoupons] = useState([]);
     const [isCouponInfoSuccess, setIsCouponInfoSuccess] = useState(false);
 
+    const [isModelNotify, setIsModelNotify] = useState(false)
+
     const checkAll = cartSelected.length === carts.length
     const indeterminate = cartSelected.length > 0 && cartSelected.length < carts.length;
 
@@ -83,6 +75,10 @@ const Cart = () => {
             description: `${message}`
         });
     };
+
+    const loadDataCart = () => {
+        setIsLoadCart(!isLoadCart)
+    }
 
     const addCoupon = (coupon) => {
         const chooseCouponsFind = chooseCoupons.find(c => c.couponId === coupon.couponId)
@@ -96,7 +92,6 @@ const Cart = () => {
         if (chooseCouponsFind) {
             const newChooseCoupons = chooseCoupons.filter(c => c.couponId !== coupon.couponId)
             setChooseCoupons([...newChooseCoupons])
-            // setDeleteCoupons((prev) => [...prev, coupon])
         }
 
     }
@@ -158,12 +153,6 @@ const Cart = () => {
             })
     };
 
-
-    const handleOkNotifyBalance = () => {
-        setIsModalNotifyBalance(false);
-
-    }
-
     const handleOkChooseCoupon = () => {
         const newCarts = carts.map((cart) => {
             if (cart.productVariantId === productVariantsIdSelected) {
@@ -182,8 +171,6 @@ const Cart = () => {
             return cart
         })
         setCartSelected([...newCartsSelected])
-
-        calculatorPrice(newCartsSelected);
         setChooseCoupons([])
         setIsModalChooseCoupon(false);
     }
@@ -199,18 +186,22 @@ const Cart = () => {
         addOrder(lstDataOrder)
             .then((res) => {
                 if (res.status === 200) {
-                    openNotification("success", "Thanh toán đơn hàng thành công")
+                    const data = res.data;
+                    if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        openNotification("success", "Thanh toán đơn hàng thành công")
+                        cartSelected.map(item => {
+                            return deleteCart({ userId: item.userId, productVariantId: item.productVariantId })
+                                .catch((errors) => {
+                                    console.log(errors)
+                                });
+                        })
+                        setCartSelected([])
+                        loadDataCart()
+                    } else {
+                        setContentModel(data.status.message)
+                        setIsModelNotify(true)
+                    }
                     setIsModalConfirmBuy(false);
-                    cartSelected.map(item => {
-                        return deleteCart({ userId: item.userId, productVariantId: item.productVariantId })
-                            .catch((errors) => {
-                                console.log(errors)
-                            });
-                    })
-                    // const newCarts = carts.filter(item => !cartSelected?.some(itemSelect => itemSelect.productVariantId === item.productVariantId))
-                    // setCartSelected(newCarts)
-                    setCartSelected([])
-                    setIsLoadCart(!isLoadCart)
                 }
             }).catch((error) => {
                 console.log(error)
@@ -231,44 +222,9 @@ const Cart = () => {
         setIsModalConfirmDelete(false);
     };
 
-    const calculatorPrice = (values) => {
-        if (values.length > 0) {
-            const totalOriginPrice = values.reduce((accumulator, currentValue) => {
-                return accumulator + (currentValue.productVariant.price * currentValue.quantity);
-            }, 0);
-
-
-            const totalDiscountPrice = values.reduce((accumulator, currentValue) => {
-                return accumulator + (currentValue.productVariant.priceDiscount * currentValue.quantity);
-            }, 0);
-
-
-            const finalOriginPrice = values.reduce((newOriginPrice, { coupons }) => {
-                coupons.map((c) => {
-                    return newOriginPrice -= c.priceDiscount
-                })
-                return newOriginPrice
-            }, totalOriginPrice)
-
-            const finalDiscountPrice = values.reduce((newDiscountPrice, { coupons }) => {
-                coupons.map((c) => {
-                    return newDiscountPrice -= c.priceDiscount
-                })
-
-                return newDiscountPrice
-            }, totalDiscountPrice)
-
-            setTotalPrice({ originPrice: finalOriginPrice, discountPrice: finalDiscountPrice });
-        } else {
-            setTotalPrice({ originPrice: 0, discountPrice: 0 });
-        }
-
-    }
 
 
     const handleOnChangeCheckbox = (values) => {
-        values.map((item) => console.log('values = ' + item))
-
         const cartFilter = carts.filter(c => values.includes(c.productVariantId))
         cartFilter.map((item) => {
             return updateCart({ userId: getUserId(), productVariantId: item.productVariantId, quantity: 0 })
@@ -280,8 +236,8 @@ const Cart = () => {
                             setIsModelInvalidCartProductQuantity(true)
                         } else if (data.responseCode === CART_RESPONSE_CODE_SUCCESS) {
                             setCartSelected([...cartFilter])
-                            calculatorPrice(cartFilter)
                         }
+                        loadDataCart()
                     }
                 })
                 .catch((error) => {
@@ -291,10 +247,11 @@ const Cart = () => {
     }
 
     const handleBuy = () => {
-        if (balance < totalPrice.discountPrice) {
-            showModalNotifyBalance()
-            return
-        }
+        // if (balance < totalPrice.discountPrice) {
+        //     setContentModel('Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản')
+        //     showModalNotifyBalance()
+        //     return;
+        // }
         showModalConfirmBuy()
     }
 
@@ -309,6 +266,10 @@ const Cart = () => {
                 }));
 
                 setCarts(dataMap)
+                if (cartSelected) {
+                    const newCartsSelected = dataMap.filter(x => cartSelected.some(c => c.productVariantId === x.productVariantId));
+                    setCartSelected(newCartsSelected)
+                }
                 console.log(JSON.stringify(dataMap[1]))
             })
             .catch((errors) => {
@@ -332,13 +293,50 @@ const Cart = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    useEffect(() => {
+
+        const calculatorPrice = (values) => {
+            if (values.length > 0) {
+                const totalOriginPrice = values.reduce((accumulator, currentValue) => {
+                    return accumulator + (currentValue.productVariant.price * currentValue.quantity);
+                }, 0);
+
+
+                const totalDiscountPrice = values.reduce((accumulator, currentValue) => {
+                    return accumulator + (currentValue.productVariant.priceDiscount * currentValue.quantity);
+                }, 0);
+
+
+                const finalOriginPrice = values.reduce((newOriginPrice, { coupons }) => {
+                    coupons.map((c) => {
+                        return newOriginPrice -= c.priceDiscount
+                    })
+                    return newOriginPrice
+                }, totalOriginPrice)
+
+                const finalDiscountPrice = values.reduce((newDiscountPrice, { coupons }) => {
+                    coupons.map((c) => {
+                        return newDiscountPrice -= c.priceDiscount
+                    })
+
+                    return newDiscountPrice
+                }, totalDiscountPrice)
+
+                setTotalPrice({ originPrice: finalOriginPrice, discountPrice: finalDiscountPrice });
+            } else {
+                setTotalPrice({ originPrice: 0, discountPrice: 0 });
+            }
+
+        }
+        calculatorPrice(cartSelected)
+
+    }, [cartSelected])
+
     const handleCheckAll = (e) => {
         if (e.target.checked) {
             setCartSelected(carts);
-            calculatorPrice(carts)
         } else {
             setCartSelected([]);
-            calculatorPrice([])
         }
     }
 
@@ -370,7 +368,8 @@ const Cart = () => {
         setInputCouponCode(e.target.value)
     }
 
-    const onChangeQuantity = (value, productVariantId) => {
+    const onBlurQuantity = (e, productVariantId) => {
+        const value = e.target.value
         updateCart({ userId: getUserId(), productVariantId: productVariantId, quantity: value })
             .then((res) => {
                 if (res.status === 200) {
@@ -379,6 +378,7 @@ const Cart = () => {
                         setContentModel(data.message)
                         setIsModelInvalidCartQuantity(true)
                     }
+                    loadDataCart()
                 }
             })
             .catch((error) => {
@@ -386,7 +386,63 @@ const Cart = () => {
             })
     }
 
-    console.log('cart: ' + JSON.stringify(cartSelected[0]))
+    const handleMinusOne = (quantity, productVariantId) => {
+        updateCart({ userId: getUserId(), productVariantId: productVariantId, quantity: (quantity - 1) })
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data
+                    if (data.responseCode === CART_RESPONSE_CODE_INVALID_QUANTITY) {
+                        setContentModel(data.message)
+                        setIsModelInvalidCartQuantity(true)
+                    }
+                    loadDataCart()
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
+    const handleAddOne = (quantity, productVariantId) => {
+        updateCart({ userId: getUserId(), productVariantId: productVariantId, quantity: (quantity + 1) })
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data
+                    if (data.responseCode === CART_RESPONSE_CODE_INVALID_QUANTITY) {
+                        setContentModel(data.message)
+                        setIsModelInvalidCartQuantity(true)
+                    }
+                    loadDataCart()
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
+
+
+    const NumericInput = ({ value, onBlur }) => {
+        const [quantity, setQuantity] = useState(value);
+
+        const handleChange = (e) => {
+
+            const reg = /^[1-9]\d*$/;
+            const targetValue = e.target.value
+            if (reg.test(targetValue)) {
+                setQuantity(e.target.value)
+            }
+        }
+
+        return (
+            <Input
+                className={cx('input-num')}
+                value={quantity}
+                onChange={handleChange}
+                onBlur={onBlur}
+            />
+        );
+    };
 
     return (
         <>
@@ -408,7 +464,7 @@ const Cart = () => {
                         <Checkbox.Group value={cartSelected.map(item => item.productVariantId)} onChange={handleOnChangeCheckbox} style={{ display: 'block' }}>
                             {
                                 carts.map((item, index) => (
-                                    <Card hoverable title={item.shopName} key={index} bodyStyle={{ padding: 20 }} headStyle={{ padding: 0, paddingLeft: 100 }} style={{ marginBottom: 10 }}>
+                                    <Card hoverable title={(<Link to={''} ><ShopOutlined /> {item.shopName}</Link>)} key={index} bodyStyle={{ padding: 20 }} headStyle={{ padding: 0, paddingLeft: 100 }} style={{ marginBottom: 10 }}>
                                         <Row className={cx('margin-bottom-item')}>
                                             <Col >
                                                 <Checkbox value={item.productVariantId}></Checkbox>
@@ -419,11 +475,21 @@ const Cart = () => {
                                                     src={item.product.thumbnail}
                                                 />
                                             </Col>
-                                            <Col offset={1}><Title level={5}>{item.product.productName}</Title></Col>
+                                            <Col offset={1}><Link to={'/product/' + item.product.productId} >{item.product.productName}</Link></Col>
                                             <Col offset={1}><Text type="secondary">Loại: {item.productVariant.productVariantName}</Text></Col>
                                             <Col offset={1}><Text type="secondary" delete>{formatPrice(item.productVariant.price)}</Text></Col>
-                                            <Col offset={1}><InputNumber min={1} max={item.productVariant.quantity} defaultValue={item.quantity} onChange={(value) => onChangeQuantity(value, item.productVariantId)} /></Col>
                                             <Col offset={1}><Text>{formatPrice(item.productVariant.priceDiscount)}</Text></Col>
+                                            <Col offset={1}>
+                                                <div>
+                                                    <Button disabled={item.quantity === 1 ? true : false} onClick={() => handleMinusOne(item.quantity, item.productVariantId)}>-</Button>
+
+                                                    <NumericInput value={item.quantity} onBlur={(e) => onBlurQuantity(e, item.productVariantId)} />
+                                                    <Button disabled={item.quantity === item.productVariant.quantity ? true : false} onClick={() => handleAddOne(item.quantity, item.productVariantId)}>+</Button>
+
+                                                </div>
+
+                                            </Col>
+                                            <Col offset={1}><Text>{formatPrice(item.productVariant.priceDiscount * item.quantity)}</Text></Col>
                                             <Col offset={1}><Button icon={<DeleteOutlined />} danger onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModalConfirmDelete() }}>Xóa</Button></Col>
                                         </Row>
                                         <Row>
@@ -462,35 +528,32 @@ const Cart = () => {
                         </Card>
                     </Col>
                 </Row>
-                <Modal title="Basic Modal" open={isModalConfirmDelete} onOk={handleAcceptDelete} onCancel={handleCancelConfirmDelete}>
+                <Modal title="Thông báo" open={isModalConfirmDelete} onOk={handleAcceptDelete} onCancel={handleCancelConfirmDelete}>
                     <p>Bạn có muốn xóa sản phẩm này khỏi giỏ hàng không?</p>
-                </Modal>
-
-                <Modal
-                    open={isModalNotifyBalance}
-                    closable={false}
-                    maskClosable={false}
-                    footer={[
-                        <Button key="submit" type="primary" onClick={handleOkNotifyBalance}>
-                            OK
-                        </Button>,
-
-                    ]}
-                >
-                    <p>Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản</p>
                 </Modal>
 
                 <Modal title="Thông báo" open={isModalConfirmBuy} onOk={handleOkConfirmBuy} onCancel={handleCancelConfirmBuy}>
                     <p>Bạn có muốn thanh toán đơn hàng này với giá <strong>{formatPrice(totalPrice.discountPrice)}</strong> không?</p>
                 </Modal>
 
-                <ModelNotifyQuantity isModelState={isModelInvalidCartProductQuantity}
+                <ModelNotify isModelState={isModelInvalidCartProductQuantity}
                     setIsModelState={setIsModelInvalidCartProductQuantity}
                     content={contentModel}
                 />
 
-                <ModelNotifyQuantity isModelState={isModelInvalidCartQuantity}
+                <ModelNotify isModelState={isModelInvalidCartQuantity}
                     setIsModelState={setIsModelInvalidCartQuantity}
+                    content={contentModel}
+                />
+
+                <ModelNotify isModelState={isModalNotifyBalance}
+                    setIsModelState={setIsModalNotifyBalance}
+                    content={contentModel}
+                />
+
+
+                <ModelNotify isModelState={isModelNotify}
+                    setIsModelState={setIsModelNotify}
                     content={contentModel}
                 />
 
@@ -533,9 +596,14 @@ const Cart = () => {
                                         />
                                         <div>
                                             {
-                                                chooseCoupons.find(c => c.couponId === item.couponId) ? (<Button icon={<DeleteOutlined />} onClick={() => { deleteCoupon(item) }} type="primary" danger>
-                                                    Xóa
-                                                </Button>) : (<Button icon={<PlusOutlined />} type="primary" onClick={() => addCoupon(item)}>Sử dụng</Button>)
+                                                item.quantity < 1 ? (
+                                                    chooseCoupons.find(c => c.couponId === item.couponId) ? (<Button icon={<DeleteOutlined />} onClick={() => { deleteCoupon(item) }} type="primary" danger>
+                                                        Xóa
+                                                    </Button>) : (<Button icon={<PlusOutlined />} type="primary" onClick={() => addCoupon(item)}>Sử dụng</Button>)
+                                                ) : (
+                                                    <Button disabled={true}>Đã hết</Button>
+                                                )
+
                                             }
                                         </div>
                                     </List.Item>

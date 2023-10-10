@@ -412,7 +412,6 @@ const ProductDetail = () => {
             getProductById(initialProductId)
                 .then((response) => {
                     const data = response.data;
-                    debugger
                     if (!data) {
                         navigate('/notFound');
                     }
