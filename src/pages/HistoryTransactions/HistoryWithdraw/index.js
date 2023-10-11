@@ -106,7 +106,7 @@ function HistoryWithdraw() {
     const [form] = Form.useForm();
     const [dataTable, setDataTable] = useState([]);
     const [searchData, setSearchData] = useState({
-        depositTransactionId: '',
+        withdrawTransactionId: '',
         fromDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
         toDate: dayjs().format('M/D/YYYY'),
         status: 0
@@ -133,8 +133,8 @@ function HistoryWithdraw() {
 
     const initFormValues = [
         {
-            name: 'depositTransactionId',
-            value: searchData.depositTransactionId,
+            name: 'withdrawTransactionId',
+            value: searchData.withdrawTransactionId,
         },
         {
             name: 'date',
@@ -155,7 +155,7 @@ function HistoryWithdraw() {
         }
 
         setSearchData({
-            depositTransactionId: values.depositTransactionId,
+            withdrawTransactionId: values.withdrawTransactionId,
             fromDate: values.date[0].$d.toLocaleDateString(),
             toDate: values.date[1].$d.toLocaleDateString(),
             status: values.status
@@ -211,7 +211,7 @@ function HistoryWithdraw() {
                         onFinish={onFinish}
                         fields={initFormValues}
                     >
-                        <Form.Item label="Mã giao dịch" labelAlign="left" name="depositTransactionId">
+                        <Form.Item label="Mã giao dịch" labelAlign="left" name="withdrawTransactionId">
                             <Input />
                         </Form.Item>
 
