@@ -37,6 +37,7 @@ const ModelNotifyQuantity = ({ isModalNotifyQuantityOpen, handleOk, content }) =
 const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected }) => {
     const auth = useAuthUser();
     const userId = auth()?.id;
+
     const {
         product,
         openNotification
@@ -52,8 +53,9 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     let maxPriceDis = 0
 
     const handleSendMessage = () => {
-        if (!userId) {
+        if (userId === undefined) {
             navigate('/login')
+            return;
         } else {
             const data = {
                 userId: userId,
@@ -127,8 +129,9 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     }
 
     const handleAddProductToCart = async (isBuyNow) => {
-        if (!userId) {
+        if (userId === undefined) {
             navigate('/login')
+            return;
         }
         if (!productVariantsSelected) {
             openNotification("error", "Vui lòng chọn loại sản phẩm")
