@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Table, Card } from 'antd';
+import { Table, Card, Space } from 'antd';
 import { useAuthUser } from 'react-auth-kit'
 
 import { getAllProducts } from "~/api/seller";
@@ -77,9 +77,10 @@ const columns = [
         dataIndex: 'productId',
         render: ((productId) => {
             return (
-                <>
+                <Space direction="vertical">
                     <Link to={`/seller/product/${productId}`}>Cập nhật</Link>
-                </>
+                    <a href={`/product/${productId}`} target="blank">Xem trước</a>
+                </Space>
             )
         }),
         width: '15%',
