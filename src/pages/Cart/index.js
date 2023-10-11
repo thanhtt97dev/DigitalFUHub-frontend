@@ -141,7 +141,7 @@ const Cart = () => {
             .then((res) => {
                 if (res.data.ok === true) {
                     updateCarts(newCarts)
-                    openNotification("success", "Xóa sản phẩm thành công")
+                    //openNotification("success", "Xóa sản phẩm thành công")
                     setProductVariantsIdSelected(0)
                 } else {
                     openNotification("error", "Có lỗi trong quá trình xóa, vui lòng thử lại sau")
