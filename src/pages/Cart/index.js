@@ -596,7 +596,7 @@ const Cart = () => {
                                         />
                                         <div>
                                             {
-                                                item.quantity < 1 ? (
+                                                item.quantity > 0 ? (
                                                     chooseCoupons.find(c => c.couponId === item.couponId) ? (<Button icon={<DeleteOutlined />} onClick={() => { deleteCoupon(item) }} type="primary" danger>
                                                         Xóa
                                                     </Button>) : (<Button icon={<PlusOutlined />} type="primary" onClick={() => addCoupon(item)}>Sử dụng</Button>)
