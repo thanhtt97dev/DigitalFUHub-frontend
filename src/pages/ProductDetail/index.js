@@ -1,23 +1,17 @@
-import React, { useState, useEffect, createContext, useContext } from "react"
-import { getUserId } from '~/utils';
-import {
-    Col, Row, Image, Button, Typography, Divider, Spin, Skeleton,
-    Avatar, List, Rate, InputNumber, Carousel, notification, Modal,
-    Radio
-} from 'antd';
+import moment from 'moment';
+import { formatPrice } from '~/utils';
 import classNames from 'classnames/bind';
-import styles from './ProductDetail.module.scss'
-import {
-    CreditCardOutlined,
-    ShoppingCartOutlined, MessageOutlined,
-} from '@ant-design/icons';
-import { getProductById } from '~/api/product';
+import { useAuthUser } from 'react-auth-kit';
 import { addProductToCart } from '~/api/cart';
+import { getProductById } from '~/api/product';
+import styles from './ProductDetail.module.scss';
 import { getFeedbackByProductId } from '~/api/feedback';
-import { formatPrice } from '~/utils'
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import moment from 'moment'
-import { CART_RESPONSE_CODE_INVALID_QUANTITY } from '~/constants'
+import { useNavigate, useParams } from 'react-router-dom';
+import CarouselCustom from '~/components/Carousels/CarouselCustom';
+import { CART_RESPONSE_CODE_INVALID_QUANTITY } from '~/constants';
+import React, { useState, useEffect, createContext, useContext } from "react";
+import { CreditCardOutlined, ShoppingCartOutlined, MessageOutlined } from '@ant-design/icons';
+import { Col, Row, Image, Button, Typography, Divider, Spin, Skeleton, Avatar, List, Rate, InputNumber, notification, Modal, Radio, Card, Carousel } from 'antd';
 
 const cx = classNames.bind(styles);
 const { Title, Text } = Typography;
@@ -41,7 +35,8 @@ const ModelNotifyQuantity = ({ isModalNotifyQuantityOpen, handleOk, content }) =
 
 
 const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected }) => {
-    const userId = getUserId();
+    const auth = useAuthUser();
+    const userId = auth()?.id;
     const {
         product,
         openNotification
@@ -57,15 +52,15 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     let maxPriceDis = 0
 
     const handleSendMessage = () => {
-        const userId = getUserId();
         if (!userId) {
             navigate('/login')
+        } else {
+            const data = {
+                userId: userId,
+                shopId: product.shopId
+            }
+            navigate('/chatBox', { state: { data: data } })
         }
-        const data = {
-            userId: userId,
-            shopId: product.shopId
-        }
-        navigate('/chatBox', { state: { data: data } })
     }
 
     const showModalNotifyQuantity = () => {
@@ -120,34 +115,18 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         setQuantity(value)
     }
 
-
-    const imageStyle = {
-        height: '50vh',
-        borderRadius: 5
-    };
-
+    const carouselStyle = { width: '100%', height: '50vh' };
 
     const ProductMedias = ({ productMedias }) => {
         return (
-            <Carousel autoplay style={{ width: '100%', height: '50vh' }}>
-                {
-                    productMedias.map((item, index) => (
-                        <div id="container-image" key={index} >
-                            <div style={{ width: '100%', textAlign: 'center' }}>
-                                <Image
-                                    style={imageStyle}
-                                    src={item.url}
-                                />
-                            </div>
-                        </div>
-                    ))
-                }
-            </Carousel >
+            <CarouselCustom
+                data={productMedias}
+                style={carouselStyle}
+            />
         )
     }
 
     const handleAddProductToCart = async (isBuyNow) => {
-        const userId = getUserId();
         if (!userId) {
             navigate('/login')
         }
@@ -186,104 +165,97 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
 
     return (
-        <Row>
-            {product ? (<>
-                <Col span={10}
-                    style={{ padding: 10 }}
-                >
-                    <ProductMedias productMedias={product.productMedias} />
-                </Col>
-                <Col span={14}
-                    style={{ padding: 15 }}
-                >
-                    <div>
-                        <Title level={3}>{product.productName}</Title>
-                        <Divider />
-                        <div className={cx('space-div-flex')}>
-                            {productVariantsSelected ? (
-                                <Title level={4}><PriceFormat price={productVariantsSelected.price} /></Title>
-                            ) : (
-                                <>
-                                    {
-                                        product.productVariants.length > 1 ? (<Title level={4}>{<PriceFormat price={minPrice} />} - {<PriceFormat price={maxPrice} />}</Title>)
-                                            : (product.productVariants.length === 1 ? <Title level={4}>{<PriceFormat price={product.productVariants[0].price} />}</Title> : <></>)
-                                    }
-                                </>
-                            )}
-                        </div>
-                        <div
-                            className={cx('space-div-flex')}
-                        >
-                            {productVariantsSelected ? (
-                                <Text delete strong type="secondary"
-                                    style={{ fontSize: 15 }}
-                                >{<PriceFormat price={discountPrice(productVariantsSelected.price, product.discount)} />}</Text>
-                            ) : (
+        <Card>
+            <Row>
+                {product ? (<>
+                    <Col span={11}
+                        style={{ padding: 15 }}
+                    >
+                        <ProductMedias productMedias={product.productMedias} />
+                    </Col>
+                    <Col span={13}
+                        style={{ padding: 15 }}
+                    >
+                        <div>
+                            <Title level={3}>{product.productName}</Title>
+                            <Divider />
+                            <div className={cx('space-div-flex')}>
+                                {productVariantsSelected ? (
+                                    <Title level={4}><PriceFormat price={productVariantsSelected.price} /></Title>
+                                ) : (
+                                    <>
+                                        {
+                                            product.productVariants.length > 1 ? (<Title level={4}>{<PriceFormat price={minPrice} />} - {<PriceFormat price={maxPrice} />}</Title>)
+                                                : (product.productVariants.length === 1 ? <Title level={4}>{<PriceFormat price={product.productVariants[0].price} />}</Title> : <></>)
+                                        }
+                                    </>
+                                )}
+                            </div>
+                            <div
+                                className={cx('space-div-flex')}
+                            >
+                                {productVariantsSelected ? (
+                                    <Text delete strong type="secondary"
+                                        style={{ fontSize: 15 }}
+                                    >{<PriceFormat price={discountPrice(productVariantsSelected.price, product.discount)} />}</Text>
+                                ) : (
 
-                                <>
-                                    {
-                                        product.productVariants.length > 1 ? (<Text delete strong type="secondary"
-                                            style={{ fontSize: 15 }}
-                                        >
-                                            {<PriceFormat price={minPriceDis} />} - {<PriceFormat price={maxPriceDis} />}
-                                        </Text>)
-                                            : (product.productVariants.length === 1 ? <Text delete>{<PriceFormat price={discountPrice(product.productVariants[0].price, product.discount)} />}</Text> : <></>)
-                                    }
-                                </>
+                                    <>
+                                        {
+                                            product.productVariants.length > 1 ? (<Text delete strong type="secondary"
+                                                style={{ fontSize: 15 }}
+                                            >
+                                                {<PriceFormat price={minPriceDis} />} - {<PriceFormat price={maxPriceDis} />}
+                                            </Text>)
+                                                : (product.productVariants.length === 1 ? <Text delete>{<PriceFormat price={discountPrice(product.productVariants[0].price, product.discount)} />}</Text> : <></>)
+                                        }
+                                    </>
 
-                            )}
-                            <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
-                        </div>
-                        <div className={cx('space-div-flex')}>
-                            <Text>Tên shop:</Text>
-                            <Button type="link">{product.shopName}</Button>
-                        </div>
-                        <Divider />
-                        <div style={{ marginBottom: 20 }}>
-                            <Title level={4}>Loại sản phẩm</Title>
-                            <Radio.Group>
-                                <GridItems productVariants={productVariants} handleSelectProductVariant={handleSelectProductVariant} />
-                            </Radio.Group>
-                        </div>
-                        <div className={cx('space-div-flex')}>
-                            <Text strong>Số lượng: </Text>
-                            &nbsp;&nbsp;
-                            <InputNumber min={1} max={productVariantsSelected?.quantity || product.quantity} defaultValue={1} onChange={handleChangeQuantity} value={quantity} />
-                            &nbsp;&nbsp;
-                            {productVariantsSelected ? (<Text type="secondary" strong>{productVariantsSelected.quantity} sản phẩm có sẵn</Text>)
-                                : (<Text type="secondary" strong>{product.quantity} sản phẩm có sẵn</Text>)}
+                                )}
+                                <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
+                            </div>
+                            <div className={cx('space-div-flex')}>
+                                <Text>Tên shop:</Text>
+                                <Button type="link">{product.shopName}</Button>
+                            </div>
+                            <Divider />
+                            <div style={{ marginBottom: 20 }}>
+                                <Title level={4}>Loại sản phẩm</Title>
+                                <Radio.Group>
+                                    <GridItems productVariants={productVariants} handleSelectProductVariant={handleSelectProductVariant} />
+                                </Radio.Group>
+                            </div>
+                            <div className={cx('space-div-flex')}>
+                                <Text strong>Số lượng: </Text>
+                                &nbsp;&nbsp;
+                                <InputNumber min={1} max={productVariantsSelected?.quantity || product.quantity} defaultValue={1} onChange={handleChangeQuantity} value={quantity} />
+                                &nbsp;&nbsp;
+                                {productVariantsSelected ? (<Text type="secondary" strong>{productVariantsSelected.quantity} sản phẩm có sẵn</Text>)
+                                    : (<Text type="secondary" strong>{product.quantity} sản phẩm có sẵn</Text>)}
 
+                            </div>
+                            <Divider />
+
+                            <div
+
+                            >
+                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={product.quantity <= 0 || userId === product.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
+                                    Mua ngay
+                                </Button>
+                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={product.quantity <= 0 || userId === product.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
+                                    Thêm vào giỏ
+                                </Button>
+                                <Button disabled={userId !== product.shopId ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
+                                    Nhắn tin
+                                </Button>
+                            </div>
                         </div>
-                        <Divider />
 
-                        <div
-
-                        >
-                            {
-                                userId ? (<>
-                                    <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={product.quantity <= 0 || userId === product.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
-                                        Mua ngay
-                                    </Button>
-                                    <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={product.quantity <= 0 || userId === product.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
-                                        Thêm vào giỏ
-                                    </Button>
-                                    <Button disabled={userId !== product.shopId ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
-                                        Nhắn tin
-                                    </Button>
-                                </>) : (<>
-                                    <Title level={5} className={cx('margin-element')}>Vui lòng đăng nhập để mua hàng, hoặc liên lạc với chủ shop.</Title>
-                                    <Link to={'/Login'}>
-                                        <Button type="primary" className={cx("button", "margin-element")}>Đăng nhập</Button>
-                                    </Link>
-                                </>)
-                            }
-                        </div>
-                    </div>
-
-                </Col>
-                <ModelNotifyQuantity isModalNotifyQuantityOpen={isModalNotifyQuantityOpen} handleOk={handleOk} content={contentProductInvalidQuantity} />
-            </>) : (<Skeleton active />)}
-        </Row>
+                    </Col>
+                    <ModelNotifyQuantity isModalNotifyQuantityOpen={isModalNotifyQuantityOpen} handleOk={handleOk} content={contentProductInvalidQuantity} />
+                </>) : (<Skeleton active />)}
+            </Row>
+        </Card>
     )
 }
 
@@ -291,25 +263,27 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 const ProductDescription = () => {
     const { product } = useContext(ProductDetailContext);
     return (
-        <Row
-        >
-            <Col span={5}>
-                <Title level={4}>Chi tiết sản phẩm</Title>
-            </Col>
-            {
-                product ? (<>
-                    <Col span={23}
-                        offset={1}
-                        style={{ display: 'flex', alignItems: 'center' }}
-                    >
-                        <div dangerouslySetInnerHTML={{ __html: product.description }} />
-                    </Col>
-                </>) : (<>
-                    <Skeleton active />
-                </>)
-            }
+        <Card>
+            <Row
+            >
+                <Col span={5}>
+                    <Title level={4}>Chi tiết sản phẩm</Title>
+                </Col>
+                {
+                    product ? (<>
+                        <Col span={23}
+                            offset={1}
+                            style={{ display: 'flex', alignItems: 'center' }}
+                        >
+                            <div dangerouslySetInnerHTML={{ __html: product.description }} />
+                        </Col>
+                    </>) : (<>
+                        <Skeleton active />
+                    </>)
+                }
 
-        </Row>
+            </Row>
+        </Card>
     )
 }
 
@@ -329,7 +303,7 @@ const ProductFeedback = ({ feedback }) => {
     )
 
     return (
-        <>
+        <Card>
             <Row>
                 <Col span={5}>
                     <Title level={4}>Đánh giá sản phẩm</Title>
@@ -376,7 +350,7 @@ const ProductFeedback = ({ feedback }) => {
                     ) : (<Skeleton active />)
                 }
             </div>
-        </>
+        </Card>
     )
 }
 
@@ -455,7 +429,6 @@ const ProductDetail = () => {
                     productVariantsSelected={productVariantsSelected} />
                 <Divider />
                 <ProductDescription />
-                <Divider />
                 <Divider />
                 <ProductFeedback feedback={feedback} />
             </ProductDetailContext.Provider>

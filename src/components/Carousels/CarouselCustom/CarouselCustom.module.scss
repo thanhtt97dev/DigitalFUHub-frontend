@@ -1,4 +1,4 @@
-.container{
+.container {
     align-items: stretch;
     border: 0;
     box-sizing: border-box;
@@ -15,7 +15,7 @@
     width: 100%;
 }
 
-.carousel{
+.carousel {
     align-items: stretch;
     display: flex;
     flex-direction: row;
@@ -25,7 +25,7 @@
     overflow-y: hidden;
 }
 
-.btn-navigation-prev{
+.btn-navigation-prev {
     left: 0;
     cursor: pointer;
     padding: 16px 8px;
@@ -39,7 +39,7 @@
     z-index: 1;
 }
 
-.btn-navigation-next{
+.btn-navigation-next {
     right: 0;
     cursor: pointer;
     padding: 16px 8px;
@@ -53,8 +53,8 @@
     z-index: 1;
 }
 
-.btn-navigation-prev_img{
-    background-image: url("https://static.cdninstagram.com/rsrc.php/v3/y5/r/TJztmXpWTmS.png");
+.btn-navigation-prev_img {
+    background-image: url('https://static.cdninstagram.com/rsrc.php/v3/y5/r/TJztmXpWTmS.png');
     background-repeat: no-repeat;
     background-position: -130px -98px;
     height: 30px;
@@ -63,12 +63,22 @@
     cursor: pointer;
 }
 
-.btn-navigation-next_img{
-    background-image: url("https://static.cdninstagram.com/rsrc.php/v3/y5/r/TJztmXpWTmS.png");
+.btn-navigation-next_img {
+    background-image: url('https://static.cdninstagram.com/rsrc.php/v3/y5/r/TJztmXpWTmS.png');
     background-repeat: no-repeat;
     background-position: -162px -98px;
     height: 30px;
     width: 30px;
     display: block;
     cursor: pointer;
+}
+
+.container-image {
+    width: 100%;
+    text-align: center;
+}
+
+.image-style {
+    height: 50vh;
+    border-radius: 5px;
 }

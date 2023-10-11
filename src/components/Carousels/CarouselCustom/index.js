@@ -9,6 +9,13 @@ function CarouselCustom({ data, style, callback }) {
 
     const slider = useRef(null);
 
+    const imageStyle = {
+        height: '50vh',
+        borderRadius: 5
+    };
+
+    const containerImageStyle = { width: '100%', textAlign: 'center' }
+
     return (
         <div className={cx("container")}>
             <button
@@ -21,10 +28,25 @@ function CarouselCustom({ data, style, callback }) {
                 className={cx("carousel")}
                 ref={slider}
                 style={style}
+                autoplay
             >
-                {data.map((x) => {
+                {/* {data.map((x, index) => {
                     return <Image src={x} alt='product-img' />
-                })}
+                })} */}
+
+                {
+                    data.map((item, index) => (
+                        <div key={index} >
+                            <div style={containerImageStyle}>
+                                <Image
+                                    style={imageStyle}
+                                    src={item}
+                                />
+                            </div>
+                        </div>
+
+                    ))
+                }
             </Carousel>
             <button
                 className={cx("btn-navigation-next")}
