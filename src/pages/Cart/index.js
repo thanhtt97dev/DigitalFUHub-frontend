@@ -14,7 +14,8 @@ import { CopyrightOutlined, DeleteOutlined, PlusOutlined, ShopOutlined } from '@
 import { Button, Row, Col, Image, Typography, Modal, notification, Checkbox, Divider, List, Input, Card } from 'antd';
 import {
     CART_RESPONSE_CODE_INVALID_QUANTITY, CART_RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, CART_RESPONSE_CODE_SUCCESS,
-    RESPONSE_CODE_ORDER_COUPON_USED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_SUCCESS
+    RESPONSE_CODE_ORDER_COUPON_USED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_SUCCESS,
+    RESPONSE_MESSAGE_ORDER_COUPON_USED, RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY
 } from '~/constants';
 
 const { Search } = Input;
@@ -187,19 +188,30 @@ const Cart = () => {
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
+                    console.log('data: ' + JSON.stringify(data))
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         openNotification("success", "Thanh toán đơn hàng thành công")
                         cartSelected.map(item => {
                             return deleteCart({ userId: item.userId, productVariantId: item.productVariantId })
+                                .then((res) => {
+                                    if (res.status === 200) {
+                                        setCartSelected([])
+                                        loadDataCart();
+                                    }
+                                })
                                 .catch((errors) => {
                                     console.log(errors)
                                 });
                         })
-                        setCartSelected([])
-                        loadDataCart()
                     } else {
-                        setContentModel(data.status.message)
-                        setIsModelNotify(true)
+                        if (data.status.responseCode === RESPONSE_CODE_ORDER_COUPON_USED) {
+                            setContentModel(RESPONSE_MESSAGE_ORDER_COUPON_USED)
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE) {
+                            setContentModel(RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE)
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY) {
+                            setContentModel(RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY)
+                        }
+                        setIsModelNotify(true);
                     }
                     setIsModalConfirmBuy(false);
                 }
@@ -225,6 +237,10 @@ const Cart = () => {
 
 
     const handleOnChangeCheckbox = (values) => {
+        if (values.length === 0) {
+            setCartSelected([])
+            return;
+        }
         const cartFilter = carts.filter(c => values.includes(c.productVariantId))
         cartFilter.map((item) => {
             return updateCart({ userId: getUserId(), productVariantId: item.productVariantId, quantity: 0 })
@@ -235,6 +251,7 @@ const Cart = () => {
                             setContentModel(data.message)
                             setIsModelInvalidCartProductQuantity(true)
                         } else if (data.responseCode === CART_RESPONSE_CODE_SUCCESS) {
+                            debugger
                             setCartSelected([...cartFilter])
                         }
                         loadDataCart()
@@ -247,11 +264,11 @@ const Cart = () => {
     }
 
     const handleBuy = () => {
-        // if (balance < totalPrice.discountPrice) {
-        //     setContentModel('Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản')
-        //     showModalNotifyBalance()
-        //     return;
-        // }
+        if (balance < totalPrice.discountPrice) {
+            setContentModel('Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản')
+            showModalNotifyBalance()
+            return;
+        }
         showModalConfirmBuy()
     }
 
