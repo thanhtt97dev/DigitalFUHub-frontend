@@ -139,6 +139,6 @@ export const PRODUCT_HIDE = 3;
 
 
 // order message
-export const RESPONSE_MESSAGE_ORDER_COUPON_USED = 'Tồn tại phiếu giảm giá đã được sử dụng';
+export const RESPONSE_MESSAGE_ORDER_COUPON_USED = 'Phiếu giảm giá đã được sử dụng';
 export const RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE = 'Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản';
 export const RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY = 'Không thể mua nhiều hơn số lượng có sẵn';
