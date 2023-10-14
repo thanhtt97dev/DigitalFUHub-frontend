@@ -64,8 +64,9 @@ const Cart = () => {
     const [coupons, setCoupons] = useState([]);
     const [chooseCoupons, setChooseCoupons] = useState([]);
     const [isCouponInfoSuccess, setIsCouponInfoSuccess] = useState(false);
-
-    const [isModelNotify, setIsModelNotify] = useState(false)
+    const [isModelNotify, setIsModelNotify] = useState(false);
+    const [IsUseCoin, setIsUseCoin] = useState(false);
+    const [userCoin, setUserCoin] = useState(0);
 
     const checkAll = cartSelected.length === carts.length
     const indeterminate = cartSelected.length > 0 && cartSelected.length < carts.length;
@@ -178,13 +179,18 @@ const Cart = () => {
 
     const handleOkConfirmBuy = () => {
         const lstDataOrder = cartSelected.map((c) => ({
-            userId: getUserId(),
             productVariantId: c.productVariantId,
-            businessFeeId: 1,
             quantity: c.quantity,
             coupons: c.coupons.map((coupon) => coupon.couponCode)
         }));
-        addOrder(lstDataOrder)
+
+        const finalDataOrder = {
+            userId: getUserId(),
+            Products: lstDataOrder,
+            IsUseCoin: IsUseCoin
+
+        }
+        addOrder(finalDataOrder)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
@@ -251,7 +257,7 @@ const Cart = () => {
                             setContentModel(data.message)
                             setIsModelInvalidCartProductQuantity(true)
                         } else if (data.responseCode === CART_RESPONSE_CODE_SUCCESS) {
-                            debugger
+
                             setCartSelected([...cartFilter])
                         }
                         loadDataCart()
@@ -282,12 +288,13 @@ const Cart = () => {
                     'coupons': []
                 }));
 
+                setUserCoin(data[0].coin)
                 setCarts(dataMap)
                 if (cartSelected) {
                     const newCartsSelected = dataMap.filter(x => cartSelected.some(c => c.productVariantId === x.productVariantId));
                     setCartSelected(newCartsSelected)
                 }
-                console.log(JSON.stringify(dataMap[1]))
+                console.log(JSON.stringify(dataMap[0]))
             })
             .catch((errors) => {
                 console.log(errors)
@@ -437,6 +444,10 @@ const Cart = () => {
             })
     }
 
+    const handleChangeCoin = (e) => {
+        setIsUseCoin(e.target.checked);
+    }
+
 
 
     const NumericInput = ({ value, onBlur }) => {
@@ -511,6 +522,11 @@ const Cart = () => {
                                         </Row>
                                         <Row>
                                             <Col offset={1}><Button type="link" onClick={() => { setProductVariantsIdSelected(item.productVariantId); getCouponShop(item.productVariantId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
+                                            <Col>{
+                                                item.coupons?.map((item) => (
+                                                    <p>{item.price}</p>
+                                                ))
+                                            }</Col>
                                         </Row>
 
                                     </Card>
@@ -534,11 +550,21 @@ const Cart = () => {
                                 <Text>Giảm giá sản phẩm:</Text>&nbsp;&nbsp;
                                 <Text strong>- {formatPrice(totalPrice.originPrice - totalPrice.discountPrice)}</Text>
                             </div>
+                            <div className={cx('space-div-flex')}>
+                                <Text>Giảm giá của shop:</Text>&nbsp;&nbsp;
+                                <Text strong>- {formatPrice(totalPrice.originPrice - totalPrice.discountPrice)}</Text>
+                            </div>
                             <Divider />
+                            <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
+
+                                <Text>Sử dụng xu:</Text>&nbsp;&nbsp;
+                                <Checkbox disabled={userCoin !== 0 && totalPrice.originPrice > 0 ? false : true} onChange={handleChangeCoin}></Checkbox>
+                            </div>
                             <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
                                 <Text>Tổng giá trị phải thanh toán:</Text>&nbsp;&nbsp;
                                 <Text strong>{formatPrice(totalPrice.discountPrice)}</Text>
                             </div>
+
                             <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block onClick={handleBuy}>
                                 Mua hàng
                             </Button>
