@@ -1,9 +1,9 @@
-import { formatPrice, formatNumberToK } from '~/utils';
 import classNames from 'classnames/bind';
 import { useAuthUser } from 'react-auth-kit';
 import { addProductToCart } from '~/api/cart';
 import { getProductById } from '~/api/product';
 import styles from './ProductDetail.module.scss';
+import { formatPrice, formatNumberToK } from '~/utils';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import CarouselCustom from '~/components/Carousels/CarouselCustom';
@@ -60,7 +60,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         } else {
             const data = {
                 userId: userId,
-                // shopId: product.shopId
+                shopId: product.shop.shopId
             }
             navigate('/chatBox', { state: { data: data } })
         }
@@ -185,7 +185,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                     >
                         <div>
                             <Title level={3}>{product.productName}</Title>
-                            <Divider />
                             <div className={cx('space-div-flex')}>
                                 {productVariantsSelected ? (
                                     <Title level={4}><PriceFormat price={productVariantsSelected.price} /></Title>
@@ -221,10 +220,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                 )}
                                 <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
                             </div>
-                            <div className={cx('space-div-flex')}>
-                                <Text>Tên shop:</Text>
-                                <Button type="link">{product.shopName}</Button>
-                            </div>
                             <Divider />
                             <div style={{ marginBottom: 20 }}>
                                 <Title level={4}>Loại sản phẩm</Title>
@@ -246,13 +241,13 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                             <div
 
                             >
-                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={product.quantity <= 0 || userId === product.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
+                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
                                     Mua ngay
                                 </Button>
-                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={product.quantity <= 0 || userId === product.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
+                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
                                     Thêm vào giỏ
                                 </Button>
-                                <Button disabled={userId !== product.shopId ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
+                                <Button disabled={userId !== product.shop.shopId ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
                                     Nhắn tin
                                 </Button>
                             </div>
