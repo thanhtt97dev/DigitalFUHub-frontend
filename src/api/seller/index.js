@@ -22,4 +22,18 @@ export const getSellerOrders = (data) => {
 };
 export const getOrderDetail = (orderId) => {
     return apiGetAuth(`api/Sellers/Orders/${orderId}`);
-}
+};
+export const getCoupons = (data) => {
+    return apiPostAuth('api/Sellers/Coupons', data);
+};
+export const addCoupon = (data) => {
+    return apiPostAuth('api/Sellers/Coupons/New', data);
+};
+
+export const updateStatusCoupon = (data) => {
+    return apiPostAuth('api/Sellers/Coupons/Update/Status', data);
+};
+
+export const removeCoupon = (data) => {
+    return apiPostAuth('api/Sellers/Coupons/Remove', data);
+};

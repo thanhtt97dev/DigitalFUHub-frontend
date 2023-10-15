@@ -75,7 +75,14 @@ const menuItems = [
                 key: '/seller/product/banned',
                 label: <Link to={"/seller/product/banned"}>Sản phẩm vi phạm</Link>,
             },
+
         ],
+
+    },
+    {
+        label: <Link to='/seller/coupon/list'>Mã giảm giá</Link>,
+        key: 'coupon',
+        icon: <AreaChartOutlined className={cx('menu-icon')} />,
     },
 ];
 const SellerLayout = () => {

@@ -21,6 +21,7 @@ import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ConfirmEmail from '~/pages/ConfirmEmail';
 import ResetPassword from '~/pages/ResetPassword';
 import AddProduct from '~/pages/Seller/ManageProduct/AddProduct';
+import Coupons from '~/pages/Seller/ManageCoupon/Coupons';
 import ProductDetail from '~/pages/ProductDetail';
 import Cart from '~/pages/Cart';
 import Products from '~/pages/Seller/ManageProduct/Products';
@@ -131,15 +132,22 @@ const routesConfig = [
         role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {
-        title: 'Seller',
-        path: '/seller',
+        title: 'Seller statistic',
+        path: '/seller/statistic',
         layout: <SellerLayout />,
         component: <></>,
         role: [SELLER_ROLE],
     },
     {
-        title: 'Dashboard Seller',
-        path: '/seller/dashboard',
+        title: 'Coupon',
+        path: '/seller/coupon/list',
+        layout: <SellerLayout />,
+        component: <Coupons />,
+        role: [SELLER_ROLE],
+    },
+    {
+        title: 'Seller order detail',
+        path: '/seller/order/:id',
         layout: <SellerLayout />,
         component: <></>,
         role: [SELLER_ROLE],

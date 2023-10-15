@@ -85,7 +85,7 @@ function EditProduct() {
         getProductById(getUserId(), productId)
             .then(async (res) => {
                 if (res.data.status.responseCode === "00") {
-                    const { productName, description, categoryId, discount, thumbnail, productMedias, tags, productVariants, productStatusId } = res.data.result;
+                    const { productName, description, categoryId, discount, thumbnail, productMedias, tags, productVariants } = res.data.result;
                     setProductName(productName);
                     setProductDescription(description);
                     setProductCategory(parseInt(categoryId));

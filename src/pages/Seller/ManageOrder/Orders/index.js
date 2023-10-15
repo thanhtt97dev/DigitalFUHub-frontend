@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, notification, Select, Row, Col } from "antd";
+import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, Select, Row, Col } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { Link } from "react-router-dom";
 
@@ -17,7 +17,6 @@ import {
     ORDER_REJECT_COMPLAINT,
     ORDER_SELLER_VIOLATES
 } from "~/constants";
-import DrawerSellerDetailOrder from "~/components/Drawers/DrawerSellerDetailOrder";
 import Column from "antd/es/table/Column";
 
 const { RangePicker } = DatePicker;
@@ -25,8 +24,6 @@ const { RangePicker } = DatePicker;
 function Orders() {
     const notification = useContext(NotificationContext)
     const [loading, setLoading] = useState(true)
-    const [openDrawer, setOpenDrawer] = useState(false)
-    const [orderId, setOrderId] = useState()
     const [form] = Form.useForm();
     const [dataTable, setDataTable] = useState([]);
     const [searchData, setSearchData] = useState({
@@ -235,15 +232,13 @@ function Orders() {
                             width="9%"
                             key="orderId"
                             render={(_, record) => (
-                                <div>
-                                    <Button type="dashed" danger onClick={() => { setOrderId(record.orderId); setOpenDrawer(true) }}>Chi tiết</Button>
-                                </div>
+                                <Link to={`/seller/order/${record.orderId}`}>
+                                    <Button type="primary">Chi tiết</Button>
+                                </Link>
                             )}
                         />
-
                     </Table>
                 </Card>
-                {openDrawer && <DrawerSellerDetailOrder orderId={orderId} isOpen={openDrawer} setOpenDrawer={setOpenDrawer} />}
 
             </Spinning>
         </>
