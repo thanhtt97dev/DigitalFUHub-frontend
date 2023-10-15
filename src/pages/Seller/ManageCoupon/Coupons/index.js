@@ -13,6 +13,7 @@ import {
 import Column from "antd/es/table/Column";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { addCoupon, removeCoupon, getCoupons, updateStatusCoupon } from "~/api/seller";
+import { checkCouponCodeExist } from "~/api/coupon";
 
 const { RangePicker } = DatePicker;
 const { confirm } = Modal;
@@ -341,14 +342,25 @@ function Coupons() {
                                 <Form.Item name="couponCodeNew"
                                     rules={[
                                         ({ getFieldValue }) => ({
-                                            validator(_, value) {
+                                            async validator(_, value) {
                                                 const data = value === undefined ? '' : value.trim();
                                                 if (!data) {
                                                     return Promise.reject(new Error('Mã giảm giá không được trống.'));
                                                 } else if (data.length < 4) {
                                                     return Promise.reject(new Error('Mã giảm giá phải có ít nhất 4 kí tự.'));
                                                 } else {
-                                                    return Promise.resolve();
+                                                    await checkCouponCodeExist(data)
+                                                        .then((res) => {
+                                                            if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                                                                return Promise.resolve();
+                                                            } else {
+                                                                return Promise.reject(new Error('Mã giảm giá không hợp lệ.'));
+                                                            }
+                                                        })
+                                                        .catch((err) => {
+                                                            return Promise.reject(new Error('Mã giảm giá không hợp lệ.'));
+                                                        })
+
                                                 }
                                             },
                                         }),
