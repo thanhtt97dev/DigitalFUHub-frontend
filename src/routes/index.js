@@ -133,6 +133,13 @@ const routesConfig = [
     },
     {
         title: 'Seller statistic',
+        path: '/seller',
+        layout: <SellerLayout />,
+        component: <></>,
+        role: [SELLER_ROLE],
+    },
+    {
+        title: 'Seller statistic',
         path: '/seller/statistic',
         layout: <SellerLayout />,
         component: <></>,
