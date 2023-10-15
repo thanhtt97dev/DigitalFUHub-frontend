@@ -1,21 +1,22 @@
-import moment from 'moment';
-import { formatPrice } from '~/utils';
+import { formatPrice, formatNumberToK } from '~/utils';
 import classNames from 'classnames/bind';
 import { useAuthUser } from 'react-auth-kit';
 import { addProductToCart } from '~/api/cart';
 import { getProductById } from '~/api/product';
 import styles from './ProductDetail.module.scss';
 import { getFeedbackByProductId } from '~/api/feedback';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import CarouselCustom from '~/components/Carousels/CarouselCustom';
 import { CART_RESPONSE_CODE_INVALID_QUANTITY } from '~/constants';
 import React, { useState, useEffect, createContext, useContext } from "react";
-import { CreditCardOutlined, ShoppingCartOutlined, MessageOutlined } from '@ant-design/icons';
+import { CreditCardOutlined, ShoppingCartOutlined, MessageOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
 import { Col, Row, Image, Button, Typography, Divider, Spin, Skeleton, Avatar, List, Rate, InputNumber, notification, Modal, Radio, Card, Carousel } from 'antd';
 
 const cx = classNames.bind(styles);
 const { Title, Text } = Typography;
 const ProductDetailContext = createContext()
+const moment = require('moment');
+require('moment/locale/vi');
 
 const ModelNotifyQuantity = ({ isModalNotifyQuantityOpen, handleOk, content }) => (
     <Modal
@@ -59,7 +60,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         } else {
             const data = {
                 userId: userId,
-                shopId: product.shopId
+                // shopId: product.shopId
             }
             navigate('/chatBox', { state: { data: data } })
         }
@@ -361,6 +362,83 @@ const ProductFeedback = ({ feedback }) => {
 }
 
 
+const ShopInfomations = ({ product }) => {
+
+    const styleFirstCard = {
+        borderRadius: '6px 0 0 6px'
+    }
+
+    const styleLastCard = {
+        borderRadius: '0 6px 6px 0'
+    }
+
+
+    return (<>
+        {
+            product ? (
+
+                <Row>
+                    <Col span={7}>
+                        <Card style={styleFirstCard}>
+                            <Row>
+                                <Col className={cx('flex-item-center')}>
+                                    <Avatar size={64} icon={<UserOutlined />} />
+                                </Col>
+                                <Col className={cx('padding-left-element')}>
+                                    <Link><Title level={4}>{product.shop.shopName}</Title></Link>
+                                    <Button icon={<ShopOutlined />} type="primary" danger ghost>Xem Shop</Button>
+                                    <Button icon={<MessageOutlined />} style={{ marginLeft: 10 }}>Chat ngay</Button>
+                                </Col>
+                            </Row>
+
+                        </Card>
+                    </Col>
+                    <Col span={6}>
+                        <Card className={cx('flex-item-center', 'card-shop-info')} bodyStyle={{ textAlign: 'center' }}>
+                            <Title level={5}>Đánh giá</Title>
+                            <Link><Text type="danger">{formatNumberToK(product.shop.feedbackNumber)}</Text></Link>
+                        </Card>
+                    </Col>
+                    <Col span={6}>
+                        <Card className={cx('flex-item-center', 'card-shop-info')} bodyStyle={{ textAlign: 'center' }}>
+                            <Title level={5}>Sản phẩm</Title>
+                            <Link><Text type="danger">{formatNumberToK(product.shop.productNumber)}</Text></Link>
+                        </Card>
+                    </Col>
+                    <Col span={5}>
+                        <Card className={cx('flex-item-center', 'card-shop-info')} style={styleLastCard} bodyStyle={{ textAlign: 'center' }}>
+                            <Title level={5}>Tham gia</Title>
+                            <Text type="danger">{moment(product.shop.dateCreate).fromNow()}</Text>
+                        </Card>
+                    </Col>
+
+
+                    {/* <Col span={4} offset={1} className={cx('space-col-shop-info')}>
+                        <Card>
+                            <Text>Tham gia</Text>
+                            <Link><Text type="danger" style={{ marginLeft: 20 }}>{moment(product.shop.dateCreate).fromNow()}</Text></Link>
+                        </Card>
+                    </Col>
+                    <Col span={4} offset={1} className={cx('space-col-shop-info')}>
+                        <Text>Sản phẩm</Text>
+                        <Link><Text type="danger" style={{ marginLeft: 20 }}>{formatNumberToK(product.shop.productNumber)}</Text></Link>
+                    </Col>
+                    <Col span={4} offset={1} className={cx('space-col-shop-info')}>
+                        <Text>Tham gia</Text>
+                        <Link><Text type="danger" style={{ marginLeft: 20 }}>{moment(product.shop.dateCreate).fromNow()}</Text></Link>
+                    </Col> */}
+                </Row>
+
+            ) : (
+                <Skeleton active />
+            )
+        }
+
+    </>)
+
+}
+
+
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -396,6 +474,7 @@ const ProductDetail = () => {
                         navigate('/notFound');
                     }
                     setProduct(data)
+                    console.log('data: ' + JSON.stringify(data))
                     setProductVariants([...response.data.productVariants])
                 })
                 .catch((errors) => {
@@ -433,9 +512,8 @@ const ProductDetail = () => {
                     productVariants={productVariants}
                     handleSelectProductVariant={handleSelectProductVariant}
                     productVariantsSelected={productVariantsSelected} />
-                <Divider />
+                <ShopInfomations product={product} />
                 <ProductDescription />
-                <Divider />
                 <ProductFeedback feedback={feedback} />
             </ProductDetailContext.Provider>
         </>
