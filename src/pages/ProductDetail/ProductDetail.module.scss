@@ -41,8 +41,23 @@
     align-items: center;
 }
 
+.flex-item-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .margin-element {
     margin: 5px;
+}
+
+.card-shop-info {
+    height: 100%;
+    border-radius: 0;
+}
+
+.padding-left-element {
+    padding-left: 15px;
 }
 
 .grid-product-suggest {
