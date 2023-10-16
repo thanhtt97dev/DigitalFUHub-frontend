@@ -1,19 +1,17 @@
 import { apiGet, apiPost } from '../defaultApi';
-// import { apiGetAuth, apiPostAuth} from '../defaultApi';
 
-
-export const getSenderConversations = (userId) => {
-    return apiGet(`api/Chats/getSenders?userId=${userId}`);
+export const GetUsersConversation = (userId) => {
+    return apiGet(`api/Conversations/getUsers?userId=${userId}`);
 };
 
-export const getListMessage = (conversationId) => {
-    return apiGet(`api/Chats/getListMessage?conversationId=${conversationId}`);
+export const GetMessages = (conversationId) => {
+    return apiGet(`api/Conversations/getMessages?conversationId=${conversationId}`);
 };
 
 export const sendMessage = (data) => {
-    return apiPost('api/chats/SendMessage', data);
+    return apiPost('api/Conversations/SendMessage', data);
 };
 
-export const existUserConversation = (senderId, recipientId) => {
-    return apiGet(`api/Chats/existUserConversation?senderId=${senderId}&recipientId=${recipientId}`);
+export const addConversation = (data) => {
+    return apiPost('api/Conversations/add', data);
 };

@@ -1,13 +1,14 @@
 import classNames from 'classnames/bind';
 import { useAuthUser } from 'react-auth-kit';
+import { addConversation } from '~/api/chat';
 import { addProductToCart } from '~/api/cart';
 import { getProductById } from '~/api/product';
 import styles from './ProductDetail.module.scss';
-import { formatPrice, formatNumberToK } from '~/utils';
+import { formatPrice, formatNumberToK, getVietnamCurrentTime } from '~/utils';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import CarouselCustom from '~/components/Carousels/CarouselCustom';
 import { CART_RESPONSE_CODE_INVALID_QUANTITY } from '~/constants';
+import CarouselCustom from '~/components/Carousels/CarouselCustom';
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { CreditCardOutlined, ShoppingCartOutlined, MessageOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
 import { Col, Row, Image, Button, Typography, Divider, Spin, Skeleton, Avatar, List, Rate, InputNumber, notification, Modal, Radio, Card, Carousel } from 'antd';
@@ -58,11 +59,19 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
             navigate('/login')
             return;
         } else {
-            const data = {
-                userId: userId,
-                shopId: product.shop.shopId
+
+            const dataAddConversation = {
+                dateCreate: getVietnamCurrentTime(),
+                UserIds: [product.shop.shopId, userId]
             }
-            navigate('/chatBox', { state: { data: data } })
+            addConversation(dataAddConversation)
+                .then((res) => {
+                    if (res.status === 200) {
+                        navigate('/chatBox', { state: { data: res.data } })
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
         }
     }
 
@@ -172,7 +181,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
 
     return (
-        <Card>
+        <Card className={cx('margin-bottom')}>
             <Row>
                 {product ? (<>
                     <Col span={11}
@@ -265,7 +274,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 const ProductDescription = () => {
     const { product } = useContext(ProductDetailContext);
     return (
-        <Card>
+        <Card className={cx('margin-bottom')}>
             <Row
             >
                 <Col span={5}>
@@ -305,7 +314,7 @@ const ProductFeedback = ({ feedback }) => {
     )
 
     return (
-        <Card>
+        <Card className={cx('margin-bottom')}>
             <Row>
                 <Col span={5}>
                     <Title level={4}>Đánh giá sản phẩm</Title>
@@ -372,7 +381,7 @@ const ShopInfomations = ({ product }) => {
         {
             product ? (
 
-                <Row>
+                <Row className={cx('margin-bottom')}>
                     <Col span={7}>
                         <Card style={styleFirstCard}>
                             <Row>

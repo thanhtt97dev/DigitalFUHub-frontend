@@ -15,11 +15,11 @@
 .card-message-sender {
     width: fit-content;
     height: fit-content;
-    background-color: #bae7ff;
+    background-color: #c2d6d6;
 }
 
 .card-header {
-    background: #bae7ff;
+    background: #669999;
     color: white;
 }
 
@@ -51,4 +51,8 @@
 .style-message-sender-1 {
     margin-left: auto;
     max-width: fit-content;
+}
+
+.backgroud-selected {
+    background-color: #c2d6d6;
 }

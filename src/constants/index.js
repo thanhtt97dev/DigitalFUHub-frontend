@@ -142,3 +142,7 @@ export const PRODUCT_HIDE = 3;
 export const RESPONSE_MESSAGE_ORDER_COUPON_USED = 'Phiếu giảm giá đã được sử dụng';
 export const RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE = 'Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản';
 export const RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY = 'Không thể mua nhiều hơn số lượng có sẵn';
+
+//Message Type
+export const MESSAGE_TYPE_CONVERSATION_TEXT = "0";
+export const MESSAGE_TYPE_CONVERSATION_IMAGE = "1";
