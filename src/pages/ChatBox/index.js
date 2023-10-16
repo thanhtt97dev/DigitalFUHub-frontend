@@ -80,14 +80,14 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                         <List.Item onClick={() => { handleClickUser(item) }}>
                             {
                                 item.users.length === 1 ? (
-                                    <Card hoverable className={item.conversationId === conversationSelected.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
+                                    <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
                                         <List.Item.Meta
                                             avatar={<Avatar src={item.users[0].avatar} />}
                                             title={item.users[0].fullname}
                                         />
                                     </Card>
                                 ) : (
-                                    <Card hoverable className={item.conversationId === conversationSelected.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
+                                    <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
                                         <List.Item.Meta
                                             avatar={<Avatar icon={<TeamOutlined />} />}
                                             title={item.conversationName}
