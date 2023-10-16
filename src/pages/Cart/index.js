@@ -44,7 +44,9 @@ const Cart = () => {
     const userId = user.id;
     const initialTotalPrice = {
         originPrice: 0,
-        discountPrice: 0
+        discountPrice: 0,
+        subProductDiscount: 0,
+        subCouponDiscount: 0
     }
     const [carts, setCarts] = useState([])
     const [isLoadCart, setIsLoadCart] = useState(false)
@@ -60,7 +62,7 @@ const Cart = () => {
     const [isModelInvalidCartQuantity, setIsModelInvalidCartQuantity] = useState(false)
     const [contentModel, setContentModel] = useState('');
     const [productVariantsIdSelected, setProductVariantsIdSelected] = useState(0);
-    const [cartSelected, setCartSelected] = useState([]);
+    const [itemCartSelected, setItemCartSelected] = useState([]);
     const [coupons, setCoupons] = useState([]);
     const [chooseCoupons, setChooseCoupons] = useState([]);
     const [isCouponInfoSuccess, setIsCouponInfoSuccess] = useState(false);
@@ -68,8 +70,8 @@ const Cart = () => {
     const [IsUseCoin, setIsUseCoin] = useState(false);
     const [userCoin, setUserCoin] = useState(0);
 
-    const checkAll = cartSelected.length === carts.length
-    const indeterminate = cartSelected.length > 0 && cartSelected.length < carts.length;
+    const checkAll = itemCartSelected.length === carts.length
+    const indeterminate = itemCartSelected.length > 0 && itemCartSelected.length < carts.length;
 
     const openNotification = (type, message) => {
         api[type]({
@@ -104,12 +106,12 @@ const Cart = () => {
     }
 
     const getCouponShop = (productVariantId) => {
-        const productVariantFind = cartSelected.find(c => c.productVariantId === productVariantId)
+        const productVariantFind = itemCartSelected.find(c => c.productVariantId === productVariantId)
         if (!productVariantFind) {
             openNotification("error", "Vui lòng chọn sản phẩm để thêm mã giảm giá của Shop")
             return;
         }
-        const existCoupons = cartSelected.find(c => c.productVariantId === productVariantId)?.coupons
+        const existCoupons = itemCartSelected.find(c => c.productVariantId === productVariantId)?.coupons
         if (existCoupons) {
             setChooseCoupons([...existCoupons])
         }
@@ -165,20 +167,20 @@ const Cart = () => {
         })
         setCarts([...newCarts])
 
-        const newCartsSelected = cartSelected.map((cart) => {
+        const newCartsSelected = itemCartSelected.map((cart) => {
             if (cart.productVariantId === productVariantsIdSelected) {
                 return { ...cart, coupons: [...chooseCoupons] }
             }
 
             return cart
         })
-        setCartSelected([...newCartsSelected])
+        setItemCartSelected([...newCartsSelected])
         setChooseCoupons([])
         setIsModalChooseCoupon(false);
     }
 
     const handleOkConfirmBuy = () => {
-        const lstDataOrder = cartSelected.map((c) => ({
+        const lstDataOrder = itemCartSelected.map((c) => ({
             productVariantId: c.productVariantId,
             quantity: c.quantity,
             coupons: c.coupons.map((coupon) => coupon.couponCode)
@@ -197,11 +199,11 @@ const Cart = () => {
                     console.log('data: ' + JSON.stringify(data))
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         openNotification("success", "Thanh toán đơn hàng thành công")
-                        cartSelected.map(item => {
+                        itemCartSelected.map(item => {
                             return deleteCart({ userId: item.userId, productVariantId: item.productVariantId })
                                 .then((res) => {
                                     if (res.status === 200) {
-                                        setCartSelected([])
+                                        setItemCartSelected([])
                                         loadDataCart();
                                     }
                                 })
@@ -244,9 +246,10 @@ const Cart = () => {
 
     const handleOnChangeCheckbox = (values) => {
         if (values.length === 0) {
-            setCartSelected([])
+            setItemCartSelected([])
             return;
         }
+
         const cartFilter = carts.filter(c => values.includes(c.productVariantId))
         cartFilter.map((item) => {
             return updateCart({ userId: getUserId(), productVariantId: item.productVariantId, quantity: 0 })
@@ -258,7 +261,7 @@ const Cart = () => {
                             setIsModelInvalidCartProductQuantity(true)
                         } else if (data.responseCode === CART_RESPONSE_CODE_SUCCESS) {
 
-                            setCartSelected([...cartFilter])
+                            setItemCartSelected([...cartFilter])
                         }
                         loadDataCart()
                     }
@@ -268,6 +271,49 @@ const Cart = () => {
                 })
         })
     }
+
+    const findCartItems = (values) => {
+        const cartItem = carts.map((cart) => {
+            const { products } = cart;
+            const productItem = products.filter(p => values.includes(p.productVariantId))
+            return productItem;
+        })
+        return [].concat(...cartItem);
+    }
+
+
+
+    const handleOnChangeCheckboxGroup = (values) => {
+        if (values.length === 0) {
+            setItemCartSelected([])
+            return;
+        }
+        const cartItems = findCartItems(values)
+        setItemCartSelected([...itemCartSelected, ...cartItems])
+
+        // cartFilter.map((item) => {
+        //     return updateCart({ userId: getUserId(), productVariantId: item.productVariantId, quantity: 0 })
+        //         .then((res) => {
+        //             if (res.status === 200) {
+        //                 const data = res.data
+        //                 if (data.responseCode === CART_RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY) {
+        //                     setContentModel(data.message)
+        //                     setIsModelInvalidCartProductQuantity(true)
+        //                 } else if (data.responseCode === CART_RESPONSE_CODE_SUCCESS) {
+
+        //                     setItemCartSelected([...cartFilter])
+        //                 }
+        //                 loadDataCart()
+        //             }
+        //         })
+        //         .catch((error) => {
+        //             console.log(error)
+        //         })
+        // })
+    }
+
+
+
 
     const handleBuy = () => {
         if (balance < totalPrice.discountPrice) {
@@ -283,18 +329,17 @@ const Cart = () => {
         getCartsByUserId(userId)
             .then((res) => {
                 const data = res.data;
-                const dataMap = data.map((item) => ({
-                    ...item,
-                    'coupons': []
-                }));
-
+                setCarts(data)
                 setUserCoin(data[0].coin)
-                setCarts(dataMap)
-                if (cartSelected) {
-                    const newCartsSelected = dataMap.filter(x => cartSelected.some(c => c.productVariantId === x.productVariantId));
-                    setCartSelected(newCartsSelected)
-                }
-                console.log(JSON.stringify(dataMap[0]))
+                // const { products } = data
+
+
+
+                // if (itemCartSelected) {
+                //     const newCartsSelected = products.filter(x => itemCartSelected.some(c => c.productVariant.productVariantId === x.productVariant.productVariantId));
+                //     setItemCartSelected(newCartsSelected)
+                // }
+                console.log('data cart = ' + data)
             })
             .catch((errors) => {
                 console.log(errors)
@@ -322,45 +367,57 @@ const Cart = () => {
         const calculatorPrice = (values) => {
             if (values.length > 0) {
                 const totalOriginPrice = values.reduce((accumulator, currentValue) => {
-                    return accumulator + (currentValue.productVariant.price * currentValue.quantity);
+                    return accumulator + (currentValue.price * currentValue.quantity);
                 }, 0);
 
 
                 const totalDiscountPrice = values.reduce((accumulator, currentValue) => {
-                    return accumulator + (currentValue.productVariant.priceDiscount * currentValue.quantity);
+                    return accumulator + (currentValue.priceDiscount * currentValue.quantity);
                 }, 0);
 
 
-                const finalOriginPrice = values.reduce((newOriginPrice, { coupons }) => {
-                    coupons.map((c) => {
-                        return newOriginPrice -= c.priceDiscount
-                    })
-                    return newOriginPrice
-                }, totalOriginPrice)
+                // const finalOriginPrice = values.reduce((newOriginPrice, { coupons }) => {
+                //     coupons.map((c) => {
+                //         return newOriginPrice -= c.priceDiscount
+                //     })
+                //     return newOriginPrice
+                // }, totalOriginPrice)
 
-                const finalDiscountPrice = values.reduce((newDiscountPrice, { coupons }) => {
-                    coupons.map((c) => {
-                        return newDiscountPrice -= c.priceDiscount
-                    })
+                // const finalDiscountPrice = values.reduce((newDiscountPrice, { coupons }) => {
+                //     coupons.map((c) => {
+                //         return newDiscountPrice -= c.priceDiscount
+                //     })
 
-                    return newDiscountPrice
-                }, totalDiscountPrice)
+                //     return newDiscountPrice
+                // }, totalDiscountPrice)
 
-                setTotalPrice({ originPrice: finalOriginPrice, discountPrice: finalDiscountPrice });
+                setTotalPrice({ originPrice: totalOriginPrice, discountPrice: totalDiscountPrice });
             } else {
                 setTotalPrice({ originPrice: 0, discountPrice: 0 });
             }
 
-        }
-        calculatorPrice(cartSelected)
 
-    }, [cartSelected])
+        }
+        calculatorPrice(itemCartSelected)
+
+    }, [itemCartSelected])
 
     const handleCheckAll = (e) => {
         if (e.target.checked) {
-            setCartSelected(carts);
+            setItemCartSelected(carts);
         } else {
-            setCartSelected([]);
+            setItemCartSelected([]);
+        }
+    }
+
+    const handleCheckAllGroup = (e) => {
+        const { value, checked } = e.target
+        const itemCarts = carts.find(x => x.shopId === value).products;
+        const itemCartSelectedFilter = itemCartSelected.filter(x => !itemCarts.includes(x))
+        if (checked) {
+            setItemCartSelected([...itemCartSelectedFilter, ...itemCarts]);
+        } else {
+            setItemCartSelected([...itemCartSelectedFilter]);
         }
     }
 
@@ -370,7 +427,7 @@ const Cart = () => {
             return;
         }
         setIsCouponInfoSuccess(true)
-        const cartFind = cartSelected.find(c => c.productVariantId === productVariantsIdSelected)
+        const cartFind = itemCartSelected.find(c => c.productVariantId === productVariantsIdSelected)
         getCoupons(cartFind.shopId, inputCouponCode)
             .then((res) => {
                 if (res.status === 200) {
@@ -472,6 +529,16 @@ const Cart = () => {
         );
     };
 
+    const checkAllGroup = (shopId) => {
+        const itemCarts = carts.find(x => x.shopId === shopId).products;
+        const itemCartSelectedFilter = itemCartSelected.filter(x => itemCarts.some(y => x === y))
+        if (itemCarts.length === itemCartSelectedFilter.length) {
+            return true;
+        } else {
+            return false
+        }
+    }
+
     return (
         <>
             {contextHolder}
@@ -489,50 +556,63 @@ const Cart = () => {
                                 <Col offset={1}>Thao Tác</Col>
                             </Row>
                         </Card>
-                        <Checkbox.Group value={cartSelected.map(item => item.productVariantId)} onChange={handleOnChangeCheckbox} style={{ display: 'block' }}>
-                            {
-                                carts.map((item, index) => (
-                                    <Card hoverable title={(<Link to={''} ><ShopOutlined /> {item.shopName}</Link>)} key={index} bodyStyle={{ padding: 20 }} headStyle={{ padding: 0, paddingLeft: 100 }} style={{ marginBottom: 10 }}>
-                                        <Row className={cx('margin-bottom-item')}>
-                                            <Col >
-                                                <Checkbox value={item.productVariantId}></Checkbox>
-                                            </Col>
-                                            <Col offset={1}>
-                                                <Image
-                                                    width={100}
-                                                    src={item.product.thumbnail}
-                                                />
-                                            </Col>
-                                            <Col offset={1}><Link to={'/product/' + item.product.productId} >{item.product.productName}</Link></Col>
-                                            <Col offset={1}><Text type="secondary">Loại: {item.productVariant.productVariantName}</Text></Col>
-                                            <Col offset={1}><Text type="secondary" delete>{formatPrice(item.productVariant.price)}</Text></Col>
-                                            <Col offset={1}><Text>{formatPrice(item.productVariant.priceDiscount)}</Text></Col>
-                                            <Col offset={1}>
-                                                <div>
-                                                    <Button disabled={item.quantity === 1 ? true : false} onClick={() => handleMinusOne(item.quantity, item.productVariantId)}>-</Button>
+                        {/* <Checkbox.Group value={itemCartSelected.map(item => item.productVariantId)} onChange={handleOnChangeCheckbox} style={{ display: 'block' }}> */}
+                        {/* <Checkbox.Group onChange={handleOnChangeCheckbox} style={{ display: 'block' }}> */}
+                        {
+                            carts.map((item, index) => (
+                                <Card hoverable title={(<Link to={''} >
+                                    <Checkbox value={item.shopId} onChange={handleCheckAllGroup} checked={checkAllGroup(item.shopId)}></Checkbox><ShopOutlined className={cx('margin-left-40')} /> {item.shopName}</Link>)}
+                                    key={index} bodyStyle={{ padding: 20 }} headStyle={{ paddingLeft: 20 }} style={{ marginBottom: 10 }}>
+                                    <Checkbox.Group value={itemCartSelected.map((item) => item.productVariantId)} onChange={handleOnChangeCheckboxGroup} style={{ display: 'block' }}>
+                                        {
+                                            item.products.map((sonItem, index) => (
+                                                <Row className={cx('margin-bottom-item')} key={index}>
+                                                    <Col >
+                                                        <Checkbox value={sonItem.productVariantId}></Checkbox>
+                                                    </Col>
+                                                    <Col offset={1}>
+                                                        <Image
+                                                            width={80}
+                                                            src={sonItem.thumbnail}
+                                                        />
+                                                    </Col>
+                                                    <Col offset={1}><Link to={'/product/' + sonItem.productId} >{sonItem.productName}</Link></Col>
+                                                    <Col offset={1}><Text type="secondary">Loại: {sonItem.productVariantName}</Text></Col>
+                                                    <Col offset={1}><Text type="secondary" delete>{formatPrice(sonItem.price)}</Text></Col>
+                                                    <Col offset={1}><Text>{formatPrice(sonItem.priceDiscount)}</Text></Col>
+                                                    <Col offset={1}>
+                                                        <div>
+                                                            <Button disabled={sonItem.quantity === 1 ? true : false} onClick={() => handleMinusOne(sonItem.quantity, sonItem.productVariantId)}>-</Button>
 
-                                                    <NumericInput value={item.quantity} onBlur={(e) => onBlurQuantity(e, item.productVariantId)} />
-                                                    <Button disabled={item.quantity === item.productVariant.quantity ? true : false} onClick={() => handleAddOne(item.quantity, item.productVariantId)}>+</Button>
+                                                            <NumericInput value={sonItem.quantity} onBlur={(e) => onBlurQuantity(e, sonItem.productVariantId)} />
+                                                            <Button disabled={sonItem.quantity === sonItem.productVariantQuantity ? true : false} onClick={() => handleAddOne(sonItem.quantity, sonItem.productVariantId)}>+</Button>
 
-                                                </div>
+                                                        </div>
 
-                                            </Col>
-                                            <Col offset={1}><Text>{formatPrice(item.productVariant.priceDiscount * item.quantity)}</Text></Col>
-                                            <Col offset={1}><Button icon={<DeleteOutlined />} danger onClick={() => { setProductVariantsIdSelected(item.productVariantId); showModalConfirmDelete() }}>Xóa</Button></Col>
-                                        </Row>
-                                        <Row>
-                                            <Col offset={1}><Button type="link" onClick={() => { setProductVariantsIdSelected(item.productVariantId); getCouponShop(item.productVariantId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
-                                            <Col>{
-                                                item.coupons?.map((item) => (
-                                                    <p>{item.price}</p>
-                                                ))
-                                            }</Col>
-                                        </Row>
+                                                    </Col>
+                                                    <Col offset={1}><Text>{formatPrice(sonItem.priceDiscount * sonItem.quantity)}</Text></Col>
+                                                    <Col offset={1}><Button icon={<DeleteOutlined />} danger onClick={() => { setProductVariantsIdSelected(sonItem.productVariantId); showModalConfirmDelete() }}>Xóa</Button></Col>
+                                                </Row>
+                                            ))
+                                        }
+                                    </Checkbox.Group>
 
-                                    </Card>
-                                ))
-                            }
-                        </Checkbox.Group>
+
+
+
+                                    <Row>
+                                        <Col offset={1}><Button type="link" onClick={() => { setProductVariantsIdSelected(item.productVariantId); getCouponShop(item.productVariantId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
+                                        <Col>{
+                                            item.coupons?.map((item) => (
+                                                <p>{item.price}</p>
+                                            ))
+                                        }</Col>
+                                    </Row>
+
+                                </Card>
+                            ))
+                        }
+                        {/* </Checkbox.Group> */}
                     </Col>
                     <Col span={6} style={{ padding: 5 }}>
                         <Card
