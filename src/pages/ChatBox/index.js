@@ -11,9 +11,8 @@ import {
     Row,
     Upload,
     Form,
-    Image,
+    Image
 } from 'antd';
-import Spinning from "~/components/Spinning";
 import connectionHub from '~/api/signalr/connectionHub';
 import { useAuthUser } from 'react-auth-kit';
 import { GetUsersConversation, GetMessages, sendMessage } from '~/api/chat';
@@ -153,7 +152,6 @@ const BodyMessageChat = ({ messages, conversationSelected, messagesEndRef }) => 
     const user = useContext(MyContext);
     return (
         <div id={cx('scrollChatMessage')}>
-
             <InfiniteScroll
                 dataLength={messages.length}
                 scrollableTarget="scrollChatMessage"
@@ -286,17 +284,14 @@ const LayoutMessageChat = (props) => {
         newMessage,
         handleChangeNewMessage,
         isUploadFile,
-        handleOpenUploadFile,
-        isMessageInfoSuccess
+        handleOpenUploadFile
     } = props.propsMessageChat
 
     return (
-
-        <Spinning wrapperClassName={cx('custom-wrapper')} spinning={isMessageInfoSuccess}>
+        <>
             <Layout className={cx('layout-chat-message')}>
                 {
                     conversationSelected ? (<>
-
                         <HeaderMessageChat conversationSelected={conversationSelected} />
                         <BodyMessageChat messages={messages}
                             styleBodyCardMessage={styleBodyCardMessage}
@@ -310,11 +305,11 @@ const LayoutMessageChat = (props) => {
                             handleChangeNewMessage={handleChangeNewMessage}
                             isUploadFile={isUploadFile}
                             handleOpenUploadFile={handleOpenUploadFile} />
-
                     </>) : (<></>)
                 }
             </Layout>
-        </Spinning>
+
+        </>
 
     )
 }
@@ -329,19 +324,13 @@ const ChatBox = () => {
     const [newMessage, setNewMessage] = useState('');
     const [userChats, setUserChats] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
-    const [isLoadData, setIsLoadData] = useState(false);
+    const [loadData, setLoadData] = useState(false);
     const [form] = Form.useForm();
-    const [isUploadFile, setIsUploadFile] = useState(false);
-    const [responseSignR, setResponseSignR] = useState();
-    const [isMessageInfoSuccess, setIsMessageInfoSuccess] = useState(false)
+    const [isUploadFile, setIsUploadFile] = useState(false)
 
 
     const handleOpenUploadFile = () => {
         setIsUploadFile(!isUploadFile)
-    }
-
-    const loadData = () => {
-        setIsLoadData(!isLoadData)
     }
 
     const messagesEndRef = useRef(null);
@@ -398,21 +387,8 @@ const ChatBox = () => {
 
 
     const handleClickUser = (conversation) => {
-        if (!isMessageInfoSuccess) {
-            setIsMessageInfoSuccess(true);
-            setConversationSelected(conversation)
-
-            GetMessages(conversation.conversationId)
-                .then((response) => {
-                    setMessages([...response.data])
-                }).catch((error) => {
-                    console.log(error)
-                }).finally(() => {
-                    setTimeout(() => {
-                        setIsMessageInfoSuccess(false)
-                    }, 500)
-                })
-        }
+        console.log('handleClickUser' + JSON.stringify(conversation))
+        setConversationSelected(conversation)
     }
 
     const handleChangeNewMessage = (e) => {
@@ -420,40 +396,22 @@ const ChatBox = () => {
         setNewMessage(value)
     }
 
+    const isLoadData = () => {
+        setLoadData(!loadData);
+    }
+
+
+
 
     useEffect(() => {
-        // Create a new SignalR connection with the token
-        const connection = connectionHub(`chatHub?userId=${user.id}`);
+        if (conversationSelected === null || conversationSelected === undefined) return;
+        GetMessages(conversationSelected.conversationId)
+            .then((response) => {
+                setMessages([...response.data])
+            })
+        console.log(conversationSelected)
 
-        // Start the connection
-        connection.start().catch((err) => console.error(err));
-
-        connection.on(SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, (response) => {
-            if (response.conversationId === conversationSelected.conversationId) {
-                setMessages((prev) => [...prev, response])
-            }
-        });
-
-        return () => {
-            // Clean up the connection when the component unmounts
-            connection.stop();
-        };
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [conversationSelected])
-
-
-    // useEffect(() => {
-    //     if (!responseSignR) return;
-    //     if (responseSignR.conversationId === conversationSelected.conversationId) {
-    //         setMessages((prev) => [...prev, responseSignR])
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [responseSignR])
-
-
-
-
 
     // useEffect(scrollToBottom, [messages]);
 
@@ -479,7 +437,7 @@ const ChatBox = () => {
 
         loadUsersChatMessage();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoadData]);
+    }, [loadData]);
 
     const propsMessageChat = {
         conversationSelected: conversationSelected,
@@ -492,8 +450,7 @@ const ChatBox = () => {
         handleChangeNewMessage: handleChangeNewMessage,
         normFile: normFile,
         isUploadFile: isUploadFile,
-        handleOpenUploadFile: handleOpenUploadFile,
-        isMessageInfoSuccess: isMessageInfoSuccess
+        handleOpenUploadFile: handleOpenUploadFile
     }
 
     return (
