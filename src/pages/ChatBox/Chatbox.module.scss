@@ -25,7 +25,7 @@
 
 .layout-chat-message {
     height: 75vh;
-    width: 65%;
+    width: 100%;
     padding: 10px;
     border: 1px solid rgba(140, 140, 140, 0.35);
 }
@@ -55,4 +55,12 @@
 
 .backgroud-selected {
     background-color: #c2d6d6;
+}
+
+.ant-spin-container .ant-spin-dot {
+    width: 90%;
+}
+
+.custom-wrapper {
+    width: 70%;
 }
