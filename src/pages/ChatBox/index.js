@@ -27,7 +27,7 @@ import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss'
 import moment from 'moment'
 import { useLocation } from 'react-router-dom';
-import { getVietnamCurrentTime } from '~/utils';
+import { getUserId, getVietnamCurrentTime } from '~/utils';
 import { MESSAGE_TYPE_CONVERSATION_TEXT, MESSAGE_TYPE_CONVERSATION_IMAGE } from '~/constants';
 
 import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE } from '~/constants';
@@ -46,65 +46,87 @@ const styleBodyCardMessage = {
 
 const MyContext = createContext()
 
-const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) => (
+const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) => {
 
-    <Layout className={cx('layout-user-chat')}>
-        <Card
-            className={cx('card-header')}
-            bodyStyle={bodyCardHeader}>
-            <Typography.Title
-                level={4}
+    useEffect(() => {
+        var userId = getUserId();
+        // Create a new SignalR connection with the token
+        const connection = connectionHub(`chatHub?userId=${userId}`);
+
+        // Start the connection
+        connection.start().catch((err) => console.error(err));
+
+        connection.on(SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, (response) => {
+            console.log('response = ' + JSON.stringify(response))
+        });
+
+        return () => {
+            // Clean up the connection when the component unmounts
+            connection.stop();
+        };
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    return (
+        <Layout className={cx('layout-user-chat')}>
+            <Card
+                className={cx('card-header')}
+                bodyStyle={bodyCardHeader}>
+                <Typography.Title
+                    level={4}
+                    style={{
+                        margin: 0,
+                    }}
+                >
+                    Gần đây
+                </Typography.Title>
+            </Card>
+            <div
+                id="scrollUserChat"
                 style={{
-                    margin: 0,
+                    height: '100%',
+                    overflow: 'auto',
+                    padding: '0 16px',
+
                 }}
             >
-                Gần đây
-            </Typography.Title>
-        </Card>
-        <div
-            id="scrollUserChat"
-            style={{
-                height: '100%',
-                overflow: 'auto',
-                padding: '0 16px',
 
-            }}
-        >
+                <InfiniteScroll
+                    dataLength={userChats.length}
+                    scrollableTarget="scrollUserChat"
+                >
+                    <List
+                        dataSource={userChats}
+                        renderItem={(item) => (
+                            <List.Item onClick={() => { handleClickUser(item) }}>
+                                {
+                                    item.users.length === 1 ? (
+                                        <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
+                                            <List.Item.Meta
+                                                avatar={<Avatar src={item.users[0].avatar} />}
+                                                title={item.users[0].fullname}
+                                            />
+                                        </Card>
+                                    ) : (
+                                        <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
+                                            <List.Item.Meta
+                                                avatar={<Avatar icon={<TeamOutlined />} />}
+                                                title={item.conversationName}
+                                            />
+                                        </Card>
+                                    )
+                                }
 
-            <InfiniteScroll
-                dataLength={userChats.length}
-                scrollableTarget="scrollUserChat"
-            >
-                <List
-                    dataSource={userChats}
-                    renderItem={(item) => (
-                        <List.Item onClick={() => { handleClickUser(item) }}>
-                            {
-                                item.users.length === 1 ? (
-                                    <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
-                                        <List.Item.Meta
-                                            avatar={<Avatar src={item.users[0].avatar} />}
-                                            title={item.users[0].fullname}
-                                        />
-                                    </Card>
-                                ) : (
-                                    <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
-                                        <List.Item.Meta
-                                            avatar={<Avatar icon={<TeamOutlined />} />}
-                                            title={item.conversationName}
-                                        />
-                                    </Card>
-                                )
-                            }
+                            </List.Item>
+                        )}
+                    />
+                </InfiniteScroll>
+            </div>
 
-                        </List.Item>
-                    )}
-                />
-            </InfiniteScroll>
-        </div>
-
-    </Layout>
-)
+        </Layout>
+    )
+}
 
 const HeaderMessageChat = ({ conversationSelected }) => (
     <Card
