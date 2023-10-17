@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useAuthUser } from 'react-auth-kit';
-import { BellFilled } from '@ant-design/icons';
+import { Link, useNavigate } from 'react-router-dom';
+import { BellFilled, ClockCircleOutlined } from '@ant-design/icons';
 import { Badge, notification, Drawer, Empty, Alert } from 'antd';
 import { formatTimeAgoVN } from '~/utils';
+import { editNotificationIsReaded } from "~/api/signalr/notification";
 import connectionHub from '~/api/signalr/connectionHub';
 import { SIGNAL_R_NOTIFICATION_HUB_RECEIVE_NOTIFICATION, SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION } from '~/constants';
 
 function Notification() {
     const auth = useAuthUser();
     const user = auth();
+    const navigate = useNavigate();
 
     const [api, contextHolder] = notification.useNotification();
+
+    const [notificationIsReaded, setNotificationIsReaded] = useState([]);
 
     const [notifications, setNotifications] = useState([]);
 
@@ -58,14 +63,35 @@ function Notification() {
         });
     };
 
+    const handleNotificationClick = (notifi) => {
+        editNotificationIsReaded(notifi.NotificationId)
+            .then(res => {
+                navigate(notifi.Link);
+                window.location.reload();
+            })
+    };
+
+    const NotificationClick = (Link) => {
+        navigate(Link);
+        window.location.reload();
+    };
+
+    useEffect(() => {
+        if (notifications.some((notifi) => notifi.IsReaded === false)) {
+            setNotificationIsReaded(false);
+        } else {
+            setNotificationIsReaded(true);
+        }
+    }, [notifications]);
+
     return (
         <>
             {contextHolder}
-            <Badge size="small" count={notifications.length} onClick={showDrawer}>
+            <Badge size="small" count={notificationIsReaded ? 0 : <ClockCircleOutlined style={{ paddingTop: '30px', color: '#f5222d' }} />} onClick={showDrawer}>
                 <BellFilled style={{ fontSize: '25px', paddingTop: '20px' }} />
             </Badge>
             <Drawer
-                style={{ overflowY: 'scroll' }}
+                style={{ overflowY: 'scroll', backgroundColor: '#F3F4F6' }}
                 title="Notification"
                 placement="right"
                 onClose={onClose}
@@ -74,25 +100,43 @@ function Notification() {
                 {notifications.length !== 0 ? (
                     notifications.map((notifi, index) => {
                         return (
-                            <Alert
-                                key={index}
-                                style={{ marginBottom: 20 }}
-                                message={<span style={{ fontWeight: 'bold' }}>{notifi.Title}</span>}
-                                description={
-                                    <>
-                                        <p>{notifi.Content}</p>
-                                        <p style={{ fontSize: 10 }}>{formatTimeAgoVN(notifi.DateCreated)}</p>
-                                    </>
-                                }
-                                type="info"
-                                showIcon
-                            />
+                            <>
+                                {notifi.IsReaded ? (
+                                    <Link onClick={() => NotificationClick(notifi.Link)}>
+                                        <Alert
+                                            style={{ backgroundColor: 'white', width: '100%', height: '20', border: 'none' }}
+                                            message={
+                                                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <b style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 15)}...` : notifi.Title}</b>
+                                                    <p style={{ fontSize: 10, margin: 0 }}>{formatTimeAgoVN(notifi.DateCreated)}</p>
+                                                </span>
+                                            }
+                                            description={<p>{notifi.Content.length > 60 ? `${notifi.Content.slice(0, 60)}...` : notifi.Content}</p>}
+                                            type="info"
+                                        />
+                                    </Link >
+                                ) : (
+                                    <Link key={index} onClick={() => handleNotificationClick(notifi)}>
+                                        <Alert
+                                            style={{ width: '100%', height: '20', border: 'none' }}
+                                            message={
+                                                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <b style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 15)}...` : notifi.Content}</b>
+                                                    <b style={{ fontSize: 10, margin: 0, color: 'blue' }}>{formatTimeAgoVN(notifi.DateCreated)}</b>
+                                                </span>
+                                            }
+                                            description={<p>{notifi.Content.length > 60 ? `${notifi.Content.slice(0, 60)}...` : notifi.Content}</p>}
+                                            type="info"
+                                        />
+                                    </Link>
+                                )}
+                            </>
                         );
                     })
                 ) : (
                     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 )}
-            </Drawer>
+            </Drawer >
         </>
     );
 }
