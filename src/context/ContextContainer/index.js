@@ -1,5 +1,5 @@
 import Notification from '~/context/NotificationContext';
-import Chat from "~/context/ChatContext";
+import { Chat } from "~/context/ChatContext";
 
 function ContextContainer({ children }) {
     return (

@@ -6,8 +6,8 @@ import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE } from '~/constants';
 
 export const ChatContext = createContext();
 
-function Chat({ children }) {
-    const [message, setMessage] = useState("daw");
+export function Chat({ children }) {
+    const [message, setMessage] = useState("");
     useEffect(() => {
         var userId = getUserId();
         // Create a new SignalR connection with the token
@@ -28,9 +28,6 @@ function Chat({ children }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    useLayoutEffect(() => {
-
-    }, [message])
 
     return (
         <ChatContext.Provider value={message}>
@@ -38,5 +35,3 @@ function Chat({ children }) {
         </ChatContext.Provider>
     );
 }
-
-export default Chat;
