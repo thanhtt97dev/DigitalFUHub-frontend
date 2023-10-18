@@ -13,8 +13,8 @@ import {
     Form,
     Image
 } from 'antd';
-import connectionHub from '~/api/signalr/connectionHub';
 import { useAuthUser } from 'react-auth-kit';
+import connectionHub from '~/api/signalr/connectionHub';
 import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
 import {
     SendOutlined,
@@ -26,9 +26,10 @@ import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss'
 import { useLocation } from 'react-router-dom';
 import { getUserId, getVietnamCurrentTime } from '~/utils';
-import { MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
-
 import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
+import { MESSAGE_TYPE_CONVERSATION_TEXT, MESSAGE_TYPE_CONVERSATION_IMAGE } from '~/constants';
+
+import { ChatContext } from "~/context/ChatContext"
 
 const cx = classNames.bind(styles);
 const { Meta } = Card;
@@ -47,6 +48,9 @@ const styleBodyCardMessage = {
 const MyContext = createContext()
 
 const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) => {
+
+    // const message = useContext(ChatContext);
+    // console.log(message)
 
     return (
         <Layout className={cx('layout-user-chat')}>

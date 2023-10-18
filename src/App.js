@@ -4,14 +4,14 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Routing from './routes/Routing';
 import Auth from './routes/Auth';
-import Notification from './context/NotificationContext';
+import ContextContainer from './context/ContextContainer';
 //import refreshToken from '~/api/refreshToken';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID
 
 function App() {
     return (
-        <Notification>
+        <ContextContainer>
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
                 <AuthProvider
                     authType={'cookie'}
@@ -27,7 +27,7 @@ function App() {
                     </Auth>
                 </AuthProvider>
             </GoogleOAuthProvider>
-        </Notification>
+        </ContextContainer>
     );
 }
 

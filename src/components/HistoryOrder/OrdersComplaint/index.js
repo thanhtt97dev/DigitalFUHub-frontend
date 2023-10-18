@@ -2,7 +2,7 @@ import CardOrderItem from "../CardOrderItem";
 import { Col, Empty, Row } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { getUserId } from "~/utils";
-import { editStatusOrder, getOrders } from "~/api/order";
+import { customerUpdateStatusOrder, getAllOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 
@@ -19,7 +19,7 @@ function OrdersComplaint({ status, loading, setLoading }) {
     useEffect(() => {
         if (nextOffset !== -1) {
             // call api
-            getOrders(paramSearch)
+            getAllOrdersCustomer(paramSearch)
                 .then(res => {
                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         setOrders(res.data.result.orders);
@@ -58,7 +58,7 @@ function OrdersComplaint({ status, loading, setLoading }) {
             orderId: orderId,
             statusId: 3
         }
-        editStatusOrder(dataBody)
+        customerUpdateStatusOrder(dataBody)
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrders(prev => {
@@ -84,7 +84,7 @@ function OrdersComplaint({ status, loading, setLoading }) {
             orderId: orderId,
             statusId: 2
         }
-        editStatusOrder(dataBody)
+        customerUpdateStatusOrder(dataBody)
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrders(prev => {
@@ -107,18 +107,16 @@ function OrdersComplaint({ status, loading, setLoading }) {
                         return <Col span={24}>
                             <CardOrderItem key={id}
                                 orderId={v.orderId}
-                                productName={v.productName}
-                                productId={v.productId}
-                                price={v.price}
-                                quantity={v.quantity}
+                                note={v.note}
+                                orderDate={v.orderDate}
                                 shopId={v.shopId}
-                                shopname={v.shopName}
-                                variantName={v.productVariantName}
-                                thumbnail={v.thumbnail}
-                                status={v.statusId}
-                                discount={v.discount}
-                                couponDiscount={v.couponDiscount}
-                                isFeedback={v.isFeedback}
+                                shopName={v.shopName}
+                                statusId={v.statusId}
+                                totalAmount={v.totalAmount}
+                                totalCoinDiscount={v.totalCoinDiscount}
+                                totalCouponDiscount={v.totalCouponDiscount}
+                                totalPayment={v.totalPayment}
+                                orderDetails={v.orderDetails}
                                 onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
                                 onOrderComplaint={() => handleOrderComplaint(v.orderId, v.shopId)}
                             />
