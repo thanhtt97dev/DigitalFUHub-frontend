@@ -62,7 +62,8 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
             const dataAddConversation = {
                 dateCreate: getVietnamCurrentTime(),
-                UserIds: [product.shop.shopId, userId]
+                UserId: userId,
+                RecipientIds: [product.shop.shopId]
             }
             addConversation(dataAddConversation)
                 .then((res) => {

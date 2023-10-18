@@ -14,7 +14,8 @@ import {
     Image
 } from 'antd';
 import { useAuthUser } from 'react-auth-kit';
-import { GetUsersConversation, GetMessages, sendMessage } from '~/api/chat';
+import connectionHub from '~/api/signalr/connectionHub';
+import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
 import {
     SendOutlined,
     FileImageOutlined,
@@ -23,9 +24,9 @@ import {
 import InfiniteScroll from 'react-infinite-scroll-component';
 import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss'
-import moment from 'moment'
 import { useLocation } from 'react-router-dom';
-import { getVietnamCurrentTime } from '~/utils';
+import { getUserId, getVietnamCurrentTime } from '~/utils';
+import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
 import { MESSAGE_TYPE_CONVERSATION_TEXT, MESSAGE_TYPE_CONVERSATION_IMAGE } from '~/constants';
 
 import { ChatContext } from "~/context/ChatContext"
@@ -33,6 +34,8 @@ import { ChatContext } from "~/context/ChatContext"
 const cx = classNames.bind(styles);
 const { Meta } = Card;
 const { Text } = Typography;
+const moment = require('moment');
+require('moment/locale/vi');
 
 const bodyCardHeader = {
     padding: 20,
@@ -46,8 +49,8 @@ const MyContext = createContext()
 
 const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) => {
 
-    const message = useContext(ChatContext);
-    console.log(message)
+    // const message = useContext(ChatContext);
+    // console.log(message)
 
     return (
         <Layout className={cx('layout-user-chat')}>
@@ -83,17 +86,26 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                             <List.Item onClick={() => { handleClickUser(item) }}>
                                 {
                                     item.users.length === 1 ? (
-                                        <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
+                                        <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }} bodyStyle={{ padding: 15 }}>
                                             <List.Item.Meta
                                                 avatar={<Avatar src={item.users[0].avatar} />}
                                                 title={item.users[0].fullname}
+                                                description={
+                                                    item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
+                                                        <p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p> : <p className={cx('text-ellipsis')}>{item.latestMessage}</p>
+                                                }
                                             />
+
                                         </Card>
                                     ) : (
                                         <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
                                             <List.Item.Meta
                                                 avatar={<Avatar icon={<TeamOutlined />} />}
                                                 title={item.conversationName}
+                                                description={
+                                                    item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
+                                                        <p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p> : <p className={cx('text-ellipsis')}>{item.latestMessage}</p>
+                                                }
                                             />
                                         </Card>
                                     )
@@ -311,6 +323,9 @@ const ChatBox = () => {
     const [isUploadFile, setIsUploadFile] = useState(false)
 
 
+
+
+
     const handleOpenUploadFile = () => {
         setIsUploadFile(!isUploadFile)
     }
@@ -330,7 +345,7 @@ const ChatBox = () => {
     );
 
     // const scrollToBottom = () => {
-    //     messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    //     messagesEndRef.current.scrollIntoView({behavior: "smooth" });
     // };
 
     // Handles
@@ -353,11 +368,24 @@ const ChatBox = () => {
         }
         bodyFormData.append('dateCreate', currentTime);
 
+        const dataUpdateUserConversation = {
+            recipientIds: [getUserId()],
+            conversationId: conversationSelected.conversationId,
+            isRead: USER_CONVERSATION_TYPE_UN_READ
+        }
+
         sendMessage(bodyFormData)
             .then((res) => {
                 if (res.status === 200) {
                     form.resetFields();
-                    setIsUploadFile(false)
+                    setIsUploadFile(false);
+
+                    updateUserConversation(dataUpdateUserConversation)
+                        .then((response) => {
+
+                        }).catch((error) => {
+                            console.log(error)
+                        })
                     setNewMessage('');
                 }
             })
@@ -369,7 +397,29 @@ const ChatBox = () => {
 
 
     const handleClickUser = (conversation) => {
-        console.log('handleClickUser' + JSON.stringify(conversation))
+        //update isRead
+        if (conversation.isRead === USER_CONVERSATION_TYPE_UN_READ) {
+            const mapUserId = conversation.users.map(x => x.userId);
+            const dataUpdate = {
+                ConversationId: conversation.conversationId,
+                IsRead: USER_CONVERSATION_TYPE_IS_READ,
+                RecipientIds: mapUserId,
+            }
+
+            updateUserConversation(dataUpdate).catch((error) => {
+                console.log(error)
+            })
+        }
+        //update new isRead
+        const newConversation = userChats.map((item) => {
+            if (item.conversationId === conversation.conversationId) {
+
+                return { ...item, isRead: USER_CONVERSATION_TYPE_IS_READ }
+            }
+            return item;
+        })
+        setUserChats(newConversation)
+
         setConversationSelected(conversation)
     }
 
@@ -391,7 +441,6 @@ const ChatBox = () => {
             .then((response) => {
                 setMessages([...response.data])
             })
-        console.log(conversationSelected)
 
     }, [conversationSelected])
 
@@ -420,6 +469,46 @@ const ChatBox = () => {
         loadUsersChatMessage();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadData]);
+
+
+    useEffect(() => {
+        var userId = getUserId();
+        // Create a new SignalR connection with the token
+        const connection = connectionHub(`chatHub?userId=${userId}`);
+
+        // Start the connection
+        connection.start().catch((err) => console.error(err));
+
+        connection.on(SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, (response) => {
+            if ('messageId' in response) {
+                setMessages((prev) => [...prev, response])
+                const newUserChat = userChats.map((item) => {
+                    if (item.conversationId === response.conversationId) {
+                        if (response.userId !== +getUserId()) {
+                            return { ...item, latestMessage: response.content, isRead: USER_CONVERSATION_TYPE_UN_READ }
+
+                        } else {
+                            return { ...item, latestMessage: response.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                        }
+                    }
+                    return item;
+                })
+
+                setUserChats(newUserChat)
+            } else {
+                const filterUserChat = userChats.find(x => x.conversationId === response.conversationId);
+                if (!filterUserChat) {
+                    setUserChats((prev) => [...prev, response])
+                }
+            }
+        });
+
+        return () => {
+            // Clean up the connection when the component unmounts
+            connection.stop();
+        };
+
+    }, [userChats])
 
     const propsMessageChat = {
         conversationSelected: conversationSelected,
