@@ -7,8 +7,9 @@ import {
     MinusCircleOutlined,
     SyncOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Col, Divider, Image, Row, Space, Tag, Typography } from "antd";
+import { Button, Card, Col, Divider, Image, Row, Space, Tag, Tooltip, Typography } from "antd";
 import { Link } from "react-router-dom";
+import { ChatIcon } from "~/components/Icon";
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
 import { formatStringToCurrencyVND } from "~/utils";
 
@@ -16,24 +17,22 @@ const { Text, Title } = Typography;
 
 function CardOrderItem({
     orderId,
-    productName,
-    productId,
-    price,
-    quantity,
+    note,
+    orderDate,
     shopId,
-    shopname,
-    variantName,
-    thumbnail,
-    status,
-    discount,
-    couponDiscount,
-    isFeedback,
+    shopName,
+    statusId,
+    totalAmount,
+    totalCoinDiscount,
+    totalCouponDiscount,
+    totalPayment,
+    orderDetails,
     onOrderComplete = () => { },
     onOrderComplaint = () => { }
 }) {
 
     const getButtonsStatus = () => {
-        if (status === ORDER_WAIT_CONFIRMATION) {
+        if (statusId === ORDER_WAIT_CONFIRMATION) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Button danger onClick={onOrderComplaint}>Khiếu nại</Button>
@@ -41,19 +40,24 @@ function CardOrderItem({
                 <Col>
                     <Button type="primary" onClick={onOrderComplete}>Xác nhận</Button>
                 </Col>
+                <Col>
+                    <Link to={`/history/order/${orderId}`}>
+                        <Button type="default">Chi tiết</Button>
+                    </Link>
+                </Col>
             </Row>
-        } else if (status === ORDER_CONFIRMED) {
+        } else if (statusId === ORDER_CONFIRMED) {
             return <Row justify="end" gutter={[8]}>
-                {!isFeedback &&
-                    <Col>
-                        <Button type="primary">Đánh giá</Button>
-                    </Col>
-                }
                 <Col>
                     <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
                 </Col>
+                <Col>
+                    <Link to={`/history/order/${orderId}`}>
+                        <Button type="default">Chi tiết</Button>
+                    </Link>
+                </Col>
             </Row>
-        } else if (status === ORDER_COMPLAINT) {
+        } else if (statusId === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Tag icon={<SyncOutlined size={16} spin />} style={{ fontSize: 14, height: 32, lineHeight: 2.2 }} color="warning">Đang khiếu nại</Tag>
@@ -61,23 +65,43 @@ function CardOrderItem({
                 <Col>
                     <Button type="primary" onClick={onOrderComplete}>Xác nhận</Button>
                 </Col>
+                <Col>
+                    <Link to={`/history/order/${orderId}`}>
+                        <Button type="default">Chi tiết</Button>
+                    </Link>
+                </Col>
             </Row>
-        } else if (status === ORDER_DISPUTE) {
+        } else if (statusId === ORDER_DISPUTE) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
                 </Col>
+                <Col>
+                    <Link to={`/history/order/${orderId}`}>
+                        <Button type="default">Chi tiết</Button>
+                    </Link>
+                </Col>
             </Row>
-        } else if (status === ORDER_REJECT_COMPLAINT) {
+        } else if (statusId === ORDER_REJECT_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Tag color="red" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Từ chối khiếu nại</Tag>
                 </Col>
+                <Col>
+                    <Link to={`/history/order/${orderId}`}>
+                        <Button type="default">Chi tiết</Button>
+                    </Link>
+                </Col>
             </Row>
-        } else if (status === ORDER_SELLER_REFUNDED || status === ORDER_SELLER_VIOLATES) {
+        } else if (statusId === ORDER_SELLER_REFUNDED || statusId === ORDER_SELLER_VIOLATES) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Tag color="cyan" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
+                </Col>
+                <Col>
+                    <Link to={`/history/order/${orderId}`}>
+                        <Button type="default">Chi tiết</Button>
+                    </Link>
                 </Col>
             </Row>
         }
@@ -89,7 +113,7 @@ function CardOrderItem({
                 {/* <ShopOutlined style={{ fontSize: '18px' }} /> */}
             </Col>
             <Col>
-                <Title level={5}>{shopname}</Title>
+                <Title level={5}>{shopName}</Title>
             </Col>
             <Col>
                 <Title level={5}>
@@ -101,71 +125,79 @@ function CardOrderItem({
                         Xem cửa hàng
                     </Button></Title>
             </Col>
+            <Col>
+                <Title level={5}>
+                    <Button
+                        type="default"
+                        size="small"
+                        icon={<ChatIcon />}
+                    >
+                        Nhắn tin
+                    </Button></Title>
+            </Col>
         </Row>}
         bordered={true}
     >
-        <Link to={`/history/order/${orderId}`}>
-            <Row gutter={[8, 8]}>
-                <Col flex={0}>
-                    <Image
-                        width={100}
-                        src={thumbnail}
-                        preview={false}
-                    />
-                </Col>
-                <Col flex={5}>
-                    <Row>
-                        <Col span={24}><Title level={5}>{productName}</Title></Col>
-                        <Col span={24}><Text>{`Phân loại hàng: ${variantName}`}</Text></Col>
-                        <Col span={24}>
+        <div>
+            {orderDetails.map((v, i) => {
+                return (
+                    <Row gutter={[8, 8]}>
+                        <Col flex={0}>
+                            <Link to={`/product/${v.productId}`}>
+                                <Image
+                                    width={120}
+                                    src={v.thumbnail}
+                                    preview={false}
+                                />
+                            </Link>
+                        </Col>
+                        <Col flex={5}>
                             <Row>
-                                <Col span={1}>
-                                    <Text>{`x${quantity}`}</Text>
+                                <Col span={24}>
+                                    <Title level={5}>
+                                        {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.substring(0, 70)}...</Tooltip> : v.productName}
+                                    </Title>
                                 </Col>
-                                <Col span={23}>
-                                    <Row justify="end">
-                                        {discount === 0 ?
-                                            <Text>{formatStringToCurrencyVND(price)} đ</Text>
-                                            :
-                                            <Space size={[8, 0]}>
-                                                <Text delete>{formatStringToCurrencyVND(price)} đ</Text>
-                                                <Text>{formatStringToCurrencyVND(price - (price * discount / 100))} đ</Text>
-                                            </Space>
-                                        }
+                                <Col span={24}><Text>{`Phân loại hàng: ${v.productVariantName}`}</Text></Col>
+                                <Col span={24}>
+                                    <Row>
+                                        <Col span={1}>
+                                            <Text>{`x${v.quantity}`}</Text>
+                                        </Col>
+                                        <Col span={23}>
+                                            <Row justify="end">
+                                                {v.discount === 0 ?
+                                                    <Text>{formatStringToCurrencyVND(v.price)}₫</Text>
+                                                    :
+                                                    <Space size={[8, 0]}>
+                                                        <Text delete>{formatStringToCurrencyVND(v.price)}₫</Text>
+                                                        <Text>{formatStringToCurrencyVND(v.price - (v.price * v.discount / 100))}₫</Text>
+                                                    </Space>
+                                                }
+                                            </Row>
+                                        </Col>
                                     </Row>
                                 </Col>
                             </Row>
                         </Col>
+                        {!v.isFeedback && <Col span={24}>
+                            <Row justify="end">
+                                <Button type="primary">Đánh giá</Button>
+                            </Row>
+                        </Col>}
                     </Row>
-                </Col>
-            </Row>
-        </Link>
+                )
+            })}
+        </div>
         <Divider />
         <Row gutter={[0, 16]}>
             <Col span={24}>
                 <Row justify="end">
-                    {/* {couponDiscount !== 0 && <Col span={24}>
-                        <Row justify="end">
-                            <Col style={{ textAlign: 'right' }}>Tổng tiền:</Col>
-                            <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                <Text>{formatStringToCurrencyVND((price - (price * discount / 100)) * quantity)} đ</Text>
-                            </Col>
-                        </Row>
-                    </Col>}
-
-                    {couponDiscount !== 0 && <Col span={24}>
-                        <Row justify="end">
-                            <Col style={{ textAlign: 'right' }}>Áp mã giảm giá:</Col>
-                            <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                <Text>-{(((price - (price * discount / 100)) * quantity) * couponDiscount / 100)} đ</Text>
-                            </Col>
-                        </Row>
-                    </Col>} */}
                     <Col span={24}>
                         <Row justify="end">
-                            <Col style={{ textAlign: 'right' }}>Thành tiền:</Col>
+                            <Col style={{ textAlign: 'right' }}><Title level={5}>Thành tiền:</Title></Col>
                             <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                <Text>{`${formatStringToCurrencyVND(((price - (price * discount / 100)) * quantity) - (((price - (price * discount / 100)) * quantity) * couponDiscount / 100))} đ`}</Text>
+                                <Text>{`${formatStringToCurrencyVND(totalPayment)}đ`}</Text>
                             </Col>
                         </Row>
                     </Col>

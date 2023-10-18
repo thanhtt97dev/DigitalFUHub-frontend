@@ -30,6 +30,7 @@ import Orders from '~/pages/Seller/ManageOrder/Orders';
 import HistoryTransactions from '~/pages/HistoryTransactions';
 import RegisterSeller from '~/pages/User/Settings/RegisterSeller';
 import HistoryOrder from '~/pages/HistoryOrder';
+import OrderDetail from '~/pages/OrderDetail';
 
 const routesConfig = [
     {
@@ -199,6 +200,13 @@ const routesConfig = [
         path: '/history/order',
         layout: <NormalLayout />,
         component: <SettingsLayout><HistoryOrder /></SettingsLayout>,
+        role: [SELLER_ROLE, CUSTOMER_ROLE]
+    },
+    {
+        title: 'History Order',
+        path: '/history/order/:orderId',
+        layout: <NormalLayout />,
+        component: <SettingsLayout><OrderDetail /></SettingsLayout>,
         role: [SELLER_ROLE, CUSTOMER_ROLE]
     },
     {
