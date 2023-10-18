@@ -2,23 +2,24 @@ import { createContext, useEffect, useState } from "react";
 
 import connectionHub from '~/api/signalr/connectionHub';
 import { getUserId } from '~/utils';
-import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE } from '~/constants';
+import { SIGNAL_R_USER_ONLINE_STATUS_HUB_RECEIVE_ONLINE_STATUS } from '~/constants';
 
-export const ChatContext = createContext();
+export const UserOnlineStatusContext = createContext();
 
-export function Chat({ children }) {
-    const [message, setMessage] = useState("");
+export function UserOnlineStatus({ children }) {
+    const [userOnlineData, setuserOnlineData] = useState("");
     useEffect(() => {
         var userId = getUserId();
         if (userId === undefined || userId === null) return;
+
         // Create a new SignalR connection with the token
-        const connection = connectionHub(`chatHub?userId=${userId}`);
+        const connection = connectionHub(`userOnlineStatusHub?userId=${userId}`);
 
         // Start the connection
         connection.start().catch((err) => console.error(err));
 
-        connection.on(SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, (response) => {
-            setMessage(response)
+        connection.on(SIGNAL_R_USER_ONLINE_STATUS_HUB_RECEIVE_ONLINE_STATUS, (response) => {
+            setuserOnlineData(response)
         });
 
         return () => {
@@ -31,8 +32,8 @@ export function Chat({ children }) {
 
 
     return (
-        <ChatContext.Provider value={message}>
+        <UserOnlineStatusContext.Provider value={userOnlineData}>
             {children}
-        </ChatContext.Provider>
+        </UserOnlineStatusContext.Provider>
     );
 }
