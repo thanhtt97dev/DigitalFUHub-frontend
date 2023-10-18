@@ -146,3 +146,7 @@ export const RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY = 'Không thể mua nhi�
 //Message Type
 export const MESSAGE_TYPE_CONVERSATION_TEXT = "0";
 export const MESSAGE_TYPE_CONVERSATION_IMAGE = "1";
+
+export const USER_CONVERSATION_TYPE_INITIAL = 1;
+export const USER_CONVERSATION_TYPE_UN_READ = 2;
+export const USER_CONVERSATION_TYPE_IS_READ = 3;

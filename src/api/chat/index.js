@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from '../defaultApi';
+import { apiGet, apiPost, apiPostAuth } from '../defaultApi';
 
 export const GetUsersConversation = (userId) => {
     return apiGet(`api/Conversations/getUsers?userId=${userId}`);
@@ -15,3 +15,10 @@ export const sendMessage = (data) => {
 export const addConversation = (data) => {
     return apiPost('api/Conversations/add', data);
 };
+
+
+export const updateUserConversation = (data) => {
+    return apiPostAuth('api/UserConversations/update', data);
+};
+
+
