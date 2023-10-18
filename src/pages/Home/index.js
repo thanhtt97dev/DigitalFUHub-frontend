@@ -149,7 +149,7 @@ function Home() {
                         <div key={item.productId}>
                             <div>
                                 <Link className={cx("grid2-item2")} to={`/product/${item.productId}`}>
-                                    <img src={item.thumbnail} /><br />
+                                    <img src={item.thumbnail} alt='thummbnail' /><br />
                                 </Link>
                                 <Link className={cx("grid2-item2")} to={`/product/${item.productId}`}>
                                     <span className={cx("name")}>{item.productName}</span>
@@ -191,7 +191,7 @@ function Home() {
                     <>
                         <div className="border-top"></div>
                         <div className={cx("load-more-button")}>
-                            <a onClick={() => setVisibleProducts(visibleProducts + 8)}>Xem thêm</a>
+                            <Button type="primary" ghost onClick={() => setVisibleProducts(visibleProducts + 8)}>Xem thêm</Button>
                         </div>
                     </>
                 )}

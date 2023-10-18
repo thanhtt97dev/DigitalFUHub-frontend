@@ -25,7 +25,7 @@ function NormalLayout(props) {
                 <Content>
                     <div
                         style={{
-                            background: isDepositPage ? '#343541' : '#F3F4F6',
+                            background: isDepositPage ? '#343541' : '#f4f7fe',
                             paddingRight: 30,
                             paddingLeft: 30,
                             paddingTop: isDepositPage ? 0 : 30,
