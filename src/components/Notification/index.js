@@ -7,6 +7,8 @@ import { formatTimeAgoVN } from '~/utils';
 import { editNotificationIsReaded } from "~/api/signalr/notification";
 import connectionHub from '~/api/signalr/connectionHub';
 import { SIGNAL_R_NOTIFICATION_HUB_RECEIVE_NOTIFICATION, SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION } from '~/constants';
+const moment = require('moment');
+require('moment/locale/vi');
 
 function Notification() {
     const auth = useAuthUser();
@@ -67,7 +69,6 @@ function Notification() {
         editNotificationIsReaded(notifi.NotificationId)
             .then(res => {
                 navigate(notifi.Link);
-                window.location.reload();
             })
     };
 
@@ -92,7 +93,7 @@ function Notification() {
             </Badge>
             <Drawer
                 style={{ overflowY: 'scroll', backgroundColor: '#F3F4F6' }}
-                title="Notification"
+                title="Thông báo"
                 placement="right"
                 onClose={onClose}
                 open={open}
@@ -122,7 +123,7 @@ function Notification() {
                                             message={
                                                 <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                     <b style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 15)}...` : notifi.Content}</b>
-                                                    <b style={{ fontSize: 10, margin: 0, color: 'blue' }}>{formatTimeAgoVN(notifi.DateCreated)}</b>
+                                                    <b style={{ fontSize: 10, margin: 0, color: 'blue' }}>{moment(notifi.DateCreated).fromNow()}</b>
                                                 </span>
                                             }
                                             description={<p>{notifi.Content.length > 60 ? `${notifi.Content.slice(0, 60)}...` : notifi.Content}</p>}
