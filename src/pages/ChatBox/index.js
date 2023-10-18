@@ -13,7 +13,6 @@ import {
     Form,
     Image
 } from 'antd';
-import connectionHub from '~/api/signalr/connectionHub';
 import { useAuthUser } from 'react-auth-kit';
 import { GetUsersConversation, GetMessages, sendMessage } from '~/api/chat';
 import {
@@ -26,10 +25,10 @@ import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss'
 import moment from 'moment'
 import { useLocation } from 'react-router-dom';
-import { getUserId, getVietnamCurrentTime } from '~/utils';
+import { getVietnamCurrentTime } from '~/utils';
 import { MESSAGE_TYPE_CONVERSATION_TEXT, MESSAGE_TYPE_CONVERSATION_IMAGE } from '~/constants';
 
-import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE } from '~/constants';
+import { ChatContext } from "~/context/ChatContext"
 
 const cx = classNames.bind(styles);
 const { Meta } = Card;
@@ -47,25 +46,8 @@ const MyContext = createContext()
 
 const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) => {
 
-    useEffect(() => {
-        var userId = getUserId();
-        // Create a new SignalR connection with the token
-        const connection = connectionHub(`chatHub?userId=${userId}`);
-
-        // Start the connection
-        connection.start().catch((err) => console.error(err));
-
-        connection.on(SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, (response) => {
-            console.log('response = ' + JSON.stringify(response))
-        });
-
-        return () => {
-            // Clean up the connection when the component unmounts
-            connection.stop();
-        };
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    const message = useContext(ChatContext);
+    console.log(message)
 
     return (
         <Layout className={cx('layout-user-chat')}>
