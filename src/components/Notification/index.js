@@ -12,7 +12,6 @@ require('moment/locale/vi');
 function Notification() {
     const auth = useAuthUser();
     const user = auth();
-    const navigate = useNavigate();
 
     const [api, contextHolder] = notification.useNotification();
 
@@ -64,15 +63,15 @@ function Notification() {
         });
     };
 
-    const handleNotificationClick = (notifi) => {
-        editNotificationIsReaded(notifi.NotificationId)
-            .then(res => {
-                window.location.replace(notifi.Link);
-            })
-    };
+    const handleClickOpenNotification = (notifi, isReaded) => {
+        if (!isReaded) {
+            var currentNotification = notifications.find(x => x.NotificationId === notifi.NotificationId)
+            currentNotification.IsReaded = true;
 
-    const NotificationClick = (Link) => {
-        window.location.replace(Link);
+            editNotificationIsReaded(notifi.NotificationId)
+                .then(res => { })
+        }
+        setOpen(false)
     };
 
     useEffect(() => {
@@ -101,7 +100,7 @@ function Notification() {
                         return (
                             <>
                                 {notifi.IsReaded ? (
-                                    <Link onClick={() => NotificationClick(notifi.Link)}>
+                                    <Link to={notifi.Link} onClick={() => handleClickOpenNotification(notifi, true)}>
                                         <Alert
                                             style={{ backgroundColor: 'white', width: '100%', height: '20', border: 'none' }}
                                             message={
@@ -115,7 +114,7 @@ function Notification() {
                                         />
                                     </Link >
                                 ) : (
-                                    <Link key={index} onClick={() => handleNotificationClick(notifi)}>
+                                    <Link to={notifi.Link} key={index} onClick={() => handleClickOpenNotification(notifi, false)} >
                                         <Alert
                                             style={{ width: '100%', height: '20', border: 'none' }}
                                             message={
