@@ -67,13 +67,12 @@ function Notification() {
     const handleNotificationClick = (notifi) => {
         editNotificationIsReaded(notifi.NotificationId)
             .then(res => {
-                navigate(notifi.Link);
+                window.location.replace(notifi.Link);
             })
     };
 
     const NotificationClick = (Link) => {
-        navigate(Link);
-        window.location.reload();
+        window.location.replace(Link);
     };
 
     useEffect(() => {
