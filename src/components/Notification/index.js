@@ -3,7 +3,6 @@ import { useAuthUser } from 'react-auth-kit';
 import { Link, useNavigate } from 'react-router-dom';
 import { BellFilled, ClockCircleOutlined } from '@ant-design/icons';
 import { Badge, notification, Drawer, Empty, Alert } from 'antd';
-import { formatTimeAgoVN } from '~/utils';
 import { editNotificationIsReaded } from "~/api/signalr/notification";
 import connectionHub from '~/api/signalr/connectionHub';
 import { SIGNAL_R_NOTIFICATION_HUB_RECEIVE_NOTIFICATION, SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION } from '~/constants';
@@ -109,7 +108,7 @@ function Notification() {
                                             message={
                                                 <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                     <b style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 15)}...` : notifi.Title}</b>
-                                                    <p style={{ fontSize: 10, margin: 0 }}>{formatTimeAgoVN(notifi.DateCreated)}</p>
+                                                    <p style={{ fontSize: 10, margin: 0 }}>{moment(notifi.DateCreated).fromNow()}</p>
                                                 </span>
                                             }
                                             description={<p>{notifi.Content.length > 60 ? `${notifi.Content.slice(0, 60)}...` : notifi.Content}</p>}
