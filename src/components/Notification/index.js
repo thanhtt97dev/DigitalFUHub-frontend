@@ -6,6 +6,8 @@ import { Badge, notification, Dropdown, Menu, Empty, Alert } from 'antd';
 import { editNotificationIsReaded } from "~/api/signalr/notification";
 import connectionHub from '~/api/signalr/connectionHub';
 import { SIGNAL_R_NOTIFICATION_HUB_RECEIVE_NOTIFICATION, SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION } from '~/constants';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCircle } from "@fortawesome/free-solid-svg-icons"
 const moment = require('moment');
 require('moment/locale/vi');
 
@@ -95,11 +97,11 @@ function Notification() {
         }
     }, [notifications]);
 
-    const maxHeight = window.innerHeight - 150;
+    const minHeight = window.innerHeight - 150;
 
     const menu = (
         <Menu style={{ width: '400px' }}>
-            <div style={{ maxHeight: maxHeight, overflowY: 'auto' }}>
+            <div style={{ minHeight: minHeight, overflowY: 'auto' }}>
                 {notifications.slice(0, visibleNotifications).map((notifi, index) => (
                     <Menu.Item>
                         {notifi.IsReaded ? (
@@ -112,22 +114,22 @@ function Notification() {
                                             <p style={{ fontSize: 10, margin: 0 }}>{moment(notifi.DateCreated).fromNow()}</p>
                                         </span>
                                     }
-                                    description={<p>{notifi.Content.length > 60 ? `${notifi.Content.slice(0, 60)}...` : notifi.Content}</p>}
+                                    description={<p>{notifi.Content.length > 80 ? `${notifi.Content.slice(0, 80)}...` : notifi.Content}</p>}
                                     type="info"
                                 />
                             </Link>
                         ) : (
                             <Link to={notifi.Link} onClick={() => handleClickOpenNotification(notifi, false)}>
                                 <Alert
-                                    style={{ backgroundColor: 'white', width: '100%', height: '20', border: 'none' }}
+                                    style={{ backgroundColor: 'white', width: '100%', minHeight: '100px', border: 'none' }}
                                     message={
                                         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <b style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 15)}...` : notifi.Content}</b>
+                                            <b style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 20)}...` : notifi.Content}</b>
                                             <b style={{ fontSize: 10, margin: '0 4px', color: 'blue' }}>{moment(notifi.DateCreated).fromNow()}</b>
-                                            <div style={{ backgroundColor: 'blue', width: '8px', height: '8px', borderRadius: '50%', marginRight: '8px' }} />
+                                            <FontAwesomeIcon icon={faCircle} style={{ color: "#0866ff", position: "absolute", top: "55px", left: "340px" }} />
                                         </span>
                                     }
-                                    description={<b>{notifi.Content.length > 60 ? `${notifi.Content.slice(0, 60)}...` : notifi.Content}</b>}
+                                    description={<b>{notifi.Content.length > 80 ? `${notifi.Content.slice(0, 80)}...` : notifi.Content}</b>}
                                     type="info"
                                 />
                             </Link>
