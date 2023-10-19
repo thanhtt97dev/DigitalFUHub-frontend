@@ -5,6 +5,7 @@ import { getUserId } from "~/utils";
 import { customerUpdateStatusOrder, getAllOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
+import { addFeedbackOrder } from "~/api/feedback";
 
 function AllOrder({ status = 0, loading, setLoading }) {
     const notification = useContext(NotificationContext);
@@ -102,7 +103,22 @@ function AllOrder({ status = 0, loading, setLoading }) {
     }
 
     const handleCustomerFeedback = (formData) => {
+        const orderId = formData.get("orderId");
+        const orderDetailId = formData.get("orderDetailId");
+        addFeedbackOrder(formData)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setOrders(prev => {
+                        const order = prev.find((value) => value.orderId === parseInt(orderId));
+                        const orderDetail = order.orderDetails.find((v) => v.orderDetailId === parseInt(orderDetailId))
+                        orderDetail.isFeedback = true;
+                        return [...prev];
+                    })
+                }
+            })
+            .catch((err) => {
 
+            })
     }
     return (<div >
         {!loading ?

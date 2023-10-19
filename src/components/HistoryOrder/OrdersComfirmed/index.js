@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getUserId } from "~/utils";
 import { getAllOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { addFeedbackOrder } from "~/api/feedback";
 
 function OrdersConfirmed({ status, loading, setLoading }) {
     const [paramSearch, setParamSearch] = useState({
@@ -48,6 +49,24 @@ function OrdersConfirmed({ status, loading, setLoading }) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+    const handleCustomerFeedback = (formData) => {
+        const orderId = formData.get("orderId");
+        const orderDetailId = formData.get("orderDetailId");
+        addFeedbackOrder(formData)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setOrders(prev => {
+                        const order = prev.find((value) => value.orderId === parseInt(orderId));
+                        const orderDetail = order.orderDetails.find((v) => v.orderDetailId === parseInt(orderDetailId))
+                        orderDetail.isFeedback = true;
+                        return [...prev];
+                    })
+                }
+            })
+            .catch((err) => {
+
+            })
+    }
     return (<div>
         {!loading ?
             orders.length > 0 ?
@@ -67,6 +86,7 @@ function OrdersConfirmed({ status, loading, setLoading }) {
                                 totalCouponDiscount={v.totalCouponDiscount}
                                 totalPayment={v.totalPayment}
                                 orderDetails={v.orderDetails}
+                                onFeedback={handleCustomerFeedback}
                             />
                         </Col>
                     })}
