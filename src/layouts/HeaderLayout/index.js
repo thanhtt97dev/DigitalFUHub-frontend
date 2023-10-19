@@ -114,9 +114,9 @@ function HeaderLayout() {
             <div className={cx("header1")} />
             <Header className={cx("header2")}>
                 <Space className={cx("item1")}>
-                    <Link to={'/home'}>
+                    {/* <Link to={'/home'}>
                         <img width={60} src={logo} />
-                    </Link>
+                    </Link> */}
                     {isGridVisible && (
                         <Link to={'/home'} className={cx("link")}>
                             <h3>DigitalFUHub</h3>

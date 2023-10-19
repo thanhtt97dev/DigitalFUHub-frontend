@@ -219,6 +219,11 @@ function OrderDetail() {
                                                     {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.substring(0, 70)}...</Tooltip> : v.productName}
                                                 </Title>
                                             </Col>
+                                            {!v.isFeedback && order.statusId === ORDER_CONFIRMED && <Col offset={1} span={6}>
+                                                <Row justify="end">
+                                                    <Button type="primary" size="small">Đánh giá</Button>
+                                                </Row>
+                                            </Col>}
                                             {v.isFeedback && <Col offset={1} span={6}>
                                                 <Row justify="end" gutter={[6, 0]}>
                                                     <Col>
@@ -258,20 +263,12 @@ function OrderDetail() {
 
                                 </Row>
                             </Col>
-                            <Divider />
                             <Col span={24}>
                                 <Row>
-                                    <Col span={24}>
-                                        <Title level={5}>Dữ liệu sản phẩm:</Title>
-                                    </Col>
-                                    {v?.assetInformations?.map((v, i) => (<Col offset={1} span={23} key={i}>{v}</Col>))}
+                                    <Col span={24}><Divider><Title level={5}>Dữ liệu sản phẩm</Title></Divider></Col>
+                                    {v?.assetInformations?.map((v, i) => (<Col span={24} key={i}>{v}</Col>))}
                                 </Row>
                             </Col>
-                            {!v.isFeedback && order.statusId === ORDER_CONFIRMED && <Col span={24}>
-                                <Row justify="end">
-                                    <Button type="primary">Đánh giá</Button>
-                                </Row>
-                            </Col>}
                         </Row>
                     )
                 })}
@@ -327,7 +324,15 @@ function OrderDetail() {
                     {getButtonsStatus()}
                 </Col>
             </Row>
-            <Divider />
+
+            {order.note &&
+                <Row>
+                    <Col span={24}><Divider><Title level={5}>Lời nhắn</Title></Divider></Col>
+                    <Col span={23}>
+                        <Text>{order.note}</Text>
+                    </Col>
+                </Row>
+            }
         </Card>
     </Card>);
 }

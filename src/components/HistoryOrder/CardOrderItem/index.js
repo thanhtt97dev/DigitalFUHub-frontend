@@ -6,14 +6,25 @@ import {
     ExclamationCircleOutlined,
     MinusCircleOutlined,
     SyncOutlined,
+    PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Col, Divider, Image, Row, Space, Tag, Tooltip, Typography } from "antd";
+import { Button, Card, Col, Divider, Form, Image, Input, Modal, Rate, Row, Space, Tag, Tooltip, Typography, Upload } from "antd";
+import TextArea from "antd/es/input/TextArea";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChatIcon } from "~/components/Icon";
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
 import { formatStringToCurrencyVND } from "~/utils";
 
 const { Text, Title } = Typography;
+
+const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
 
 function CardOrderItem({
     orderId,
@@ -30,6 +41,35 @@ function CardOrderItem({
     onOrderComplete = () => { },
     onOrderComplaint = () => { }
 }) {
+    const [form] = Form.useForm();
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewImage, setPreviewImage] = useState('');
+    const [previewTitle, setPreviewTitle] = useState('');
+    const [fileList, setFileList] = useState([]);
+    const handleCancel = () => setPreviewOpen(false);
+    const handlePreview = async (file) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setPreviewImage(file.url || file.preview);
+        setPreviewOpen(true);
+        setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
+    };
+    const handleChange = (info) => {
+        let newFileList = [...info.fileList];
+
+        newFileList = newFileList.slice(-5);
+
+        newFileList = newFileList.map((file) => {
+            if (file.response) {
+                file.url = file.response.url;
+            }
+            file.response = '';
+            file.status = 'done';
+            return file;
+        });
+        setFileList(newFileList);
+    }
 
     const getButtonsStatus = () => {
         if (statusId === ORDER_WAIT_CONFIRMATION) {
@@ -51,6 +91,12 @@ function CardOrderItem({
                 <Col>
                     <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
                 </Col>
+                {orderDetails.some((v, i) => v.isFeedback === true) ?
+                    <Col>
+                        <Button type="default">Xem đánh giá</Button>
+                    </Col>
+                    : ''
+                }
                 <Col>
                     <Link to={`/history/order/${orderId}`}>
                         <Button type="default">Chi tiết</Button>
@@ -106,110 +152,189 @@ function CardOrderItem({
             </Row>
         }
     }
-    return <Card
-        title={<Row gutter={[8, 0]} align="bottom">
-            <Col>
-                <Title level={5}><ShopOutlined style={{ fontSize: '18px' }} /></Title>
-                {/* <ShopOutlined style={{ fontSize: '18px' }} /> */}
-            </Col>
-            <Col>
-                <Title level={5}>{shopName}</Title>
-            </Col>
-            <Col>
-                <Title level={5}>
-                    <Button
-                        type="default"
-                        size="small"
-                        icon={<ShopOutlined />}
-                    >
-                        Xem cửa hàng
-                    </Button></Title>
-            </Col>
-            <Col>
-                <Title level={5}>
-                    <Button
-                        type="default"
-                        size="small"
-                        icon={<ChatIcon />}
-                    >
-                        Nhắn tin
-                    </Button></Title>
-            </Col>
-        </Row>}
-        bordered={true}
-    >
-        <div>
-            {orderDetails.map((v, i) => {
-                return (
-                    <Row gutter={[8, 8]}>
-                        <Col flex={0}>
-                            <Link to={`/product/${v.productId}`}>
-                                <Image
-                                    width={120}
-                                    src={v.thumbnail}
-                                    preview={false}
-                                />
-                            </Link>
-                        </Col>
-                        <Col flex={5}>
-                            <Row>
-                                <Col span={24}>
-                                    <Title level={5}>
-                                        {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.substring(0, 70)}...</Tooltip> : v.productName}
-                                    </Title>
-                                </Col>
-                                <Col span={24}><Text>{`Phân loại hàng: ${v.productVariantName}`}</Text></Col>
-                                <Col span={24}>
-                                    <Row>
-                                        <Col span={1}>
-                                            <Text>{`x${v.quantity}`}</Text>
-                                        </Col>
-                                        <Col span={23}>
-                                            <Row justify="end">
-                                                {v.discount === 0 ?
-                                                    <Text>{formatStringToCurrencyVND(v.price)}₫</Text>
-                                                    :
-                                                    <Space size={[8, 0]}>
-                                                        <Text delete>{formatStringToCurrencyVND(v.price)}₫</Text>
-                                                        <Text>{formatStringToCurrencyVND(v.price - (v.price * v.discount / 100))}₫</Text>
-                                                    </Space>
-                                                }
-                                            </Row>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </Row>
-                        </Col>
-                        {!v.isFeedback && <Col span={24}>
-                            <Row justify="end">
-                                <Button type="primary">Đánh giá</Button>
-                            </Row>
-                        </Col>}
-                    </Row>
-                )
-            })}
-        </div>
-        <Divider />
-        <Row gutter={[0, 16]}>
-            <Col span={24}>
-                <Row justify="end">
-                    <Col span={24}>
-                        <Row justify="end">
-                            <Col style={{ textAlign: 'right' }}><Title level={5}>Thành tiền:</Title></Col>
-                            <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                <Text>{`${formatStringToCurrencyVND(totalPayment)}đ`}</Text>
-                            </Col>
-                        </Row>
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const showModalFeedback = () => {
+        form.resetFields();
+        setFileList([])
+        setIsModalOpen(true);
+    };
+    const handleModalFeedbackOk = () => {
+        setIsModalOpen(false);
+    };
+    const handleModalFeedbackCancel = () => {
+        setIsModalOpen(false);
+    };
+    return <>
+        <Modal
+            title="Đánh giá sản phẩm"
+            footer={null}
+            open={isModalOpen}
+            onOk={handleModalFeedbackOk}
+            onCancel={handleModalFeedbackCancel}>
+            <Form
+                form={form}
+            >
+                <Row>
+                    <Col span={8} offset={1}><Text>Điểm đánh giá</Text></Col>
+                    <Col span={15}>
+                        <Form.Item name="rate">
+                            <Rate style={{
+                                lineHeight: '0'
+                            }} />
+                        </Form.Item>
                     </Col>
                 </Row>
+                <Row>
+                    <Col span={8} offset={1}><Text>Nội dung</Text></Col>
+                    <Col span={15}>
+                        <Form.Item name="content">
+                            <TextArea />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={8} offset={1}><Text>Hình ảnh</Text></Col>
+                    <Col span={15}>
+                        <Form.Item name="image">
+                            <Upload
+                                accept=".png, .jpeg, .jpg"
+                                beforeUpload={false}
+                                listType="picture-card"
+                                fileList={fileList}
+                                onPreview={handlePreview}
+                                onChange={handleChange}
+                                maxCount={5}
+                            >
 
-            </Col>
-            <Col span={24}>
-                {getButtonsStatus()}
-            </Col>
-        </Row>
+                                {fileList.length >= 5 ? null : <div>
+                                    <PlusOutlined />
+                                    <div
+                                        style={{
+                                            marginTop: 8,
+                                        }}
+                                    >
+                                        Upload
+                                    </div>
+                                </div>}
+                            </Upload>
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row justify="end" gutter={[16, 0]}>
+                    <Col><Button type="default" danger>Hủy</Button></Col>
+                    <Col><Button type="primary" htmlType="submit">Xác nhận</Button></Col>
+                </Row>
+            </Form>
+        </Modal >
+        <Card
+            title={<Row gutter={[8, 0]} align="bottom">
+                <Col>
+                    <Title level={5}><ShopOutlined style={{ fontSize: '18px' }} /></Title>
+                    {/* <ShopOutlined style={{ fontSize: '18px' }} /> */}
+                </Col>
+                <Col>
+                    <Title level={5}>{shopName}</Title>
+                </Col>
+                <Col>
+                    <Title level={5}>
+                        <Button
+                            type="default"
+                            size="small"
+                            icon={<ShopOutlined />}
+                        >
+                            Xem cửa hàng
+                        </Button></Title>
+                </Col>
+                <Col>
+                    <Title level={5}>
+                        <Button
+                            type="default"
+                            size="small"
+                            icon={<ChatIcon />}
+                        >
+                            Nhắn tin
+                        </Button></Title>
+                </Col>
+            </Row>}
+            bordered={true}
+        >
+            <div>
+                {orderDetails.map((v, i) => {
+                    return (
+                        <Row gutter={[8, 8]}>
+                            <Col flex={0}>
+                                <Link to={`/product/${v.productId}`}>
+                                    <Image
+                                        width={120}
+                                        src={v.thumbnail}
+                                        preview={false}
+                                    />
+                                </Link>
+                            </Col>
+                            <Col flex={5}>
+                                <Row>
+                                    <Col span={24}>
+                                        <Row>
+                                            <Col span={17}>
+                                                <Title level={5}>
+                                                    {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.substring(0, 70)}...</Tooltip> : v.productName}
+                                                </Title>
+                                            </Col>
+                                            {!v.isFeedback && statusId === ORDER_CONFIRMED && <Col offset={1} span={6}>
+                                                <Row justify="end">
+                                                    <Button type="primary" size="small" onClick={showModalFeedback}>Đánh giá</Button>
+                                                </Row>
+                                            </Col>}
+                                        </Row>
+                                    </Col>
+                                    <Col span={24}><Text>{`Phân loại hàng: ${v.productVariantName}`}</Text></Col>
+                                    <Col span={24}>
+                                        <Row>
+                                            <Col span={1}>
+                                                <Text>{`x${v.quantity}`}</Text>
+                                            </Col>
+                                            <Col span={23}>
+                                                <Row justify="end">
+                                                    {v.discount === 0 ?
+                                                        <Text>{formatStringToCurrencyVND(v.price)}₫</Text>
+                                                        :
+                                                        <Space size={[8, 0]}>
+                                                            <Text delete>{formatStringToCurrencyVND(v.price)}₫</Text>
+                                                            <Text>{formatStringToCurrencyVND(v.price - (v.price * v.discount / 100))}₫</Text>
+                                                        </Space>
+                                                    }
+                                                </Row>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                </Row>
+                            </Col>
 
-    </Card>;
+                        </Row>
+                    )
+                })}
+            </div>
+            <Divider />
+            <Row gutter={[0, 16]}>
+                <Col span={24}>
+                    <Row justify="end">
+                        <Col span={24}>
+                            <Row justify="end">
+                                <Col style={{ textAlign: 'right' }}><Title level={5}>Thành tiền:</Title></Col>
+                                <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
+                                    <Text>{`${formatStringToCurrencyVND(totalPayment)}đ`}</Text>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+
+                </Col>
+                <Col span={24}>
+                    {getButtonsStatus()}
+                </Col>
+            </Row>
+        </Card>
+    </>;
 }
 
 export default CardOrderItem;
