@@ -3,14 +3,14 @@ import styles from './Chatbox.module.scss';
 import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
 import { ChatContext } from "~/context/ChatContext";
-import connectionHub from '~/api/signalr/connectionHub';
+import { UserOnlineStatusContext } from "~/context/UserOnlineStatusContext";
 import { getUserId, getVietnamCurrentTime } from '~/utils';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { SendOutlined, FileImageOutlined, TeamOutlined } from '@ant-design/icons';
-import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
-import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Badge, Alert } from 'antd';
-import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
+import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Badge } from 'antd';
+import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
 
 const { Meta } = Card;
 const { Text } = Typography;
@@ -26,12 +26,7 @@ const styleBodyCardMessage = {
     padding: 16
 }
 
-const MyContext = createContext()
-
 const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) => {
-
-    const message = useContext(ChatContext);
-    console.log('message context: ' + JSON.stringify(message))
 
     return (
         <Layout className={cx('layout-user-chat')}>
@@ -147,7 +142,9 @@ const HeaderMessageChat = ({ conversationSelected }) => (
 )
 
 const BodyMessageChat = ({ messages, conversationSelected, messagesEndRef }) => {
-    const user = useContext(MyContext);
+    var userId = getUserId();
+    if (userId === undefined || userId === null) return;
+
     return (
         <div id={cx('scrollChatMessage')}>
             <InfiniteScroll
@@ -159,7 +156,7 @@ const BodyMessageChat = ({ messages, conversationSelected, messagesEndRef }) => 
                     renderItem={(item) => (
                         <>
                             {
-                                item.userId !== user.id ?
+                                item.userId !== userId ?
                                     (<div style={{ marginBottom: 25 }}>
                                         <Card className={cx('card-message')} bodyStyle={styleBodyCardMessage}>
                                             {
@@ -324,12 +321,8 @@ const ChatBox = () => {
     const [newMessage, setNewMessage] = useState('');
     const [userChats, setUserChats] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
-    const [loadData, setLoadData] = useState(false);
     const [form] = Form.useForm();
     const [isUploadFile, setIsUploadFile] = useState(false)
-
-
-
 
 
     const handleOpenUploadFile = () => {
@@ -456,47 +449,7 @@ const ChatBox = () => {
 
         loadUsersChatMessage();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loadData]);
-
-
-    // useEffect(() => {
-    //     var userId = getUserId();
-    //     // Create a new SignalR connection with the token
-    //     const connection = connectionHub(`chatHub?userId=${userId}`);
-
-    //     // Start the connection
-    //     connection.start().catch((err) => console.error(err));
-
-    //     connection.on(SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, (response) => {
-    //         if ('messageId' in response) {
-    //             setMessages((prev) => [...prev, response])
-    //             const newUserChat = userChats.map((item) => {
-    //                 if (item.conversationId === response.conversationId) {
-    //                     if (response.userId !== +getUserId()) {
-    //                         return { ...item, latestMessage: response.content, isRead: USER_CONVERSATION_TYPE_UN_READ }
-
-    //                     } else {
-    //                         return { ...item, latestMessage: response.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
-    //                     }
-    //                 }
-    //                 return item;
-    //             })
-
-    //             setUserChats(newUserChat)
-    //         } else {
-    //             const filterUserChat = userChats.find(x => x.conversationId === response.conversationId);
-    //             if (!filterUserChat) {
-    //                 setUserChats((prev) => [...prev, response])
-    //             }
-    //         }
-    //     });
-
-    //     return () => {
-    //         // Clean up the connection when the component unmounts
-    //         connection.stop();
-    //     };
-
-    // }, [userChats])
+    }, []);
 
     const message = useContext(ChatContext);
 
@@ -508,6 +461,9 @@ const ChatBox = () => {
                     const newUserChat = userChats.map((item) => {
                         if (item.conversationId === message.conversationId) {
                             if (message.userId !== +getUserId()) {
+                                // if (conversationSelected.conversationId === message.conversationId) {
+
+                                // }
                                 return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_UN_READ }
 
                             } else {
@@ -532,6 +488,18 @@ const ChatBox = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [message])
 
+    // const userOnlineStatusContext = useContext(UserOnlineStatusContext);
+    // console.log('OnlineStatus = ' + userOnlineStatusContext);
+
+    // useEffect(() => {
+    //     // const setOnlineStatus = () => {
+    //     //     console.log('OnlineStatus = ' + userOnlineStatusContext);
+    //     // }
+
+    //     // setOnlineStatus();
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [userOnlineStatusContext])
+
 
     const propsMessageChat = {
         conversationSelected: conversationSelected,
@@ -548,15 +516,13 @@ const ChatBox = () => {
     }
 
     return (
-        <MyContext.Provider value={user}>
-            <div className={cx('container')}>
-                <LayoutUserChat
-                    userChats={userChats}
-                    handleClickUser={handleClickUser}
-                    conversationSelected={conversationSelected} />
-                <LayoutMessageChat propsMessageChat={propsMessageChat} />
-            </div>
-        </MyContext.Provider>
+        <div className={cx('container')}>
+            <LayoutUserChat
+                userChats={userChats}
+                handleClickUser={handleClickUser}
+                conversationSelected={conversationSelected} />
+            <LayoutMessageChat propsMessageChat={propsMessageChat} />
+        </div>
     );
 }
 
