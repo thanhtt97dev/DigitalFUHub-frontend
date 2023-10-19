@@ -3,6 +3,7 @@ import styles from './Chatbox.module.scss';
 import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
 import { ChatContext } from "~/context/ChatContext";
+import { UserOnlineStatusContext } from "~/context/UserOnlineStatusContext";
 import connectionHub from '~/api/signalr/connectionHub';
 import { getUserId, getVietnamCurrentTime } from '~/utils';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -32,6 +33,10 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
 
     const message = useContext(ChatContext);
     console.log('message context: ' + JSON.stringify(message))
+
+
+    const userOnline = useContext(UserOnlineStatusContext);
+    console.log('user context: ' + JSON.stringify(userOnline))
 
     return (
         <Layout className={cx('layout-user-chat')}>
