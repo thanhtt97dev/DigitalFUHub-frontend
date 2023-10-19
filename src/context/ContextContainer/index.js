@@ -1,13 +1,16 @@
 import Notification from '~/context/NotificationContext';
 import { Chat } from "~/context/ChatContext";
+import { UserOnlineStatus } from "~/context/UserOnlineStatusContext";
 
 function ContextContainer({ children }) {
     return (
         <>
             <Notification>
-                <Chat>
-                    {children}
-                </Chat>
+                <UserOnlineStatus>
+                    <Chat>
+                        {children}
+                    </Chat>
+                </UserOnlineStatus>
             </Notification>
         </>
     );

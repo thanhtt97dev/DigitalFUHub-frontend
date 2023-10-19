@@ -57,10 +57,27 @@
     background-color: #c2d6d6;
 }
 
+.margin-top-10 {
+    margin-top: 10px;
+}
+
 .ant-spin-container .ant-spin-dot {
     width: 90%;
 }
 
 .custom-wrapper {
     width: 70%;
+}
+
+.text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 110px;
+}
+
+.text-un-read {
+    color: black;
+    font-weight: bolder;
+    font-style: italic;
 }
