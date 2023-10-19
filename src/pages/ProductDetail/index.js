@@ -11,7 +11,9 @@ import { CART_RESPONSE_CODE_INVALID_QUANTITY } from '~/constants';
 import CarouselCustom from '~/components/Carousels/CarouselCustom';
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { CreditCardOutlined, ShoppingCartOutlined, MessageOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
-import { Col, Row, Image, Button, Typography, Divider, Spin, Skeleton, Avatar, List, Rate, InputNumber, notification, Modal, Radio, Card, Carousel } from 'antd';
+import { Col, Row, Image, Button, Typography, Divider, Spin, Skeleton, Avatar, List, Rate, InputNumber, notification, Modal, Radio, Card, Carousel, Space } from 'antd';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCircle } from "@fortawesome/free-solid-svg-icons"
 
 const cx = classNames.bind(styles);
 const { Title, Text } = Typography;
@@ -390,9 +392,27 @@ const ShopInfomations = ({ product }) => {
                                     <Avatar size={64} icon={<UserOutlined />} />
                                 </Col>
                                 <Col className={cx('padding-left-element')}>
-                                    <Link><Title level={4}>{product.shop.shopName}</Title></Link>
-                                    <Button icon={<ShopOutlined />} type="primary" danger ghost>Xem Shop</Button>
-                                    <Button icon={<MessageOutlined />} style={{ marginLeft: 10 }}>Chat ngay</Button>
+                                    <Space direction='vertical'>
+                                        <Link><Title level={4}>{product.shop.shopName}</Title></Link>
+                                        {(() => {
+                                            if (product.shop.isOnline) {
+                                                return (
+                                                    <div><FontAwesomeIcon icon={faCircle} style={{ color: "#00a400" }} /> Online</div>
+                                                )
+                                            } else {
+                                                return (
+                                                    <p>Online {moment(product.shop.lastTimeOnline).fromNow()}</p>
+                                                )
+                                            }
+                                        })()}
+                                        <Space direction='horizontal'>
+                                            <Button icon={<ShopOutlined />} type="primary" danger ghost>Xem Shop</Button>
+                                            <Button icon={<MessageOutlined />} style={{ marginLeft: 10 }}>
+                                                Chat ngay
+                                            </Button>
+                                        </Space>
+                                    </Space>
+
                                 </Col>
                             </Row>
 
