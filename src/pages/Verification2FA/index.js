@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useSignIn } from 'react-auth-kit';
 import { Button, Form, Input, Space, message } from 'antd';
 
@@ -28,7 +27,6 @@ const tailLayout = {
 function Verification2FA() {
 
     const signIn = useSignIn();
-    const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
 
     const path = window.location.pathname;
@@ -39,7 +37,7 @@ function Verification2FA() {
         const user = getUser();
         if (user != null) {
             alert("You not have permission to view this site!")
-            return navigate("/home")
+            return window.location.replace("/home")
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -64,7 +62,7 @@ function Verification2FA() {
                 });
                 saveDataAuthToCookies(res.data.userId, res.data.accessToken, res.data.refreshToken, res.data.jwtId);
 
-                return navigate("/home")
+                return window.location.replace("/home")
             }).catch((err) => {
                 error();
             })

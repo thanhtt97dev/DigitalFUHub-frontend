@@ -20,6 +20,7 @@ export function UserOnlineStatus({ children }) {
 
         connection.on(SIGNAL_R_USER_ONLINE_STATUS_HUB_RECEIVE_ONLINE_STATUS, (response) => {
             setuserOnlineData(response)
+            console.log(response)
         });
 
         return () => {

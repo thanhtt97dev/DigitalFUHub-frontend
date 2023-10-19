@@ -80,7 +80,7 @@ function Login() {
                         },
                     });
                     saveDataAuthToCookies(res.data.userId, res.data.accessToken, res.data.refreshToken, res.data.jwtId);
-                    return navigate('/home');
+                    return window.location.replace("/home");
                 }
             })
             .catch((err) => {

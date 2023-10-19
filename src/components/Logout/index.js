@@ -13,16 +13,14 @@ function Logout() {
     const hanldeLogout = () => {
         const jwtId = getJwtId();
 
+        removeDataAuthInCookies();
         revokeToken(jwtId)
             .then((res) => {
-                console.log('revoke token success!');
-                removeDataAuthInCookies();
                 signOut();
             })
             .catch((err) => {
                 console.log(err);
             });
-
         return navigate('/home');
     };
 
