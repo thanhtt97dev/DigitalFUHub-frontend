@@ -10,7 +10,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Card, Col, Divider, Form, Image, Modal, Rate, Row, Space, Tag, Tooltip, Typography, Upload } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChatIcon } from "~/components/Icon";
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
@@ -167,7 +167,6 @@ function CardOrderItem({
         setIsModalOpen(false);
     };
     const handleSubmitFeedback = (values) => {
-        console.log(values)
         var formData = new FormData();
         formData.append("userId", getUserId());
         formData.append("orderId", orderId);
@@ -182,7 +181,6 @@ function CardOrderItem({
             formData.append("imageFiles", null);
         }
         handleModalFeedbackOk()
-        console.log(formData);
         onFeedback(formData);
     }
     return <>
@@ -290,14 +288,15 @@ function CardOrderItem({
             </Row>}
             bordered={true}
         >
-            <div>
+            <Row gutter={[0, 16]}>
                 {orderDetails.map((v, i) => {
-                    return (
+                    return (<Col span={24}>
                         <Row gutter={[8, 8]}>
                             <Col flex={0}>
                                 <Link to={`/product/${v.productId}`}>
                                     <Image
                                         width={120}
+                                        height={75}
                                         src={v.thumbnail}
                                         preview={false}
                                     />
@@ -344,9 +343,10 @@ function CardOrderItem({
                             </Col>
 
                         </Row>
+                    </Col>
                     )
                 })}
-            </div>
+            </Row>
             <Divider />
             <Row gutter={[0, 16]}>
                 <Col span={24}>
@@ -370,4 +370,4 @@ function CardOrderItem({
     </>;
 }
 
-export default CardOrderItem;
+export default memo(CardOrderItem);
