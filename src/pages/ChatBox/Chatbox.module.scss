@@ -81,3 +81,15 @@
     font-weight: bolder;
     font-style: italic;
 }
+
+.circle {
+    width: 11px;
+    height: 11px;
+    background-color: #448df3;
+    border-radius: 50%; /* Điều này tạo hình tròn */
+}
+
+.space-div-flex {
+    display: flex;
+    align-items: center;
+}

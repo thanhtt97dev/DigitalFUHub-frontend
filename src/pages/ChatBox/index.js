@@ -9,14 +9,14 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { SendOutlined, FileImageOutlined, TeamOutlined } from '@ant-design/icons';
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
-import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Badge } from 'antd';
+import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Badge, Alert } from 'antd';
 import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
 
-const cx = classNames.bind(styles);
 const { Meta } = Card;
 const { Text } = Typography;
-const moment = require('moment');
 require('moment/locale/vi');
+const moment = require('moment');
+const cx = classNames.bind(styles);
 
 const bodyCardHeader = {
     padding: 20,
@@ -69,29 +69,48 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                 {
                                     item.users.length === 1 ? (
                                         <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }} bodyStyle={{ padding: 15 }}>
-                                            <List.Item.Meta
-                                                avatar={<Avatar src={item.users[0].avatar} />}
-                                                // avatar={<Badge color='green' size='small' dot>
-                                                //     <Avatar icon={<TeamOutlined />} />
-                                                // </Badge>}
-                                                title={item.users[0].fullname}
-                                                description={
-                                                    item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
-                                                        <p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p> : <p className={cx('text-ellipsis')}>{item.latestMessage}</p>
-                                                }
-                                            />
 
+                                            {
+                                                item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
+                                                    (<div className={cx('space-div-flex')}>
+                                                        <List.Item.Meta
+                                                            avatar={<Avatar src={item.users[0].avatar} />}
+                                                            title={item.users[0].fullname}
+                                                            description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
+                                                        />
+                                                        <div className={cx('circle')}></div>
+                                                    </div>)
+                                                    :
+                                                    (<div className={cx('space-div-flex')}>
+                                                        <List.Item.Meta
+                                                            avatar={<Avatar src={item.users[0].avatar} />}
+                                                            title={item.users[0].fullname}
+                                                            description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
+                                                        />
+                                                    </div>)
+                                            }
                                         </Card>
                                     ) : (
                                         <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
-                                            <List.Item.Meta
-                                                avatar={<Avatar icon={<TeamOutlined />} />}
-                                                title={item.conversationName}
-                                                description={
-                                                    item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
-                                                        <p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p> : <p className={cx('text-ellipsis')}>{item.latestMessage}</p>
-                                                }
-                                            />
+                                            {
+                                                item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
+                                                    (<div className={cx('space-div-flex')}>
+                                                        <List.Item.Meta
+                                                            avatar={<Avatar icon={<TeamOutlined />} />}
+                                                            title={item.conversationName}
+                                                            description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
+                                                        />
+                                                        <div className={cx('circle')}></div>
+                                                    </div>)
+                                                    :
+                                                    (<div className={cx('space-div-flex')}>
+                                                        <List.Item.Meta
+                                                            avatar={<Avatar icon={<TeamOutlined />} />}
+                                                            title={item.conversationName}
+                                                            description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
+                                                        />
+                                                    </div>)
+                                            }
                                         </Card>
                                     )
                                 }
@@ -179,6 +198,8 @@ const BodyMessageChat = ({ messages, conversationSelected, messagesEndRef }) => 
                                                     )
 
                                                 }
+
+
                                             </Card>
                                             <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
                                         </div>
@@ -438,48 +459,78 @@ const ChatBox = () => {
     }, [loadData]);
 
 
+    // useEffect(() => {
+    //     var userId = getUserId();
+    //     // Create a new SignalR connection with the token
+    //     const connection = connectionHub(`chatHub?userId=${userId}`);
+
+    //     // Start the connection
+    //     connection.start().catch((err) => console.error(err));
+
+    //     connection.on(SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, (response) => {
+    //         if ('messageId' in response) {
+    //             setMessages((prev) => [...prev, response])
+    //             const newUserChat = userChats.map((item) => {
+    //                 if (item.conversationId === response.conversationId) {
+    //                     if (response.userId !== +getUserId()) {
+    //                         return { ...item, latestMessage: response.content, isRead: USER_CONVERSATION_TYPE_UN_READ }
+
+    //                     } else {
+    //                         return { ...item, latestMessage: response.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
+    //                     }
+    //                 }
+    //                 return item;
+    //             })
+
+    //             setUserChats(newUserChat)
+    //         } else {
+    //             const filterUserChat = userChats.find(x => x.conversationId === response.conversationId);
+    //             if (!filterUserChat) {
+    //                 setUserChats((prev) => [...prev, response])
+    //             }
+    //         }
+    //     });
+
+    //     return () => {
+    //         // Clean up the connection when the component unmounts
+    //         connection.stop();
+    //     };
+
+    // }, [userChats])
+
+    const message = useContext(ChatContext);
+
     useEffect(() => {
-        var userId = getUserId();
-        // Create a new SignalR connection with the token
-        const connection = connectionHub(`chatHub?userId=${userId}`);
+        const setMessage = () => {
+            if (message) {
+                if ('messageId' in message) {
+                    setMessages((prev) => [...prev, message])
+                    const newUserChat = userChats.map((item) => {
+                        if (item.conversationId === message.conversationId) {
+                            if (message.userId !== +getUserId()) {
+                                return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_UN_READ }
 
-        // Start the connection
-        connection.start().catch((err) => console.error(err));
-
-        connection.on(SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, (response) => {
-            if ('messageId' in response) {
-                setMessages((prev) => [...prev, response])
-                const newUserChat = userChats.map((item) => {
-                    if (item.conversationId === response.conversationId) {
-                        if (response.userId !== +getUserId()) {
-                            return { ...item, latestMessage: response.content, isRead: USER_CONVERSATION_TYPE_UN_READ }
-
-                        } else {
-                            return { ...item, latestMessage: response.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                            } else {
+                                return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                            }
                         }
-                    }
-                    return item;
-                })
+                        return item;
+                    })
 
-                setUserChats(newUserChat)
-            } else {
-                const filterUserChat = userChats.find(x => x.conversationId === response.conversationId);
-                if (!filterUserChat) {
-                    setUserChats((prev) => [...prev, response])
+                    setUserChats(newUserChat)
+                } else {
+                    const filterUserChat = userChats.find(x => x.conversationId === message.conversationId);
+                    if (!filterUserChat) {
+                        setUserChats((prev) => [...prev, message])
+                    }
                 }
             }
-        });
+        }
 
-        return () => {
-            // Clean up the connection when the component unmounts
-            connection.stop();
-        };
+        setMessage();
 
-    }, [userChats])
-
-    // const message = useContext(ChatContext);
-    // console.log('message context: ' + message)
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [message])
 
 
     const propsMessageChat = {
