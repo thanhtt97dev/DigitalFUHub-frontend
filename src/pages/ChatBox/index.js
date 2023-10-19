@@ -1,35 +1,16 @@
-import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
-import {
-    Layout,
-    Input,
-    Button,
-    Avatar,
-    List,
-    Card,
-    Typography,
-    Col,
-    Row,
-    Upload,
-    Form,
-    Image
-} from 'antd';
-import { useAuthUser } from 'react-auth-kit';
-import connectionHub from '~/api/signalr/connectionHub';
-import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
-import {
-    SendOutlined,
-    FileImageOutlined,
-    TeamOutlined
-} from '@ant-design/icons';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import classNames from 'classnames/bind';
-import styles from './Chatbox.module.scss'
+import styles from './Chatbox.module.scss';
+import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
+import { ChatContext } from "~/context/ChatContext";
+import connectionHub from '~/api/signalr/connectionHub';
 import { getUserId, getVietnamCurrentTime } from '~/utils';
-import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
-import { MESSAGE_TYPE_CONVERSATION_TEXT, MESSAGE_TYPE_CONVERSATION_IMAGE } from '~/constants';
-
-import { ChatContext } from "~/context/ChatContext"
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { SendOutlined, FileImageOutlined, TeamOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
+import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
+import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Badge } from 'antd';
+import { SIGNAL_R_CHAT_HUB_RECEIVE_MESSAGE, USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
 
 const cx = classNames.bind(styles);
 const { Meta } = Card;
@@ -49,12 +30,13 @@ const MyContext = createContext()
 
 const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) => {
 
-    // const message = useContext(ChatContext);
-    // console.log(message)
+    const message = useContext(ChatContext);
+    console.log('message context: ' + JSON.stringify(message))
 
     return (
         <Layout className={cx('layout-user-chat')}>
             <Card
+                bordered
                 className={cx('card-header')}
                 bodyStyle={bodyCardHeader}>
                 <Typography.Title
@@ -89,6 +71,9 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                         <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }} bodyStyle={{ padding: 15 }}>
                                             <List.Item.Meta
                                                 avatar={<Avatar src={item.users[0].avatar} />}
+                                                // avatar={<Badge color='green' size='small' dot>
+                                                //     <Avatar icon={<TeamOutlined />} />
+                                                // </Badge>}
                                                 title={item.users[0].fullname}
                                                 description={
                                                     item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
@@ -368,24 +353,11 @@ const ChatBox = () => {
         }
         bodyFormData.append('dateCreate', currentTime);
 
-        const dataUpdateUserConversation = {
-            recipientIds: [getUserId()],
-            conversationId: conversationSelected.conversationId,
-            isRead: USER_CONVERSATION_TYPE_UN_READ
-        }
-
         sendMessage(bodyFormData)
             .then((res) => {
                 if (res.status === 200) {
                     form.resetFields();
                     setIsUploadFile(false);
-
-                    updateUserConversation(dataUpdateUserConversation)
-                        .then((response) => {
-
-                        }).catch((error) => {
-                            console.log(error)
-                        })
                     setNewMessage('');
                 }
             })
@@ -398,14 +370,15 @@ const ChatBox = () => {
 
     const handleClickUser = (conversation) => {
         //update isRead
+        var userId = getUserId();
+        if (userId === undefined || userId === null) return;
+
         if (conversation.isRead === USER_CONVERSATION_TYPE_UN_READ) {
-            const mapUserId = conversation.users.map(x => x.userId);
             const dataUpdate = {
                 ConversationId: conversation.conversationId,
                 IsRead: USER_CONVERSATION_TYPE_IS_READ,
-                RecipientIds: mapUserId,
+                UserId: userId,
             }
-
             updateUserConversation(dataUpdate).catch((error) => {
                 console.log(error)
             })
@@ -427,12 +400,6 @@ const ChatBox = () => {
         const { value } = e.target
         setNewMessage(value)
     }
-
-    const isLoadData = () => {
-        setLoadData(!loadData);
-    }
-
-
 
 
     useEffect(() => {
@@ -509,6 +476,11 @@ const ChatBox = () => {
         };
 
     }, [userChats])
+
+    // const message = useContext(ChatContext);
+    // console.log('message context: ' + message)
+
+
 
     const propsMessageChat = {
         conversationSelected: conversationSelected,
