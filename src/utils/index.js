@@ -315,4 +315,10 @@ export function formatNumberToK(number) {
         return number.toString();
     }
 }
+export function getDistanceDayTwoDate(date1, date2) {
+    var d1 = new Date(date1);
+    var d2 = new Date(date2);
+    var diff = Math.abs(d2 - d1);
+    return diff / (24 * 60 * 60 * 1000)
+}
 

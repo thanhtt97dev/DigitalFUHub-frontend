@@ -8,13 +8,13 @@ import {
     SyncOutlined,
     PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Col, Divider, Form, Image, Input, Modal, Rate, Row, Space, Tag, Tooltip, Typography, Upload } from "antd";
+import { Button, Card, Col, Divider, Form, Image, Modal, Rate, Row, Space, Tag, Tooltip, Typography, Upload } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChatIcon } from "~/components/Icon";
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
-import { formatStringToCurrencyVND } from "~/utils";
+import { formatStringToCurrencyVND, getDistanceDayTwoDate, getUserId } from "~/utils";
 
 const { Text, Title } = Typography;
 
@@ -39,7 +39,8 @@ function CardOrderItem({
     totalPayment,
     orderDetails,
     onOrderComplete = () => { },
-    onOrderComplaint = () => { }
+    onOrderComplaint = () => { },
+    onFeedback = () => { }
 }) {
     const [form] = Form.useForm();
     const [previewOpen, setPreviewOpen] = useState(false);
@@ -153,6 +154,7 @@ function CardOrderItem({
         }
     }
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const orderDetailRef = useRef();
     const showModalFeedback = () => {
         form.resetFields();
         setFileList([])
@@ -164,6 +166,25 @@ function CardOrderItem({
     const handleModalFeedbackCancel = () => {
         setIsModalOpen(false);
     };
+    const handleSubmitFeedback = (values) => {
+        console.log(values)
+        var formData = new FormData();
+        formData.append("userId", getUserId());
+        formData.append("orderId", orderId);
+        formData.append("orderDetailId", orderDetailRef.current);
+        formData.append("rate", values.rate);
+        formData.append("content", values.content ?? "");
+        if (values.images || values.images?.fileList?.length > 0) {
+            values.images.fileList.forEach((v) => {
+                formData.append("images", v.originFileObj);
+            })
+        } else {
+            formData.append("imageFiles", null);
+        }
+        handleModalFeedbackOk()
+        console.log(formData);
+        onFeedback(formData);
+    }
     return <>
         <Modal
             title="Đánh giá sản phẩm"
@@ -173,11 +194,23 @@ function CardOrderItem({
             onCancel={handleModalFeedbackCancel}>
             <Form
                 form={form}
+                onFinish={handleSubmitFeedback}
             >
                 <Row>
                     <Col span={8} offset={1}><Text>Điểm đánh giá</Text></Col>
                     <Col span={15}>
-                        <Form.Item name="rate">
+                        <Form.Item name="rate"
+                            rules={[
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (value !== 0) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error('Vui lòng không để trống điểm đánh giá.'));
+                                    },
+                                }),
+                            ]}
+                        >
                             <Rate style={{
                                 lineHeight: '0'
                             }} />
@@ -195,7 +228,7 @@ function CardOrderItem({
                 <Row>
                     <Col span={8} offset={1}><Text>Hình ảnh</Text></Col>
                     <Col span={15}>
-                        <Form.Item name="image">
+                        <Form.Item name="images">
                             <Upload
                                 accept=".png, .jpeg, .jpg"
                                 beforeUpload={false}
@@ -213,7 +246,7 @@ function CardOrderItem({
                                             marginTop: 8,
                                         }}
                                     >
-                                        Upload
+                                        Tải lên
                                     </div>
                                 </div>}
                             </Upload>
@@ -221,7 +254,7 @@ function CardOrderItem({
                     </Col>
                 </Row>
                 <Row justify="end" gutter={[16, 0]}>
-                    <Col><Button type="default" danger>Hủy</Button></Col>
+                    <Col><Button type="default" danger onClick={handleModalFeedbackCancel}>Hủy</Button></Col>
                     <Col><Button type="primary" htmlType="submit">Xác nhận</Button></Col>
                 </Row>
             </Form>
@@ -230,7 +263,6 @@ function CardOrderItem({
             title={<Row gutter={[8, 0]} align="bottom">
                 <Col>
                     <Title level={5}><ShopOutlined style={{ fontSize: '18px' }} /></Title>
-                    {/* <ShopOutlined style={{ fontSize: '18px' }} /> */}
                 </Col>
                 <Col>
                     <Title level={5}>{shopName}</Title>
@@ -280,11 +312,12 @@ function CardOrderItem({
                                                     {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.substring(0, 70)}...</Tooltip> : v.productName}
                                                 </Title>
                                             </Col>
-                                            {!v.isFeedback && statusId === ORDER_CONFIRMED && <Col offset={1} span={6}>
+                                            {!v.isFeedback && statusId === ORDER_CONFIRMED && getDistanceDayTwoDate(orderDate, new Date()) <= 7 && <Col offset={1} span={6}>
                                                 <Row justify="end">
-                                                    <Button type="primary" size="small" onClick={showModalFeedback}>Đánh giá</Button>
+                                                    <Button type="primary" size="small" onClick={() => { orderDetailRef.current = v.orderDetailId; showModalFeedback(); }}>Đánh giá</Button>
                                                 </Row>
-                                            </Col>}
+                                            </Col>
+                                            }
                                         </Row>
                                     </Col>
                                     <Col span={24}><Text>{`Phân loại hàng: ${v.productVariantName}`}</Text></Col>

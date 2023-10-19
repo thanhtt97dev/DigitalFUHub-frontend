@@ -12,7 +12,7 @@ import {
 } from "~/constants";
 import Column from "antd/es/table/Column";
 import { QuestionCircleOutlined } from "@ant-design/icons";
-import { addCoupon, removeCoupon, getCoupons, updateStatusCoupon } from "~/api/seller";
+import { addCouponSeller, removeCouponSeller, getCouponsSeller, updateStatusCouponSeller } from "~/api/coupon";
 import { checkCouponCodeExist } from "~/api/coupon";
 
 const { RangePicker } = DatePicker;
@@ -64,7 +64,7 @@ function Coupons() {
             ...searchData,
             status: searchData.status === 0 ? null : searchData.status === 1 ? true : false
         }
-        getCoupons(data)
+        getCouponsSeller(data)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setListCoupons(res.data.result);
@@ -100,7 +100,7 @@ function Coupons() {
             quantity: values.quantityNew,
             isPublic: values.isPublic
         }
-        addCoupon(data)
+        addCouponSeller(data)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     notification("success", "Thành công", "Tạo mã giảm giá thành công.")
@@ -135,7 +135,7 @@ function Coupons() {
                     couponId: couponId,
                     isPublic: checked
                 }
-                updateStatusCoupon(data)
+                updateStatusCouponSeller(data)
                     .then((res) => {
                         if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                             setSearchData({
@@ -167,7 +167,7 @@ function Coupons() {
                     userId: getUserId(),
                     couponId: couponId,
                 }
-                removeCoupon(data)
+                removeCouponSeller(data)
                     .then((res) => {
                         if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                             setSearchData({

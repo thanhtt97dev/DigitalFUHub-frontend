@@ -2,7 +2,6 @@ import { useEffect, useState, useRef, useLayoutEffect, useContext } from "react"
 import { useNavigate, useParams } from 'react-router-dom';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { editProduct, getProductById } from "~/api/seller";
 import Spinning from "~/components/Spinning";
 import { NotificationContext } from '~/context/NotificationContext';
 
@@ -12,6 +11,7 @@ import { getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/u
 import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
+import { editProductSeller, getProductSellerById } from "~/api/product";
 const columns = [
     {
         title: 'Số thứ tự',
@@ -82,7 +82,7 @@ function EditProduct() {
 
     // get product
     useLayoutEffect(() => {
-        getProductById(getUserId(), productId)
+        getProductSellerById(getUserId(), productId)
             .then(async (res) => {
                 if (res.data.status.responseCode === "00") {
                     const { productName, description, categoryId, discount, thumbnail, productMedias, tags, productVariants } = res.data.result;
@@ -261,7 +261,7 @@ function EditProduct() {
                 formData.append('productVariantFileUpdate', variant.file ? variant.file.originFileObj : null);
             }
         })
-        editProduct(productId, formData)
+        editProductSeller(productId, formData)
             .then(res => {
                 setLoading(false);
                 if (res.data.status.responseCode === '00') {

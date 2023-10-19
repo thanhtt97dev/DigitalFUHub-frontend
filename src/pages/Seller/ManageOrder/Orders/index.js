@@ -3,7 +3,7 @@ import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, Select, Row, 
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { Link } from "react-router-dom";
 
-import { getSellerOrders } from '~/api/seller'
+import { getOrdersSeller } from '~/api/order'
 import Spinning from "~/components/Spinning";
 import { formatStringToCurrencyVND, getUserId, ParseDateTime } from '~/utils/index'
 import { NotificationContext } from "~/context/NotificationContext";
@@ -36,7 +36,7 @@ function Orders() {
     });
 
     useEffect(() => {
-        getSellerOrders(searchData)
+        getOrdersSeller(searchData)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setDataTable(res.data.result)

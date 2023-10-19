@@ -100,6 +100,10 @@ function AllOrder({ status = 0, loading, setLoading }) {
             })
             .catch(err => { notification("error", "Thất bại", "Đã có lỗi xảy ra.") })
     }
+
+    const handleCustomerFeedback = (formData) => {
+
+    }
     return (<div >
         {!loading ?
             orders.length > 0 ?
@@ -120,6 +124,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
                                 orderDetails={v.orderDetails}
                                 onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
                                 onOrderComplaint={() => handleOrderComplaint(v.orderId, v.shopId)}
+                                onFeedback={handleCustomerFeedback}
                             />
                         </Col>
                     })}
