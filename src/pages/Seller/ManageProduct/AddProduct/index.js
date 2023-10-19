@@ -7,9 +7,9 @@ import Spinning from '~/components/Spinning';
 import { NotificationContext } from '~/context/NotificationContext';
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 import { getUserId, readDataFileExcelImportProduct } from '~/utils';
-import { addProduct } from '~/api/seller';
 import { getAllCategory } from '~/api/category';
 import { useNavigate } from 'react-router-dom';
+import { addProductSeller } from '~/api/product';
 
 const columns = [
     {
@@ -228,7 +228,7 @@ function AddProduct() {
         formData.append('category', values.category);
         formData.append('discount', values.discount);
         formData.append('thumbnail', values.thumbnailProduct.file.originFileObj);
-        addProduct(formData)
+        addProductSeller(formData)
             .then((res) => {
                 setLoading(false);
                 if (res.data.status.responseCode === "00") {

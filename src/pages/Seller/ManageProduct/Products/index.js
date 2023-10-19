@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Table, Card, Space } from 'antd';
 import { useAuthUser } from 'react-auth-kit'
 
-import { getAllProducts } from "~/api/seller";
+import { getAllProductsSeller } from "~/api/product";
 import Spinning from "~/components/Spinning";
 
 
@@ -96,7 +96,7 @@ function Products() {
     const [dataTable, setDataTable] = useState([]);
 
     useEffect(() => {
-        getAllProducts(user.id)
+        getAllProductsSeller(user.id)
             .then((res) => {
                 setDataTable(res.data);
                 setTimeout(() => {

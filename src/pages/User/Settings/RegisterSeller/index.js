@@ -1,6 +1,6 @@
 import { Card, Row, Col, Form, Input, Button } from "antd";
 import { getUserId } from "~/utils";
-import { registerSeller } from "~/api/seller";
+import { registerShop } from "~/api/shop";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import Spinning from "~/components/Spinning";
@@ -50,8 +50,7 @@ function RegisterSeller() {
             shopDescription: shopDescription,
             userId: getUserId()
         }
-        console.log(data);
-        registerSeller(data)
+        registerShop(data)
             .then(res => {
                 setLoading(false);
                 if (res.data.status.responseCode === "00") {
