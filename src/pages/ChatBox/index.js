@@ -1,13 +1,14 @@
 import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
+import { getOnlineStatusUser } from '~/api/user';
 import { ChatContext } from "~/context/ChatContext";
-import { UserOnlineStatusContext } from "~/context/UserOnlineStatusContext";
 import { getUserId, getVietnamCurrentTime } from '~/utils';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import { UserOnlineStatusContext } from "~/context/UserOnlineStatusContext";
 import { SendOutlined, FileImageOutlined, TeamOutlined } from '@ant-design/icons';
-import React, { useState, useEffect, useRef, useContext } from 'react';
 import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
 import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Badge } from 'antd';
 import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
@@ -19,7 +20,7 @@ const moment = require('moment');
 const cx = classNames.bind(styles);
 
 const bodyCardHeader = {
-    padding: 20,
+    padding: 15,
 }
 
 const styleBodyCardMessage = {
@@ -69,7 +70,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                 item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<Avatar src={item.users[0].avatar} />}
+                                                            avatar={<Badge status="success" dot={item.users[0].isOnline}><Avatar src={item.users[0].avatar} /></Badge>}
                                                             title={item.users[0].fullname}
                                                             description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
                                                         />
@@ -78,7 +79,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                     :
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<Avatar src={item.users[0].avatar} />}
+                                                            avatar={<Badge status="success" dot={item.users[0].isOnline}><Avatar src={item.users[0].avatar} /></Badge>}
                                                             title={item.users[0].fullname}
                                                             description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
                                                         />
@@ -91,7 +92,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                 item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<Avatar icon={<TeamOutlined />} />}
+                                                            avatar={<Badge status="success" dot={item.users[0].isOnline}><Avatar icon={<TeamOutlined />} /></Badge>}
                                                             title={item.conversationName}
                                                             description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
                                                         />
@@ -102,7 +103,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                         <List.Item.Meta
                                                             avatar={<Avatar icon={<TeamOutlined />} />}
                                                             title={item.conversationName}
-                                                            description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
+                                                            description={<Badge status="success" dot={item.users[0].isOnline}><p className={cx('text-ellipsis')}>{item.latestMessage}</p></Badge>}
                                                         />
                                                     </div>)
                                             }
@@ -120,7 +121,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
     )
 }
 
-const HeaderMessageChat = ({ conversationSelected }) => (
+const HeaderMessageChat = ({ conversationSelected, lastTimeOnline }) => (
     <Card
         className={cx('card-header')}
         bodyStyle={bodyCardHeader}>
@@ -128,8 +129,10 @@ const HeaderMessageChat = ({ conversationSelected }) => (
         {
             conversationSelected.users.length === 1 ? (
                 <Meta
-                    avatar={<Avatar src={conversationSelected.users[0].avatar} />}
+                    avatar={<Badge status="success" dot={conversationSelected.users[0].isOnline}><Avatar src={conversationSelected.users[0].avatar} /></Badge>}
                     title={conversationSelected.users[0].fullname}
+                    // description={conversationSelected.users[0].isOnline ? <p>Đang hoạt động</p> : <p>Hoạt động {moment(conversationSelected.users[0].lastTimeOnline).fromNow()}</p>}
+                    description={conversationSelected.users[0].isOnline ? <p>Đang hoạt động</p> : <p>Hoạt động {lastTimeOnline || moment(conversationSelected.users[0].lastTimeOnline).fromNow()}</p>}
                 />
             ) : (
                 <Meta
@@ -142,7 +145,7 @@ const HeaderMessageChat = ({ conversationSelected }) => (
 )
 
 const BodyMessageChat = ({ messages, conversationSelected, messagesEndRef }) => {
-    var userId = getUserId();
+    var userId = +getUserId();
     if (userId === undefined || userId === null) return;
 
     return (
@@ -281,7 +284,8 @@ const LayoutMessageChat = (props) => {
         newMessage,
         handleChangeNewMessage,
         isUploadFile,
-        handleOpenUploadFile
+        handleOpenUploadFile,
+        lastTimeOnline
     } = props.propsMessageChat
 
     return (
@@ -289,7 +293,7 @@ const LayoutMessageChat = (props) => {
             <Layout className={cx('layout-chat-message')}>
                 {
                     conversationSelected ? (<>
-                        <HeaderMessageChat conversationSelected={conversationSelected} />
+                        <HeaderMessageChat conversationSelected={conversationSelected} lastTimeOnline={lastTimeOnline} />
                         <BodyMessageChat messages={messages}
                             styleBodyCardMessage={styleBodyCardMessage}
                             conversationSelected={conversationSelected}
@@ -321,6 +325,7 @@ const ChatBox = () => {
     const [newMessage, setNewMessage] = useState('');
     const [userChats, setUserChats] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
+    const [lastTimeOnline, setLastTimeOnline] = useState('');
     const [form] = Form.useForm();
     const [isUploadFile, setIsUploadFile] = useState(false)
 
@@ -381,23 +386,29 @@ const ChatBox = () => {
 
     };
 
+    const updateIsReadConversation = (ConversationId, IsRead, UserId) => {
+        const dataUpdate = {
+            ConversationId: ConversationId,
+            IsRead: IsRead,
+            UserId: UserId,
+        }
+        updateUserConversation(dataUpdate).catch((error) => {
+            console.log(error)
+        })
+    }
+
 
     const handleClickUser = (conversation) => {
-        //update isRead
+
+        //update is Read db
         var userId = getUserId();
         if (userId === undefined || userId === null) return;
 
         if (conversation.isRead === USER_CONVERSATION_TYPE_UN_READ) {
-            const dataUpdate = {
-                ConversationId: conversation.conversationId,
-                IsRead: USER_CONVERSATION_TYPE_IS_READ,
-                UserId: userId,
-            }
-            updateUserConversation(dataUpdate).catch((error) => {
-                console.log(error)
-            })
+            updateIsReadConversation(conversation.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
         }
-        //update new isRead
+
+        //update new isRead state
         const newConversation = userChats.map((item) => {
             if (item.conversationId === conversation.conversationId) {
 
@@ -407,6 +418,13 @@ const ChatBox = () => {
         })
         setUserChats(newConversation)
 
+        // get last time online
+        getOnlineStatusUser(userId)
+            .then((res) => {
+
+            }).catch((error) => {
+                console.log(error);
+            })
         setConversationSelected(conversation)
     }
 
@@ -426,6 +444,19 @@ const ChatBox = () => {
     }, [conversationSelected])
 
     // useEffect(scrollToBottom, [messages]);
+
+    const intervalTime = () => {
+
+        if (conversationSelected === null || conversationSelected === undefined) return;
+        const interval = setInterval(() => {
+            if (conversationSelected.users.length === 1) {
+                setLastTimeOnline(moment(conversationSelected.users[0].lastTimeOnline).fromNow());
+            }
+        }, 60000);
+        return () => clearInterval(interval);
+    }
+
+    intervalTime();
 
 
     useEffect(() => {
@@ -451,20 +482,31 @@ const ChatBox = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+
+    // message from signR
     const message = useContext(ChatContext);
 
     useEffect(() => {
+        const userId = +getUserId()
+
         const setMessage = () => {
             if (message) {
                 if ('messageId' in message) {
-                    setMessages((prev) => [...prev, message])
+                    // data update message chat
+                    if (conversationSelected.conversationId === message.conversationId) {
+                        setMessages((prev) => [...prev, message])
+                    }
+
+                    // data update new user chat
                     const newUserChat = userChats.map((item) => {
                         if (item.conversationId === message.conversationId) {
-                            if (message.userId !== +getUserId()) {
-                                // if (conversationSelected.conversationId === message.conversationId) {
-
-                                // }
-                                return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_UN_READ }
+                            if (message.userId !== userId) {
+                                if (conversationSelected.conversationId === message.conversationId) {
+                                    updateIsReadConversation(conversationSelected.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
+                                    return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                                } else {
+                                    return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_UN_READ }
+                                }
 
                             } else {
                                 return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
@@ -473,6 +515,7 @@ const ChatBox = () => {
                         return item;
                     })
 
+                    // update user chat
                     setUserChats(newUserChat)
                 } else {
                     const filterUserChat = userChats.find(x => x.conversationId === message.conversationId);
@@ -488,17 +531,86 @@ const ChatBox = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [message])
 
-    // const userOnlineStatusContext = useContext(UserOnlineStatusContext);
-    // console.log('OnlineStatus = ' + userOnlineStatusContext);
+    const setDefaultLastTime = () => {
+        setLastTimeOnline('')
+    }
 
-    // useEffect(() => {
-    //     // const setOnlineStatus = () => {
-    //     //     console.log('OnlineStatus = ' + userOnlineStatusContext);
-    //     // }
 
-    //     // setOnlineStatus();
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [userOnlineStatusContext])
+    // user online status
+    const userOnlineStatusContext = useContext(UserOnlineStatusContext);
+
+    useEffect(() => {
+        const setOnlineStatus = () => {
+            if (userOnlineStatusContext) {
+                setDefaultLastTime();
+                // parse to json
+                const userOnlineStatusJson = JSON.parse(userOnlineStatusContext)
+
+                if (userChats.length === 0) return;
+                // update users status conversations
+                const updateUserStatusConversations = async () => {
+                    const findConversation = userChats.find(x => x.conversationId === userOnlineStatusJson.ConversationId);
+                    const newUserInConversation = await Promise.all(findConversation.users.map(async (user) => {
+                        if (user.userId === userOnlineStatusJson.UserId) {
+                            try {
+                                const res = await getOnlineStatusUser(user.userId);
+                                if (res.status === 200) {
+                                    const lastTimeOnline = res.data.lastTimeOnline
+                                    const isOnline = userOnlineStatusJson.IsOnline;
+                                    updateUserStatusConversationSelected(isOnline, lastTimeOnline)
+                                    return { ...user, isOnline: isOnline, lastTimeOnline: lastTimeOnline }
+                                }
+                            } catch (error) {
+                                console.log(error);
+                            }
+                        }
+                        return user;
+                    }));
+
+                    //set new users
+                    findConversation.users = newUserInConversation
+
+                    //
+                    const newUserChat = userChats.map((x) => {
+                        if (x.conversationId === findConversation.conversationId) {
+                            return { ...findConversation };
+                        }
+                        return x;
+                    })
+
+                    setUserChats(newUserChat);
+                };
+
+                // update users status conversations selected
+                const updateUserStatusConversationSelected = (IsOnline, lastTimeOnline) => {
+                    if (conversationSelected !== null && conversationSelected !== undefined) {
+                        const newConversationSelected = conversationSelected;
+                        const newUserInConversation = newConversationSelected.users.map((user) => {
+                            if (user.userId === userOnlineStatusJson.UserId) {
+                                return { ...user, isOnline: IsOnline, lastTimeOnline: lastTimeOnline }
+                            }
+                            return user;
+                        });
+
+                        //set new users
+                        newConversationSelected.users = newUserInConversation
+
+                        setConversationSelected(newConversationSelected);
+                    }
+                };
+
+                // call func update
+                updateUserStatusConversations();
+
+            }
+        }
+
+        setOnlineStatus();
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userOnlineStatusContext])
+
+
 
 
     const propsMessageChat = {
@@ -512,7 +624,8 @@ const ChatBox = () => {
         handleChangeNewMessage: handleChangeNewMessage,
         normFile: normFile,
         isUploadFile: isUploadFile,
-        handleOpenUploadFile: handleOpenUploadFile
+        handleOpenUploadFile: handleOpenUploadFile,
+        lastTimeOnline: lastTimeOnline
     }
 
     return (
