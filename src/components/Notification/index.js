@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuthUser } from 'react-auth-kit';
 import { Link, useNavigate } from 'react-router-dom';
-import { BellFilled, ClockCircleOutlined } from '@ant-design/icons';
+import { BellOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { Badge, notification, Dropdown, Menu, Empty, Alert, Button, Space } from 'antd';
 import { editNotificationIsReaded } from "~/api/signalr/notification";
 import connectionHub from '~/api/signalr/connectionHub';
@@ -183,7 +183,7 @@ function Notification() {
                     size="small"
                     count={notificationIsReaded ? 0 : <ClockCircleOutlined style={{ paddingTop: '30px', color: '#f5222d' }} />}
                 >
-                    <BellFilled style={{ fontSize: '25px', paddingTop: '20px' }} />
+                    <BellOutlined style={{ fontSize: '25px', paddingTop: '20px', cursor: 'pointer' }} />
                 </Badge>
             </Dropdown>
         </>

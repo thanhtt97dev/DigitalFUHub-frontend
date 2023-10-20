@@ -204,7 +204,7 @@ function Orders() {
                             title="Số tiền"
                             key="totalAmount"
                             render={(_, record) => (
-                                <p>{formatStringToCurrencyVND(record.totalAmount)}</p>
+                                <p>{formatStringToCurrencyVND(record.totalPayment)}₫</p>
                             )}
                         />
                         <Column

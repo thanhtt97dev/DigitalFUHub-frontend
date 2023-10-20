@@ -8,7 +8,12 @@ import {
     CreditCardOutlined,
     ShopOutlined,
     BellOutlined,
-    MailOutlined
+    MailOutlined,
+    DollarOutlined,
+    ShoppingOutlined,
+    UserOutlined,
+    MessageOutlined,
+    ClockCircleOutlined
 
 } from '@ant-design/icons';
 import { Layout, Menu, Space, theme, Avatar, Button, Row, Col, Dropdown, Badge, Card } from 'antd';
@@ -17,6 +22,7 @@ import classNames from 'classnames/bind';
 import { Link, Outlet } from 'react-router-dom';
 import logo from '~/assets/images/fpt-logo.jpg'
 import Logout from '~/components/Logout';
+import Notification from '~/components/Notification';
 
 const cx = classNames.bind(styles);
 const { Content, Sider, Header } = Layout;
@@ -24,9 +30,9 @@ const { Content, Sider, Header } = Layout;
 const items = [
 
     {
-        key: 'settings',
-        label: <Link to={"/settings"}>Cài đặt</Link>,
-        icon: <SettingOutlined />,
+        key: 'account',
+        label: <Link to={"/settings"}>Tài khoản</Link>,
+        icon: <UserOutlined />,
     },
     {
         key: 'history transaction',
@@ -50,7 +56,7 @@ const menuItems = [
     {
         label: 'Quản lý đơn hàng',
         key: 'seller/order',
-        icon: <StockOutlined className={cx('menu-icon')} />,
+        icon: <ShoppingOutlined className={cx('menu-icon')} />,
         children: [
             {
                 key: '/seller/order/list',
@@ -61,7 +67,7 @@ const menuItems = [
     {
         label: 'Quản lý sản phẩm',
         key: 'seller/product',
-        icon: <StockOutlined className={cx('menu-icon')} />,
+        icon: <ShopOutlined className={cx('menu-icon')} />,
         children: [
             {
                 key: '/seller/product/list',
@@ -82,7 +88,7 @@ const menuItems = [
     {
         label: <Link to='/seller/coupon/list'>Mã giảm giá</Link>,
         key: 'coupon',
-        icon: <AreaChartOutlined className={cx('menu-icon')} />,
+        icon: <DollarOutlined className={cx('menu-icon')} />,
     },
 ];
 const SellerLayout = () => {
@@ -108,6 +114,7 @@ const SellerLayout = () => {
                 </div>
                 <Menu
                     className={cx("menu")}
+                    defaultOpenKeys={['seller/product', 'seller/order']}
                     defaultSelectedKeys={['dashboard']}
                     mode="inline" items={menuItems} />
             </Sider>
@@ -128,20 +135,19 @@ const SellerLayout = () => {
                         </Col>
 
                         <Col span={22}>
-                            <Row gutter={[40, 0]} justify="end" align="middle">
+                            <Row gutter={[16, 0]} justify="end" align="middle">
                                 <Col >
-                                    <Badge count={10} size="small">
-                                        <BellOutlined style={{
-                                            fontSize: '20px'
-                                        }} />
-                                    </Badge>
+                                    <Notification />
                                 </Col>
                                 <Col>
-                                    <Badge count={12} size="small">
-                                        <MailOutlined style={{
-                                            fontSize: '20px',
-                                        }} />
-                                    </Badge>
+                                    <Link to="/chatBox">
+                                        <Badge count={<ClockCircleOutlined style={{ paddingTop: '30px', color: '#f5222d' }} />} size="small">
+                                            <MessageOutlined style={{
+                                                fontSize: '25px',
+                                                paddingTop: '20px'
+                                            }} />
+                                        </Badge>
+                                    </Link>
                                 </Col>
                                 <Col align="center" style={{
                                     marginTop: '-0.5rem'
