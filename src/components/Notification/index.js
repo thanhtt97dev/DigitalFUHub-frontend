@@ -102,13 +102,13 @@ function Notification() {
 
     const menu = (
         <>
-            <Space style={{ position: "fixed", zIndex: "10", backgroundColor: "white", width: "400px", padding: "10px 0" }}>
+            <Space style={{ backgroundColor: "white", width: "400px", padding: "10px 0" }}>
                 <h2 style={{ marginLeft: "10px" }}>Thông báo</h2>
-                <Button type='link' style={{ position: "absolute", left: "260px", top: "10px" }}>Đánh đã đọc</Button>
+                <Button type='link' style={{ position: "absolute", left: "260px", top: "10px" }}>Đánh dấu đã đọc</Button>
             </Space>
             <Menu style={{ width: '400px' }}>
                 <div style={{ minHeight: minHeight, maxHeight: maxHeight, overflowY: 'auto' }}>
-                    <div style={{ marginTop: "60px" }}>
+                    <>
                         {(() => {
                             if (notifications.length === 0) {
                                 return (
@@ -155,7 +155,7 @@ function Notification() {
                                 )
                             }
                         })()}
-                    </div>
+                    </>
                 </div>
                 {notifications.length > visibleNotifications && (
                     <Menu.Item style={{ textAlign: 'center', fontWeight: 'bold' }}>
