@@ -52,15 +52,10 @@ function Login() {
             password: values.password ? encryptPassword(values.password) : null,
         };
         if (values.google === true) {
-            data = {
-                email: values.email,
-                fullname: values.fullname
-            };
+            data = { gToken: values.gToken };
         }
-
         login(data, values.google)
             .then((res) => {
-
                 //rule: this FE just for customer, seller
                 if (res.data.roleName === ADMIN_ROLE) {
                     setMessage("Bạn không có quyền để đăng nhập! Hãy thử một tài khoản khác!")
