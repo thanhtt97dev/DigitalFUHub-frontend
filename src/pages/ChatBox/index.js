@@ -92,7 +92,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                 item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<Avatar icon={<TeamOutlined />} />}
+                                                            avatar={<Badge status="success" dot={item.users[0].isOnline}><Avatar icon={<TeamOutlined />} /></Badge>}
                                                             title={item.conversationName}
                                                             description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
                                                         />
@@ -103,7 +103,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                         <List.Item.Meta
                                                             avatar={<Avatar icon={<TeamOutlined />} />}
                                                             title={item.conversationName}
-                                                            description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
+                                                            description={<Badge status="success" dot={item.users[0].isOnline}><p className={cx('text-ellipsis')}>{item.latestMessage}</p></Badge>}
                                                         />
                                                     </div>)
                                             }
@@ -531,6 +531,10 @@ const ChatBox = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [message])
 
+    const setDefaultLastTime = () => {
+        setLastTimeOnline('')
+    }
+
 
     // user online status
     const userOnlineStatusContext = useContext(UserOnlineStatusContext);
@@ -538,6 +542,7 @@ const ChatBox = () => {
     useEffect(() => {
         const setOnlineStatus = () => {
             if (userOnlineStatusContext) {
+                setDefaultLastTime();
                 // parse to json
                 const userOnlineStatusJson = JSON.parse(userOnlineStatusContext)
 
