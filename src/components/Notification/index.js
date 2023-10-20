@@ -135,7 +135,7 @@ function Notification() {
                                                         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                             <b style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 20)}...` : notifi.Content}</b>
                                                             <b style={{ fontSize: 10, margin: '0 4px', color: 'blue' }}>{moment(notifi.DateCreated).fromNow()}</b>
-                                                            <FontAwesomeIcon icon={faCircle} style={{ color: "#0866ff", position: "absolute", top: "55px", left: "320px" }} />
+                                                            <FontAwesomeIcon icon={faCircle} style={{ color: "#0866ff", position: "absolute", top: "55px", left: "330px" }} />
                                                         </span>
                                                     }
                                                     description={<b>{notifi.Content.length > 80 ? `${notifi.Content.slice(0, 80)}...` : notifi.Content}</b>}
