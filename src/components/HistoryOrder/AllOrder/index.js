@@ -1,4 +1,4 @@
-import { Col, Empty, Row } from "antd";
+import { Col, Empty, Modal, Row } from "antd";
 import CardOrderItem from "../CardOrderItem";
 import { useContext, useEffect, useState } from "react";
 import { getUserId } from "~/utils";
@@ -120,31 +120,47 @@ function AllOrder({ status = 0, loading, setLoading }) {
 
             })
     }
+    const [isModalViewFeedbackOpen, setIsModalViewFeedbackOpen] = useState(false);
+    const showModalViewFeedback = () => {
+        setIsModalViewFeedbackOpen(true);
+    };
+    const handleViewFeedbackOk = () => {
+        setIsModalViewFeedbackOpen(false);
+    }
+    const handleViewFeedbackCancel = () => {
+        setIsModalViewFeedbackOpen(false);
+    }
+
     return (<div >
         {!loading ?
             orders.length > 0 ?
-                <Row gutter={[0, 16]} style={{ padding: '0 50px' }}>
-                    {orders.map((v, i) => {
-                        return <Col span={24}>
-                            <CardOrderItem key={v.orderId}
-                                orderId={v.orderId}
-                                note={v.note}
-                                orderDate={v.orderDate}
-                                shopId={v.shopId}
-                                shopName={v.shopName}
-                                statusId={v.statusId}
-                                totalAmount={v.totalAmount}
-                                totalCoinDiscount={v.totalCoinDiscount}
-                                totalCouponDiscount={v.totalCouponDiscount}
-                                totalPayment={v.totalPayment}
-                                orderDetails={v.orderDetails}
-                                onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
-                                onOrderComplaint={() => handleOrderComplaint(v.orderId, v.shopId)}
-                                onFeedback={handleCustomerFeedback}
-                            />
-                        </Col>
-                    })}
-                </Row>
+                <>
+                    <Row gutter={[0, 16]} style={{ padding: '0 50px' }}>
+                        {orders.map((v, i) => {
+                            return <Col span={24}>
+                                <CardOrderItem key={v.orderId}
+                                    orderId={v.orderId}
+                                    note={v.note}
+                                    orderDate={v.orderDate}
+                                    shopId={v.shopId}
+                                    shopName={v.shopName}
+                                    statusId={v.statusId}
+                                    totalAmount={v.totalAmount}
+                                    totalCoinDiscount={v.totalCoinDiscount}
+                                    totalCouponDiscount={v.totalCouponDiscount}
+                                    totalPayment={v.totalPayment}
+                                    orderDetails={v.orderDetails}
+                                    onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
+                                    onOrderComplaint={() => handleOrderComplaint(v.orderId, v.shopId)}
+                                    onFeedback={handleCustomerFeedback}
+                                />
+                            </Col>
+                        })}
+                    </Row>
+                    <Modal title="Basic Modal" open={isModalViewFeedbackOpen} onOk={handleViewFeedbackOk} onCancel={handleViewFeedbackCancel}>
+
+                    </Modal>
+                </>
                 :
                 <Empty />
             :

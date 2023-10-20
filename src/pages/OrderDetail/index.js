@@ -42,10 +42,12 @@ function OrderDetail() {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrder(res.data.result);
                 } else {
+                    notification("error", "Lỗi", "Đã có lỗi xảy ra.")
                     return navigate("/history/order");
                 }
             })
             .catch((err) => {
+                notification("error", "Lỗi", "Đã có lỗi xảy ra.")
                 return navigate("/history/order");
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -130,6 +132,12 @@ function OrderDetail() {
                 <Col>
                     <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
                 </Col>
+                {order.orderDetails.some((v, i) => v.isFeedback === true) ?
+                    <Col>
+                        <Button type="default">Xem đánh giá</Button>
+                    </Col>
+                    : ''
+                }
 
             </Row>
         } else if (order?.statusId === ORDER_COMPLAINT) {
@@ -214,9 +222,9 @@ function OrderDetail() {
         formData.append("orderDetailId", orderDetailRef.current);
         formData.append("rate", values.rate);
         formData.append("content", values.content ?? "");
-        if (values.images || values.images?.fileList?.length > 0) {
-            values.images.fileList.forEach((v) => {
-                formData.append("images", v.originFileObj);
+        if (values.imageFiles || values.imageFiles?.fileList?.length > 0) {
+            values.imageFiles.fileList.forEach((v) => {
+                formData.append("imageFiles", v.originFileObj);
             })
         } else {
             formData.append("imageFiles", null);
@@ -233,6 +241,15 @@ function OrderDetail() {
             })
     }
     return (<>
+        <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
+            <img
+                alt="preview"
+                style={{
+                    width: '100%',
+                }}
+                src={previewImage}
+            />
+        </Modal>
         <Modal
             title="Đánh giá sản phẩm"
             footer={null}
@@ -275,7 +292,7 @@ function OrderDetail() {
                 <Row>
                     <Col span={8} offset={1}><Text>Hình ảnh</Text></Col>
                     <Col span={15}>
-                        <Form.Item name="images">
+                        <Form.Item name="imageFiles">
                             <Upload
                                 accept=".png, .jpeg, .jpg"
                                 beforeUpload={false}
@@ -297,6 +314,7 @@ function OrderDetail() {
                                     </div>
                                 </div>}
                             </Upload>
+
                         </Form.Item>
                     </Col>
                 </Row>

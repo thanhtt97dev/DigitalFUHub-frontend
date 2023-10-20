@@ -53,9 +53,8 @@ function OrdersRefund({ status, loading, setLoading }) {
             orders.length > 0 ?
                 <Row gutter={[0, 16]} style={{ padding: '0 50px' }}>
                     {orders.map((v, i) => {
-                        const id = String(i + 1);
                         return <Col span={24}>
-                            <CardOrderItem key={id}
+                            <CardOrderItem key={v.orderId}
                                 orderId={v.orderId}
                                 note={v.note}
                                 orderDate={v.orderDate}
