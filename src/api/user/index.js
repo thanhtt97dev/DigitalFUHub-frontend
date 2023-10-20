@@ -85,3 +85,7 @@ export const resetPassword = (email) => {
 export const updateAccountBalance = (id, data) => {
     return apiPut(`api/Users/UpdateBalance/${id}`, data);
 };
+
+export const getOnlineStatusUser = (id) => {
+    return apiGetAuth(`api/users/GetOnlineStatusUser/${id}`);
+};

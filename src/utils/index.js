@@ -322,3 +322,4 @@ export function getDistanceDayTwoDate(date1, date2) {
     return diff / (24 * 60 * 60 * 1000)
 }
 
+
