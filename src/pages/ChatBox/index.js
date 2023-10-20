@@ -4,7 +4,6 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
-import { getOnlineStatusUser } from '~/api/user';
 import { ChatContext } from "~/context/ChatContext";
 import { getUserId, getVietnamCurrentTime } from '~/utils';
 import { UserOnlineStatusContext } from "~/context/UserOnlineStatusContext";
@@ -418,13 +417,7 @@ const ChatBox = () => {
         })
         setUserChats(newConversation)
 
-        // get last time online
-        getOnlineStatusUser(userId)
-            .then((res) => {
 
-            }).catch((error) => {
-                console.log(error);
-            })
         setConversationSelected(conversation)
     }
 
@@ -493,7 +486,7 @@ const ChatBox = () => {
             if (message) {
                 if ('messageId' in message) {
                     // data update message chat
-                    if (conversationSelected.conversationId === message.conversationId) {
+                    if (conversationSelected?.conversationId === message.conversationId) {
                         setMessages((prev) => [...prev, message])
                     }
 
@@ -501,7 +494,7 @@ const ChatBox = () => {
                     const newUserChat = userChats.map((item) => {
                         if (item.conversationId === message.conversationId) {
                             if (message.userId !== userId) {
-                                if (conversationSelected.conversationId === message.conversationId) {
+                                if (conversationSelected?.conversationId === message.conversationId) {
                                     updateIsReadConversation(conversationSelected.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
                                     return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
                                 } else {
@@ -548,24 +541,17 @@ const ChatBox = () => {
 
                 if (userChats.length === 0) return;
                 // update users status conversations
-                const updateUserStatusConversations = async () => {
+                const updateUserStatusConversations = () => {
                     const findConversation = userChats.find(x => x.conversationId === userOnlineStatusJson.ConversationId);
-                    const newUserInConversation = await Promise.all(findConversation.users.map(async (user) => {
+                    const newUserInConversation = findConversation.users.map((user) => {
                         if (user.userId === userOnlineStatusJson.UserId) {
-                            try {
-                                const res = await getOnlineStatusUser(user.userId);
-                                if (res.status === 200) {
-                                    const lastTimeOnline = res.data.lastTimeOnline
-                                    const isOnline = userOnlineStatusJson.IsOnline;
-                                    updateUserStatusConversationSelected(isOnline, lastTimeOnline)
-                                    return { ...user, isOnline: isOnline, lastTimeOnline: lastTimeOnline }
-                                }
-                            } catch (error) {
-                                console.log(error);
-                            }
+                            const lastTimeOnline = new Date();
+                            const isOnline = userOnlineStatusJson.IsOnline;
+                            updateUserStatusConversationSelected(isOnline, lastTimeOnline)
+                            return { ...user, isOnline: isOnline, lastTimeOnline: lastTimeOnline }
                         }
                         return user;
-                    }));
+                    });
 
                     //set new users
                     findConversation.users = newUserInConversation
