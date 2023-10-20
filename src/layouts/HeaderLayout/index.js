@@ -5,8 +5,8 @@ import { Layout, Image, Space, Button, Dropdown, Avatar, Input } from 'antd';
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
 import {
-    MessageOutlined, ShoppingCartOutlined, MessageFilled, BellFilled,
-    SettingOutlined, CreditCardOutlined, ShopOutlined, ShoppingOutlined
+    MessageOutlined, ShoppingCartOutlined, BellFilled,
+    SettingOutlined, CreditCardOutlined, ShopOutlined, ShoppingOutlined, UserOutlined
 } from '@ant-design/icons';
 
 import logo from '~/assets/images/Logo.png';
@@ -27,7 +27,7 @@ const { Search } = Input;
 const itemsFixed = [
     {
         key: 'settings',
-        label: <Link to={"/settings"}><><SettingOutlined /> Cài đặt</></Link>,
+        label: <Link to={"/settings"}><><UserOutlined /> Tài khoản</></Link>,
         roles: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {
@@ -158,7 +158,7 @@ function HeaderLayout() {
                             </Link>
                             <Notificaion />
                             <Link to={'/chatBox'}>
-                                <MessageFilled className={cx("icon")} />
+                                <MessageOutlined className={cx("icon")} />
                             </Link>
                             <Dropdown
                                 menu={{ items }}

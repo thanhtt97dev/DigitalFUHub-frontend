@@ -12,10 +12,10 @@ function BoxImage({ src, onPreview = () => { }, onRemove = () => { } }) {
         <div className={cx('content-img')}>
             <div className={cx('content-blur')}>
                 <div className={cx('options')}>
-                    <Tooltip title="Preview file">
+                    <Tooltip title="Preview">
                         <EyeOutlined onClick={onPreview} className={cx('option-item')} style={{ color: 'white', fontSize: '16px' }} />
                     </Tooltip>
-                    <Tooltip title="Remove file">
+                    <Tooltip title="Remove">
                         <DeleteOutlined onClick={onRemove} className={cx('option-item')} style={{ color: 'white', fontSize: '16px' }} />
                     </Tooltip>
                 </div>

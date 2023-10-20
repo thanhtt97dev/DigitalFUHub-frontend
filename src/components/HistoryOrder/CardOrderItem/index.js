@@ -7,12 +7,12 @@ import {
     MinusCircleOutlined,
     SyncOutlined,
     PlusOutlined,
+    MessageOutlined,
 } from "@ant-design/icons";
 import { Button, Card, Col, Divider, Form, Image, Modal, Rate, Row, Space, Tag, Tooltip, Typography, Upload } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { memo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChatIcon } from "~/components/Icon";
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
 import { formatStringToCurrencyVND, getDistanceDayTwoDate, getUserId } from "~/utils";
 
@@ -40,7 +40,8 @@ function CardOrderItem({
     orderDetails,
     onOrderComplete = () => { },
     onOrderComplaint = () => { },
-    onFeedback = () => { }
+    onFeedback = () => { },
+    onViewFeedback = () => { }
 }) {
     const [form] = Form.useForm();
     const [previewOpen, setPreviewOpen] = useState(false);
@@ -94,7 +95,7 @@ function CardOrderItem({
                 </Col>
                 {orderDetails.some((v, i) => v.isFeedback === true) ?
                     <Col>
-                        <Button type="default">Xem đánh giá</Button>
+                        <Button type="default" onClick={onViewFeedback}>Xem đánh giá</Button>
                     </Col>
                     : ''
                 }
@@ -286,14 +287,16 @@ function CardOrderItem({
                         </Button></Title>
                 </Col>
                 <Col>
-                    <Title level={5}>
-                        <Button
-                            type="default"
-                            size="small"
-                            icon={<ChatIcon />}
-                        >
-                            Nhắn tin
-                        </Button></Title>
+                    <Link to="/chatBox">
+                        <Title level={5}>
+                            <Button
+                                type="default"
+                                size="small"
+                                icon={<MessageOutlined />}
+                            >
+                                Nhắn tin
+                            </Button></Title>
+                    </Link>
                 </Col>
             </Row>}
             bordered={true}
@@ -318,7 +321,7 @@ function CardOrderItem({
                                         <Row>
                                             <Col span={17}>
                                                 <Title level={5}>
-                                                    {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.substring(0, 70)}...</Tooltip> : v.productName}
+                                                    {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
                                                 </Title>
                                             </Col>
                                             {!v.isFeedback && statusId === ORDER_CONFIRMED && getDistanceDayTwoDate(orderDate, new Date()) <= 7 && <Col offset={1} span={6}>

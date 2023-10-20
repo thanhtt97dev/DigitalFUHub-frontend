@@ -560,7 +560,7 @@ function EditProduct() {
                                                     ]}
                                                     initialValue={productVariants[name]?.nameVariant}
                                                 >
-                                                    <Input placeholder="Tên loại sản phẩm" disabled={!!productVariants[name]?.nameVariant} />
+                                                    <Input placeholder="Tên loại sản phẩm" />
 
                                                 </Form.Item>
                                                 <Form.Item
