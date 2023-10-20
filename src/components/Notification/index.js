@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuthUser } from 'react-auth-kit';
 import { Link, useNavigate } from 'react-router-dom';
 import { BellFilled, ClockCircleOutlined } from '@ant-design/icons';
-import { Badge, notification, Dropdown, Menu, Empty, Alert, Button } from 'antd';
+import { Badge, notification, Dropdown, Menu, Empty, Alert, Button, Space } from 'antd';
 import { editNotificationIsReaded } from "~/api/signalr/notification";
 import connectionHub from '~/api/signalr/connectionHub';
 import { SIGNAL_R_NOTIFICATION_HUB_RECEIVE_NOTIFICATION, SIGNAL_R_NOTIFICATION_HUB_RECEIVE_ALL_NOTIFICATION } from '~/constants';
@@ -101,61 +101,69 @@ function Notification() {
     const maxHeight = window.innerHeight - 250;
 
     const menu = (
-        <Menu style={{ width: '400px' }}>
-            <div style={{ minHeight: minHeight, maxHeight: maxHeight, overflowY: 'auto' }}>
-                {(() => {
-                    if (notifications.length === 0) {
-                        return (
-                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<b>Không có thông báo!</b>} />
-                        )
-                    } else {
-                        return (
-                            <>
-                                {notifications.slice(0, visibleNotifications).map((notifi, index) => (
-                                    <Menu.Item>
-                                        {notifi.IsReaded ? (
-                                            <Link to={notifi.Link} onClick={() => handleClickOpenNotification(notifi, true)}>
-                                                <Alert
-                                                    style={{ backgroundColor: 'white', width: '100%', height: '20', border: 'none' }}
-                                                    message={
-                                                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                            <p style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 15)}...` : notifi.Title}</p>
-                                                            <p style={{ fontSize: 10, margin: 0 }}>{moment(notifi.DateCreated).fromNow()}</p>
-                                                        </span>
-                                                    }
-                                                    description={<p>{notifi.Content.length > 80 ? `${notifi.Content.slice(0, 80)}...` : notifi.Content}</p>}
-                                                    type="info"
-                                                />
-                                            </Link>
-                                        ) : (
-                                            <Link to={notifi.Link} onClick={() => handleClickOpenNotification(notifi, false)}>
-                                                <Alert
-                                                    style={{ backgroundColor: 'white', width: '100%', minHeight: '100px', border: 'none' }}
-                                                    message={
-                                                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                            <b style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 20)}...` : notifi.Content}</b>
-                                                            <b style={{ fontSize: 10, margin: '0 4px', color: 'blue' }}>{moment(notifi.DateCreated).fromNow()}</b>
-                                                            <FontAwesomeIcon icon={faCircle} style={{ color: "#0866ff", position: "absolute", top: "55px", left: "330px" }} />
-                                                        </span>
-                                                    }
-                                                    description={<b>{notifi.Content.length > 80 ? `${notifi.Content.slice(0, 80)}...` : notifi.Content}</b>}
-                                                    type="info"
-                                                />
-                                            </Link>
-                                        )}
-                                    </Menu.Item>
-                                ))}
-                            </>
-                        )
-                    }
-                })()}
-            </div>
-            {notifications.length > visibleNotifications && (
-                <Menu.Item style={{ textAlign: 'center', fontWeight: 'bold' }}>
-                    <Button onClick={loadMoreNotifications}>Xem thêm</Button>
-                </Menu.Item>
-            )}
-        </Menu>
+        <>
+            <Space style={{ position: "fixed", zIndex: "10", backgroundColor: "white", width: "400px", padding: "10px 0" }}>
+                <h2 style={{ marginLeft: "10px" }}>Thông báo</h2>
+                <Button type='link' style={{ position: "absolute", left: "260px", top: "10px" }}>Đánh đã đọc</Button>
+            </Space>
+            <Menu style={{ width: '400px' }}>
+                <div style={{ minHeight: minHeight, maxHeight: maxHeight, overflowY: 'auto' }}>
+                    <div style={{ marginTop: "60px" }}>
+                        {(() => {
+                            if (notifications.length === 0) {
+                                return (
+                                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<b>Chưa có thông báo!</b>} />
+                                )
+                            } else {
+                                return (
+                                    <>
+                                        {notifications.slice(0, visibleNotifications).map((notifi, index) => (
+                                            <Menu.Item>
+                                                {notifi.IsReaded ? (
+                                                    <Link to={notifi.Link} onClick={() => handleClickOpenNotification(notifi, true)}>
+                                                        <Alert
+                                                            style={{ backgroundColor: 'white', width: '100%', height: '20', border: 'none' }}
+                                                            message={
+                                                                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                    <p style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 15)}...` : notifi.Title}</p>
+                                                                    <p style={{ fontSize: 10, margin: 0 }}>{moment(notifi.DateCreated).fromNow()}</p>
+                                                                </span>
+                                                            }
+                                                            description={<p>{notifi.Content.length > 80 ? `${notifi.Content.slice(0, 80)}...` : notifi.Content}</p>}
+                                                            type="info"
+                                                        />
+                                                    </Link>
+                                                ) : (
+                                                    <Link to={notifi.Link} onClick={() => handleClickOpenNotification(notifi, false)}>
+                                                        <Alert
+                                                            style={{ backgroundColor: 'white', width: '100%', minHeight: '100px', border: 'none' }}
+                                                            message={
+                                                                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                    <b style={{ flex: 1, margin: 0 }}>{notifi.Title.length > 15 ? `${notifi.Title.slice(0, 20)}...` : notifi.Content}</b>
+                                                                    <b style={{ fontSize: 10, margin: '0 4px', color: 'blue' }}>{moment(notifi.DateCreated).fromNow()}</b>
+                                                                    <FontAwesomeIcon icon={faCircle} style={{ color: "#0866ff", position: "absolute", top: "55px", left: "330px" }} />
+                                                                </span>
+                                                            }
+                                                            description={<b>{notifi.Content.length > 80 ? `${notifi.Content.slice(0, 80)}...` : notifi.Content}</b>}
+                                                            type="info"
+                                                        />
+                                                    </Link>
+                                                )}
+                                            </Menu.Item>
+                                        ))}
+                                    </>
+                                )
+                            }
+                        })()}
+                    </div>
+                </div>
+                {notifications.length > visibleNotifications && (
+                    <Menu.Item style={{ textAlign: 'center', fontWeight: 'bold' }}>
+                        <Button onClick={loadMoreNotifications}>Xem thêm</Button>
+                    </Menu.Item>
+                )}
+            </Menu>
+        </>
     );
 
     return (
