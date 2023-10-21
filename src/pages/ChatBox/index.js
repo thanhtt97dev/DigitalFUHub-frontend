@@ -71,7 +71,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                         renderItem={(item) => (
                             <List.Item onClick={() => { handleClickUser(item) }}>
                                 {
-                                    item.users.length === 1 ? (
+                                    item.isGroup === false ? (
                                         <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }} bodyStyle={{ padding: 15 }}>
 
                                             {
@@ -100,7 +100,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                 item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<Badge status="success" dot={item.users[0].isOnline}><Avatar icon={<TeamOutlined />} /></Badge>}
+                                                            avatar={<SmallUserAvatar srcAvatar={fptImage} isActive={item.users[0].isOnline} />}
                                                             title={item.conversationName}
                                                             description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
                                                         />
@@ -109,9 +109,9 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                     :
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<Avatar icon={<TeamOutlined />} />}
+                                                            avatar={<SmallUserAvatar srcAvatar={fptImage} isActive={item.users[0].isOnline} />}
                                                             title={item.conversationName}
-                                                            description={<Badge status="success" dot={item.users[0].isOnline}><p className={cx('text-ellipsis')}>{item.latestMessage}</p></Badge>}
+                                                            description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
                                                         />
                                                     </div>)
                                             }
@@ -147,15 +147,15 @@ const HeaderMessageChat = ({ conversationSelected, lastTimeOnline }) => (
     <Card
         bodyStyle={bodyCardHeader}>
         {
-            conversationSelected.users.length === 1 ? (
+            conversationSelected.isGroup === false ? (
                 <Meta
                     avatar={<BigUserAvatar srcAvatar={conversationSelected.users[0].avatar} isActive={conversationSelected.users[0].isOnline} />}
                     title={conversationSelected.users[0].fullname}
-                    description={conversationSelected.users[0].isOnline ? <p>Đang hoạt động</p> : <p>Hoạt động {lastTimeOnline || moment(conversationSelected.users[0].lastTimeOnline).fromNow()}</p>}
+                    description={conversationSelected.users[0].isOnline ? <p>Đang hoạt động</p> : <p>Hoạt động {lastTimeOnline ? lastTimeOnline : moment(conversationSelected.users[0].lastTimeOnline).fromNow()}</p>}
                 />
             ) : (
                 <Meta
-                    avatar={<Avatar icon={<TeamOutlined />} />}
+                    avatar={<BigUserAvatar srcAvatar={fptImage} isActive={conversationSelected.users[0].isOnline} />}
                     title={conversationSelected.conversationName}
                 />
             )
@@ -463,7 +463,7 @@ const ChatBox = () => {
 
         if (conversationSelected === null || conversationSelected === undefined) return;
         const interval = setInterval(() => {
-            if (conversationSelected.users.length === 1) {
+            if (conversationSelected.isGroup === false) {
                 setLastTimeOnline(moment(conversationSelected.users[0].lastTimeOnline).fromNow());
             }
         }, 60000);
