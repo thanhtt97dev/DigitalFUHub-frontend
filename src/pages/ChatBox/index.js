@@ -95,7 +95,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                             }
                                         </Card>
                                     ) : (
-                                        <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
+                                        <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }} bodyStyle={{ padding: 15 }}>
                                             {
                                                 item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
                                                     (<div className={cx('space-div-flex')}>
