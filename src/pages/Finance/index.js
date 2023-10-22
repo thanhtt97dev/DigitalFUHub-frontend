@@ -4,7 +4,7 @@ import { Card } from "antd";
 import HistoryDeposit from "./HistoryDeposit";
 import HistoryWithdraw from "./HistoryWithdraw";
 
-function HistoryTransactions() {
+function Finance() {
     const initialTabList = [
         {
             key: 'tab1',
@@ -43,4 +43,4 @@ function HistoryTransactions() {
     )
 }
 
-export default HistoryTransactions;
+export default Finance;

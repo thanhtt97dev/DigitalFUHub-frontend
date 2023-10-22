@@ -8,7 +8,8 @@ import {
     GlobalOutlined,
     BankOutlined,
     ShopOutlined,
-    ShoppingOutlined
+    ShoppingOutlined,
+    CreditCardOutlined
 } from '@ant-design/icons';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import { useAuthUser } from 'react-auth-kit';
@@ -36,6 +37,12 @@ const items = [
         label: 'Tài khoản ngân hàng',
         link: '/settings/bankAccount',
         role: [CUSTOMER_ROLE, SELLER_ROLE],
+    },
+    {
+        icon: CreditCardOutlined,
+        label: 'Giao dịch tài chính',
+        link: '/finance',
+        role: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {
         icon: ShoppingOutlined,
@@ -70,7 +77,7 @@ function SettingsLayout({ children }) {
                 <Button type="primary" onClick={toggleCollapsed} style={{ marginBottom: 16, marginRight: 15 }}>
                     {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 </Button>
-                <h1>Cài đặt</h1>
+                <h1>Tài khoản</h1>
             </Row>
             <Layout style={{ minHeight: '100vh' }}>
                 <Sider

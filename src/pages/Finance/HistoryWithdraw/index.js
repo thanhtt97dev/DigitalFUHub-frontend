@@ -23,7 +23,7 @@ const columns = [
     {
         title: 'Mã giao dịch',
         dataIndex: 'withdrawTransactionId',
-        width: '9%',
+        width: '5%',
     },
     {
         title: 'Số tiền',
@@ -38,7 +38,7 @@ const columns = [
     {
         title: 'Thời gian tạo yêu cầu',
         dataIndex: 'requestDate',
-        width: '13%',
+        width: '16%',
         render: (requestDate) => {
             return (
                 <p>{ParseDateTime(requestDate)}</p>
