@@ -1,5 +1,5 @@
-import React from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import { Layout } from 'antd';
 import { FacebookOutlined, InstagramOutlined, TwitterCircleFilled } from '@ant-design/icons';
@@ -17,6 +17,10 @@ function NormalLayout(props) {
 
     const location = useLocation();
     const isDepositPage = location.pathname === '/deposit';
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    })
 
     return (
         <>
@@ -49,18 +53,18 @@ function NormalLayout(props) {
                         <div className={cx("footer-links")}>
                             <h2>Mạng Xã Hội</h2><br />
                             <ul>
-                                <li><FacebookOutlined /> <a href="https://www.facebook.com/react">Facebook</a></li>
-                                <li><InstagramOutlined /> <a href="https://www.instagram.com/reactjs1/">Instagram</a></li>
-                                <li><TwitterCircleFilled /> <a href="https://twitter.com/reactjs">Twitter</a></li>
+                                <li><FacebookOutlined /> <a href="https://www.facebook.com/react" target="_blank" rel="noreferrer">Facebook</a></li>
+                                <li><InstagramOutlined /> <a href="https://www.instagram.com/reactjs1/" target="_blank" rel="noreferrer">Instagram</a></li>
+                                <li><TwitterCircleFilled /> <a href="https://twitter.com/reactjs" target="_blank" rel="noreferrer">Twitter</a></li>
                             </ul>
                         </div>
 
                         <div className={cx("footer-links")} style={{ borderRight: '1px solid black' }}>
                             <h2>Chính Sách</h2><br />
                             <ul>
-                                <li><a href="/privacyPolicy">Chính sách bảo mật</a></li>
-                                <li><a href="/faq">FAQ</a></li>
-                                <li><a href="/warrantPolicy">Chính sách bảo hành & đổi trả</a></li>
+                                <li><Link to="/privacyPolicy">Chính sách bảo mật</Link></li>
+                                <li><Link to="/faq">FAQ</Link></li>
+                                <li><Link to="/warrantPolicy">Chính sách bảo hành & đổi trả</Link></li>
                             </ul>
                         </div>
                     </div>
