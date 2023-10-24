@@ -138,6 +138,12 @@ export const PRODUCT_ACTIVE = 1;
 export const PRODUCT_BAN = 2;
 export const PRODUCT_HIDE = 3;
 
+// reset password status
+export const RESPONSE_CODE_RESET_PASSWORD_NOT_CONFIRM = "RS_01";
+export const RESPONSE_CODE_RESET_PASSWORD_SIGNIN_GOOGLE = "RS_02";
+
+// confirm password status
+export const RESPONSE_CODE_CONFIRM_PASSWORD_IS_CONFIRMED = "CF_01";
 
 // order message
 export const RESPONSE_MESSAGE_ORDER_COUPON_USED = 'Phiếu giảm giá đã được sử dụng';

@@ -19,7 +19,7 @@ const { RangePicker } = DatePicker;
 const { confirm } = Modal;
 function Coupons() {
     const notification = useContext(NotificationContext)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true);
     const [formSearch] = Form.useForm();
     const [formModal] = Form.useForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,8 +64,10 @@ function Coupons() {
             ...searchData,
             status: searchData.status === 0 ? null : searchData.status === 1 ? true : false
         }
+        setLoading(true);
         getCouponsSeller(data)
             .then((res) => {
+                setLoading(false);
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setListCoupons(res.data.result);
                 } else {
@@ -73,6 +75,7 @@ function Coupons() {
                 }
             })
             .catch((err) => {
+                setLoading(false);
                 notification('error', 'Lỗi', 'Đã có lỗi xảy ra.')
             })
 
@@ -112,17 +115,17 @@ function Coupons() {
                         status: 0
                     });
                 } else {
-                    notification("error", "Thành công", "Tạo mã giảm giá thất bại.")
+                    notification("error", "Thất bại", "Tạo mã giảm giá thất bại.")
                 }
             })
             .catch((err) => {
-                notification("error", "Thành công", "Tạo mã giảm giá thất bại.")
+                notification("error", "Lỗi", "Đã có lỗi xảy ra.")
             })
         handleModalOk();
     }
-    const disabledDate = current => {
-        return current && current < dayjs().startOf('day');
-    };
+    // const disabledDate = current => {
+    //     return current && current < dayjs().startOf('day');
+    // };
 
     const handleChangeStatus = (couponId, checked) => {
         confirm({
@@ -148,14 +151,13 @@ function Coupons() {
                         }
                     })
                     .catch((err) => {
-                        notification("error", "Thất bại", "Cập nhật mã giảm giá thất bại.")
+                        notification("error", "Lỗi", "Đã có lỗi xảy ra.")
                     })
 
             },
             onCancel() {
             }
         })
-
     }
     const handleRemoveCoupon = (couponId) => {
         confirm({
@@ -180,7 +182,7 @@ function Coupons() {
                         }
                     })
                     .catch((err) => {
-                        notification("error", "Thất bại", "Xóa mã giảm giá thất bại.")
+                        notification("error", "Lỗi", "Đã có lỗi xảy ra.")
                     })
 
             },
@@ -389,7 +391,7 @@ function Coupons() {
                                     <RangePicker locale={locale}
                                         style={{ width: '100%' }}
                                         format={"M/D/YYYY HH:mm"}
-                                        disabledDate={disabledDate}
+                                        // disabledDate={disabledDate}
                                         showTime={{
                                             hideDisabledOptions: true,
                                             defaultValue: [dayjs('00:00', 'HH:mm')],
@@ -485,7 +487,6 @@ function Coupons() {
                                 <Button htmlType="submit" type="primary">Xác nhận</Button>
                             </Col>
                         </Row>
-
                     </Form>
                 </Modal>
 

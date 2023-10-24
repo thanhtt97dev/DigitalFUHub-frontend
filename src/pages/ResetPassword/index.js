@@ -1,43 +1,35 @@
 import { useState } from "react";
-import { Button, Form, Input, message, Spin } from 'antd';
+import { Button, Form, Input, Spin } from 'antd';
 import { resetPassword } from "~/api/user";
-
+import { NotificationContext } from "~/context/NotificationContext";
+import { useContext } from "react";
+import { RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_RESET_PASSWORD_NOT_CONFIRM, RESPONSE_CODE_RESET_PASSWORD_SIGNIN_GOOGLE, RESPONSE_CODE_SUCCESS } from "~/constants";
 function ResetPassword() {
+    const notification = useContext(NotificationContext);
     const [form] = Form.useForm();
-    const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(false)
-    const notification = (type, message) => {
-        messageApi.open({
-            type: type,
-            content: message,
-            duration: 5
-        });
-    };
+
 
     const onFinish = (values) => {
         setLoading(true);
         resetPassword(values.email)
             .then((res) => {
                 setLoading(false);
-                notification('success', `Mật khẩu mới đã được gửi đến email ${values.email}.`)
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    notification('success', "Thành công", `Mật khẩu mới đã được gửi đến email ${values.email}.`)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_RESET_PASSWORD_NOT_CONFIRM) {
+                    notification('success', "Thất bại", `Vui lòng xác nhận tài khoản trước khi đặt lại mật khẩu.`);
+                } else if (res.data.status.responseCode === RESPONSE_CODE_RESET_PASSWORD_SIGNIN_GOOGLE) {
+                    notification('success', "Thất bại", `Vui lòng tạo tài khoản trước khi đặt lại mật khẩu.`);
+                } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
+                    notification('success', "Thất bại", `Không tồn tại tài khoản.`);
+                } else {
+                    notification('success', "Thất bại", `Vui lòng kiểm tra lại.`);
+                }
             })
             .catch((err) => {
                 setLoading(false);
-                if (!err.response) {
-                    notification('error', 'Đã có lỗi xảy ra.')
-                } else {
-                    switch (err.response.status) {
-                        case 409:
-                            notification('error', 'Đã có lỗi xảy ra.')
-                            break;
-                        case 404:
-                            notification('error', 'Tài khoản không tồn tại.')
-                            break;
-                        default:
-                            notification('error', 'Đã có lỗi xảy ra.')
-                            break;
-                    }
-                }
+                notification('error', "Lỗi", 'Đã có lỗi xảy ra.')
             })
     }
     return <div style={{
@@ -46,7 +38,6 @@ function ResetPassword() {
         display: 'flex',
         justifyContent: 'center',
     }}>
-        {contextHolder}
         <Form
             layout='vertical'
             form={form}

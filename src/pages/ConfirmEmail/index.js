@@ -1,52 +1,34 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Button, Form, Input, message, Spin } from 'antd';
+import { Button, Form, Input, Spin } from 'antd';
 import { confirmEmail, generateTokenConfirmEmail } from "~/api/user";
-
+import { NotificationContext } from "~/context/NotificationContext";
+import { useContext } from "react";
+import { RESPONSE_CODE_CONFIRM_PASSWORD_IS_CONFIRMED, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_SUCCESS } from "~/constants";
 function ConfirmEmail() {
+    const notification = useContext(NotificationContext);
     const [form] = Form.useForm();
-    const [messageApi, contextHolder] = message.useMessage();
     const [searchParams] = useSearchParams(); //setSearchParams
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
-    const timeoutId = useRef()
-    const notification = (type, message) => {
-        messageApi.open({
-            type: type,
-            content: message,
-            duration: 5
-        });
-    };
+
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         const tokenParam = searchParams.get("token");
         if (tokenParam) {
             confirmEmail(tokenParam)
                 .then((res) => {
-                    if (res.data === "Y") {
-                        notification('success', 'Xác thực tài khoản thành công.')
-                        timeoutId.current = setTimeout(() => navigate('/login'), 4000)
+                    if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        notification('success', "Thành công", 'Xác thực tài khoản thành công.')
+                        return navigate('/login');
                     } else {
-                        notification('error', 'Tài khoản đã được xác thực.')
+                        notification('error', "Thất bại", 'Vui lòng kiểm tra lại.')
                     }
                 })
                 .catch((err) => {
-                    switch (err.response.status) {
-                        case 409:
-                            notification('error', 'Đã quá thời gian xác thực vui lòng gửi lại email xác thực.')
-                            break;
-                        case 404:
-                            notification('error', 'Không thể xác thực tài khoản vui lòng thử lại.')
-                            break;
-                        default:
-                            notification('error', 'Đã có lỗi xảy ra.')
-                            break;
-                    }
+                    notification('error', "Lỗi", 'Đã có lỗi xảy ra.')
                 })
         }
-
-        return () => clearTimeout(timeoutId.current)
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -55,25 +37,17 @@ function ConfirmEmail() {
         generateTokenConfirmEmail(values.email)
             .then((res) => {
                 setLoading(false);
-                notification('success', `Vui lòng đi đến ${values.email} để xác thực tài khoản.`)
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    notification('success', "Thành công", `Vui lòng đi đến ${values.email} để xác thực tài khoản.`,)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
+                    notification('error', "Thất bại", `Vui lòng kiểm tra lại.`,)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_CONFIRM_PASSWORD_IS_CONFIRMED) {
+                    notification('error', "Thất bại", `Tài khoản đã được xác thực.`,)
+                }
             })
             .catch((err) => {
                 setLoading(false);
-                if (!err.response) {
-                    notification('error', 'Đã có lỗi xảy ra.')
-                } else {
-                    switch (err.response.status) {
-                        case 409:
-                            notification('error', 'Tài khoản đã được xác thực.')
-                            break;
-                        case 404:
-                            notification('error', 'Email không tồn tại!')
-                            break;
-                        default:
-                            notification('error', 'Đã có lỗi xảy ra.')
-                            break;
-                    }
-                }
+                notification('error', 'Lỗi', 'Đã có lỗi xảy ra.')
             })
 
     }
@@ -83,7 +57,6 @@ function ConfirmEmail() {
         display: 'flex',
         justifyContent: 'center',
     }}>
-        {contextHolder}
         <Form
             layout='vertical'
             form={form}

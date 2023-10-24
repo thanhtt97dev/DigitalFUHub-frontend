@@ -2,10 +2,9 @@ import { useEffect, useState, useRef, useLayoutEffect, useContext } from "react"
 import { useNavigate, useParams } from 'react-router-dom';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import Spinning from "~/components/Spinning";
 import { NotificationContext } from '~/context/NotificationContext';
 
-import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip } from 'antd';
+import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Spin } from 'antd';
 import { PlusOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
 import { getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
 import { getAllCategory } from "~/api/category";
@@ -261,29 +260,30 @@ function EditProduct() {
                 formData.append('productVariantFileUpdate', variant.file ? variant.file.originFileObj : null);
             }
         })
-        editProductSeller(productId, formData)
+        editProductSeller(formData)
             .then(res => {
                 setLoading(false);
                 if (res.data.status.responseCode === '00') {
-                    notification('success', 'Cập nhật sản phẩm thành công.');
+                    notification('success', "Thành công", 'Cập nhật sản phẩm thành công.');
                 } else {
-                    notification('error', 'Cập nhật sản phẩm thất bại.');
+                    notification('error', 'Thất bại', 'Cập nhật sản phẩm thất bại.');
                 }
                 return navigate('/seller/product/list')
             })
             .catch(err => {
                 setLoading(false);
-                notification('error', 'Đã có lỗi xảy ra.');
+                notification('error', 'Lỗi', 'Đã có lỗi xảy ra.');
                 return navigate('/seller/product/list')
             })
 
     }
     const handleDownloadDataOld = async () => {
+        const now = new Date();
         const buffer = await writeDataToExcel(productVariants[indexBtnViewOldDataRef.current]?.data)
         let blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         let link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = "NewSheet.xlsx";
+        link.download = `${now.getFullYear()}${now.getMonth() + 1}${now.getDate()}${now.getHours()}${now.getMinutes()}${now.getSeconds()}.xlsx`;
         link.click();
         URL.revokeObjectURL(link.href);
         link.remove();
@@ -291,7 +291,7 @@ function EditProduct() {
 
     return (
         <>
-            <Spinning spinning={loading}>
+            <Spin spinning={loading}>
                 <Modal open={previewOpen} title={previewImageTitle} footer={null} onCancel={handleCancel}>
                     <img
                         alt="thumbnail"
@@ -723,7 +723,7 @@ function EditProduct() {
                         </Form.Item>
                     </Form >
                 </Card>
-            </Spinning >
+            </Spin >
         </>
     );
 

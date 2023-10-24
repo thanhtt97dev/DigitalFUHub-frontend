@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { PlusOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, InputNumber, Upload, Modal, Table, Space, theme, Tag, Tooltip, Card } from 'antd';
+import { Button, Form, Input, Select, InputNumber, Upload, Modal, Table, Space, theme, Tag, Tooltip, Card, Spin } from 'antd';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Spinning from '~/components/Spinning';
@@ -253,7 +253,7 @@ function AddProduct() {
 
     return (
         <>
-            <Spinning spinning={loading}>
+            <Spin spinning={loading}>
                 <Card
                     onScroll={(e) => { console.log(e.y) }}
                     style={{
@@ -607,7 +607,7 @@ function AddProduct() {
                         </Form.Item>
                     </Form >
                 </Card>
-            </Spinning >
+            </Spin >
         </>
     );
 };

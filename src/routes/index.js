@@ -2,7 +2,6 @@ import Login from '~/pages/Login';
 import AccessDenied from '~/pages/AccessDenied';
 import Home from '~/pages/Home';
 import NormalLayout from '~/layouts/NormalLayout';
-import UploadFile from '~/pages/UploadFile';
 import Verification2FA from '~/pages/Verification2FA';
 import SettingsLayout from '~/pages/User/Settings/SettingsLayout';
 import Personal from '~/pages/User/Settings/Personal';
@@ -61,12 +60,6 @@ const routesConfig = [
         path: '/',
         layout: <NormalLayout />,
         component: <Home />,
-    },
-    {
-        title: 'upload',
-        path: '/upload',
-        layout: <NormalLayout />,
-        component: <UploadFile />,
     },
     {
         title: 'verification2FA',
