@@ -1,4 +1,4 @@
-import { Avatar, Button, Col, Empty, Image, Modal, Rate, Row, Typography } from "antd";
+import { Avatar, Button, Col, Empty, Image, Modal, Rate, Row, Spin, Typography } from "antd";
 import CardOrderItem from "../CardOrderItem";
 import { useContext, useEffect, useState } from "react";
 import { ParseDateTime, getUserId } from "~/utils";
@@ -21,12 +21,15 @@ function AllOrder({ status = 0, loading, setLoading }) {
     });
     const [orders, setOrders] = useState([]);
     const [nextOffset, setNextOffset] = useState(0)
+    const [loadingMoreData, setLoadingMoreData] = useState(false);
     useEffect(() => {
         if (nextOffset !== -1) {
             // call api
+            if (nextOffset !== 0) {
+                setLoadingMoreData(true);
+            }
             getAllOrdersCustomer(paramSearch)
                 .then(res => {
-
                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         setOrders(res.data.result.orders);
                         setNextOffset(res.data.result.nextOffset);
@@ -38,8 +41,8 @@ function AllOrder({ status = 0, loading, setLoading }) {
                     setLoading(false);
                     clearTimeout(idTimeout)
                 }, 300)
-
             }
+            setLoadingMoreData(false);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [paramSearch])
@@ -48,7 +51,9 @@ function AllOrder({ status = 0, loading, setLoading }) {
             var scrollMaxY = window.scrollMaxY || (document.documentElement.scrollHeight - document.documentElement.clientHeight)
             if (scrollMaxY - window.scrollY <= 300) {
                 if (nextOffset !== -1) {
-                    setParamSearch({ ...paramSearch, offset: nextOffset })
+                    if (!loadingMoreData) {
+                        setParamSearch({ ...paramSearch, offset: nextOffset })
+                    }
                 }
             }
         })
@@ -177,6 +182,9 @@ function AllOrder({ status = 0, loading, setLoading }) {
                                 />
                             </Col>
                         })}
+                        <Col span={24}>
+                            <Spin spinning={loadingMoreData}></Spin>
+                        </Col>
                     </Row>
                     <Modal title="Đánh giá cửa hàng" open={isModalViewFeedbackOpen} onOk={handleViewFeedbackOk} onCancel={handleViewFeedbackCancel}
                         footer={[

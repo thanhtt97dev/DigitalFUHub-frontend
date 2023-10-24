@@ -19,6 +19,6 @@ export const getProductSellerById = (userId, productId) => {
 export const addProductSeller = (formData) => {
     return apiPostAuthForm('api/Products/Add', formData);
 };
-export const editProductSeller = (productId, formData) => {
-    return apiPutAuthForm(`api/Products/Edit/${productId}`, formData);
+export const editProductSeller = (formData) => {
+    return apiPostAuthForm('api/Products/Edit', formData);
 };

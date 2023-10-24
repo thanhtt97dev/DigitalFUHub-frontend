@@ -1,94 +1,51 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import {
     Alert,
     Button,
     Form,
     Input,
     Spin,
-    notification
-    // Upload,
-    // Space
 } from 'antd';
 import { Link } from 'react-router-dom';
 import { checkExistEmail, signUp, checkExistUsername } from '~/api/user';
-// import classNames from 'classnames/bind';
-// import styles from './SignUp.module.scss';
 import { encryptPassword, regexPattern } from '~/utils';
-// const cx = classNames.bind(styles)
-
-// const normFile = (e) => {
-//     if (Array.isArray(e)) {
-//         return e;
-//     }
-//     return e && e.fileList;
-// };
+import { RESPONSE_CODE_SUCCESS } from '~/constants';
+import { NotificationContext } from '~/context/NotificationContext';
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
-// const formItemLayout = {
-//     labelCol: {
-//         xs: {
-//             span: 24,
-//         },
-//         sm: {
-//             span: 8,
-//         }
-//     },
-//     wrapperCol: {
-//         xs: {
-//             span: 24,
-//         },
-//         sm: {
-//             span: 16,
-//         },
-//     },
-// };
-// const tailFormItemLayout = {
-//     wrapperCol: {
-//         xs: {
-//             span: 24,
-//             offset: 0,
-//         },
-//         sm: {
-//             span: 16,
-//             offset: 6, //8
-//         },
-//     },
-// };
 
 const validatorFields = {
     checkExistUsername: () => ({
         async validator(_, value) {
             if (!value) return Promise.resolve();
-            let isExist = false;
             await checkExistUsername(value)
                 .then(res => {
-                    isExist = res.data === 'Y' ? true : false;
+                    if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        return Promise.resolve();
+                    } else {
+                        return Promise.reject(new Error('Tên tài khoản không hợp lệ!'));
+                    }
                 })
                 .catch(err => {
-                    isExist = false;
+                    return Promise.reject(new Error('Tên tài khoản không hợp lệ!'));
                 });
-            if (!isExist) {
-                return Promise.resolve();
-            }
-            return Promise.reject(new Error('Email đã tồn tại!'));
         },
     }),
     checkExistEmail: () => ({
         async validator(_, value) {
             if (!value) return Promise.resolve();
-            let isExist = false;
             await checkExistEmail(value)
                 .then(res => {
-                    isExist = res.data === 'Y' ? true : false;
+                    if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        return Promise.resolve();
+                    } else {
+                        return Promise.reject(new Error('Email không hợp lệ!'));
+                    }
                 })
                 .catch(err => {
-                    isExist = false;
+                    return Promise.reject(new Error('Email không hợp lệ!'));
                 });
-            if (!isExist) {
-                return Promise.resolve();
-            }
-            return Promise.reject(new Error('Email đã tồn tại!'));
         },
     }),
     checkFormatUsername: () => ({
@@ -133,11 +90,11 @@ const validatorFields = {
 }
 
 function SignUp() {
+    const notification = useContext(NotificationContext);
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     // const navigate = useNavigate();
-    const [api, contextHolder] = notification.useNotification();
     const onFinish = (values) => {
         setLoading(true);
         const dataBody = {
@@ -151,21 +108,14 @@ function SignUp() {
             .then(res => {
                 form.resetFields();
                 setLoading(false);
-                setMessage(`Vui lòng đi đến ${dataBody.email} để xác thực tài khoản.`);
+                setMessage(`Vui lòng đến ${dataBody.email} để xác thực tài khoản.`);
                 // return navigate('/confirmEmail')
             })
             .catch(err => {
                 setLoading(false);
-                openNotificationWithIcon('error');
+                notification("error", "Lỗi", "Đã có lỗi xảy ra")
             })
     }
-    const openNotificationWithIcon = (type) => {
-        api[type]({
-            message: 'Đã có lỗi xảy ra vui lòng thử lại sau!',
-            description:
-                '',
-        });
-    };
 
     return (
         <div style={{
@@ -175,7 +125,6 @@ function SignUp() {
             justifyContent: 'center',
             alignItems: 'center'
         }}>
-            {contextHolder}
             <Form
                 // {...formItemLayout}
                 form={form}
