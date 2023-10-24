@@ -9,7 +9,7 @@ import { formatPrice, discountPrice } from '~/utils';
 import { Link } from 'react-router-dom';
 import { updateCart, deleteCart } from '~/api/cart';
 import { getCouponPublic } from '~/api/coupon';
-import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input } from 'antd';
+import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag } from 'antd';
 import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/icons';
 import {
     RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_INVALID_QUANTITY,
@@ -211,6 +211,7 @@ const Products = ({ dataPropProductComponent }) => {
     }
 
     ///
+
     return (
         <>
             <Col span={18} style={{ padding: 5 }}>
@@ -265,9 +266,14 @@ const Products = ({ dataPropProductComponent }) => {
                                 <Row>
                                     <Col offset={1}><Button type="link" onClick={() => { setShopIdSelected(cart.shopId); showCouponShop(cart.shopId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
                                     <Col>{
-                                        // cart.coupons?.map((item) => (
-                                        //     <p>{item.price}</p>
-                                        // ))
+                                        couponCodeSelecteds?.map((couponItem) => {
+                                            if (couponItem.shopId === cart.shopId) {
+                                                return (<Tag bordered={false} color="blue">
+                                                    {couponItem.couponCode}
+                                                </Tag>)
+                                            }
+                                            return couponItem;
+                                        })
                                     }</Col>
                                 </Row>
 
