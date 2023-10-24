@@ -1,7 +1,11 @@
 import { apiGet, apiPostAuth } from '../defaultApi';
 
-export const getCoupons = (shopId, couponCode) => {
-    return apiGet(`api/Coupons/getCoupons?shopId=${shopId}&couponCode=${couponCode}`);
+export const getCouponPublic = (shopId) => {
+    return apiGet(`api/Coupons/GetCouponPublic?shopId=${shopId}`);
+};
+
+export const getCouponByCode = (couponCode) => {
+    return apiGet(`api/Coupons/GetCouponByCode?couponCode=${couponCode}`);
 };
 
 export const checkCouponCodeExist = async (couponCode) => {

@@ -69,7 +69,11 @@ export const send2FaQrCode = (id) => {
 };
 
 export const getCustomerBalance = (id) => {
-    return apiGetAuth(`api/users/GetCustomerBalance/${id}`);
+    return apiGetAuth(`api/users/getCustomerBalance/${id}`);
+};
+
+export const getCoinUser = (id) => {
+    return apiGetAuth(`api/users/GetCoin/${id}`);
 };
 
 export const confirmEmail = (token) => {

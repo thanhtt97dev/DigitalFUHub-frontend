@@ -8,6 +8,7 @@ import Coupons from '../Coupons'
 import { formatPrice, discountPrice } from '~/utils';
 import { Link } from 'react-router-dom';
 import { updateCart, deleteCart } from '~/api/cart';
+import { getCouponPublic } from '~/api/coupon';
 import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input } from 'antd';
 import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/icons';
 import {
@@ -29,18 +30,22 @@ const Products = ({ dataPropProductComponent }) => {
         cartDetailIdSelecteds,
         handleCheckAll,
         reloadCarts,
+        couponCodeSelecteds,
+        setCouponCodeSelecteds,
+        coupons,
+        setCoupons,
         handleCheckAllGroup,
         checkAllGroup,
-        updateCarts
     } = dataPropProductComponent;
     //
 
     //states
     const [isOpenModalAlert, setIsOpenModalAlert] = useState(false);
-    const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
     const [contentModalAlert, setContentModalAlert] = useState('');
-    const [productVariantsIdSelected, setProductVariantsIdSelected] = useState(0);
-    const [coupons, setCoupons] = useState([]);
+    const [isOpenModalCoupons, setIsOpenModalCoupons] = useState(false);
+    const [shopIdSelected, setShopIdSelected] = useState(0);
+
+
     //
 
 
@@ -56,9 +61,13 @@ const Products = ({ dataPropProductComponent }) => {
 
 
     // modal confirmation
-    const showModalConfirmDelete = () => {
-        setIsOpenModalDelete(true);
-    };
+    const openModalCoupons = () => {
+        setIsOpenModalCoupons(true);
+    }
+
+    const closeModalCoupons = () => {
+        setIsOpenModalCoupons(false);
+    }
     //
 
 
@@ -123,16 +132,17 @@ const Products = ({ dataPropProductComponent }) => {
 
     const showCouponShop = (shopId) => {
 
-        // const productVariantFind = itemCartSelected.find(c => c.productVariantId === productVariantId)
-        // if (!productVariantFind) {
-        //     openNotification("error", "Vui lòng chọn sản phẩm để thêm mã giảm giá của Shop")
-        //     return;
-        // }
-        // const existCoupons = itemCartSelected.find(c => c.productVariantId === productVariantId)?.coupons
-        // if (existCoupons) {
-        //     setChooseCoupons([...existCoupons])\
-        // }
-        // setIsModalChooseCoupon(true)
+        getCouponPublic(shopId)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    setCoupons(data.result);
+                    openModalCoupons();
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     const deleteCartDetail = (cartDetailId) => {
@@ -189,6 +199,18 @@ const Products = ({ dataPropProductComponent }) => {
     };
     ///
 
+    /// props
+    const dataPropCouponComponent = {
+        isOpenModalCoupons: isOpenModalCoupons,
+        coupons: coupons,
+        closeModalCoupons: closeModalCoupons,
+        couponCodeSelecteds: couponCodeSelecteds,
+        setCouponCodeSelecteds: setCouponCodeSelecteds,
+        setCoupons: setCoupons,
+        shopIdSelected: shopIdSelected
+    }
+
+    ///
     return (
         <>
             <Col span={18} style={{ padding: 5 }}>
@@ -202,7 +224,7 @@ const Products = ({ dataPropProductComponent }) => {
                         <Col offset={1}>Thao Tác</Col>
                     </Row>
                 </Card>
-                <Checkbox.Group value={cartDetailIdSelecteds} onChange={handleOnChangeCheckbox} style={{ display: 'block' }} >
+                <Checkbox.Group onChange={handleOnChangeCheckbox} style={{ display: 'block' }} >
                     {
                         carts.map((cart, index) => (
                             <Card
@@ -241,7 +263,7 @@ const Products = ({ dataPropProductComponent }) => {
                                     ))
                                 }
                                 <Row>
-                                    <Col offset={1}><Button type="link" onClick={() => { showCouponShop(cart.shopId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
+                                    <Col offset={1}><Button type="link" onClick={() => { setShopIdSelected(cart.shopId); showCouponShop(cart.shopId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
                                     <Col>{
                                         // cart.coupons?.map((item) => (
                                         //     <p>{item.price}</p>
@@ -255,7 +277,7 @@ const Products = ({ dataPropProductComponent }) => {
                 </Checkbox.Group>
             </Col>
 
-            <Coupons />
+            <Coupons dataPropCouponComponent={dataPropCouponComponent} />
             <ModalAlert isOpen={isOpenModalAlert} handleOk={closeModalAlert} content={contentModalAlert} />
             <ModalConfirmation />
         </>

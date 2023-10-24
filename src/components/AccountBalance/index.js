@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCoins } from '@fortawesome/free-solid-svg-icons'
 import { Space } from 'antd';
-
+import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import { getCustomerBalance } from '~/api/user';
 import { getUserId, formatStringToCurrencyVND } from '~/utils';
 
@@ -13,8 +13,13 @@ function AccountBalance() {
         const userId = getUserId();
         getCustomerBalance(userId)
             .then((res) => {
-                if (balance !== res.data) {
-                    setBalance(res.data)
+                if (res.status === 200) {
+                    const data = res.data;
+                    if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        if (balance !== data.result) {
+                            setBalance(data.result)
+                        }
+                    }
                 }
             }).catch((err) => {
                 console.log(err.message)

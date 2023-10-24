@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Products from '~/components/Cart/Products';
 import Prices from '~/components/Cart/Prices';
 import { useAuthUser } from 'react-auth-kit';
-import { getCustomerBalance } from '~/api/user';
+import { getCustomerBalance, getCoinUser } from '~/api/user';
 import { getCartsByUserId } from '~/api/cart';
 import { Row } from 'antd';
 import { discountPrice } from '~/utils';
+import { RESPONSE_CODE_SUCCESS } from '~/constants';
 
 
 const Cart = () => {
@@ -16,8 +17,9 @@ const Cart = () => {
     const initialTotalPrice = {
         originPrice: 0,
         discountPrice: 0,
-        subPriceProductDiscount: 0,
-        subPriceCouponDiscount: 0
+        totalPriceProductDiscount: 0,
+        totalPriceCouponDiscount: 0,
+        totalPriceCoinDiscount: 0
     }
 
     const [carts, setCarts] = useState([])
@@ -25,7 +27,10 @@ const Cart = () => {
     const [cartDetailIdSelecteds, setCartDetailIdSelecteds] = useState([]);
     const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
     const [userCoin, setUserCoin] = useState(0);
+    const [isUseCoin, setIsUseCoin] = useState(false);
     const [balance, setBalance] = useState(0);
+    const [coupons, setCoupons] = useState([]);
+    const [couponCodeSelecteds, setCouponCodeSelecteds] = useState([]);
 
 
 
@@ -33,8 +38,6 @@ const Cart = () => {
     /// handles
 
     const handleOnChangeCheckbox = (values) => {
-
-        console.log('CartDetailIdSelecteds: ' + values)
         if (values.length === 0) {
             setCartDetailIdSelecteds([])
             return;
@@ -92,10 +95,6 @@ const Cart = () => {
         }
     }
 
-    // const handleChangeCoin = (e) => {
-    //     setIsUseCoin(e.target.checked);
-    // }
-
     const checkAllGroup = (shopId) => {
         const itemCarts = carts.find(x => x.shopId === shopId).products;
         const itemCartSelectedFilter = cartDetailIdSelecteds.filter(x => itemCarts.some(y => x === y))
@@ -114,17 +113,9 @@ const Cart = () => {
         getCartsByUserId(userId)
             .then((res) => {
                 if (res.status === 200) {
-                    console.log('reload carts')
                     const data = res.data;
                     setCarts(data);
                 }
-                // setUserCoin(data[0].coin)
-                // const { products } = data
-                // if (itemCartSelected) {
-                //     const newCartsSelected = products.filter(x => itemCartSelected.some(c => c.productVariant.productVariantId === x.productVariant.productVariantId));
-                //     setItemCartSelected(newCartsSelected)
-                // }
-                // console.log('data cart = ' + data)
             })
             .catch((errors) => {
                 console.log(errors)
@@ -133,11 +124,17 @@ const Cart = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reloadCartsFlag])
 
+
     useEffect(() => {
         getCustomerBalance(userId)
             .then((res) => {
-                if (balance !== res.data) {
-                    setBalance(res.data)
+                if (res.status === 200) {
+                    const data = res.data;
+                    if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        if (balance !== data.result) {
+                            setBalance(data.result)
+                        }
+                    }
                 }
             }).catch((err) => {
                 console.log(err.message)
@@ -147,56 +144,96 @@ const Cart = () => {
     }, [])
 
     useEffect(() => {
+        getCoinUser(userId)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        if (userCoin !== data.result.coin) {
+                            setUserCoin(data.result.coin);
+                        }
+                    }
+                }
+            }).catch((err) => {
+                console.log(err.message)
+            })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+
+    useEffect(() => {
 
         const calculatorPrice = (cartDetailIdSelecteds) => {
+            let newTotalPrice = {
+                originPrice: 0,
+                discountPrice: 0,
+                totalPriceProductDiscount: 0,
+                totalPriceCouponDiscount: 0,
+                totalPriceCoinDiscount: 0
+            }
+
             if (cartDetailIdSelecteds.length > 0) {
+
+                //filter coupons
+                const couponsFilter = coupons.filter(x => couponCodeSelecteds.some(y => y.couponCode === x.couponCode));
 
                 // filter cart detail
                 const cartDetailSelected = filterCartDetail(cartDetailIdSelecteds);;
 
-                console.log('cartDetailSelected: ' + JSON.stringify(cartDetailSelected));
                 // calculator price
                 if (cartDetailSelected) {
-                    const totalOriginPrice = cartDetailSelected.reduce((accumulator, currentValue) => {
+                    let totalOriginPrice = cartDetailSelected.reduce((accumulator, currentValue) => {
                         return accumulator + (currentValue.productVariantPrice * currentValue.quantity);
                     }, 0);
 
 
-                    const totalDiscountPrice = cartDetailSelected.reduce((accumulator, currentValue) => {
+                    let totalDiscountPrice = cartDetailSelected.reduce((accumulator, currentValue) => {
                         return accumulator + (discountPrice(currentValue.productVariantPrice, currentValue.productDiscount) * currentValue.quantity);
                     }, 0);
 
-                    const subPriceProductDiscount = totalOriginPrice - totalDiscountPrice;
+                    // total price discount product
+                    const newTotalPriceProductDiscount = totalOriginPrice - totalDiscountPrice;
 
-                    const newTotalPrice = {
-                        originPrice: totalOriginPrice ? totalOriginPrice : 0,
-                        discountPrice: totalDiscountPrice ? totalDiscountPrice : 0,
-                        subPriceProductDiscount: subPriceProductDiscount ? subPriceProductDiscount : 0,
-                        subPriceCouponDiscount: 0
+                    // total price coupons shop
+                    let newTotalPriceCouponDiscount = 0;
+                    if (couponsFilter) {
+                        newTotalPriceCouponDiscount = couponsFilter.reduce((accumulator, currentValue) => {
+                            return accumulator + currentValue.priceDiscount;
+                        }, 0);
+
+                        // sub total discount price
+                        totalDiscountPrice -= newTotalPriceCouponDiscount;
                     }
-                    setTotalPrice(newTotalPrice);
+
+                    // total price coin
+                    let totalPriceCoinDiscount = 0;
+                    if (isUseCoin) {
+                        totalPriceCoinDiscount = userCoin > 0 ? userCoin : 0;
+
+                        // sub total discount price
+                        totalDiscountPrice -= totalPriceCoinDiscount;
+                    }
+
+                    newTotalPrice = {
+                        ...totalPrice,
+                        originPrice: totalOriginPrice > 0 ? totalOriginPrice : 0,
+                        discountPrice: totalDiscountPrice > 0 ? totalDiscountPrice : 0,
+                        totalPriceProductDiscount: newTotalPriceProductDiscount > 0 ? newTotalPriceProductDiscount : 0,
+                        totalPriceCouponDiscount: newTotalPriceCouponDiscount > 0 ? newTotalPriceCouponDiscount : 0,
+                        totalPriceCoinDiscount: totalPriceCoinDiscount > 0 ? totalPriceCoinDiscount : 0
+                    }
                 }
-
-                // const finalOriginPrice = values.reduce((newOriginPrice, { coupons }) => {
-                //     coupons.map((c) => {
-                //         return newOriginPrice -= c.priceDiscount
-                //     })
-                //     return newOriginPrice
-                // }, totalOriginPrice)
-
-                // const finalDiscountPrice = values.reduce((newDiscountPrice, { coupons }) => {
-                //     coupons.map((c) => {
-                //         return newDiscountPrice -= c.priceDiscount
-                //     })
-
-                //     return newDiscountPrice
-                // }, totalDiscountPrice)
             }
+
+
+
+            setTotalPrice(newTotalPrice);
         }
+
         calculatorPrice(cartDetailIdSelecteds)
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cartDetailIdSelecteds, carts])
+    }, [cartDetailIdSelecteds, carts, couponCodeSelecteds, isUseCoin])
     ///
 
 
@@ -221,18 +258,6 @@ const Cart = () => {
         setReloadCartsFlag(!reloadCartsFlag);
     }
 
-    const findProductsByShopId = (shopId) => {
-        const itemCarts = carts.find(x => x.shopId === shopId).products;
-
-        return itemCarts;
-    }
-
-    const findProductsSelectedByShopId = (shopId) => {
-        const itemCarts = carts.find(x => x.shopId === shopId).products;
-
-        return itemCarts;
-    }
-
     const findCartItems = (productVariantIds) => {
         const cartItem = carts.map((cart) => {
             const { products } = cart;
@@ -251,12 +276,25 @@ const Cart = () => {
         cartDetailIdSelecteds: cartDetailIdSelecteds,
         setCartDetailIdSelecteds: setCartDetailIdSelecteds,
         handleOnChangeCheckbox: handleOnChangeCheckbox,
-        reloadCarts: reloadCarts
+        reloadCarts: reloadCarts,
+        couponCodeSelecteds: couponCodeSelecteds,
+        setCouponCodeSelecteds: setCouponCodeSelecteds,
+        coupons: coupons,
+        setCoupons: setCoupons,
     }
 
     const dataPropPriceComponent = {
         userId: userId,
+        carts: carts,
         totalPrice: totalPrice,
+        userCoin: userCoin,
+        setIsUseCoin: setIsUseCoin,
+        balance: balance,
+        filterCartDetail: filterCartDetail,
+        cartDetailIdSelecteds: cartDetailIdSelecteds,
+        isUseCoin: isUseCoin,
+        reloadCarts: reloadCarts,
+        couponCodeSelecteds
     }
     ///
 

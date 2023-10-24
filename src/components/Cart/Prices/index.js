@@ -6,11 +6,13 @@ import ModalConfirmation from '~/components/Modals/ModalConfirmation';
 import { formatPrice } from '~/utils';
 import { addOrder } from '~/api/order';
 import { deleteCart } from '~/api/cart';
+import { formatNumberToK } from '~/utils';
+import { EuroCircleOutlined } from '@ant-design/icons';
 import { NotificationContext } from "~/context/NotificationContext";
 import { Button, Col, Typography, Checkbox, Divider, Card } from 'antd';
 import {
     RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_COUPON_USED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY,
-    RESPONSE_MESSAGE_ORDER_COUPON_USED, RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY
+    RESPONSE_MESSAGE_ORDER_COUPON_USED, RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_CART_SUCCESS
 } from '~/constants';
 
 const { Title, Text } = Typography;
@@ -20,17 +22,19 @@ const Prices = ({ dataPropPriceComponent }) => {
     // distructuring props
     const {
         userId,
+        carts,
         totalPrice,
         userCoin,
+        setIsUseCoin,
         balance,
-        itemCartSelected,
+        isUseCoin,
         reloadCarts,
-        setItemCartSelected
+        cartDetailIdSelecteds,
+        couponCodeSelecteds
     } = dataPropPriceComponent;
     //
 
     // states
-    const [isUseCoin, setIsUseCoin] = useState(false);
     const [isOpenModalAlert, setIsOpenModalAlert] = useState(false);
     const [isOpenModalConfirmationBuy, setIsOpenModalConfirmationBuy] = useState(false);
     const [contentModalAlert, setContentModalAlert] = useState('');
@@ -77,32 +81,43 @@ const Prices = ({ dataPropPriceComponent }) => {
     }
 
     const handleOkConfirmationBuy = () => {
-        const lstDataOrder = itemCartSelected.map((c) => ({
-            productVariantId: c.productVariantId,
-            quantity: c.quantity,
-            coupons: c.coupons.map((coupon) => coupon.couponCode)
-        }));
+
+        // create shop product request add order DTO
+        const shopProductRequest = [];
+
+        for (let i = 0; i < carts.length; i++) {
+            const cartDetails = carts[i].products;
+            const cartDetailsFil = cartDetails.filter(x => cartDetailIdSelecteds.includes(x.cartDetailId));
+            if (cartDetailsFil) {
+                const shopProduct = {
+                    shopId: carts[i].shopId,
+                    products: cartDetailsFil.map(x => ({ productVariantId: x.productVariantId, quantity: x.quantity })),
+                    coupon: couponCodeSelecteds.find(x => x.shopId === carts[i].shopId).couponCode
+                };
+
+                shopProductRequest.push(shopProduct);
+            }
+        }
 
         const finalDataOrder = {
             userId: userId,
-            products: lstDataOrder,
+            shopProducts: shopProductRequest,
             isUseCoin: isUseCoin
-
         }
 
         addOrder(finalDataOrder)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
-                    console.log('data: ' + JSON.stringify(data))
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        notification("success", "Thành công", "Thanh toán đơn hàng thành công")
-                        itemCartSelected.map(item => {
-                            return deleteCart({ userId: item.userId, productVariantId: item.productVariantId })
+                        cartDetailIdSelecteds.map(cartDetaiId => {
+                            return deleteCart(cartDetaiId)
                                 .then((res) => {
                                     if (res.status === 200) {
-                                        setItemCartSelected([])
-                                        reloadCarts();
+                                        const data = res.data;
+                                        if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
+                                            reloadCarts();
+                                        }
                                     }
                                 })
                                 .catch((errors) => {
@@ -125,7 +140,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                 console.log(error)
             })
     }
-    //
+    ///
 
     return (
         <>
@@ -133,7 +148,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                 <Card
                     style={{
                         width: '100%',
-                        height: '55vh',
+                        height: '60vh',
                     }}
                 >
                     <Title level={4} className={cx('space-div-flex')}>Thanh toán</Title>
@@ -143,16 +158,20 @@ const Prices = ({ dataPropPriceComponent }) => {
                     </div>
                     <div className={cx('space-div-flex')}>
                         <Text>Giảm giá sản phẩm:</Text>&nbsp;&nbsp;
-                        <Text strong>- {formatPrice(totalPrice.originPrice - totalPrice.discountPrice)}</Text>
+                        <Text strong>- {formatPrice(totalPrice.totalPriceProductDiscount)}</Text>
                     </div>
                     <div className={cx('space-div-flex')}>
                         <Text>Giảm giá của shop:</Text>&nbsp;&nbsp;
-                        <Text strong>- {formatPrice(totalPrice.originPrice - totalPrice.discountPrice)}</Text>
+                        <Text strong>- {formatPrice(totalPrice.totalPriceCouponDiscount)}</Text>
+                    </div>
+                    <div className={cx('space-div-flex')}>
+                        <Text>Giảm giá từ Coin:</Text>&nbsp;&nbsp;
+                        <Text strong>- {formatPrice(totalPrice.totalPriceCoinDiscount)}</Text>
                     </div>
                     <Divider />
                     <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
 
-                        <Text>Sử dụng xu:</Text>&nbsp;&nbsp;
+                        <Text><EuroCircleOutlined />&nbsp;&nbsp;<Text type="warning">{formatNumberToK(userCoin)}</Text> - Sử dụng Coin:</Text>&nbsp;&nbsp;
                         <Checkbox disabled={userCoin !== 0 && totalPrice.originPrice > 0 ? false : true} onChange={handleUseCoin}></Checkbox>
                     </div>
                     <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
@@ -166,8 +185,12 @@ const Prices = ({ dataPropPriceComponent }) => {
                 </Card>
             </Col>
 
-            <ModalAlert />
-            <ModalConfirmation />
+            <ModalAlert isOpen={isOpenModalAlert} handleOk={closeModalAlert} content={contentModalAlert} />
+            <ModalConfirmation title='Thanh toán'
+                isOpen={isOpenModalConfirmationBuy}
+                onOk={handleOkConfirmationBuy}
+                onCancel={closeModalConfirmationBuy}
+                content={`Bạn có muốn thanh toán đơn hàng này với giá ${formatPrice(totalPrice.discountPrice)} không?`} />
         </>
 
     )
