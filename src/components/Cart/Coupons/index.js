@@ -1,15 +1,18 @@
 import moment from 'moment';
 import React, { useState, useContext } from 'react';
 import classNames from 'classnames/bind';
-import styles from './Cart.module.scss';
+import styles from '~/pages/Cart/Cart.module.scss';
 import { getCoupons } from '~/api/coupon';
+import Spinning from "~/components/Spinning";
 import { formatPrice, getVietnamCurrentTime } from '~/utils';
-import { NotificationContext } from "~/context/NotificationContext";
-import { Button, Typography, Modal, List, Spinning, Search } from 'antd';
+import { Button, Typography, Modal, List, Input } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { NotificationContext } from "~/context/NotificationContext";
 
+const { Search } = Input;
 const { Text } = Typography;
 const cx = classNames.bind(styles);
+
 
 const Coupons = (props) => {
     // distructuring props

@@ -4,6 +4,8 @@ import Prices from '~/components/Cart/Prices';
 import { useAuthUser } from 'react-auth-kit';
 import { getCustomerBalance } from '~/api/user';
 import { getCartsByUserId } from '~/api/cart';
+import { Row } from 'antd';
+import { discountPrice } from '~/utils';
 
 
 const Cart = () => {
@@ -20,17 +22,10 @@ const Cart = () => {
 
     const [carts, setCarts] = useState([])
     const [reloadCartsFlag, setReloadCartsFlag] = useState(false)
-    const [itemCartSelected, setItemCartSelected] = useState([]);
+    const [cartDetailIdSelecteds, setCartDetailIdSelecteds] = useState([]);
     const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
     const [userCoin, setUserCoin] = useState(0);
     const [balance, setBalance] = useState(0);
-
-
-
-    const [isModelInvalidCartProductQuantity, setIsModelInvalidCartProductQuantity] = useState(false)
-    const [isModelInvalidCartQuantity, setIsModelInvalidCartQuantity] = useState(false)
-    const [productVariantsIdSelected, setProductVariantsIdSelected] = useState(0);
-
 
 
 
@@ -38,12 +33,12 @@ const Cart = () => {
 
     const handleOnChangeCheckbox = (values) => {
         if (values.length === 0) {
-            setItemCartSelected([])
+            setCartDetailIdSelecteds([])
             return;
         }
 
         const cartItems = findCartItems(values)
-        setItemCartSelected([...cartItems])
+        setCartDetailIdSelecteds([...cartItems])
 
         // const cartFilter = carts.filter(c => values.includes(c.productVariantId))
         // cartFilter.map((item) => {
@@ -70,11 +65,11 @@ const Cart = () => {
 
     const handleOnChangeCheckboxGroup = (values) => {
         if (values.length === 0) {
-            setItemCartSelected([])
+            setCartDetailIdSelecteds([])
             return;
         }
         const cartItems = findCartItems(values)
-        setItemCartSelected([...itemCartSelected, ...cartItems])
+        setCartDetailIdSelecteds([...cartDetailIdSelecteds, ...cartItems])
 
         // cartFilter.map((item) => {
         //     return updateCart({ userId: getUserId(), productVariantId: item.productVariantId, quantity: 0 })
@@ -99,20 +94,20 @@ const Cart = () => {
 
     const handleCheckAll = (e) => {
         if (e.target.checked) {
-            setItemCartSelected(carts);
+            setCartDetailIdSelecteds(carts);
         } else {
-            setItemCartSelected([]);
+            setCartDetailIdSelecteds([]);
         }
     }
 
     const handleCheckAllGroup = (e) => {
         const { value, checked } = e.target
         const itemCarts = carts.find(x => x.shopId === value).products;
-        const itemCartSelectedFilter = itemCartSelected.filter(x => !itemCarts.includes(x))
+        const itemCartSelectedFilter = cartDetailIdSelecteds.filter(x => !itemCarts.includes(x))
         if (checked) {
-            setItemCartSelected([...itemCartSelectedFilter, ...itemCarts]);
+            setCartDetailIdSelecteds([...itemCartSelectedFilter, ...itemCarts]);
         } else {
-            setItemCartSelected([...itemCartSelectedFilter]);
+            setCartDetailIdSelecteds([...itemCartSelectedFilter]);
         }
     }
 
@@ -122,7 +117,7 @@ const Cart = () => {
 
     const checkAllGroup = (shopId) => {
         const itemCarts = carts.find(x => x.shopId === shopId).products;
-        const itemCartSelectedFilter = itemCartSelected.filter(x => itemCarts.some(y => x === y))
+        const itemCartSelectedFilter = cartDetailIdSelecteds.filter(x => itemCarts.some(y => x === y))
         if (itemCarts.length === itemCartSelectedFilter.length) {
             return true;
         } else {
@@ -137,23 +132,23 @@ const Cart = () => {
     useEffect(() => {
         getCartsByUserId(userId)
             .then((res) => {
-                const data = res.data;
-                setCarts(data)
-                setUserCoin(data[0].coin)
+                if (res.status === 200) {
+                    const data = res.data;
+                    setCarts(data)
+                }
+                // setUserCoin(data[0].coin)
                 // const { products } = data
                 // if (itemCartSelected) {
                 //     const newCartsSelected = products.filter(x => itemCartSelected.some(c => c.productVariant.productVariantId === x.productVariant.productVariantId));
                 //     setItemCartSelected(newCartsSelected)
                 // }
-                console.log('data cart = ' + data)
+                // console.log('data cart = ' + data)
             })
             .catch((errors) => {
                 console.log(errors)
             })
 
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [reloadCartsFlag])
+    }, [reloadCartsFlag, userId])
 
     useEffect(() => {
         getCustomerBalance(userId)
@@ -170,17 +165,41 @@ const Cart = () => {
 
     useEffect(() => {
 
-        const calculatorPrice = (values) => {
-            if (values.length > 0) {
-                const totalOriginPrice = values.reduce((accumulator, currentValue) => {
-                    return accumulator + (currentValue.price * currentValue.quantity);
-                }, 0);
+        const calculatorPrice = (cartDetailIdSelecteds) => {
+            if (cartDetailIdSelecteds.length > 0) {
+                const cartDetailSelected = [];
+
+                // filter cart detail
+                for (let i = 0; i < carts.length; i++) {
+                    const cartDetails = carts[i].products;
+                    const filterCartDetails = cartDetails.filter(x => cartDetailIdSelecteds.includes(x.cartDetailId));
+
+                    if (filterCartDetails) {
+                        cartDetailSelected.push(filterCartDetails);
+                    }
+                }
+
+                // calculator price
+                if (cartDetailSelected) {
+                    const totalOriginPrice = cartDetailSelected.reduce((accumulator, currentValue) => {
+                        return accumulator + (currentValue.productVariantPrice * currentValue.quantity);
+                    }, 0);
 
 
-                const totalDiscountPrice = values.reduce((accumulator, currentValue) => {
-                    return accumulator + (currentValue.priceDiscount * currentValue.quantity);
-                }, 0);
+                    const totalDiscountPrice = cartDetailSelected.reduce((accumulator, currentValue) => {
+                        return accumulator + (discountPrice(currentValue.productVariantPrice, currentValue.productDiscount) * currentValue.quantity);
+                    }, 0);
 
+                    const subPriceProductDiscount = totalOriginPrice - totalDiscountPrice;
+
+                    const newTotalPrice = {
+                        originPrice: totalOriginPrice,
+                        discountPrice: totalDiscountPrice,
+                        subPriceProductDiscount: subPriceProductDiscount,
+                        subPriceCouponDiscount: 0
+                    }
+                    setTotalPrice(newTotalPrice);
+                }
 
                 // const finalOriginPrice = values.reduce((newOriginPrice, { coupons }) => {
                 //     coupons.map((c) => {
@@ -196,17 +215,12 @@ const Cart = () => {
 
                 //     return newDiscountPrice
                 // }, totalDiscountPrice)
-
-                setTotalPrice({ originPrice: totalOriginPrice, discountPrice: totalDiscountPrice });
-            } else {
-                setTotalPrice({ originPrice: 0, discountPrice: 0 });
             }
-
-
         }
-        calculatorPrice(itemCartSelected)
+        calculatorPrice(cartDetailIdSelecteds)
 
-    }, [itemCartSelected])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cartDetailIdSelecteds])
     ///
 
 
@@ -235,11 +249,24 @@ const Cart = () => {
     }
     ///
 
+    /// props
+    const dataPropProductComponent = {
+        userId: userId,
+        carts: carts,
+        setCartDetailIdSelecteds: setCartDetailIdSelecteds
+    }
+
+    const dataPropPriceComponent = {
+        userId: userId,
+        totalPrice: totalPrice,
+    }
+    ///
+
     return (
-        <>
-            <Products />
-            <Prices />
-        </>
+        <Row>
+            <Products dataPropProductComponent={dataPropProductComponent} />
+            <Prices dataPropPriceComponent={dataPropPriceComponent} />
+        </Row>
     )
 }
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from 'antd';
 import classNames from 'classnames/bind';
-import styles from './Cart.module.scss';
+import styles from '~/pages/Cart/Cart.module.scss';
 
 const cx = classNames.bind(styles);
 

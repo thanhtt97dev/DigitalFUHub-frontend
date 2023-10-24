@@ -7,9 +7,9 @@ import { useLocation } from 'react-router-dom';
 import { ChatContext } from "~/context/ChatContext";
 import { getUserId, getVietnamCurrentTime } from '~/utils';
 import { UserOnlineStatusContext } from "~/context/UserOnlineStatusContext";
-import { SendOutlined, FileImageOutlined, TeamOutlined } from '@ant-design/icons';
+import { SendOutlined, FileImageOutlined } from '@ant-design/icons';
 import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
-import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Badge, Space } from 'antd';
+import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Space } from 'antd';
 import fptImage from '~/assets/images/fpt-logo.jpg'
 import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
 

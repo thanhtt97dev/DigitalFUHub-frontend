@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import classNames from 'classnames/bind';
-import styles from './Cart.module.scss';
+import styles from '~/pages/Cart/Cart.module.scss';
 import ModalAlert from '~/components/Modals/ModalAlert';
 import ModalConfirmation from '~/components/Modals/ModalConfirmation';
 import { formatPrice } from '~/utils';
@@ -16,7 +16,7 @@ import {
 const { Title, Text } = Typography;
 const cx = classNames.bind(styles);
 
-const Prices = (props) => {
+const Prices = ({ dataPropPriceComponent }) => {
     // distructuring props
     const {
         userId,
@@ -26,7 +26,7 @@ const Prices = (props) => {
         itemCartSelected,
         reloadCarts,
         setItemCartSelected
-    } = props;
+    } = dataPropPriceComponent;
     //
 
     // states
