@@ -13,7 +13,7 @@ export function UserOnlineStatus({ children }) {
         if (userId === undefined || userId === null) return;
 
         // Create a new SignalR connection with the token
-        const connection = connectionHub(`userOnlineStatusHub?userId=${userId}`);
+        const connection = connectionHub(`hubs/userOnlineStatus?userId=${userId}`);
 
         // Start the connection
         connection.start().catch((err) => console.error(err));

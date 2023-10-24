@@ -26,7 +26,7 @@ import Cart from '~/pages/Cart';
 import Products from '~/pages/Seller/ManageProduct/Products';
 import EditProduct from '~/pages/Seller/ManageProduct/EditProduct';
 import Orders from '~/pages/Seller/ManageOrder/Orders';
-import HistoryTransactions from '~/pages/HistoryTransactions';
+import Finance from '~/pages/Finance';
 import RegisterSeller from '~/pages/User/Settings/RegisterSeller';
 import HistoryOrder from '~/pages/HistoryOrder';
 import OrderDetail from '~/pages/OrderDetail';
@@ -119,10 +119,10 @@ const routesConfig = [
         component: <Deposit />,
     },
     {
-        title: 'History Transaction',
-        path: '/historyTransaction',
+        title: 'finance',
+        path: '/finance',
         layout: <NormalLayout />,
-        component: <HistoryTransactions />,
+        component: <SettingsLayout><Finance /></SettingsLayout>,
         role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {

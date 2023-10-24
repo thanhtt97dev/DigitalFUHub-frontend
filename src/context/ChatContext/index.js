@@ -12,7 +12,7 @@ export function Chat({ children }) {
         var userId = getUserId();
         if (userId === undefined || userId === null) return;
         // Create a new SignalR connection with the token
-        const connection = connectionHub(`chatHub?userId=${userId}`);
+        const connection = connectionHub(`hubs/chat?userId=${userId}`);
 
         // Start the connection
         connection.start().catch((err) => console.error(err));

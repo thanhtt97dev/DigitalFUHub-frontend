@@ -4,13 +4,13 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
-import { getOnlineStatusUser } from '~/api/user';
 import { ChatContext } from "~/context/ChatContext";
 import { getUserId, getVietnamCurrentTime } from '~/utils';
 import { UserOnlineStatusContext } from "~/context/UserOnlineStatusContext";
-import { SendOutlined, FileImageOutlined, TeamOutlined } from '@ant-design/icons';
+import { SendOutlined, FileImageOutlined } from '@ant-design/icons';
 import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
-import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Badge } from 'antd';
+import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Space } from 'antd';
+import fptImage from '~/assets/images/fpt-logo.jpg'
 import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
 
 const { Meta } = Card;
@@ -19,13 +19,24 @@ require('moment/locale/vi');
 const moment = require('moment');
 const cx = classNames.bind(styles);
 
+// style component
 const bodyCardHeader = {
     padding: 15,
 }
 
 const styleBodyCardMessage = {
-    padding: 16
+    padding: 10
 }
+
+const styleTypography = {
+    margin: 0
+}
+
+const styleMessageImage = {
+    borderRadius: 5
+}
+
+//
 
 const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) => {
 
@@ -33,13 +44,10 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
         <Layout className={cx('layout-user-chat')}>
             <Card
                 bordered
-                className={cx('card-header')}
                 bodyStyle={bodyCardHeader}>
                 <Typography.Title
                     level={4}
-                    style={{
-                        margin: 0,
-                    }}
+                    style={styleTypography}
                 >
                     Gần đây
                 </Typography.Title>
@@ -63,14 +71,14 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                         renderItem={(item) => (
                             <List.Item onClick={() => { handleClickUser(item) }}>
                                 {
-                                    item.users.length === 1 ? (
+                                    item.isGroup === false ? (
                                         <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }} bodyStyle={{ padding: 15 }}>
 
                                             {
                                                 item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<Badge status="success" dot={item.users[0].isOnline}><Avatar src={item.users[0].avatar} /></Badge>}
+                                                            avatar={<SmallUserAvatar srcAvatar={item.users[0].avatar} isActive={item.users[0].isOnline} />}
                                                             title={item.users[0].fullname}
                                                             description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
                                                         />
@@ -79,7 +87,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                     :
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<Badge status="success" dot={item.users[0].isOnline}><Avatar src={item.users[0].avatar} /></Badge>}
+                                                            avatar={<SmallUserAvatar srcAvatar={item.users[0].avatar} isActive={item.users[0].isOnline} />}
                                                             title={item.users[0].fullname}
                                                             description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
                                                         />
@@ -87,12 +95,12 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                             }
                                         </Card>
                                     ) : (
-                                        <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }}>
+                                        <Card hoverable className={item.conversationId === conversationSelected?.conversationId ? cx('backgroud-selected') : ''} style={{ width: '100%' }} bodyStyle={{ padding: 15 }}>
                                             {
                                                 item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<Badge status="success" dot={item.users[0].isOnline}><Avatar icon={<TeamOutlined />} /></Badge>}
+                                                            avatar={<SmallUserAvatar srcAvatar={fptImage} isActive={item.users[0].isOnline} />}
                                                             title={item.conversationName}
                                                             description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
                                                         />
@@ -101,9 +109,9 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                     :
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<Avatar icon={<TeamOutlined />} />}
+                                                            avatar={<SmallUserAvatar srcAvatar={fptImage} isActive={item.users[0].isOnline} />}
                                                             title={item.conversationName}
-                                                            description={<Badge status="success" dot={item.users[0].isOnline}><p className={cx('text-ellipsis')}>{item.latestMessage}</p></Badge>}
+                                                            description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
                                                         />
                                                     </div>)
                                             }
@@ -121,22 +129,33 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
     )
 }
 
+const BigUserAvatar = ({ srcAvatar, isActive }) => (
+    <div className={cx('big-avatar')}>
+        <Avatar size={50} src={srcAvatar} />
+        {isActive ? <span className={cx('big-avatar-status')}></span> : <></>}
+    </div>
+)
+
+const SmallUserAvatar = ({ srcAvatar, isActive }) => (
+    <div className={cx('small-avatar')}>
+        <Avatar size={40} src={srcAvatar} />
+        {isActive ? <span className={cx('small-avatar-status')}></span> : <></>}
+    </div>
+)
+
 const HeaderMessageChat = ({ conversationSelected, lastTimeOnline }) => (
     <Card
-        className={cx('card-header')}
         bodyStyle={bodyCardHeader}>
-
         {
-            conversationSelected.users.length === 1 ? (
+            conversationSelected.isGroup === false ? (
                 <Meta
-                    avatar={<Badge status="success" dot={conversationSelected.users[0].isOnline}><Avatar src={conversationSelected.users[0].avatar} /></Badge>}
+                    avatar={<BigUserAvatar srcAvatar={conversationSelected.users[0].avatar} isActive={conversationSelected.users[0].isOnline} />}
                     title={conversationSelected.users[0].fullname}
-                    // description={conversationSelected.users[0].isOnline ? <p>Đang hoạt động</p> : <p>Hoạt động {moment(conversationSelected.users[0].lastTimeOnline).fromNow()}</p>}
-                    description={conversationSelected.users[0].isOnline ? <p>Đang hoạt động</p> : <p>Hoạt động {lastTimeOnline || moment(conversationSelected.users[0].lastTimeOnline).fromNow()}</p>}
+                    description={conversationSelected.users[0].isOnline ? <p>Đang hoạt động</p> : <p>Hoạt động {lastTimeOnline ? lastTimeOnline : moment(conversationSelected.users[0].lastTimeOnline).fromNow()}</p>}
                 />
             ) : (
                 <Meta
-                    avatar={<Avatar icon={<TeamOutlined />} />}
+                    avatar={<BigUserAvatar srcAvatar={fptImage} isActive={conversationSelected.users[0].isOnline} />}
                     title={conversationSelected.conversationName}
                 />
             )
@@ -144,76 +163,54 @@ const HeaderMessageChat = ({ conversationSelected, lastTimeOnline }) => (
     </Card>
 )
 
-const BodyMessageChat = ({ messages, conversationSelected, messagesEndRef }) => {
+const styleBodyMessage = { overflowY: 'auto', maxHeight: '50vh' }
+
+const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef }) => {
     var userId = +getUserId();
     if (userId === undefined || userId === null) return;
 
     return (
-        <div id={cx('scrollChatMessage')}>
-            <InfiniteScroll
-                dataLength={messages.length}
-                scrollableTarget="scrollChatMessage"
-            >
-                <List
-                    dataSource={messages}
-                    renderItem={(item) => (
-                        <>
-                            {
-                                item.userId !== userId ?
-                                    (<div style={{ marginBottom: 25 }}>
-                                        <Card className={cx('card-message')} bodyStyle={styleBodyCardMessage}>
-                                            {
-                                                item.messageType === MESSAGE_TYPE_CONVERSATION_TEXT ? (
-                                                    <Meta
-                                                        avatar={<Avatar size={30} src={item.avatar} />}
-                                                        title={item.content} />
-                                                ) : (
-                                                    <Meta
-                                                        avatar={<Avatar size={30} src={item.avatar} />}
-                                                        title={<Image
-                                                            width={200}
-                                                            src={item.content}
-                                                        />} />
-                                                )
-
-                                            }
-
+        <div style={styleBodyMessage} ref={bodyMessageRef}>
+            {
+                messages.map((item) => (
+                    <>
+                        {
+                            item.userId !== userId ?
+                                (<div style={{ marginBottom: 25 }}>
+                                    <Card className={cx('card-message')} bodyStyle={styleBodyCardMessage}>
+                                        <Space align="center">
+                                            <Avatar size={35} src={item.avatar} />
+                                            {item.messageType === MESSAGE_TYPE_CONVERSATION_TEXT ? <p>{item.content}</p> : <Image style={styleMessageImage} width={150} src={item.content} />}
+                                        </Space>
+                                    </Card>
+                                    <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
+                                </div>)
+                                :
+                                (<div style={{ marginBottom: 25, position: 'relative' }}>
+                                    <div className={cx('style-message-sender-1')}>
+                                        <Card className={cx('card-message-sender')} bodyStyle={styleBodyCardMessage}>
+                                            <Space align="center">
+                                                {item.messageType === MESSAGE_TYPE_CONVERSATION_TEXT ? <p className={cx('text-color-message')}>{item.content}</p> : <Image style={styleMessageImage} width={150} src={item.content} />}
+                                            </Space>
                                         </Card>
                                         <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
-                                    </div>)
-                                    :
-                                    (<div style={{ marginBottom: 25, position: 'relative' }}>
-                                        <div className={cx('style-message-sender-1')}>
-                                            <Card className={cx('card-message-sender')} bodyStyle={styleBodyCardMessage}>
-                                                {
-                                                    item.messageType === MESSAGE_TYPE_CONVERSATION_TEXT ? (
-                                                        <Meta
-                                                            title={item.content} />
-                                                    ) : (
-                                                        <Meta
-                                                            title={<Image
-                                                                width={200}
-                                                                src={item.content}
-                                                            />} />
-                                                    )
+                                    </div>
 
-                                                }
-
-
-                                            </Card>
-                                            <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
-                                        </div>
-
-                                    </div>)
-                            }
-                        </>
-
-                    )}
-                />
-            </InfiniteScroll>
+                                </div>)
+                        }
+                    </>
+                ))
+            }
             <div ref={messagesEndRef} />
         </div>
     )
+}
+
+const styleFormInputMessage = {
+    position: 'absolute',
+    bottom: 0,
+    width: '95%',
+    marginBottom: 15
 }
 
 const InputMessageChat = ({ form,
@@ -226,49 +223,48 @@ const InputMessageChat = ({ form,
     handleOpenUploadFile }) => {
 
 
-
     return (
-        <div className={cx('input-message-chat')}>
-            <Form
-                name="control-hooks"
-                form={form}
-                onFinish={onFinish}
-            >
-                {
-                    isUploadFile ? (
-                        <Row>
-                            <Col span={24}>
-                                <Form.Item name="fileUpload" valuePropName="fileList" getValueFromEvent={normFile}>
-                                    <Upload
-                                        listType="picture-card"
-                                    >
-                                        {uploadButton}
-                                    </Upload>
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    ) : (<></>)}
-                <Row>
-                    <Col span={2}>
-                        <Button style={{ marginLeft: 15 }} type="primary" shape="circle" icon={<FileImageOutlined />} size={30} onClick={handleOpenUploadFile} />
-                    </Col>
-                    <Col span={22}>
-                        <Input
-                            placeholder="Type a message..."
-                            value={newMessage}
-                            onChange={handleChangeNewMessage}
-                            suffix={
-                                <Button
-                                    type="primary"
-                                    icon={<SendOutlined />}
-                                    htmlType="submit"
-                                />
-                            }
-                        />
-                    </Col>
-                </Row>
-            </Form>
-        </div>)
+        <Form
+            name="control-hooks"
+            form={form}
+            onFinish={onFinish}
+            style={styleFormInputMessage}
+        >
+            {
+                isUploadFile ? (
+                    <Row>
+                        <Col span={24}>
+                            <Form.Item name="fileUpload" valuePropName="fileList" getValueFromEvent={normFile}>
+                                <Upload
+                                    listType="picture-card"
+                                >
+                                    {uploadButton}
+                                </Upload>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                ) : (<></>)}
+            <Row>
+                <Col span={2}>
+                    <Button style={{ marginLeft: 15 }} type="primary" shape="circle" icon={<FileImageOutlined />} size={30} onClick={handleOpenUploadFile} />
+                </Col>
+                <Col span={22}>
+                    <Input
+                        placeholder="Type a message..."
+                        value={newMessage}
+                        onChange={handleChangeNewMessage}
+                        suffix={
+                            <Button
+                                type="primary"
+                                icon={<SendOutlined />}
+                                htmlType="submit"
+                            />
+                        }
+                    />
+                </Col>
+            </Row>
+        </Form>
+    )
 }
 
 const LayoutMessageChat = (props) => {
@@ -285,7 +281,8 @@ const LayoutMessageChat = (props) => {
         handleChangeNewMessage,
         isUploadFile,
         handleOpenUploadFile,
-        lastTimeOnline
+        lastTimeOnline,
+        bodyMessageRef
     } = props.propsMessageChat
 
     return (
@@ -297,7 +294,8 @@ const LayoutMessageChat = (props) => {
                         <BodyMessageChat messages={messages}
                             styleBodyCardMessage={styleBodyCardMessage}
                             conversationSelected={conversationSelected}
-                            messagesEndRef={messagesEndRef} />
+                            messagesEndRef={messagesEndRef}
+                            bodyMessageRef={bodyMessageRef} />
                         <InputMessageChat form={form}
                             onFinish={onFinish}
                             normFile={normFile}
@@ -321,20 +319,24 @@ const ChatBox = () => {
     const auth = useAuthUser();
     const user = auth();
 
+    const [form] = Form.useForm();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [userChats, setUserChats] = useState([]);
+    const [conversations, setConversations] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
     const [lastTimeOnline, setLastTimeOnline] = useState('');
-    const [form] = Form.useForm();
-    const [isUploadFile, setIsUploadFile] = useState(false)
+    const [reloadMessageFlag, setIsReloadMessageFlag] = useState(false);
+    const [isUploadFile, setIsUploadFile] = useState(false);
+    const messagesEndRef = useRef(null);
+    const bodyMessageRef = useRef(null);
 
+    const reloadMessages = () => {
+        setIsReloadMessageFlag(!reloadMessageFlag);
+    }
 
     const handleOpenUploadFile = () => {
         setIsUploadFile(!isUploadFile)
     }
-
-    const messagesEndRef = useRef(null);
 
     const normFile = (e) => {
         if (Array.isArray(e)) {
@@ -348,9 +350,17 @@ const ChatBox = () => {
         <Button type="primary" shape="circle" icon={<FileImageOutlined />} size={30} />
     );
 
-    // const scrollToBottom = () => {
-    //     messagesEndRef.current.scrollIntoView({behavior: "smooth" });
-    // };
+    // scroll
+    const scrollToBottom = () => {
+        if (bodyMessageRef.current && messagesEndRef.current) {
+            const bodyMessageElement = bodyMessageRef.current;
+            const messagesEndElement = messagesEndRef.current;
+
+            bodyMessageElement.scrollTop = messagesEndElement.offsetTop;
+        }
+    };
+
+    useEffect(scrollToBottom, [messages]);
 
     // Handles
 
@@ -409,22 +419,16 @@ const ChatBox = () => {
         }
 
         //update new isRead state
-        const newConversation = userChats.map((item) => {
+        const newConversation = conversations.map((item) => {
             if (item.conversationId === conversation.conversationId) {
 
                 return { ...item, isRead: USER_CONVERSATION_TYPE_IS_READ }
             }
             return item;
         })
-        setUserChats(newConversation)
+        setConversations(newConversation)
 
-        // get last time online
-        getOnlineStatusUser(userId)
-            .then((res) => {
 
-            }).catch((error) => {
-                console.log(error);
-            })
         setConversationSelected(conversation)
     }
 
@@ -438,18 +442,28 @@ const ChatBox = () => {
         if (conversationSelected === null || conversationSelected === undefined) return;
         GetMessages(conversationSelected.conversationId)
             .then((response) => {
-                setMessages([...response.data])
+                const messages = response.data
+
+                // set avt default for empty avt
+                const newMessages = messages.map((message) => {
+                    if (message.avatar.length === 0) {
+                        return { ...message, avatar: fptImage }
+                    }
+                    return message;
+                })
+
+                setMessages(newMessages)
             })
 
     }, [conversationSelected])
 
-    // useEffect(scrollToBottom, [messages]);
 
+    // interval
     const intervalTime = () => {
 
         if (conversationSelected === null || conversationSelected === undefined) return;
         const interval = setInterval(() => {
-            if (conversationSelected.users.length === 1) {
+            if (conversationSelected.isGroup === false) {
                 setLastTimeOnline(moment(conversationSelected.users[0].lastTimeOnline).fromNow());
             }
         }, 60000);
@@ -457,18 +471,35 @@ const ChatBox = () => {
     }
 
     intervalTime();
+    //
 
 
+    // get conversations
     useEffect(() => {
         if (user === null || user === undefined) return;
 
-        const loadUsersChatMessage = () => {
+        const loadConversations = () => {
             GetUsersConversation(user.id)
                 .then((response) => {
                     const conversations = response.data
-                    setUserChats(conversations);
+
+                    // set avt default for empty avt
+                    const newConversation = conversations.map((conversation) => {
+                        const newUsers = conversation.users.map((user) => {
+                            if (user.avatar.length === 0) {
+                                return { ...user, avatar: fptImage }
+                            }
+                            return user;
+                        })
+
+                        conversation.users = newUsers
+                        return conversation;
+                    })
+
+                    //set 
+                    setConversations(newConversation);
                     if (conversationIdPath) {
-                        const conversationFilter = conversations.find(c => c.conversationId === conversationIdPath);
+                        const conversationFilter = newConversation.find(c => c.conversationId === conversationIdPath);
                         setConversationSelected(conversationFilter)
                     }
                 })
@@ -478,9 +509,9 @@ const ChatBox = () => {
 
         };
 
-        loadUsersChatMessage();
+        loadConversations();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [reloadMessageFlag]);
 
 
     // message from signR
@@ -492,16 +523,22 @@ const ChatBox = () => {
         const setMessage = () => {
             if (message) {
                 if ('messageId' in message) {
+
+                    //set default avatar
+                    if (message.avatar === null) {
+                        message.avatar = fptImage;
+                    }
+
                     // data update message chat
-                    if (conversationSelected.conversationId === message.conversationId) {
+                    if (conversationSelected?.conversationId === message.conversationId) {
                         setMessages((prev) => [...prev, message])
                     }
 
                     // data update new user chat
-                    const newUserChat = userChats.map((item) => {
+                    const newConversations = conversations.map((item) => {
                         if (item.conversationId === message.conversationId) {
                             if (message.userId !== userId) {
-                                if (conversationSelected.conversationId === message.conversationId) {
+                                if (conversationSelected?.conversationId === message.conversationId) {
                                     updateIsReadConversation(conversationSelected.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
                                     return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
                                 } else {
@@ -516,11 +553,20 @@ const ChatBox = () => {
                     })
 
                     // update user chat
-                    setUserChats(newUserChat)
+                    setConversations(newConversations)
                 } else {
-                    const filterUserChat = userChats.find(x => x.conversationId === message.conversationId);
+                    const filterUserChat = conversations.find(x => x.conversationId === message.conversationId);
                     if (!filterUserChat) {
-                        setUserChats((prev) => [...prev, message])
+                        //set default avatar
+                        const newUsers = message.users.map((user) => {
+                            if (user.avatar.length === 0) {
+                                return { ...user, avatar: fptImage }
+                            }
+                            return user;
+                        })
+                        message.users = newUsers;
+
+                        setConversations((prev) => [...prev, message])
                     }
                 }
             }
@@ -546,39 +592,32 @@ const ChatBox = () => {
                 // parse to json
                 const userOnlineStatusJson = JSON.parse(userOnlineStatusContext)
 
-                if (userChats.length === 0) return;
+                if (conversations.length === 0) return;
                 // update users status conversations
-                const updateUserStatusConversations = async () => {
-                    const findConversation = userChats.find(x => x.conversationId === userOnlineStatusJson.ConversationId);
-                    const newUserInConversation = await Promise.all(findConversation.users.map(async (user) => {
+                const updateUserStatusConversations = () => {
+                    const findConversation = conversations.find(x => x.conversationId === userOnlineStatusJson.ConversationId);
+                    const newUserInConversation = findConversation.users.map((user) => {
                         if (user.userId === userOnlineStatusJson.UserId) {
-                            try {
-                                const res = await getOnlineStatusUser(user.userId);
-                                if (res.status === 200) {
-                                    const lastTimeOnline = res.data.lastTimeOnline
-                                    const isOnline = userOnlineStatusJson.IsOnline;
-                                    updateUserStatusConversationSelected(isOnline, lastTimeOnline)
-                                    return { ...user, isOnline: isOnline, lastTimeOnline: lastTimeOnline }
-                                }
-                            } catch (error) {
-                                console.log(error);
-                            }
+                            const lastTimeOnline = new Date();
+                            const isOnline = userOnlineStatusJson.IsOnline;
+                            updateUserStatusConversationSelected(isOnline, lastTimeOnline)
+                            return { ...user, isOnline: isOnline, lastTimeOnline: lastTimeOnline }
                         }
                         return user;
-                    }));
+                    });
 
                     //set new users
                     findConversation.users = newUserInConversation
 
                     //
-                    const newUserChat = userChats.map((x) => {
+                    const newUserChat = conversations.map((x) => {
                         if (x.conversationId === findConversation.conversationId) {
                             return { ...findConversation };
                         }
                         return x;
                     })
 
-                    setUserChats(newUserChat);
+                    setConversations(newUserChat);
                 };
 
                 // update users status conversations selected
@@ -625,17 +664,19 @@ const ChatBox = () => {
         normFile: normFile,
         isUploadFile: isUploadFile,
         handleOpenUploadFile: handleOpenUploadFile,
-        lastTimeOnline: lastTimeOnline
+        lastTimeOnline: lastTimeOnline,
+        bodyMessageRef: bodyMessageRef
     }
 
     return (
         <div className={cx('container')}>
             <LayoutUserChat
-                userChats={userChats}
+                userChats={conversations}
                 handleClickUser={handleClickUser}
                 conversationSelected={conversationSelected} />
             <LayoutMessageChat propsMessageChat={propsMessageChat} />
         </div>
+
     );
 }
 

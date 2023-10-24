@@ -28,7 +28,7 @@ function Notification() {
     useEffect(() => {
         if (user === null || user === undefined) return;
         // Create a new SignalR connection with the token
-        const connection = connectionHub(`notificationHub?userId=${user.id}`);
+        const connection = connectionHub(`hubs/notification?userId=${user.id}`);
         console.log(connection);
         // Start the connection
         connection.start().catch((err) => console.error(err));

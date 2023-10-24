@@ -116,9 +116,10 @@ export const WITHDRAW_TRANSACTION_PAID = 2;
 export const WITHDRAW_TRANSACTION_REJECT = 3;
 
 // Cart Status
-export const CART_RESPONSE_CODE_SUCCESS = "CART_00";
-export const CART_RESPONSE_CODE_INVALID_QUANTITY = "CART_01";
-export const CART_RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY = "CART_02";
+export const RESPONSE_CODE_CART_SUCCESS = "CART_00";
+export const RESPONSE_CODE_CART_INVALID_QUANTITY = "CART_01";
+export const RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY = "CART_02";
+export const RESPONSE_CODE_CART_PRODUCT_VARIANT_NOT_IN_SHOP = "CART_03";
 
 // status order
 export const ORDER_WAIT_CONFIRMATION = 1;
@@ -149,6 +150,11 @@ export const RESPONSE_CODE_CONFIRM_PASSWORD_IS_CONFIRMED = "CF_01";
 export const RESPONSE_MESSAGE_ORDER_COUPON_USED = 'Phiếu giảm giá đã được sử dụng';
 export const RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE = 'Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản';
 export const RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY = 'Không thể mua nhiều hơn số lượng có sẵn';
+
+// cart message
+export const RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY = 'Không thể cập nhật vì số lượng sản phẩm không đủ';
+export const RESPONSE_MESSAGE_CART_INVALID_QUANTITY = 'Không thể cập nhật vì số lượng sản phẩm không đủ';
+export const RESPONSE_MESSAGE_CART_NOT_FOUND = 'Không tìm thấy sản phẩm trong giỏ hàng';
 
 //Message Type
 export const MESSAGE_TYPE_CONVERSATION_TEXT = "0";

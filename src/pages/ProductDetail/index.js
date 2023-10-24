@@ -4,10 +4,10 @@ import { addConversation } from '~/api/chat';
 import { addProductToCart } from '~/api/cart';
 import { getProductById } from '~/api/product';
 import styles from './ProductDetail.module.scss';
-import { formatPrice, formatNumberToK, getVietnamCurrentTime } from '~/utils';
+import { formatPrice, formatNumberToK, getVietnamCurrentTime, getUserId } from '~/utils';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { CART_RESPONSE_CODE_INVALID_QUANTITY } from '~/constants';
+import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS } from '~/constants';
 import CarouselCustom from '~/components/Carousels/CarouselCustom';
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { CreditCardOutlined, ShoppingCartOutlined, MessageOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
@@ -56,27 +56,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     let minPriceDis = 0
     let maxPriceDis = 0
 
-    const handleSendMessage = () => {
-        if (userId === undefined) {
-            navigate('/login')
-            return;
-        } else {
-
-            const dataAddConversation = {
-                dateCreate: getVietnamCurrentTime(),
-                UserId: userId,
-                RecipientIds: [product.shop.shopId]
-            }
-            addConversation(dataAddConversation)
-                .then((res) => {
-                    if (res.status === 200) {
-                        navigate('/chatBox', { state: { data: res.data } })
-                    }
-                }).catch((error) => {
-                    console.log(error)
-                })
-        }
-    }
 
     const showModalNotifyQuantity = () => {
         setIsModalNotifyQuantityOpen(true);
@@ -142,10 +121,13 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     }
 
     const handleAddProductToCart = async (isBuyNow) => {
+        console.log('productVariantsSelected: ' + JSON.stringify(productVariantsSelected));
+
         if (userId === undefined) {
             navigate('/login')
             return;
         }
+
         if (!productVariantsSelected) {
             openNotification("error", "Vui lòng chọn loại sản phẩm")
             return;
@@ -153,6 +135,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
         const dataAddToCart = {
             userId: userId,
+            shopId: product.shop.shopId,
             productVariantId: productVariantsSelected.productVariantId,
             quantity: quantity
         }
@@ -160,14 +143,14 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         addProductToCart(dataAddToCart)
             .then((res) => {
                 if (res.status === 200) {
-                    const data = res.data
-                    if (data.responseCode === CART_RESPONSE_CODE_INVALID_QUANTITY && data.ok === false) {
-                        const message = `Sản phẩm này đang có số lượng ${data.message} trong giỏ hàng của bạn,
+                    const data = res.data;
+                    if (data.status.responseCode === RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY && data.status.ok === false) {
+                        const message = `Sản phẩm này đang có số lượng ${data.result} trong giỏ hàng của bạn,
                         không thể thêm số lượng đã chọn vào giỏ hàng vì đã vượt quá số lượng sản phẩm có sẵn`
-
                         setContentProductInvalidQuantity(message);
                         showModalNotifyQuantity();
-                    } else {
+
+                    } else if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS && data.status.ok === true) {
                         if (!isBuyNow) {
                             openNotification("success", "Sản phẩm đã được thêm vào trong giỏ hàng của bạn")
                         } else {
@@ -258,9 +241,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                 </Button>
                                 <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
                                     Thêm vào giỏ
-                                </Button>
-                                <Button disabled={userId !== product.shop.shopId ? false : true} className={cx('margin-element')} type="primary" shape="round" icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage}>
-                                    Nhắn tin
                                 </Button>
                             </div>
                         </div>
@@ -371,12 +351,39 @@ const ProductFeedback = ({ feedback }) => {
 
 const ShopInfomations = ({ product }) => {
 
+    const navigate = useNavigate()
+
+    const userId = +getUserId();
+    if (userId === null && userId === undefined) return;
+
     const styleFirstCard = {
         borderRadius: '6px 0 0 6px'
     }
 
     const styleLastCard = {
         borderRadius: '0 6px 6px 0'
+    }
+
+    const handleSendMessage = () => {
+        if (userId === undefined) {
+            navigate('/login')
+            return;
+        } else {
+
+            const dataAddConversation = {
+                dateCreate: getVietnamCurrentTime(),
+                UserId: userId,
+                RecipientIds: [product.shop.shopId]
+            }
+            addConversation(dataAddConversation)
+                .then((res) => {
+                    if (res.status === 200) {
+                        navigate('/chatBox', { state: { data: res.data } })
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
+        }
     }
 
 
@@ -407,9 +414,10 @@ const ShopInfomations = ({ product }) => {
                                         })()}
                                         <Space direction='horizontal'>
                                             <Button icon={<ShopOutlined />} type="primary" danger ghost>Xem Shop</Button>
-                                            <Button icon={<MessageOutlined />} style={{ marginLeft: 10 }}>
+                                            <Button disabled={userId !== product.shop.shopId ? false : true} className={cx('margin-element')} icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage} style={{ marginLeft: 10 }}>
                                                 Chat ngay
                                             </Button>
+
                                         </Space>
                                     </Space>
 
@@ -436,22 +444,6 @@ const ShopInfomations = ({ product }) => {
                             <Text type="danger">{moment(product.shop.dateCreate).fromNow()}</Text>
                         </Card>
                     </Col>
-
-
-                    {/* <Col span={4} offset={1} className={cx('space-col-shop-info')}>
-                        <Card>
-                            <Text>Tham gia</Text>
-                            <Link><Text type="danger" style={{ marginLeft: 20 }}>{moment(product.shop.dateCreate).fromNow()}</Text></Link>
-                        </Card>
-                    </Col>
-                    <Col span={4} offset={1} className={cx('space-col-shop-info')}>
-                        <Text>Sản phẩm</Text>
-                        <Link><Text type="danger" style={{ marginLeft: 20 }}>{formatNumberToK(product.shop.productNumber)}</Text></Link>
-                    </Col>
-                    <Col span={4} offset={1} className={cx('space-col-shop-info')}>
-                        <Text>Tham gia</Text>
-                        <Link><Text type="danger" style={{ marginLeft: 20 }}>{moment(product.shop.dateCreate).fromNow()}</Text></Link>
-                    </Col> */}
                 </Row>
 
             ) : (
