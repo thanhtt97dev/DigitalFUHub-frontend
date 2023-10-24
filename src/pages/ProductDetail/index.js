@@ -7,7 +7,7 @@ import styles from './ProductDetail.module.scss';
 import { formatPrice, formatNumberToK, getVietnamCurrentTime, getUserId } from '~/utils';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { CART_RESPONSE_CODE_INVALID_QUANTITY } from '~/constants';
+import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS } from '~/constants';
 import CarouselCustom from '~/components/Carousels/CarouselCustom';
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { CreditCardOutlined, ShoppingCartOutlined, MessageOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
@@ -121,10 +121,13 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     }
 
     const handleAddProductToCart = async (isBuyNow) => {
+        console.log('productVariantsSelected: ' + JSON.stringify(productVariantsSelected));
+
         if (userId === undefined) {
             navigate('/login')
             return;
         }
+
         if (!productVariantsSelected) {
             openNotification("error", "Vui lòng chọn loại sản phẩm")
             return;
@@ -132,6 +135,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
         const dataAddToCart = {
             userId: userId,
+            shopId: product.shop.shopId,
             productVariantId: productVariantsSelected.productVariantId,
             quantity: quantity
         }
@@ -139,14 +143,14 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         addProductToCart(dataAddToCart)
             .then((res) => {
                 if (res.status === 200) {
-                    const data = res.data
-                    if (data.responseCode === CART_RESPONSE_CODE_INVALID_QUANTITY && data.ok === false) {
-                        const message = `Sản phẩm này đang có số lượng ${data.message} trong giỏ hàng của bạn,
+                    const data = res.data;
+                    if (data.status.responseCode === RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY && data.status.ok === false) {
+                        const message = `Sản phẩm này đang có số lượng ${data.result} trong giỏ hàng của bạn,
                         không thể thêm số lượng đã chọn vào giỏ hàng vì đã vượt quá số lượng sản phẩm có sẵn`
-
                         setContentProductInvalidQuantity(message);
                         showModalNotifyQuantity();
-                    } else {
+
+                    } else if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS && data.status.ok === true) {
                         if (!isBuyNow) {
                             openNotification("success", "Sản phẩm đã được thêm vào trong giỏ hàng của bạn")
                         } else {

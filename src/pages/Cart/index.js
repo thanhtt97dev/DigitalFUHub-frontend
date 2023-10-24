@@ -29,37 +29,18 @@ const Cart = () => {
 
 
 
+
     /// handles
 
     const handleOnChangeCheckbox = (values) => {
+
+        console.log('CartDetailIdSelecteds: ' + values)
         if (values.length === 0) {
             setCartDetailIdSelecteds([])
             return;
         }
 
-        const cartItems = findCartItems(values)
-        setCartDetailIdSelecteds([...cartItems])
-
-        // const cartFilter = carts.filter(c => values.includes(c.productVariantId))
-        // cartFilter.map((item) => {
-        //     return updateCart({ userId: getUserId(), productVariantId: item.productVariantId, quantity: 0 })
-        //         .then((res) => {
-        //             if (res.status === 200) {
-        //                 const data = res.data
-        //                 if (data.responseCode === CART_RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY) {
-        //                     setContentModel(data.message)
-        //                     setIsModelInvalidCartProductQuantity(true)
-        //                 } else if (data.responseCode === CART_RESPONSE_CODE_SUCCESS) {
-
-        //                     setItemCartSelected([...cartFilter])
-        //                 }
-        //                 loadDataCart()
-        //             }
-        //         })
-        //         .catch((error) => {
-        //             console.log(error)
-        //         })
-        // })
+        setCartDetailIdSelecteds([...values]);
     }
 
 
@@ -133,8 +114,9 @@ const Cart = () => {
         getCartsByUserId(userId)
             .then((res) => {
                 if (res.status === 200) {
+                    console.log('reload carts')
                     const data = res.data;
-                    setCarts(data)
+                    setCarts(data);
                 }
                 // setUserCoin(data[0].coin)
                 // const { products } = data
@@ -148,7 +130,8 @@ const Cart = () => {
                 console.log(errors)
             })
 
-    }, [reloadCartsFlag, userId])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [reloadCartsFlag])
 
     useEffect(() => {
         getCustomerBalance(userId)
@@ -167,18 +150,11 @@ const Cart = () => {
 
         const calculatorPrice = (cartDetailIdSelecteds) => {
             if (cartDetailIdSelecteds.length > 0) {
-                const cartDetailSelected = [];
 
                 // filter cart detail
-                for (let i = 0; i < carts.length; i++) {
-                    const cartDetails = carts[i].products;
-                    const filterCartDetails = cartDetails.filter(x => cartDetailIdSelecteds.includes(x.cartDetailId));
+                const cartDetailSelected = filterCartDetail(cartDetailIdSelecteds);;
 
-                    if (filterCartDetails) {
-                        cartDetailSelected.push(filterCartDetails);
-                    }
-                }
-
+                console.log('cartDetailSelected: ' + JSON.stringify(cartDetailSelected));
                 // calculator price
                 if (cartDetailSelected) {
                     const totalOriginPrice = cartDetailSelected.reduce((accumulator, currentValue) => {
@@ -193,9 +169,9 @@ const Cart = () => {
                     const subPriceProductDiscount = totalOriginPrice - totalDiscountPrice;
 
                     const newTotalPrice = {
-                        originPrice: totalOriginPrice,
-                        discountPrice: totalDiscountPrice,
-                        subPriceProductDiscount: subPriceProductDiscount,
+                        originPrice: totalOriginPrice ? totalOriginPrice : 0,
+                        discountPrice: totalDiscountPrice ? totalDiscountPrice : 0,
+                        subPriceProductDiscount: subPriceProductDiscount ? subPriceProductDiscount : 0,
                         subPriceCouponDiscount: 0
                     }
                     setTotalPrice(newTotalPrice);
@@ -220,13 +196,31 @@ const Cart = () => {
         calculatorPrice(cartDetailIdSelecteds)
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cartDetailIdSelecteds])
+    }, [cartDetailIdSelecteds, carts])
     ///
 
 
 
 
     /// functions
+
+    const filterCartDetail = (cartDetailIds) => {
+        const cartDetails = [];
+        for (let i = 0; i < carts.length; i++) {
+            const products = carts[i].products;
+            const filterProducts = products.filter(x => cartDetailIds.includes(x.cartDetailId));
+
+            if (filterProducts) {
+                cartDetails.push(filterProducts);
+            }
+        }
+        return [].concat(...cartDetails);
+    }
+
+    const reloadCarts = () => {
+        setReloadCartsFlag(!reloadCartsFlag);
+    }
+
     const findProductsByShopId = (shopId) => {
         const itemCarts = carts.find(x => x.shopId === shopId).products;
 
@@ -249,11 +243,15 @@ const Cart = () => {
     }
     ///
 
+
     /// props
     const dataPropProductComponent = {
         userId: userId,
         carts: carts,
-        setCartDetailIdSelecteds: setCartDetailIdSelecteds
+        cartDetailIdSelecteds: cartDetailIdSelecteds,
+        setCartDetailIdSelecteds: setCartDetailIdSelecteds,
+        handleOnChangeCheckbox: handleOnChangeCheckbox,
+        reloadCarts: reloadCarts
     }
 
     const dataPropPriceComponent = {
