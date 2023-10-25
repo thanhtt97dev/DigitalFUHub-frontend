@@ -37,6 +37,16 @@ const Cart = () => {
 
     /// handles
 
+    const getCouponCodeSelecteds = (shopId) => {
+        if (!couponCodeSelecteds) return;
+        let couponCode = '';
+        const coupon = couponCodeSelecteds.find(x => x.shopId === shopId);
+        if (coupon) {
+            couponCode = coupon.couponCode;
+        }
+        return couponCode;
+    }
+
     const handleOnChangeCheckbox = (values) => {
         if (values.length === 0) {
             setCartDetailIdSelecteds([])
@@ -281,6 +291,7 @@ const Cart = () => {
         setCouponCodeSelecteds: setCouponCodeSelecteds,
         coupons: coupons,
         setCoupons: setCoupons,
+        getCouponCodeSelecteds: getCouponCodeSelecteds
     }
 
     const dataPropPriceComponent = {
@@ -294,7 +305,8 @@ const Cart = () => {
         cartDetailIdSelecteds: cartDetailIdSelecteds,
         isUseCoin: isUseCoin,
         reloadCarts: reloadCarts,
-        couponCodeSelecteds
+        couponCodeSelecteds,
+        getCouponCodeSelecteds: getCouponCodeSelecteds
     }
     ///
 

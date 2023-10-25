@@ -1,4 +1,4 @@
-import { apiGet, apiPostAuth } from '../defaultApi';
+import { apiGet, apiGetAuth, apiPostAuth } from '../defaultApi';
 
 export const getCouponPublic = (shopId) => {
     return apiGet(`api/Coupons/GetCouponPublic?shopId=${shopId}`);
@@ -7,15 +7,20 @@ export const getCouponPublic = (shopId) => {
 export const getCouponByCode = (couponCode) => {
     return apiGet(`api/Coupons/GetCouponByCode?couponCode=${couponCode}`);
 };
-
-export const checkCouponCodeExist = async (couponCode) => {
-    return await apiGet(`api/Coupons/CheckCouponCodeExist/${couponCode}`);
+export const getCouponById = (shopId, couponId) => {
+    return apiGetAuth(`api/Coupons/${shopId}/${couponId}`);
+};
+export const checkCouponCodeExist = async (userId, couponCode) => {
+    return await apiGetAuth(`api/Coupons/IsExistCouponCode/${userId}/${couponCode}`);
 };
 export const getCouponsSeller = (data) => {
     return apiPostAuth('api/Coupons/List/Seller', data);
 };
 export const addCouponSeller = (data) => {
     return apiPostAuth('api/Coupons/Add', data);
+};
+export const editCouponSeller = (data) => {
+    return apiPostAuth('api/Coupons/Edit', data);
 };
 
 export const updateStatusCouponSeller = (data) => {

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Switch, InputNumber, Tooltip, Tag } from "antd";
+import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Switch, InputNumber, Tooltip, Typography } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
-import { Link } from "react-router-dom";
 
 import Spinning from "~/components/Spinning";
 import { formatStringToCurrencyVND, getUserId, ParseDateTime } from '~/utils/index'
@@ -11,12 +10,18 @@ import {
     RESPONSE_CODE_SUCCESS,
 } from "~/constants";
 import Column from "antd/es/table/Column";
-import { QuestionCircleOutlined } from "@ant-design/icons";
-import { addCouponSeller, removeCouponSeller, getCouponsSeller, updateStatusCouponSeller } from "~/api/coupon";
+import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { addCouponSeller, removeCouponSeller, getCouponsSeller, updateStatusCouponSeller, getCouponById, editCouponSeller } from "~/api/coupon";
 import { checkCouponCodeExist } from "~/api/coupon";
 
+const { Title } = Typography;
+
 const { RangePicker } = DatePicker;
+
 const { confirm } = Modal;
+
+const removeSecondOfDateTime = (date) => date.slice(0, date.length - 6) + ' ' + date.slice(-2)
+
 function Coupons() {
     const notification = useContext(NotificationContext)
     const [loading, setLoading] = useState(true);
@@ -92,14 +97,15 @@ function Coupons() {
         });
 
     }
-    const onFinishModal = (values) => {
+    const onAddCoupon = (values) => {
         const data = {
             userId: getUserId(),
+            couponName: values.couponNameNew,
             couponCode: values.couponCodeNew,
             priceDiscount: values.priceDiscountNew,
-            amountOrderCondition: values.amountOrderConditionNew,
-            startDate: values.dateNew[0].$d,
-            endDate: values.dateNew[1].$d,
+            MinTotalOrderValue: values.minTotalOrderValueNew,
+            startDate: removeSecondOfDateTime(values.dateNew[0].$d.toLocaleString()),
+            endDate: removeSecondOfDateTime(values.dateNew[1].$d.toLocaleString()),
             quantity: values.quantityNew,
             isPublic: values.isPublic
         }
@@ -184,13 +190,98 @@ function Coupons() {
                     .catch((err) => {
                         notification("error", "Lỗi", "Đã có lỗi xảy ra.")
                     })
-
             },
             onCancel() {
             }
         })
 
     }
+    const [couponIdUpdate, setCouponIdUpdate] = useState();
+    const [isOpenUpdateCouponModal, setIsOpenUpdateCouponModal] = useState(false);
+    const [couponUpdate, setCouponUpdate] = useState({});
+    const [isViewDetailCoupon, setIsViewDetailCoupon] = useState(true);
+    const onCloseUpdateModal = () => {
+        setIsOpenUpdateCouponModal(false);
+        setIsViewDetailCoupon(true);
+    }
+    const onOpenUpdateModal = () => {
+        setIsOpenUpdateCouponModal(true);
+        setIsViewDetailCoupon(true);
+    }
+    const handleOpenUpdateCouponModal = (couponId) => {
+        setCouponIdUpdate(couponId);
+        getCouponById(getUserId(), couponId)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setCouponUpdate(res.data.result);
+                    onOpenUpdateModal()
+                }
+            })
+            .catch((err) => {
+            })
+    }
+    const onUpdateCoupon = ({ couponNameUpdate, couponCodeUpdate, dateUpdate, minTotalOrderValueUpdate,
+        priceDiscountUpdate, quantityUpdate, isPublicUpdate }) => {
+        setIsOpenUpdateCouponModal(false);
+        const data = {
+            couponId: couponIdUpdate,
+            couponName: couponNameUpdate,
+            couponCode: couponCodeUpdate,
+            startDate: removeSecondOfDateTime(dateUpdate[0].$d.toLocaleString()),
+            endDate: removeSecondOfDateTime(dateUpdate[1].$d.toLocaleString()),
+            minTotalOrderValue: minTotalOrderValueUpdate,
+            priceDiscount: priceDiscountUpdate,
+            quantity: quantityUpdate,
+            isPublic: isPublicUpdate,
+            userId: getUserId(),
+        };
+        editCouponSeller(data)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setSearchData({
+                        ...searchData,
+                        userId: getUserId(),
+                    });
+                    notification("success", "Thành công", "Cập nhật mã giảm giá thành công.")
+                } else {
+                    notification("error", "Thất bại", "Cập nhật mã giảm giá thất bại.")
+                }
+            })
+            .catch((err) => {
+                notification("error", "Lỗi", "Đã có lỗi xảy ra.")
+            })
+    }
+    const initialFielUpdate = [
+        {
+            name: 'couponNameUpdate',
+            value: couponUpdate?.couponName,
+        },
+        {
+            name: 'couponCodeUpdate',
+            value: couponUpdate?.couponCode,
+        },
+        {
+            name: 'dateUpdate',
+            value: [dayjs(couponUpdate?.startDate), dayjs(couponUpdate?.endDate)]
+        },
+        {
+            name: 'minTotalOrderValueUpdate',
+            value: couponUpdate?.minTotalOrderValue
+        },
+        {
+            name: 'priceDiscountUpdate',
+            value: couponUpdate?.priceDiscount
+        },
+        {
+            name: 'quantityUpdate',
+            value: couponUpdate?.quantity
+        },
+        {
+            name: 'isPublicUpdate',
+            value: couponUpdate?.isPublic
+        }
+
+    ]
     return (
         <>
             <Spinning spinning={loading}>
@@ -305,9 +396,9 @@ function Coupons() {
                         <Column
                             width="15%"
                             title="Đơn hàng tối thiểu"
-                            key="amountOrderCondition"
+                            key="minTotalOrderValue"
                             render={(_, record) => (
-                                <p>{formatStringToCurrencyVND(record.amountOrderCondition)} đ</p>
+                                <p>{formatStringToCurrencyVND(record.minTotalOrderValue)} đ</p>
                             )}
                         />
                         <Column
@@ -323,7 +414,14 @@ function Coupons() {
                             title="Trạng thái"
                             key="isPublic"
                             render={(_, record) => (
-                                <Button type="dashed" danger onClick={() => handleRemoveCoupon(record.couponId)}>Xóa</Button>
+                                <Row gutter={[8, 8]}>
+                                    <Col>
+                                        <Button type="primary" style={{ width: '80px' }} onClick={() => handleOpenUpdateCouponModal(record.couponId)}>Chi tiết</Button>
+                                    </Col>
+                                    <Col>
+                                        <Button type="dashed" style={{ width: '80px' }} danger onClick={() => handleRemoveCoupon(record.couponId)}>Xóa</Button>
+                                    </Col>
+                                </Row>
                             )}
                         />
 
@@ -336,8 +434,28 @@ function Coupons() {
                 >
                     <Form
                         form={formModal}
-                        onFinish={onFinishModal}
+                        onFinish={onAddCoupon}
                     >
+                        <Row>
+                            <Col span={8} offset={1}><label>Tên mã giảm giá: <Tooltip title="Tên mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
+                            <Col span={15}>
+                                <Form.Item name="couponNameNew"
+                                    rules={[
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                const data = value === undefined ? "" : value.trim();
+                                                if (data) {
+                                                    return Promise.resolve();
+                                                } else {
+                                                    return Promise.reject(new Error('Tên mã giảm giá không được trống.'))
+                                                }
+                                            },
+                                        }),
+                                    ]}>
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                        </Row>
                         <Row>
                             <Col span={8} offset={1}><label>Mã giảm giá: <Tooltip title="Mã giảm giá áp dụng cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
                             <Col span={15}>
@@ -351,7 +469,7 @@ function Coupons() {
                                                 } else if (data.length < 4) {
                                                     return Promise.reject(new Error('Mã giảm giá phải có ít nhất 4 kí tự.'));
                                                 } else {
-                                                    await checkCouponCodeExist(data)
+                                                    await checkCouponCodeExist(0, data)
                                                         .then((res) => {
                                                             if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                                                                 return Promise.resolve();
@@ -362,7 +480,6 @@ function Coupons() {
                                                         .catch((err) => {
                                                             return Promise.reject(new Error('Mã giảm giá không hợp lệ.'));
                                                         })
-
                                                 }
                                             },
                                         }),
@@ -371,6 +488,7 @@ function Coupons() {
                                 </Form.Item>
                             </Col>
                         </Row>
+
 
                         <Row>
                             <Col span={8} offset={1}><label>Thời gian giảm giá: <Tooltip title="Thời gian áp dụng mã giảm giá cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
@@ -403,7 +521,7 @@ function Coupons() {
                         <Row>
                             <Col span={8} offset={1}><label>Đơn hàng tối thiểu: <Tooltip title="Số tiền tối thiểu của đơn hàng để có thể áp dụng được mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
                             <Col span={15}>
-                                <Form.Item name="amountOrderConditionNew"
+                                <Form.Item name="minTotalOrderValueNew"
                                     rules={[
                                         ({ getFieldValue }) => ({
                                             validator(_, value) {
@@ -429,15 +547,17 @@ function Coupons() {
                                     rules={[
                                         ({ getFieldValue }) => ({
                                             validator(_, value) {
-                                                if (getFieldValue('amountOrderConditionNew') === undefined || getFieldValue('amountOrderConditionNew') === null) {
-                                                    return Promise.reject(new Error('Vui lòng nhập số tiền cho đơn hàng tối thiểu.'));
-                                                } else if (value === undefined || value === null) {
+                                                // if (getFieldValue('amountOrderConditionNew') === undefined || getFieldValue('amountOrderConditionNew') === null) {
+                                                //     return Promise.reject(new Error('Vui lòng nhập số tiền cho đơn hàng tối thiểu.'));
+                                                // } else 
+                                                if (value === undefined || value === null) {
                                                     return Promise.reject(new Error('Số tiền giảm giá không được để trống.'));
                                                 } else if (value < 0) {
                                                     return Promise.reject(new Error('Số tiền giảm giá phải lớn hơn hoặc bằng 0.'));
-                                                } else if (value > getFieldValue('amountOrderConditionNew')) {
-                                                    return Promise.reject(new Error('Số tiền giảm giá phải nhỏ hơn hoặc bằng giá tiền đơn hàng tối thiểu.'));
                                                 }
+                                                // else if (value > getFieldValue('amountOrderConditionNew')) {
+                                                //     return Promise.reject(new Error('Số tiền giảm giá phải nhỏ hơn hoặc bằng giá tiền đơn hàng tối thiểu.'));
+                                                // }
                                                 else {
                                                     return Promise.resolve();
                                                 }
@@ -490,6 +610,183 @@ function Coupons() {
                     </Form>
                 </Modal>
 
+                <Modal title={<div>Chi tiết sản phẩm <Tooltip title="Cập nhật"><EditOutlined style={{ cursor: 'pointer' }} onClick={() => setIsViewDetailCoupon(false)} /></Tooltip></div>} open={isOpenUpdateCouponModal}
+                    onCancel={onCloseUpdateModal}
+                    width={600}
+                    footer={null}
+                >
+                    <Form
+                        onFinish={onUpdateCoupon}
+                        fields={initialFielUpdate}
+                        disabled={isViewDetailCoupon}
+                    >
+                        <Row>
+                            <Col span={8} offset={1}><label>Tên mã giảm giá: <Tooltip title="Tên mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
+                            <Col span={15}>
+                                <Form.Item name="couponNameUpdate"
+                                    rules={[
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                const data = value === undefined ? "" : value.trim();
+                                                if (data) {
+                                                    return Promise.resolve();
+                                                } else {
+                                                    return Promise.reject(new Error('Tên mã giảm giá không được trống.'))
+                                                }
+                                            },
+                                        }),
+                                    ]}>
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={8} offset={1}><label>Mã giảm giá: <Tooltip title="Mã giảm giá áp dụng cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
+                            <Col span={15}>
+                                <Form.Item name="couponCodeUpdate"
+                                    rules={[
+                                        ({ getFieldValue }) => ({
+                                            async validator(_, value) {
+                                                const data = value === undefined ? '' : value.trim();
+                                                if (!data) {
+                                                    return Promise.reject(new Error('Mã giảm giá không được trống.'));
+                                                } else if (data.length < 4) {
+                                                    return Promise.reject(new Error('Mã giảm giá phải có ít nhất 4 kí tự.'));
+                                                } else {
+                                                    await checkCouponCodeExist(getUserId(), data)
+                                                        .then((res) => {
+                                                            if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                                                                return Promise.resolve();
+                                                            } else {
+                                                                return Promise.reject(new Error('Mã giảm giá không hợp lệ.'));
+                                                            }
+                                                        })
+                                                        .catch((err) => {
+                                                            return Promise.reject(new Error('Mã giảm giá không hợp lệ.'));
+                                                        })
+                                                }
+                                            },
+                                        }),
+                                    ]}>
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={8} offset={1}><label>Thời gian giảm giá: <Tooltip title="Thời gian áp dụng mã giảm giá cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
+                            <Col span={15}>
+                                <Form.Item name="dateUpdate"
+                                    rules={[
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                if (!value || !value[0] || !value[1]) {
+                                                    return Promise.reject(new Error('Thời gian áp dụng mã giảm giá không được trống.'));
+                                                } else {
+                                                    return Promise.resolve();
+                                                }
+                                            },
+                                        }),
+                                    ]}
+                                >
+                                    <RangePicker locale={locale}
+                                        style={{ width: '100%' }}
+                                        format={"M/D/YYYY HH:mm"}
+                                        showTime={{
+                                            hideDisabledOptions: true,
+                                            defaultValue: [dayjs('00:00', 'HH:mm')],
+                                        }}
+                                        placement={"bottomLeft"} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={8} offset={1}><label>Đơn hàng tối thiểu: <Tooltip title="Số tiền tối thiểu của đơn hàng để có thể áp dụng được mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
+                            <Col span={15}>
+                                <Form.Item name="minTotalOrderValueUpdate"
+                                    rules={[
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                if (value === undefined || value === null) {
+                                                    return Promise.reject(new Error('Số tiền đơn hàng tối thiểu không được để trống.'));
+                                                } else if (value < 0) {
+                                                    return Promise.reject(new Error('Số tiền đơn hàng tối thiểu phải lớn hơn hoặc bằng 0.'));
+                                                } else {
+                                                    return Promise.resolve();
+                                                }
+                                            },
+                                        }),
+                                    ]}
+                                >
+                                    <InputNumber addonAfter="VNĐ" style={{ width: '100%' }} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={8} offset={1}><label>Số tiền giảm giá: <Tooltip title="Số tiền được giảm khi áp dụng mã cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
+                            <Col span={15}>
+                                <Form.Item name="priceDiscountUpdate"
+                                    rules={[
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                if (value === undefined || value === null) {
+                                                    return Promise.reject(new Error('Số tiền giảm giá không được để trống.'));
+                                                } else if (value < 0) {
+                                                    return Promise.reject(new Error('Số tiền giảm giá phải lớn hơn hoặc bằng 0.'));
+                                                } else {
+                                                    return Promise.resolve();
+                                                }
+                                            },
+                                        }),
+                                    ]}
+                                >
+                                    <InputNumber addonAfter="VNĐ" style={{ width: '100%' }} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={8} offset={1}><label>Số lượng: <Tooltip title="Số lượng mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
+                            <Col span={15}>
+                                <Form.Item name="quantityUpdate"
+                                    rules={[
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                if (value === undefined || value === null) {
+                                                    return Promise.reject(new Error('Số lượng mã giảm giá không được để trống.'));
+                                                } else if (value <= 0) {
+                                                    return Promise.reject(new Error('Số lượng mã giảm giá phải lớn hơn 0.'));
+                                                } else {
+                                                    return Promise.resolve();
+                                                }
+                                            },
+                                        }),
+                                    ]}
+                                >
+                                    <InputNumber addonAfter="VNĐ" style={{ width: '100%' }} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={8} offset={1}><label>Trạng thái: <Tooltip title={<div><p>Công khai: mọi người có thể tìm thấy mã giảm giá này khi đặt hàng.</p><p>Riêng tư: mọi người sẽ không thể tìm thấy mã giảm giá này, trừ khi được người bán gửi riêng cho người mua.</p></div>}><QuestionCircleOutlined /></Tooltip></label></Col>
+                            <Col span={15}>
+                                <Form.Item name="isPublicUpdate"
+                                    valuePropName="checked"
+                                >
+                                    <Switch checkedChildren="Công khai" unCheckedChildren="Riêng tư" />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row justify="end">
+                            {!isViewDetailCoupon && <>
+                                <Col offset={1}>
+                                    <Button onClick={onCloseUpdateModal} type="default" danger>Hủy</Button>
+                                </Col>
+                                <Col offset={1}>
+                                    <Button htmlType="submit" type="primary">Xác nhận</Button>
+                                </Col>
+                            </>}
+                        </Row>
+                    </Form>
+                </Modal>
             </Spinning>
         </>
     )
