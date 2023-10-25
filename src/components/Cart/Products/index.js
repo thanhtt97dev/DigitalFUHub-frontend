@@ -34,6 +34,7 @@ const Products = ({ dataPropProductComponent }) => {
         setCouponCodeSelecteds,
         coupons,
         setCoupons,
+        getCouponCodeSelecteds,
         handleCheckAllGroup,
         checkAllGroup,
     } = dataPropProductComponent;
@@ -164,6 +165,7 @@ const Products = ({ dataPropProductComponent }) => {
                 notification("error", "Lỗi", "Có lỗi trong quá trình xóa, vui lòng thử lại");
             })
     };
+
     ///
 
     /// styles
@@ -211,6 +213,12 @@ const Products = ({ dataPropProductComponent }) => {
     }
 
     ///
+
+
+    console.log('couponCodeSelecteds = ');
+    for (let i = 0; i < couponCodeSelecteds.length; i++) {
+        console.log(JSON.stringify(couponCodeSelecteds))
+    }
 
     return (
         <>
@@ -265,16 +273,9 @@ const Products = ({ dataPropProductComponent }) => {
                                 }
                                 <Row>
                                     <Col offset={1}><Button type="link" onClick={() => { setShopIdSelected(cart.shopId); showCouponShop(cart.shopId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
-                                    <Col>{
-                                        couponCodeSelecteds?.map((couponItem) => {
-                                            if (couponItem.shopId === cart.shopId) {
-                                                return (<Tag bordered={false} color="blue">
-                                                    {couponItem.couponCode}
-                                                </Tag>)
-                                            }
-                                            return couponItem;
-                                        })
-                                    }</Col>
+                                    <Col>
+                                        <Tag color="gold">{getCouponCodeSelecteds(cart.shopId)}</Tag>
+                                    </Col>
                                 </Row>
 
                             </Card>
