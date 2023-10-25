@@ -13,7 +13,7 @@ export const getCartsByUserId = (userId) => {
 };
 
 export const deleteCart = (data) => {
-    return apiPostAuth(`api/Carts/DeleteCart`, data);
+    return apiPostAuth(`api/Carts/DeleteCartDetail`, data);
 };
 
 export const updateCart = (data) => {
