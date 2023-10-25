@@ -30,7 +30,8 @@ const Prices = ({ dataPropPriceComponent }) => {
         isUseCoin,
         reloadCarts,
         cartDetailIdSelecteds,
-        couponCodeSelecteds
+        couponCodeSelecteds,
+        getCouponCodeSelecteds
     } = dataPropPriceComponent;
     //
 
@@ -92,7 +93,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                 const shopProduct = {
                     shopId: carts[i].shopId,
                     products: cartDetailsFil.map(x => ({ productVariantId: x.productVariantId, quantity: x.quantity })),
-                    coupon: couponCodeSelecteds.find(x => x.shopId === carts[i].shopId).couponCode
+                    coupon: getCouponCodeSelecteds(carts[i].shopId)
                 };
 
                 shopProductRequest.push(shopProduct);
