@@ -21,4 +21,7 @@ export const updateUserConversation = (data) => {
     return apiPostAuth('api/UserConversations/update', data);
 };
 
+export const getConversation = (data) => {
+    return apiPostAuth('api/Conversations/GetConversation', data);
+};
 
