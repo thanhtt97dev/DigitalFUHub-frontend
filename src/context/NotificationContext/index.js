@@ -5,7 +5,7 @@ export const NotificationContext = createContext();
 
 function Notification({ children }) {
     const [api, contextHolder] = notification.useNotification();
-    const openNotificationWithIcon = (type = 'success', message = '', description = '', duration = 4.5, placement = 'bottomLeft') => {
+    const openNotificationWithIcon = (type = 'success', message = '', description = '', duration = 4.5, placement = 'topRight') => {
         api[type]({
             message: message,
             description: description,
