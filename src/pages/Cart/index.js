@@ -230,19 +230,16 @@ const Cart = () => {
 
                     // total price coin
                     let totalPriceCoinDiscount = 0;
-                    if (isUseCoin) {
-                        if (userCoin > 0) {
-                            if (totalOriginPrice >= userCoin) {
-                                totalPriceCoinDiscount = userCoin;
-                            } else {
-                                totalPriceCoinDiscount = totalOriginPrice;
-                            }
-                        } else {
-                            totalPriceCoinDiscount = 0;
-                        }
 
-                        // sub total discount price
-                        totalDiscountPrice -= totalPriceCoinDiscount;
+                    if (isUseCoin && userCoin > 0 && totalDiscountPrice > 0) {
+                        if (totalDiscountPrice <= userCoin) {
+                            totalPriceCoinDiscount = totalDiscountPrice;
+                            totalDiscountPrice = 0;
+                        }
+                        else {
+                            totalPriceCoinDiscount = userCoin;
+                            totalDiscountPrice -= totalPriceCoinDiscount;
+                        }
                     }
 
                     newTotalPrice = {

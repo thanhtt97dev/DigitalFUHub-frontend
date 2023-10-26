@@ -101,7 +101,7 @@ const Products = ({ dataPropProductComponent }) => {
                 if (res.status === 200) {
                     const data = res.data
                     if (data.status.responseCode === RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY) {
-                        setContentModalAlert(RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY)
+                        setContentModalAlert(RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY + ` (Còn ${data.result} sản phẩm)`)
                         openModalAlert();
                     }
                     reloadCarts();
