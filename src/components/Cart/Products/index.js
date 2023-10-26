@@ -7,7 +7,7 @@ import ModalConfirmation from '~/components/Modals/ModalConfirmation';
 import Coupons from '../Coupons'
 import { formatPrice, discountPrice } from '~/utils';
 import { Link } from 'react-router-dom';
-import { updateCart, deleteCart } from '~/api/cart';
+import { updateCart, deleteCartDetail } from '~/api/cart';
 import { getCouponPublic } from '~/api/coupon';
 import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag } from 'antd';
 import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/icons';
@@ -147,7 +147,7 @@ const Products = ({ dataPropProductComponent }) => {
 
     const deleteCartDetail = (cartDetailId) => {
 
-        deleteCart(cartDetailId)
+        deleteCartDetail(cartDetailId)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;

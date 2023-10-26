@@ -4,7 +4,7 @@ import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
 import Spinning from "~/components/Spinning";
 import { formatPrice, getVietnamCurrentTime } from '~/utils';
-import { getCouponByCode } from '~/api/coupon';
+import { getCouponPrivate } from '~/api/coupon';
 import { Button, Typography, Modal, List, Input, Radio } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { NotificationContext } from "~/context/NotificationContext";
@@ -66,16 +66,18 @@ const Coupons = ({ dataPropCouponComponent }) => {
         }
 
         setIsCouponInfoSuccess(true);
-        getCouponByCode(inputCouponCode)
+        getCouponPrivate(inputCouponCode, shopIdSelected)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         const coupon = data.result;
-                        const couponFind = coupons.find(x => x.couponCode === coupon.couponCode);
-                        // add coupon private
-                        if (!couponFind) {
-                            setCoupons((prev) => [...prev, coupon]);
+                        if (coupon) {
+                            const couponFind = coupons.find(x => x.couponCode === coupon.couponCode);
+                            // add coupon private
+                            if (!couponFind) {
+                                setCoupons((prev) => [...prev, coupon]);
+                            }
                         }
                     }
                 }

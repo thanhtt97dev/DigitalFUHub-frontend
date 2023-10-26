@@ -93,21 +93,33 @@ const Prices = ({ dataPropPriceComponent }) => {
         // is loading button
         loadingButton();
         // create shop product request add order DTO
+        //data add order
         const shopProductRequest = [];
+        //data remove cart
+        const dataRemoveCart = [];
 
         for (let i = 0; i < carts.length; i++) {
             const cartDetails = carts[i].products;
             const cartDetailsFil = cartDetails.filter(x => cartDetailIdSelecteds.includes(x.cartDetailId));
             if (cartDetailsFil) {
+                // add order dto
                 const shopProduct = {
                     shopId: carts[i].shopId,
                     products: cartDetailsFil.map(x => ({ productVariantId: x.productVariantId, quantity: x.quantity })),
                     coupon: getCouponCodeSelecteds(carts[i].shopId)
                 };
 
+                // remove cart dto
+                const deleteCart = {
+                    cartId: carts[i].cartId,
+                    cartDetailIds: cartDetailsFil.map(x => (x.cartDetailId)),
+                }
+
                 shopProductRequest.push(shopProduct);
+                dataRemoveCart.push(deleteCart)
             }
         }
+
 
         const finalDataOrder = {
             userId: userId,
@@ -115,33 +127,31 @@ const Prices = ({ dataPropPriceComponent }) => {
             isUseCoin: isUseCoin
         }
 
+
+
         addOrder(finalDataOrder)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-
                         // delete cart selecteds
-                        cartDetailIdSelecteds.map(cartDetaiId => {
-                            return deleteCart(cartDetaiId)
-                                .then((res) => {
-                                    if (res.status === 200) {
-                                        const data = res.data;
-                                        if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
-
-                                        }
-                                    }
-                                })
-                                .catch((errors) => {
-                                    console.log(errors)
-                                }).finally(() => {
-                                    setTimeout(() => {
+                        deleteCart(dataRemoveCart)
+                            .then((res) => {
+                                if (res.status === 200) {
+                                    const data = res.data;
+                                    if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                                         unLoadingButton();
-                                        closeModalConfirmationBuy();
-                                        reloadCarts();
-                                    }, 500)
-                                })
-                        })
+                                    }
+                                }
+                            })
+                            .catch((errors) => {
+                                console.log(errors)
+                            }).finally(() => {
+                                setTimeout(() => {
+                                    closeModalConfirmationBuy();
+                                    reloadCarts();
+                                }, 500)
+                            })
                     } else {
                         if (data.status.responseCode === RESPONSE_CODE_ORDER_COUPON_USED) {
                             setContentModalAlert(RESPONSE_MESSAGE_ORDER_COUPON_USED)
@@ -151,6 +161,8 @@ const Prices = ({ dataPropPriceComponent }) => {
                             setContentModalAlert(RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY)
                         }
                         openModalAlert();
+                        unLoadingButton();
+                        closeModalConfirmationBuy();
                     }
                 }
             }).catch((error) => {
@@ -165,7 +177,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                 <Card
                     style={{
                         width: '100%',
-                        height: '60vh',
+                        minHeight: '60vh',
                     }}
                 >
                     <Title level={4} className={cx('space-div-flex')}>Thanh toán</Title>

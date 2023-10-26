@@ -40,8 +40,6 @@ const Cart = () => {
     const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(false)
 
 
-
-
     /// handles
 
     const loadingCartInfo = () => {
