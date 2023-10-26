@@ -10,8 +10,8 @@ export const getCouponByCode = (couponCode) => {
 export const getCouponById = (shopId, couponId) => {
     return apiGetAuth(`api/Coupons/${shopId}/${couponId}`);
 };
-export const checkCouponCodeExist = async (userId, couponCode) => {
-    return await apiGetAuth(`api/Coupons/IsExistCouponCode/${userId}/${couponCode}`);
+export const checkCouponCodeExist = async (action, couponCode) => {
+    return await apiGetAuth(`api/Coupons/IsExistCouponCode/${action}/${couponCode}`);
 };
 export const getCouponsSeller = (data) => {
     return apiPostAuth('api/Coupons/List/Seller', data);

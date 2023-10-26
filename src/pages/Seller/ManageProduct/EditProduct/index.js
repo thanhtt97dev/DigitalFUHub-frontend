@@ -228,7 +228,6 @@ function EditProduct() {
         setLoading(true);
         let formData = new FormData();
         formData.append('productId', productId);
-        formData.append('userId', getUserId());
         formData.append('productName', values.nameProduct);
         formData.append('productDescription', productDescription);
         formData.append('discount', values.discount);

@@ -40,7 +40,7 @@ function OrderDetail() {
 
     const getOrderDetail = useCallback(() => {
         setLoading(true);
-        getOrderDetailCustomer(getUserId(), orderId)
+        getOrderDetailCustomer(orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrder(res.data.result);

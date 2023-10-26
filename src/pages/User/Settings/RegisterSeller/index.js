@@ -1,5 +1,4 @@
 import { Card, Row, Col, Form, Input, Button } from "antd";
-import { getUserId } from "~/utils";
 import { registerShop } from "~/api/shop";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
@@ -48,7 +47,6 @@ function RegisterSeller() {
         const data = {
             shopName: values.shopName,
             shopDescription: shopDescription,
-            userId: getUserId()
         }
         registerShop(data)
             .then(res => {

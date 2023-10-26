@@ -1,7 +1,7 @@
 import CardOrderItem from "../CardOrderItem";
 import { Avatar, Button, Col, Empty, Image, Modal, Rate, Row, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { ParseDateTime, getUserId } from "~/utils";
+import { ParseDateTime } from "~/utils";
 import { getAllOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
@@ -11,7 +11,6 @@ import { Link } from "react-router-dom";
 const { Title, Text, Paragraph } = Typography
 function OrdersConfirmed({ status, loading, setLoading }) {
     const [paramSearch, setParamSearch] = useState({
-        userId: getUserId(),
         limit: 5,
         offset: 0,
         statusId: status
@@ -83,7 +82,6 @@ function OrdersConfirmed({ status, loading, setLoading }) {
     }
     const handleCustomerViewFeedback = (orderId) => {
         const data = {
-            userId: getUserId(),
             orderId: orderId
         }
         getFeedbackDetail(data)

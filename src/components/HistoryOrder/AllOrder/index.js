@@ -14,7 +14,6 @@ const { Text, Title, Paragraph } = Typography;
 function AllOrder({ status = 0, loading, setLoading }) {
     const notification = useContext(NotificationContext);
     const [paramSearch, setParamSearch] = useState({
-        userId: getUserId(),
         limit: 5,
         offset: 0,
         statusId: status
@@ -66,7 +65,6 @@ function AllOrder({ status = 0, loading, setLoading }) {
     const handleOrderComplaint = (orderId, shopId) => {
         // call api
         const dataBody = {
-            userId: getUserId(),
             shopId: shopId,
             orderId: orderId,
             statusId: 3
@@ -91,7 +89,6 @@ function AllOrder({ status = 0, loading, setLoading }) {
     const handleOrderComplete = (orderId, shopId) => {
         // call api
         const dataBody = {
-            userId: getUserId(),
             shopId: shopId,
             orderId: orderId,
             statusId: 2
@@ -142,7 +139,6 @@ function AllOrder({ status = 0, loading, setLoading }) {
     }
     const handleCustomerViewFeedback = (orderId) => {
         const data = {
-            userId: getUserId(),
             orderId: orderId
         }
         getFeedbackDetail(data)
