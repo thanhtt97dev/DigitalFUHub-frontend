@@ -5,8 +5,7 @@ import styles from '~/pages/Cart/Cart.module.scss';
 import Spinning from "~/components/Spinning";
 import { formatPrice, getVietnamCurrentTime } from '~/utils';
 import { getCouponPrivate } from '~/api/coupon';
-import { Button, Typography, Modal, List, Input, Radio } from 'antd';
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { Typography, Modal, List, Input, Radio } from 'antd';
 import { NotificationContext } from "~/context/NotificationContext";
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 
@@ -157,7 +156,8 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                 <List.Item key={item.couponId}>
                                     <List.Item.Meta
                                         title={item.couponName}
-                                        description={(<><p>Giảm {formatPrice(item.priceDiscount)} -
+                                        description={(<><p>Giảm {formatPrice(item.priceDiscount)} - Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}<br />
+
                                             {
                                                 item.quantity > 0 ? (
                                                     moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
@@ -168,7 +168,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                     />
                                     { }
                                     <div>
-                                        <Radio disabled={item.quantity <= 0 || (totalPrice.originPrice < item.priceDiscount) ? true : false}
+                                        <Radio disabled={item.quantity <= 0 || ((totalPrice.originPrice - totalPrice.totalPriceProductDiscount) < item.minTotalOrderValue) ? true : false}
                                             value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
                                     </div>
                                 </List.Item>
