@@ -223,7 +223,6 @@ function AddProduct() {
         });
 
         formData.append('productName', values.nameProduct);
-        formData.append('userId', getUserId());
         formData.append('description', descriptionValue);
         formData.append('category', values.category);
         formData.append('discount', values.discount);

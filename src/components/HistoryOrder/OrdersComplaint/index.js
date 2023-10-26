@@ -1,7 +1,6 @@
 import CardOrderItem from "../CardOrderItem";
 import { Col, Empty, Row } from "antd";
 import { useContext, useEffect, useState } from "react";
-import { getUserId } from "~/utils";
 import { customerUpdateStatusOrder, getAllOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
@@ -9,7 +8,6 @@ import { NotificationContext } from "~/context/NotificationContext";
 function OrdersComplaint({ status, loading, setLoading }) {
     const notification = useContext(NotificationContext);
     const [paramSearch, setParamSearch] = useState({
-        userId: getUserId(),
         limit: 5,
         offset: 0,
         statusId: status
@@ -53,7 +51,6 @@ function OrdersComplaint({ status, loading, setLoading }) {
     const handleOrderComplaint = (orderId, shopId) => {
         // call api
         const dataBody = {
-            userId: getUserId(),
             shopId: shopId,
             orderId: orderId,
             statusId: 3
@@ -79,7 +76,6 @@ function OrdersComplaint({ status, loading, setLoading }) {
     const handleOrderComplete = (orderId, shopId) => {
         // call api
         const dataBody = {
-            userId: getUserId(),
             shopId: shopId,
             orderId: orderId,
             statusId: 2

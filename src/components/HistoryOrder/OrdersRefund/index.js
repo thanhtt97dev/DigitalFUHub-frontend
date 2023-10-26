@@ -1,13 +1,11 @@
 import CardOrderItem from "../CardOrderItem";
 import { Col, Empty, Row } from "antd";
 import { useEffect, useState } from "react";
-import { getUserId } from "~/utils";
 import { getAllOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 
 function OrdersRefund({ status, loading, setLoading }) {
     const [paramSearch, setParamSearch] = useState({
-        userId: getUserId(),
         limit: 5,
         offset: 0,
         statusId: status

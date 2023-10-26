@@ -469,7 +469,7 @@ function Coupons() {
                                                 } else if (data.length < 4) {
                                                     return Promise.reject(new Error('Mã giảm giá phải có ít nhất 4 kí tự.'));
                                                 } else {
-                                                    await checkCouponCodeExist(0, data)
+                                                    await checkCouponCodeExist('A', data)
                                                         .then((res) => {
                                                             if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                                                                 return Promise.resolve();
@@ -653,7 +653,7 @@ function Coupons() {
                                                 } else if (data.length < 4) {
                                                     return Promise.reject(new Error('Mã giảm giá phải có ít nhất 4 kí tự.'));
                                                 } else {
-                                                    await checkCouponCodeExist(getUserId(), data)
+                                                    await checkCouponCodeExist('U', data)
                                                         .then((res) => {
                                                             if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                                                                 return Promise.resolve();
