@@ -119,7 +119,7 @@ const Products = ({ dataPropProductComponent }) => {
                 if (res.status === 200) {
                     const data = res.data
                     if (data.status.responseCode === RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY) {
-                        setContentModalAlert(RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY)
+                        setContentModalAlert(RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY + ` (Còn ${data.result} sản phẩm)`)
                         openModalAlert();
                     }
                     reloadCarts();
@@ -145,7 +145,8 @@ const Products = ({ dataPropProductComponent }) => {
             })
     }
 
-    const deleteCartDetail = (cartDetailId) => {
+    const funcDeleteCartDetail = (cartDetailId) => {
+
 
         deleteCartDetail(cartDetailId)
             .then((res) => {
@@ -261,7 +262,7 @@ const Products = ({ dataPropProductComponent }) => {
 
                                             </Col>
                                             <Col offset={1}><Text>{formatPrice(discountPrice(product.productVariantPrice, product.productDiscount) * product.quantity)}</Text></Col>
-                                            <Col offset={1}><Button icon={<DeleteOutlined />} danger onClick={() => deleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
+                                            <Col offset={1}><Button icon={<DeleteOutlined />} danger onClick={() => funcDeleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
                                         </Row>
                                     ))
                                 }

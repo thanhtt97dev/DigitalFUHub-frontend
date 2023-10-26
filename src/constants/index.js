@@ -133,6 +133,10 @@ export const ORDER_SELLER_VIOLATES = 7;
 export const RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY = "ORDER_01";
 export const RESPONSE_CODE_ORDER_COUPON_USED = "ORDER_02";
 export const RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE = "ORDER_03";
+export const RESPONSE_CODE_ORDER_NOT_ELIGIBLE = "ORDER_04";
+export const RESPONSE_CODE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP = "ORDER_05";
+export const RESPONSE_CODE_ORDER_PRODUCT_HAS_BEEN_BANED = "ORDER_06";
+export const RESPONSE_CODE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT = "ORDER_07";
 
 // product status
 export const PRODUCT_ACTIVE = 1;
@@ -150,6 +154,10 @@ export const RESPONSE_CODE_CONFIRM_PASSWORD_IS_CONFIRMED = "CF_01";
 export const RESPONSE_MESSAGE_ORDER_COUPON_USED = 'Phiếu giảm giá đã được sử dụng';
 export const RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE = 'Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản';
 export const RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY = 'Không thể mua nhiều hơn số lượng có sẵn';
+export const RESPONSE_MESSAGE_ORDER_NOT_ELIGIBLE = 'Đơn hàng không đủ điều kiện để áp dụng mã giảm giá';
+export const RESPONSE_MESSAGE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP = 'Loại sản phẩm này không tồn tại trong cửa hàng';
+export const RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED = 'Sản phẩm đã bị cấm';
+export const RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT = 'Không thể mua sản phẩm của chính mình';
 
 // cart message
 export const RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY = 'Không thể cập nhật vì số lượng sản phẩm không đủ';

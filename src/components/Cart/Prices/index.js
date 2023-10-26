@@ -12,7 +12,10 @@ import { NotificationContext } from "~/context/NotificationContext";
 import { Button, Col, Typography, Checkbox, Divider, Card } from 'antd';
 import {
     RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_COUPON_USED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY,
-    RESPONSE_MESSAGE_ORDER_COUPON_USED, RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_CART_SUCCESS
+    RESPONSE_MESSAGE_ORDER_COUPON_USED, RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_CART_SUCCESS,
+    RESPONSE_CODE_ORDER_NOT_ELIGIBLE, RESPONSE_CODE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP, RESPONSE_CODE_ORDER_PRODUCT_HAS_BEEN_BANED,
+    RESPONSE_CODE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT, RESPONSE_MESSAGE_ORDER_NOT_ELIGIBLE, RESPONSE_MESSAGE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP,
+    RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED, RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT
 } from '~/constants';
 
 const { Title, Text } = Typography;
@@ -158,7 +161,15 @@ const Prices = ({ dataPropPriceComponent }) => {
                         } else if (data.status.responseCode === RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE) {
                             setContentModalAlert(RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE)
                         } else if (data.status.responseCode === RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY) {
-                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY)
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY + ` (Còn ${data.result} sản phẩm)`)
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_NOT_ELIGIBLE) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_NOT_ELIGIBLE);
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP);
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_PRODUCT_HAS_BEEN_BANED) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED);
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT);
                         }
                         openModalAlert();
                         unLoadingButton();
