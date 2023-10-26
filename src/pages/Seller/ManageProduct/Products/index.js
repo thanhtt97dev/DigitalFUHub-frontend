@@ -96,7 +96,7 @@ function Products() {
     const [dataTable, setDataTable] = useState([]);
 
     useEffect(() => {
-        getAllProductsSeller(user.id)
+        getAllProductsSeller()
             .then((res) => {
                 setDataTable(res.data);
                 setTimeout(() => {

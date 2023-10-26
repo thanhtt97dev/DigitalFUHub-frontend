@@ -20,6 +20,8 @@ import { NotificationContext } from "~/context/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
 import TextArea from "antd/es/input/TextArea";
 import logoFPT from '~/assets/images/fpt-logo.jpg'
+import { useAuthUser } from 'react-auth-kit'
+import { getConversation } from '~/api/chat'
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -32,6 +34,8 @@ const getBase64 = (file) =>
     });
 
 function OrderDetail() {
+    const auth = useAuthUser()
+    const user = auth();
     const notification = useContext(NotificationContext);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
@@ -68,7 +72,6 @@ function OrderDetail() {
     const handleOrderComplaint = () => {
         // call api
         const dataBody = {
-            userId: getUserId(),
             shopId: order.shopId,
             orderId: order.orderId,
             statusId: 3
@@ -92,7 +95,6 @@ function OrderDetail() {
     const handleOrderComplete = () => {
         // call api
         const dataBody = {
-            userId: getUserId(),
             shopId: order.shopId,
             orderId: order.orderId,
             statusId: 2
@@ -154,7 +156,6 @@ function OrderDetail() {
     };
     const handleSubmitFeedback = (values) => {
         var formData = new FormData();
-        formData.append("userId", getUserId());
         formData.append("orderId", orderId);
         formData.append("orderDetailId", orderDetailRef.current);
         formData.append("rate", values.rate);
@@ -189,11 +190,7 @@ function OrderDetail() {
         setIsModalViewFeedbackOpen(false);
     }
     const handleCustomerViewFeedback = (orderId) => {
-        const data = {
-            userId: getUserId(),
-            orderId: orderId
-        }
-        getFeedbackDetail(data)
+        getFeedbackDetail(orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     showModalViewFeedback();
@@ -272,6 +269,18 @@ function OrderDetail() {
                 </Col>
             </Row>
         }
+    }
+    const handleOpenChat = () => {
+        var data = { shopId: order.shopId, userId: user.id }
+        getConversation(data)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    navigate('/chatBox', { state: { data: res.data.result } })
+                }
+            })
+            .catch(() => {
+
+            })
     }
     return (<>
         <Spin spinning={loading}>
@@ -461,6 +470,7 @@ function OrderDetail() {
                                             type="default"
                                             size="small"
                                             icon={<MessageOutlined />}
+                                            onClick={handleOpenChat}
                                         >
                                             Nhắn tin
                                         </Button>

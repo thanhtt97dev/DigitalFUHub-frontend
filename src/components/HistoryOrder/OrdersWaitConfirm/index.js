@@ -1,6 +1,6 @@
 import CardOrderItem from "../CardOrderItem";
-import { Col, Empty, Row } from "antd";
-import { useEffect, useState, useContext } from "react";
+import { Col, Empty, Row, Spin } from "antd";
+import { useEffect, useState, useContext, useRef } from "react";
 import { getUserId } from "~/utils";
 import { customerUpdateStatusOrder, getAllOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
@@ -9,21 +9,24 @@ import { NotificationContext } from "~/context/NotificationContext";
 function OrdersWaitConfirm({ status, loading, setLoading }) {
     const notification = useContext(NotificationContext);
     const [paramSearch, setParamSearch] = useState({
-        userId: getUserId(),
         limit: 5,
         offset: 0,
         statusId: status
     });
     const [orders, setOrders] = useState([]);
-    const [nextOffset, setNextOffset] = useState(0)
+    const nextOffset = useRef(0)
+    const [loadingMoreData, setLoadingMoreData] = useState(false);
     useEffect(() => {
-        if (nextOffset !== -1) {
+        if (nextOffset.current !== -1) {
+            if (nextOffset.current !== 0) {
+                setLoadingMoreData(true);
+            }
             // call api
             getAllOrdersCustomer(paramSearch)
                 .then(res => {
                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        setOrders(res.data.result.orders);
-                        setNextOffset(res.data.result.nextOffset);
+                        setOrders([...orders, ...res.data.result.orders]);
+                        nextOffset.current = res.data.result.nextOffset;
                     }
                 })
                 .catch(err => { })
@@ -33,15 +36,16 @@ function OrdersWaitConfirm({ status, loading, setLoading }) {
                     clearTimeout(idTimeout)
                 }, 300)
             }
+            setLoadingMoreData(false);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [paramSearch])
     useEffect(() => {
         window.addEventListener("scroll", (e) => {
             var scrollMaxY = window.scrollMaxY || (document.documentElement.scrollHeight - document.documentElement.clientHeight)
-            if (scrollMaxY - window.scrollY <= 300) {
-                if (nextOffset !== -1) {
-                    setParamSearch({ ...paramSearch, offset: nextOffset })
+            if (scrollMaxY - window.scrollY <= 150) {
+                if (nextOffset.current !== -1 && !loadingMoreData) {
+                    setParamSearch({ ...paramSearch, offset: nextOffset.current })
                 }
             }
         })
@@ -122,6 +126,11 @@ function OrdersWaitConfirm({ status, loading, setLoading }) {
                             />
                         </Col>
                     })}
+                    <Col span={24}>
+                        <Row justify="center" gutter={8}>
+                            <Spin spinning={loadingMoreData}></Spin>
+                        </Row>
+                    </Col>
                 </Row>
                 :
                 <Empty />

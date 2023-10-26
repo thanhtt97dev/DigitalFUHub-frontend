@@ -17,7 +17,7 @@ import { useAuthUser } from 'react-auth-kit'
 
 import { getConversation } from '~/api/chat'
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_SUCCESS } from "~/constants";
-import { formatStringToCurrencyVND, getDistanceDayTwoDate, getUserId } from "~/utils";
+import { formatStringToCurrencyVND, getDistanceDayTwoDate } from "~/utils";
 
 const { Text, Title } = Typography;
 
@@ -175,7 +175,6 @@ function CardOrderItem({
     };
     const handleSubmitFeedback = (values) => {
         var formData = new FormData();
-        formData.append("userId", getUserId());
         formData.append("orderId", orderId);
         formData.append("orderDetailId", orderDetailRef.current);
         formData.append("rate", values.rate);

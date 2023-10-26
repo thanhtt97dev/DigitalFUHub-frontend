@@ -4,13 +4,14 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { NotificationContext } from '~/context/NotificationContext';
 
-import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Spin } from 'antd';
+import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Spin, Switch } from 'antd';
 import { PlusOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
 import { getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
 import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 import { editProductSeller, getProductSellerById } from "~/api/product";
+import { PRODUCT_ACTIVE, PRODUCT_HIDE, RESPONSE_CODE_SUCCESS } from "~/constants";
 const columns = [
     {
         title: 'Số thứ tự',
@@ -74,6 +75,7 @@ function EditProduct() {
     const [productCategory, setProductCategory] = useState(1);
     const [productDiscount, setProductDiscount] = useState(0);
     const [productVariants, setProductVariants] = useState([])
+    const [isActiveProduct, setIsActiveProduct] = useState()
     const [stateInit, setStateInit] = useState(true)
     const btnAddRef = useRef();
     // const idIntervalRef = useRef();
@@ -83,16 +85,17 @@ function EditProduct() {
     useLayoutEffect(() => {
         getProductSellerById(getUserId(), productId)
             .then(async (res) => {
-                if (res.data.status.responseCode === "00") {
-                    const { productName, description, categoryId, discount, thumbnail, productMedias, tags, productVariants } = res.data.result;
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    const { productName, description, categoryId, discount, thumbnail, productMedias, tags, productVariants, productStatusId } = res.data.result;
                     setProductName(productName);
                     setProductDescription(description);
                     setProductCategory(parseInt(categoryId));
                     setProductDiscount(parseInt(discount));
                     setProductThumbnailSrc([{ src: thumbnail, file: null }]);
                     setProductImagesSrc(productMedias.map(v => ({ src: v.url, file: null })));
-                    setTags(tags.map((value, inex) => value.tagName));
-                    setProductVariants(productVariants.map((value, index) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, data: value.assetInformations, file: undefined })));
+                    setTags(tags.map((value) => value.tagName));
+                    setIsActiveProduct(productStatusId === PRODUCT_ACTIVE ? true : false)
+                    setProductVariants(productVariants.map((value) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, data: value.assetInformations, file: undefined })));
                 }
             })
             .catch((err) => {
@@ -232,6 +235,7 @@ function EditProduct() {
         formData.append('productDescription', productDescription);
         formData.append('discount', values.discount);
         formData.append('categoryId', values.category);
+        formData.append('isActiveProduct', values.isActiveProduct ? PRODUCT_ACTIVE : PRODUCT_HIDE);
         formData.append('productThumbnail', productThumbnailSrc[0]?.file ? productThumbnailSrc[0]?.file : null);
         productImagesSrc.forEach((value, index) => {
             if (value.file) {
@@ -323,6 +327,10 @@ function EditProduct() {
                                 name: ["category"],
                                 value: productCategory,
                             },
+                            {
+                                name: ["isActiveProduct"],
+                                value: isActiveProduct
+                            }
                         ]}
                         layout="vertical"
                         style={{
@@ -717,6 +725,12 @@ function EditProduct() {
                                     )}
                             </Space>
                         </Form.Item>
+                        <Form.Item name='isActiveProduct' label="Trạng thái:" required={true}
+                            valuePropName="checked"
+                        >
+                            <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
+                        </Form.Item>
+
                         <Form.Item style={{ textAlign: 'center' }}>
                             <Button type='primary' size='large' htmlType='submit'>Xác nhận</Button>
                         </Form.Item>

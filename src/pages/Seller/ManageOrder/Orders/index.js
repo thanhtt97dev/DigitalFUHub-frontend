@@ -30,7 +30,7 @@ function Orders() {
         orderId: '',
         customerEmail: '',
         userId: getUserId(),
-        fromDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
+        fromDate: dayjs().subtract(30, 'day').format('M/D/YYYY'),
         toDate: dayjs().format('M/D/YYYY'),
         status: 0
     });
@@ -204,7 +204,7 @@ function Orders() {
                             title="Số tiền"
                             key="totalAmount"
                             render={(_, record) => (
-                                <p>{formatStringToCurrencyVND(record.totalPayment)}₫</p>
+                                <p>{formatStringToCurrencyVND(record.totalAmount - record.totalCouponDiscount)}₫</p>
                             )}
                         />
                         <Column
