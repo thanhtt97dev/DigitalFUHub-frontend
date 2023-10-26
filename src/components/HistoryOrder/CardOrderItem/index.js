@@ -128,6 +128,16 @@ function CardOrderItem({
         } else if (statusId === ORDER_DISPUTE) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
+                    <Button
+                        type="primary"
+                        danger
+                        icon={<MessageOutlined />}
+                        onClick={handleOpenChatGroupForDepositeOrder}
+                    >
+                        Nhắn tin với người bán và quản trị viên
+                    </Button>
+                </Col>
+                <Col>
                     <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
                 </Col>
                 <Col>
@@ -191,8 +201,21 @@ function CardOrderItem({
         onFeedback(formData);
     }
 
-    const handleOpenChat = () => {
+    const handleOpenChatWithSeller = () => {
         var data = { shopId, userId: user.id }
+        getConversation(data)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    navigate('/chatBox', { state: { data: res.data.result } })
+                }
+            })
+            .catch(() => {
+
+            })
+    }
+
+    const handleOpenChatGroupForDepositeOrder = () => {
+        var data = { shopId, userId: user.id, isGroup: true }
         getConversation(data)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -311,7 +334,7 @@ function CardOrderItem({
                             type="default"
                             size="small"
                             icon={<MessageOutlined />}
-                            onClick={handleOpenChat}
+                            onClick={handleOpenChatWithSeller}
                         >
                             Nhắn tin
                         </Button></Title>
