@@ -12,8 +12,11 @@ import {
 import { Button, Card, Col, Divider, Form, Image, Modal, Rate, Row, Space, Tag, Tooltip, Typography, Upload } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { memo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthUser } from 'react-auth-kit'
+
+import { getConversation } from '~/api/chat'
+import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { formatStringToCurrencyVND, getDistanceDayTwoDate, getUserId } from "~/utils";
 
 const { Text, Title } = Typography;
@@ -43,6 +46,9 @@ function CardOrderItem({
     onFeedback = () => { },
     onViewFeedback = () => { }
 }) {
+    const auth = useAuthUser()
+    const user = auth();
+    const navigate = useNavigate()
     const [form] = Form.useForm();
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
@@ -185,6 +191,19 @@ function CardOrderItem({
         onFeedback(formData);
     }
 
+    const handleOpenChat = () => {
+        var data = { shopId, userId: user.id }
+        getConversation(data)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    navigate('/chatBox', { state: { data: res.data.result } })
+                }
+            })
+            .catch(() => {
+
+            })
+    }
+
     return <>
         <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
             <img
@@ -287,16 +306,15 @@ function CardOrderItem({
                         </Button></Title>
                 </Col>
                 <Col>
-                    <Link to="/chatBox">
-                        <Title level={5}>
-                            <Button
-                                type="default"
-                                size="small"
-                                icon={<MessageOutlined />}
-                            >
-                                Nhắn tin
-                            </Button></Title>
-                    </Link>
+                    <Title level={5}>
+                        <Button
+                            type="default"
+                            size="small"
+                            icon={<MessageOutlined />}
+                            onClick={handleOpenChat}
+                        >
+                            Nhắn tin
+                        </Button></Title>
                 </Col>
             </Row>}
             bordered={true}
