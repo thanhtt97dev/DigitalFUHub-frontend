@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
 import Spinning from "~/components/Spinning";
@@ -26,7 +26,8 @@ const Coupons = ({ dataPropCouponComponent }) => {
         setCoupons,
         couponCodeSelecteds,
         setCouponCodeSelecteds,
-        shopIdSelected
+        shopIdSelected,
+        totalPrice
     } = dataPropCouponComponent;
     ///
 
@@ -90,13 +91,34 @@ const Coupons = ({ dataPropCouponComponent }) => {
     }
 
     const chooseModalCoupon = () => {
-
-        const couponCodeSelectedsFil = couponCodeSelecteds.filter(x => !coupons.some(y => y.couponCode === x.couponCode));
-        setCouponCodeSelecteds([...couponCodeSelectedsFil, { shopId: shopIdSelected, couponCode: couponCodeSelected }]);
+        if (couponCodeSelected) {
+            const couponCodeSelectedsFil = couponCodeSelecteds.filter(x => !coupons.some(y => y.couponCode === x.couponCode));
+            setCouponCodeSelecteds([...couponCodeSelectedsFil, { shopId: shopIdSelected, couponCode: couponCodeSelected }]);
+        } else {
+            const newCouponCodeSelecteds = couponCodeSelecteds.filter(x => x.shopId !== shopIdSelected);
+            setCouponCodeSelecteds(newCouponCodeSelecteds)
+        }
 
         closeModalCoupons();
     }
     ///
+
+    /// useEffect
+    useEffect(() => {
+        if (!couponCodeSelected) return;
+        const couponFind = coupons.find(x => x.couponCode === couponCodeSelected);
+        if (!couponFind) return;
+        const priceCoupon = couponFind.priceDiscount;
+        if (totalPrice.originPrice < priceCoupon) {
+            setCouponCodeSelected(undefined);
+            const newCouponCodeSelectedsFilter = couponCodeSelecteds.filter(x => x.couponCode !== couponFind.couponCode);
+            setCouponCodeSelecteds(newCouponCodeSelectedsFilter);
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [totalPrice.originPrice]);
+    ///
+
 
     return (
         <Modal
@@ -132,14 +154,20 @@ const Coupons = ({ dataPropCouponComponent }) => {
                             renderItem={(item) => (
                                 <List.Item key={item.couponId}>
                                     <List.Item.Meta
-                                        title={<a href="https://ant.design">{item.couponName}</a>}
+                                        title={item.couponName}
                                         description={(<><p>Giảm {formatPrice(item.priceDiscount)} -
-                                            {moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
-                                                (<Text type="danger"> HSD: {moment(item.endDate).format('DD.MM.YYYY')} (Sắp hết hạn)</Text>)
-                                                : (<> HSD: {moment(item.endDate).format('DD.MM.YYYY')}</>)}</p></>)}
+                                            {
+                                                item.quantity > 0 ? (
+                                                    moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
+                                                        (<Text type="danger"> HSD: {moment(item.endDate).format('DD.MM.YYYY')} (Sắp hết hạn)</Text>)
+                                                        : (<> HSD: {moment(item.endDate).format('DD.MM.YYYY')}</>)) : (<Text type="danger"> Đã hết</Text>)
+                                            }
+                                        </p></>)}
                                     />
+                                    { }
                                     <div>
-                                        <Radio disabled={item.quantity > 0 ? false : true} value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                        <Radio disabled={item.quantity <= 0 || (totalPrice.originPrice < item.priceDiscount) ? true : false}
+                                            value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
                                     </div>
                                 </List.Item>
                             )}

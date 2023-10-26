@@ -30,8 +30,7 @@ const Prices = ({ dataPropPriceComponent }) => {
         isUseCoin,
         reloadCarts,
         cartDetailIdSelecteds,
-        couponCodeSelecteds,
-        getCouponCodeSelecteds
+        getCouponCodeSelecteds,
     } = dataPropPriceComponent;
     //
 
@@ -39,6 +38,7 @@ const Prices = ({ dataPropPriceComponent }) => {
     const [isOpenModalAlert, setIsOpenModalAlert] = useState(false);
     const [isOpenModalConfirmationBuy, setIsOpenModalConfirmationBuy] = useState(false);
     const [contentModalAlert, setContentModalAlert] = useState('');
+    const [isLoadingButton, setIsLoadingButton] = useState(false);
     //
 
     // contexts
@@ -67,6 +67,13 @@ const Prices = ({ dataPropPriceComponent }) => {
     //
 
     //handles
+    const loadingButton = () => {
+        setIsLoadingButton(true);
+    }
+
+    const unLoadingButton = () => {
+        setIsLoadingButton(false);
+    }
     const handleBuy = () => {
         if (balance < totalPrice.discountPrice) {
             setContentModalAlert('Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản')
@@ -83,6 +90,8 @@ const Prices = ({ dataPropPriceComponent }) => {
 
     const handleOkConfirmationBuy = () => {
 
+        // is loading button
+        loadingButton();
         // create shop product request add order DTO
         const shopProductRequest = [];
 
@@ -111,19 +120,27 @@ const Prices = ({ dataPropPriceComponent }) => {
                 if (res.status === 200) {
                     const data = res.data;
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+
+                        // delete cart selecteds
                         cartDetailIdSelecteds.map(cartDetaiId => {
                             return deleteCart(cartDetaiId)
                                 .then((res) => {
                                     if (res.status === 200) {
                                         const data = res.data;
                                         if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
-                                            reloadCarts();
+
                                         }
                                     }
                                 })
                                 .catch((errors) => {
                                     console.log(errors)
-                                });
+                                }).finally(() => {
+                                    setTimeout(() => {
+                                        unLoadingButton();
+                                        closeModalConfirmationBuy();
+                                        reloadCarts();
+                                    }, 500)
+                                })
                         })
                     } else {
                         if (data.status.responseCode === RESPONSE_CODE_ORDER_COUPON_USED) {
@@ -135,7 +152,6 @@ const Prices = ({ dataPropPriceComponent }) => {
                         }
                         openModalAlert();
                     }
-                    closeModalConfirmationBuy();
                 }
             }).catch((error) => {
                 console.log(error)
@@ -191,7 +207,10 @@ const Prices = ({ dataPropPriceComponent }) => {
                 isOpen={isOpenModalConfirmationBuy}
                 onOk={handleOkConfirmationBuy}
                 onCancel={closeModalConfirmationBuy}
-                content={`Bạn có muốn thanh toán đơn hàng này với giá ${formatPrice(totalPrice.discountPrice)} không?`} />
+                contentModal={`Bạn có muốn thanh toán đơn hàng này với giá ${formatPrice(totalPrice.discountPrice)} không?`}
+                contentButtonCancel='Quay lại'
+                contentButtonOk='Thanh toán'
+                isLoading={isLoadingButton} />
         </>
 
     )

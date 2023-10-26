@@ -33,10 +33,9 @@ const Products = ({ dataPropProductComponent }) => {
         couponCodeSelecteds,
         setCouponCodeSelecteds,
         coupons,
+        totalPrice,
         setCoupons,
         getCouponCodeSelecteds,
-        handleCheckAllGroup,
-        checkAllGroup,
     } = dataPropProductComponent;
     //
 
@@ -209,16 +208,11 @@ const Products = ({ dataPropProductComponent }) => {
         couponCodeSelecteds: couponCodeSelecteds,
         setCouponCodeSelecteds: setCouponCodeSelecteds,
         setCoupons: setCoupons,
-        shopIdSelected: shopIdSelected
+        shopIdSelected: shopIdSelected,
+        totalPrice: totalPrice
     }
 
     ///
-
-
-    console.log('couponCodeSelecteds = ');
-    for (let i = 0; i < couponCodeSelecteds.length; i++) {
-        console.log(JSON.stringify(couponCodeSelecteds))
-    }
 
     return (
         <>
@@ -274,7 +268,9 @@ const Products = ({ dataPropProductComponent }) => {
                                 <Row>
                                     <Col offset={1}><Button type="link" onClick={() => { setShopIdSelected(cart.shopId); showCouponShop(cart.shopId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
                                     <Col>
-                                        <Tag color="gold">{getCouponCodeSelecteds(cart.shopId)}</Tag>
+                                        {
+                                            getCouponCodeSelecteds(cart.shopId) && (<Tag color="gold">{getCouponCodeSelecteds(cart.shopId)}</Tag>)
+                                        }
                                     </Col>
                                 </Row>
 
