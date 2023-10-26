@@ -1,12 +1,11 @@
 import moment from 'moment';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
 import Spinning from "~/components/Spinning";
 import { formatPrice, getVietnamCurrentTime } from '~/utils';
-import { getCouponByCode } from '~/api/coupon';
-import { Button, Typography, Modal, List, Input, Radio } from 'antd';
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { getCouponPrivate } from '~/api/coupon';
+import { Typography, Modal, List, Input, Radio } from 'antd';
 import { NotificationContext } from "~/context/NotificationContext";
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 
@@ -26,7 +25,8 @@ const Coupons = ({ dataPropCouponComponent }) => {
         setCoupons,
         couponCodeSelecteds,
         setCouponCodeSelecteds,
-        shopIdSelected
+        shopIdSelected,
+        totalPrice
     } = dataPropCouponComponent;
     ///
 
@@ -65,16 +65,18 @@ const Coupons = ({ dataPropCouponComponent }) => {
         }
 
         setIsCouponInfoSuccess(true);
-        getCouponByCode(inputCouponCode)
+        getCouponPrivate(inputCouponCode, shopIdSelected)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         const coupon = data.result;
-                        const couponFind = coupons.find(x => x.couponCode === coupon.couponCode);
-                        // add coupon private
-                        if (!couponFind) {
-                            setCoupons((prev) => [...prev, coupon]);
+                        if (coupon) {
+                            const couponFind = coupons.find(x => x.couponCode === coupon.couponCode);
+                            // add coupon private
+                            if (!couponFind) {
+                                setCoupons((prev) => [...prev, coupon]);
+                            }
                         }
                     }
                 }
@@ -90,13 +92,34 @@ const Coupons = ({ dataPropCouponComponent }) => {
     }
 
     const chooseModalCoupon = () => {
-
-        const couponCodeSelectedsFil = couponCodeSelecteds.filter(x => !coupons.some(y => y.couponCode === x.couponCode));
-        setCouponCodeSelecteds([...couponCodeSelectedsFil, { shopId: shopIdSelected, couponCode: couponCodeSelected }]);
+        if (couponCodeSelected) {
+            const couponCodeSelectedsFil = couponCodeSelecteds.filter(x => !coupons.some(y => y.couponCode === x.couponCode));
+            setCouponCodeSelecteds([...couponCodeSelectedsFil, { shopId: shopIdSelected, couponCode: couponCodeSelected }]);
+        } else {
+            const newCouponCodeSelecteds = couponCodeSelecteds.filter(x => x.shopId !== shopIdSelected);
+            setCouponCodeSelecteds(newCouponCodeSelecteds)
+        }
 
         closeModalCoupons();
     }
     ///
+
+    /// useEffect
+    useEffect(() => {
+        if (!couponCodeSelected) return;
+        const couponFind = coupons.find(x => x.couponCode === couponCodeSelected);
+        if (!couponFind) return;
+        const priceCoupon = couponFind.priceDiscount;
+        if (totalPrice.originPrice < priceCoupon) {
+            setCouponCodeSelected(undefined);
+            const newCouponCodeSelectedsFilter = couponCodeSelecteds.filter(x => x.couponCode !== couponFind.couponCode);
+            setCouponCodeSelecteds(newCouponCodeSelectedsFilter);
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [totalPrice.originPrice]);
+    ///
+
 
     return (
         <Modal
@@ -132,14 +155,21 @@ const Coupons = ({ dataPropCouponComponent }) => {
                             renderItem={(item) => (
                                 <List.Item key={item.couponId}>
                                     <List.Item.Meta
-                                        title={<a href="https://ant.design">{item.couponName}</a>}
-                                        description={(<><p>Giảm {formatPrice(item.priceDiscount)} -
-                                            {moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
-                                                (<Text type="danger"> HSD: {moment(item.endDate).format('DD.MM.YYYY')} (Sắp hết hạn)</Text>)
-                                                : (<> HSD: {moment(item.endDate).format('DD.MM.YYYY')}</>)}</p></>)}
+                                        title={item.couponName}
+                                        description={(<><p>Giảm {formatPrice(item.priceDiscount)} - Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}<br />
+
+                                            {
+                                                item.quantity > 0 ? (
+                                                    moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
+                                                        (<Text type="danger"> HSD: {moment(item.endDate).format('DD.MM.YYYY')} (Sắp hết hạn)</Text>)
+                                                        : (<> HSD: {moment(item.endDate).format('DD.MM.YYYY')}</>)) : (<Text type="danger"> Đã hết</Text>)
+                                            }
+                                        </p></>)}
                                     />
+                                    { }
                                     <div>
-                                        <Radio disabled={item.quantity > 0 ? false : true} value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                        <Radio disabled={item.quantity <= 0 || ((totalPrice.originPrice - totalPrice.totalPriceProductDiscount) < item.minTotalOrderValue) ? true : false}
+                                            value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
                                     </div>
                                 </List.Item>
                             )}

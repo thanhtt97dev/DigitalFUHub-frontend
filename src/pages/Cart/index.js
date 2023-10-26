@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Products from '~/components/Cart/Products';
 import Prices from '~/components/Cart/Prices';
+import Spinning from "~/components/Spinning";
+import classNames from 'classnames/bind';
+import styles from './Cart.module.scss';
+import { Typography } from 'antd';
 import { useAuthUser } from 'react-auth-kit';
 import { getCustomerBalance, getCoinUser } from '~/api/user';
 import { getCartsByUserId } from '~/api/cart';
@@ -10,9 +14,11 @@ import { RESPONSE_CODE_SUCCESS } from '~/constants';
 
 
 const Cart = () => {
+    const { Title } = Typography;
     const auth = useAuthUser();
     const user = auth();
     const userId = user.id;
+    const cx = classNames.bind(styles);
 
     const initialTotalPrice = {
         originPrice: 0,
@@ -31,11 +37,18 @@ const Cart = () => {
     const [balance, setBalance] = useState(0);
     const [coupons, setCoupons] = useState([]);
     const [couponCodeSelecteds, setCouponCodeSelecteds] = useState([]);
-
-
+    const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(false)
 
 
     /// handles
+
+    const loadingCartInfo = () => {
+        setIsLoadingCartInfo(true);
+    }
+
+    const unLoadingCartInfo = () => {
+        setIsLoadingCartInfo(false);
+    }
 
     const getCouponCodeSelecteds = (shopId) => {
         if (!couponCodeSelecteds) return;
@@ -218,7 +231,15 @@ const Cart = () => {
                     // total price coin
                     let totalPriceCoinDiscount = 0;
                     if (isUseCoin) {
-                        totalPriceCoinDiscount = userCoin > 0 ? userCoin : 0;
+                        if (userCoin > 0) {
+                            if (totalOriginPrice >= userCoin) {
+                                totalPriceCoinDiscount = userCoin;
+                            } else {
+                                totalPriceCoinDiscount = totalOriginPrice;
+                            }
+                        } else {
+                            totalPriceCoinDiscount = 0;
+                        }
 
                         // sub total discount price
                         totalDiscountPrice -= totalPriceCoinDiscount;
@@ -291,7 +312,8 @@ const Cart = () => {
         setCouponCodeSelecteds: setCouponCodeSelecteds,
         coupons: coupons,
         setCoupons: setCoupons,
-        getCouponCodeSelecteds: getCouponCodeSelecteds
+        getCouponCodeSelecteds: getCouponCodeSelecteds,
+        totalPrice: totalPrice,
     }
 
     const dataPropPriceComponent = {
@@ -311,10 +333,20 @@ const Cart = () => {
     ///
 
     return (
-        <Row>
-            <Products dataPropProductComponent={dataPropProductComponent} />
-            <Prices dataPropPriceComponent={dataPropPriceComponent} />
-        </Row>
+        <>
+            {
+                carts.length > 0 ? (<div id='container-cart'>
+                    <Spinning wrapperClassName={cx('ant-spin-container', 'ant-spin-dot')} spinning={isLoadingCartInfo}>
+                        <Row>
+                            <Products dataPropProductComponent={dataPropProductComponent} />
+                            <Prices dataPropPriceComponent={dataPropPriceComponent} />
+                        </Row>
+                    </Spinning>
+                </div>
+                ) : (<Title level={4} style={{ width: '100%', textAlign: 'center' }}>Không có sản phẩm nào trong giỏ hàng</Title>)
+            }
+
+        </>
     )
 }
 

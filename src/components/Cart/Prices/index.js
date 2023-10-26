@@ -12,7 +12,10 @@ import { NotificationContext } from "~/context/NotificationContext";
 import { Button, Col, Typography, Checkbox, Divider, Card } from 'antd';
 import {
     RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_COUPON_USED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY,
-    RESPONSE_MESSAGE_ORDER_COUPON_USED, RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_CART_SUCCESS
+    RESPONSE_MESSAGE_ORDER_COUPON_USED, RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_CART_SUCCESS,
+    RESPONSE_CODE_ORDER_NOT_ELIGIBLE, RESPONSE_CODE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP, RESPONSE_CODE_ORDER_PRODUCT_HAS_BEEN_BANED,
+    RESPONSE_CODE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT, RESPONSE_MESSAGE_ORDER_NOT_ELIGIBLE, RESPONSE_MESSAGE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP,
+    RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED, RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT
 } from '~/constants';
 
 const { Title, Text } = Typography;
@@ -30,8 +33,7 @@ const Prices = ({ dataPropPriceComponent }) => {
         isUseCoin,
         reloadCarts,
         cartDetailIdSelecteds,
-        couponCodeSelecteds,
-        getCouponCodeSelecteds
+        getCouponCodeSelecteds,
     } = dataPropPriceComponent;
     //
 
@@ -39,6 +41,7 @@ const Prices = ({ dataPropPriceComponent }) => {
     const [isOpenModalAlert, setIsOpenModalAlert] = useState(false);
     const [isOpenModalConfirmationBuy, setIsOpenModalConfirmationBuy] = useState(false);
     const [contentModalAlert, setContentModalAlert] = useState('');
+    const [isLoadingButton, setIsLoadingButton] = useState(false);
     //
 
     // contexts
@@ -67,6 +70,13 @@ const Prices = ({ dataPropPriceComponent }) => {
     //
 
     //handles
+    const loadingButton = () => {
+        setIsLoadingButton(true);
+    }
+
+    const unLoadingButton = () => {
+        setIsLoadingButton(false);
+    }
     const handleBuy = () => {
         if (balance < totalPrice.discountPrice) {
             setContentModalAlert('Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản')
@@ -83,22 +93,36 @@ const Prices = ({ dataPropPriceComponent }) => {
 
     const handleOkConfirmationBuy = () => {
 
+        // is loading button
+        loadingButton();
         // create shop product request add order DTO
+        //data add order
         const shopProductRequest = [];
+        //data remove cart
+        const dataRemoveCart = [];
 
         for (let i = 0; i < carts.length; i++) {
             const cartDetails = carts[i].products;
             const cartDetailsFil = cartDetails.filter(x => cartDetailIdSelecteds.includes(x.cartDetailId));
             if (cartDetailsFil) {
+                // add order dto
                 const shopProduct = {
                     shopId: carts[i].shopId,
                     products: cartDetailsFil.map(x => ({ productVariantId: x.productVariantId, quantity: x.quantity })),
                     coupon: getCouponCodeSelecteds(carts[i].shopId)
                 };
 
+                // remove cart dto
+                const deleteCart = {
+                    cartId: carts[i].cartId,
+                    cartDetailIds: cartDetailsFil.map(x => (x.cartDetailId)),
+                }
+
                 shopProductRequest.push(shopProduct);
+                dataRemoveCart.push(deleteCart)
             }
         }
+
 
         const finalDataOrder = {
             userId: userId,
@@ -106,36 +130,51 @@ const Prices = ({ dataPropPriceComponent }) => {
             isUseCoin: isUseCoin
         }
 
+
+
         addOrder(finalDataOrder)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        cartDetailIdSelecteds.map(cartDetaiId => {
-                            return deleteCart(cartDetaiId)
-                                .then((res) => {
-                                    if (res.status === 200) {
-                                        const data = res.data;
-                                        if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
-                                            reloadCarts();
-                                        }
+                        // delete cart selecteds
+                        deleteCart(dataRemoveCart)
+                            .then((res) => {
+                                if (res.status === 200) {
+                                    const data = res.data;
+                                    if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                                        unLoadingButton();
                                     }
-                                })
-                                .catch((errors) => {
-                                    console.log(errors)
-                                });
-                        })
+                                }
+                            })
+                            .catch((errors) => {
+                                console.log(errors)
+                            }).finally(() => {
+                                setTimeout(() => {
+                                    closeModalConfirmationBuy();
+                                    reloadCarts();
+                                }, 500)
+                            })
                     } else {
                         if (data.status.responseCode === RESPONSE_CODE_ORDER_COUPON_USED) {
                             setContentModalAlert(RESPONSE_MESSAGE_ORDER_COUPON_USED)
                         } else if (data.status.responseCode === RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE) {
                             setContentModalAlert(RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE)
                         } else if (data.status.responseCode === RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY) {
-                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY)
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY + ` (Còn ${data.result} sản phẩm)`)
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_NOT_ELIGIBLE) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_NOT_ELIGIBLE);
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP);
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_PRODUCT_HAS_BEEN_BANED) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED);
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT);
                         }
                         openModalAlert();
+                        unLoadingButton();
+                        closeModalConfirmationBuy();
                     }
-                    closeModalConfirmationBuy();
                 }
             }).catch((error) => {
                 console.log(error)
@@ -149,7 +188,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                 <Card
                     style={{
                         width: '100%',
-                        height: '60vh',
+                        minHeight: '60vh',
                     }}
                 >
                     <Title level={4} className={cx('space-div-flex')}>Thanh toán</Title>
@@ -191,7 +230,10 @@ const Prices = ({ dataPropPriceComponent }) => {
                 isOpen={isOpenModalConfirmationBuy}
                 onOk={handleOkConfirmationBuy}
                 onCancel={closeModalConfirmationBuy}
-                content={`Bạn có muốn thanh toán đơn hàng này với giá ${formatPrice(totalPrice.discountPrice)} không?`} />
+                contentModal={`Bạn có muốn thanh toán đơn hàng này với giá ${formatPrice(totalPrice.discountPrice)} không?`}
+                contentButtonCancel='Quay lại'
+                contentButtonOk='Thanh toán'
+                isLoading={isLoadingButton} />
         </>
 
     )

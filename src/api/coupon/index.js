@@ -4,8 +4,8 @@ export const getCouponPublic = (shopId) => {
     return apiGet(`api/Coupons/GetCouponPublic?shopId=${shopId}`);
 };
 
-export const getCouponByCode = (couponCode) => {
-    return apiGet(`api/Coupons/GetCouponByCode?couponCode=${couponCode}`);
+export const getCouponPrivate = (couponCode, shopId) => {
+    return apiGet(`api/Coupons/GetCouponPrivate?couponCode=${couponCode}&shopId=${shopId}`);
 };
 export const getCouponById = (shopId, couponId) => {
     return apiGetAuth(`api/Coupons/${shopId}/${couponId}`);

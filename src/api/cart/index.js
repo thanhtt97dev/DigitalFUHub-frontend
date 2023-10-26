@@ -12,8 +12,12 @@ export const getCartsByUserId = (userId) => {
     return apiGetAuth(`api/Carts/GetCartsByUserId/${userId}`);
 };
 
-export const deleteCart = (data) => {
+export const deleteCartDetail = (data) => {
     return apiPostAuth(`api/Carts/DeleteCartDetail`, data);
+};
+
+export const deleteCart = (data) => {
+    return apiPostAuth(`api/Carts/DeleteCart`, data);
 };
 
 export const updateCart = (data) => {

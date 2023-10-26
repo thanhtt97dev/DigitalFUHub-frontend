@@ -7,7 +7,7 @@ import ModalConfirmation from '~/components/Modals/ModalConfirmation';
 import Coupons from '../Coupons'
 import { formatPrice, discountPrice } from '~/utils';
 import { Link } from 'react-router-dom';
-import { updateCart, deleteCart } from '~/api/cart';
+import { updateCart, deleteCartDetail } from '~/api/cart';
 import { getCouponPublic } from '~/api/coupon';
 import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag } from 'antd';
 import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/icons';
@@ -33,10 +33,9 @@ const Products = ({ dataPropProductComponent }) => {
         couponCodeSelecteds,
         setCouponCodeSelecteds,
         coupons,
+        totalPrice,
         setCoupons,
         getCouponCodeSelecteds,
-        handleCheckAllGroup,
-        checkAllGroup,
     } = dataPropProductComponent;
     //
 
@@ -120,7 +119,7 @@ const Products = ({ dataPropProductComponent }) => {
                 if (res.status === 200) {
                     const data = res.data
                     if (data.status.responseCode === RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY) {
-                        setContentModalAlert(RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY)
+                        setContentModalAlert(RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY + ` (Còn ${data.result} sản phẩm)`)
                         openModalAlert();
                     }
                     reloadCarts();
@@ -146,9 +145,10 @@ const Products = ({ dataPropProductComponent }) => {
             })
     }
 
-    const deleteCartDetail = (cartDetailId) => {
+    const funcDeleteCartDetail = (cartDetailId) => {
 
-        deleteCart(cartDetailId)
+
+        deleteCartDetail(cartDetailId)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
@@ -209,16 +209,11 @@ const Products = ({ dataPropProductComponent }) => {
         couponCodeSelecteds: couponCodeSelecteds,
         setCouponCodeSelecteds: setCouponCodeSelecteds,
         setCoupons: setCoupons,
-        shopIdSelected: shopIdSelected
+        shopIdSelected: shopIdSelected,
+        totalPrice: totalPrice
     }
 
     ///
-
-
-    console.log('couponCodeSelecteds = ');
-    for (let i = 0; i < couponCodeSelecteds.length; i++) {
-        console.log(JSON.stringify(couponCodeSelecteds))
-    }
 
     return (
         <>
@@ -267,14 +262,16 @@ const Products = ({ dataPropProductComponent }) => {
 
                                             </Col>
                                             <Col offset={1}><Text>{formatPrice(discountPrice(product.productVariantPrice, product.productDiscount) * product.quantity)}</Text></Col>
-                                            <Col offset={1}><Button icon={<DeleteOutlined />} danger onClick={() => deleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
+                                            <Col offset={1}><Button icon={<DeleteOutlined />} danger onClick={() => funcDeleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
                                         </Row>
                                     ))
                                 }
                                 <Row>
                                     <Col offset={1}><Button type="link" onClick={() => { setShopIdSelected(cart.shopId); showCouponShop(cart.shopId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
                                     <Col>
-                                        <Tag color="gold">{getCouponCodeSelecteds(cart.shopId)}</Tag>
+                                        {
+                                            getCouponCodeSelecteds(cart.shopId) && (<Tag color="gold">{getCouponCodeSelecteds(cart.shopId)}</Tag>)
+                                        }
                                     </Col>
                                 </Row>
 
