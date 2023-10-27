@@ -17,7 +17,7 @@ import { useAuthUser } from 'react-auth-kit'
 
 import { getConversation } from '~/api/chat'
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_SUCCESS } from "~/constants";
-import { formatStringToCurrencyVND, getDistanceDayTwoDate, getUserId } from "~/utils";
+import { formatStringToCurrencyVND, getDistanceDayTwoDate } from "~/utils";
 
 const { Text, Title } = Typography;
 
@@ -128,6 +128,16 @@ function CardOrderItem({
         } else if (statusId === ORDER_DISPUTE) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
+                    <Button
+                        type="primary"
+                        danger
+                        icon={<MessageOutlined />}
+                        onClick={handleOpenChatGroupForDepositeOrder}
+                    >
+                        Nhắn tin với người bán và quản trị viên
+                    </Button>
+                </Col>
+                <Col>
                     <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
                 </Col>
                 <Col>
@@ -175,7 +185,6 @@ function CardOrderItem({
     };
     const handleSubmitFeedback = (values) => {
         var formData = new FormData();
-        formData.append("userId", getUserId());
         formData.append("orderId", orderId);
         formData.append("orderDetailId", orderDetailRef.current);
         formData.append("rate", values.rate);
@@ -191,8 +200,21 @@ function CardOrderItem({
         onFeedback(formData);
     }
 
-    const handleOpenChat = () => {
+    const handleOpenChatWithSeller = () => {
         var data = { shopId, userId: user.id }
+        getConversation(data)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    navigate('/chatBox', { state: { data: res.data.result } })
+                }
+            })
+            .catch(() => {
+
+            })
+    }
+
+    const handleOpenChatGroupForDepositeOrder = () => {
+        var data = { shopId, userId: user.id, isGroup: true }
         getConversation(data)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -311,7 +333,7 @@ function CardOrderItem({
                             type="default"
                             size="small"
                             icon={<MessageOutlined />}
-                            onClick={handleOpenChat}
+                            onClick={handleOpenChatWithSeller}
                         >
                             Nhắn tin
                         </Button></Title>

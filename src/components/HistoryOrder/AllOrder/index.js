@@ -1,6 +1,6 @@
-import { Avatar, Button, Col, Empty, Image, Modal, Rate, Row, Spin, Typography } from "antd";
+import { Avatar, Button, Col, Empty, Image, Modal, Rate, Row, Spin, Typography, Space } from "antd";
 import CardOrderItem from "../CardOrderItem";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { ParseDateTime, getUserId } from "~/utils";
 import { customerUpdateStatusOrder, getAllOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
@@ -19,19 +19,19 @@ function AllOrder({ status = 0, loading, setLoading }) {
         statusId: status
     });
     const [orders, setOrders] = useState([]);
-    const [nextOffset, setNextOffset] = useState(0)
+    const nextOffset = useRef(0)
     const [loadingMoreData, setLoadingMoreData] = useState(false);
     useEffect(() => {
-        if (nextOffset !== -1) {
-            // call api
-            if (nextOffset !== 0) {
+        if (nextOffset.current !== -1) {
+
+            if (nextOffset.current !== 0) {
                 setLoadingMoreData(true);
             }
             getAllOrdersCustomer(paramSearch)
                 .then(res => {
                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        setOrders(res.data.result.orders);
-                        setNextOffset(res.data.result.nextOffset);
+                        setOrders([...orders, ...res.data.result.orders]);
+                        nextOffset.current = res.data.result.nextOffset;
                     }
                 })
                 .catch(err => { })
@@ -45,19 +45,22 @@ function AllOrder({ status = 0, loading, setLoading }) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [paramSearch])
+
     useEffect(() => {
-        window.addEventListener("scroll", (e) => {
+        const scrollHandle = () => {
             var scrollMaxY = window.scrollMaxY || (document.documentElement.scrollHeight - document.documentElement.clientHeight)
-            if (scrollMaxY - window.scrollY <= 300) {
-                if (nextOffset !== -1) {
-                    if (!loadingMoreData) {
-                        setParamSearch({ ...paramSearch, offset: nextOffset })
-                    }
+            if (scrollMaxY - window.scrollY <= 150) {
+                if (nextOffset.current !== -1 && !loadingMoreData) {
+                    setParamSearch({
+                        ...paramSearch,
+                        offset: nextOffset.current,
+                    });
                 }
             }
-        })
+        }
+        window.addEventListener("scroll", scrollHandle);
         return () => {
-            window.removeEventListener("scroll", () => { })
+            window.removeEventListener("scroll", scrollHandle)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -138,10 +141,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
         setIsModalViewFeedbackOpen(false);
     }
     const handleCustomerViewFeedback = (orderId) => {
-        const data = {
-            orderId: orderId
-        }
-        getFeedbackDetail(data)
+        getFeedbackDetail(orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setFeedbackDetail(res.data.result);
@@ -151,7 +151,6 @@ function AllOrder({ status = 0, loading, setLoading }) {
             .catch((err) => {
             })
     }
-
     return (<div >
         {!loading ?
             orders.length > 0 ?
@@ -179,9 +178,12 @@ function AllOrder({ status = 0, loading, setLoading }) {
                             </Col>
                         })}
                         <Col span={24}>
-                            <Spin spinning={loadingMoreData}></Spin>
+                            <Row justify="center" gutter={8}>
+                                <Spin spinning={loadingMoreData}></Spin>
+                            </Row>
                         </Col>
                     </Row>
+
                     <Modal title="Đánh giá cửa hàng" open={isModalViewFeedbackOpen} onOk={handleViewFeedbackOk} onCancel={handleViewFeedbackCancel}
                         footer={[
                             <Button key="close" onClick={handleViewFeedbackOk}>

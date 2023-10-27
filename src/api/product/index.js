@@ -8,8 +8,8 @@ export const getAllProducts = () => {
     return apiGet(`api/Products/GetAllProduct`);
 };
 
-export const getAllProductsSeller = (id) => {
-    return apiGetAuth(`api/Products/Seller/All/${id}`);
+export const getAllProductsSeller = () => {
+    return apiGetAuth(`api/Products/Seller/All`);
 };
 
 export const getProductSellerById = (userId, productId) => {

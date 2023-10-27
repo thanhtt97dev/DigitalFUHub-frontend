@@ -141,7 +141,8 @@ export const RESPONSE_CODE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT = "ORDER_07";
 // product status
 export const PRODUCT_ACTIVE = 1;
 export const PRODUCT_BAN = 2;
-export const PRODUCT_HIDE = 3;
+export const PRODUCT_REMOVE = 3;
+export const PRODUCT_HIDE = 4;
 
 // reset password status
 export const RESPONSE_CODE_RESET_PASSWORD_NOT_CONFIRM = "RS_01";
