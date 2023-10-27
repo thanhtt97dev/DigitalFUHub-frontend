@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import Spinning from "~/components/Spinning";
 import { useSignOut } from "react-auth-kit";
-import { removeDataAuthInCookies } from '~/utils';
+import { getUserId, removeDataAuthInCookies } from '~/utils';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { checkExistShopName } from "~/api/shop";
@@ -45,6 +45,7 @@ function RegisterSeller() {
     const onFinish = (values) => {
         setLoading(true);
         const data = {
+            userId: getUserId(),
             shopName: values.shopName,
             shopDescription: shopDescription,
         }

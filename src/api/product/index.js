@@ -8,12 +8,12 @@ export const getAllProducts = () => {
     return apiGet(`api/Products/GetAllProduct`);
 };
 
-export const getAllProductsSeller = () => {
-    return apiGetAuth(`api/Products/Seller/All`);
+export const getAllProductsSeller = (userId) => {
+    return apiGetAuth(`api/Products/Seller/${userId}/All`);
 };
 
 export const getProductSellerById = (userId, productId) => {
-    return apiGetAuth(`api/Products/Seller/${productId}`);
+    return apiGetAuth(`api/Products/Seller/${userId}/${productId}`);
 };
 
 export const addProductSeller = (formData) => {

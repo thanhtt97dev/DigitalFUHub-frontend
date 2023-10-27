@@ -7,6 +7,6 @@ export const getFeedbackByProductId = (productId) => {
 export const addFeedbackOrder = (data) => {
     return apiPostAuthForm("api/Feedbacks/Customer/Add", data);
 }
-export const getFeedbackDetail = (orderId) => {
-    return apiGetAuth(`api/Feedbacks/Customer/${orderId}`);
+export const getFeedbackDetail = (userId, orderId) => {
+    return apiGetAuth(`api/Feedbacks/Customer/${userId}/${orderId}`);
 }

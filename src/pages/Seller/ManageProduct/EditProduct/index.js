@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef, useLayoutEffect, useContext } from "react";
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { NotificationContext } from '~/context/NotificationContext';
 
 import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Spin, Switch } from 'antd';
-import { PlusOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined, CloseOutlined, QuestionCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
 import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
@@ -231,6 +231,7 @@ function EditProduct() {
         setLoading(true);
         let formData = new FormData();
         formData.append('productId', productId);
+        formData.append('userId', getUserId());
         formData.append('productName', values.nameProduct);
         formData.append('productDescription', productDescription);
         formData.append('discount', values.discount);
@@ -310,7 +311,7 @@ function EditProduct() {
                         width: '100%',
                         minHeight: "690px"
                     }}
-                    title="Cập nhật sản phẩm"
+                    title={<div><Link to={'/seller/product/list'}><LeftOutlined />Trở về</Link>&nbsp; Cập nhật sản phẩm</div>}
                 >
                     <Form
                         form={form}
@@ -339,7 +340,7 @@ function EditProduct() {
                         }}
                         onFinish={onFinish}
                     >
-                        <Form.Item name='nameProduct' label="Tên sản phẩm:" required
+                        <Form.Item name='nameProduct' label={<lable>Tên sản phẩm <Tooltip title="Tên sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             rules={[
                                 (getFieldValue) => ({
                                     validator(_, value) {
@@ -354,7 +355,7 @@ function EditProduct() {
                         >
                             <Input placeholder='Tên sản phẩm' />
                         </Form.Item>
-                        <Form.Item name='description' label="Mô tả:" required
+                        <Form.Item name='description' label={<lable>Mô tả <Tooltip title="Mô tả sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             rules={[
                                 (getFieldValue) => ({
                                     validator(_, value) {
@@ -386,7 +387,7 @@ function EditProduct() {
                             {/* </CKEditorContext> */}
                         </Form.Item>
                         {/* <UploadThumbnail /> */}
-                        <Form.Item name='thumbnailProduct' label='Ảnh đại diện sản phẩm:' required
+                        <Form.Item name='thumbnailProduct' label={<lable>Ảnh đại diện sản phẩm <Tooltip title="Ảnh đại diện sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={[
                                 (getFieldValue) => ({
@@ -438,7 +439,7 @@ function EditProduct() {
 
                         {/* <UploadImagesProduct /> */}
 
-                        <Form.Item name='productImages' label='Ảnh chi tiết sản phẩm (tối đa 5 ảnh):' required
+                        <Form.Item name='productImages' label={<lable>Ảnh chi tiết sản phẩm (tối đa 5 ảnh) <Tooltip title="Ảnh chi tiết sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={[
                                 (getFieldValue) => ({
@@ -494,7 +495,7 @@ function EditProduct() {
 
                         </Form.Item>
 
-                        <Form.Item name='discount' label="Giảm giá:"
+                        <Form.Item name='discount' label={<lable>Giảm giá <Tooltip title="Giảm giá của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
                                     required: true,
@@ -503,7 +504,7 @@ function EditProduct() {
                         >
                             <InputNumber style={{ width: '100%' }} placeholder='giảm giá' addonAfter="%" min={0} max={100} />
                         </Form.Item>
-                        <Form.Item name='category' label="Danh mục:"
+                        <Form.Item name='category' label={<lable>Danh mục <Tooltip title="Danh mục của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
                                     required: true,
@@ -523,7 +524,8 @@ function EditProduct() {
                             {(fields, { add, remove }) => (
                                 <>
                                     <Space direction='horizontal'>
-                                        <Form.Item label={<div>Loại sản phẩm: (<a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a>)</div>} style={{ marginBottom: -30, display: 'flex' }}
+                                        <Form.Item label={<div>Loại sản phẩm <a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a>
+                                            <Tooltip title="Loại sản phẩm, nếu chưa có mẫu nhập sản phẩm vui lòng nhấn vào tải mẫu nhập sản phẩm. Khi cập nhật lại sản phẩm mọi dữ liệu cũ sẽ bị xóa."><QuestionCircleOutlined /></Tooltip></div>} style={{ marginBottom: -30, display: 'flex' }}
                                             required={true}
                                         >
                                         </Form.Item>
@@ -661,7 +663,7 @@ function EditProduct() {
                             )}
                         </Form.List>
 
-                        <Form.Item name='tagsProduct' label="Nhãn:" required={true}
+                        <Form.Item name='tagsProduct' label={<lable>Nhãn <Tooltip title="Nhãn của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required={true}
                             validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={
                                 [
@@ -725,7 +727,7 @@ function EditProduct() {
                                     )}
                             </Space>
                         </Form.Item>
-                        <Form.Item name='isActiveProduct' label="Trạng thái:" required={true}
+                        <Form.Item name='isActiveProduct' label={<lable>Trạng thái <Tooltip title="Trạng thái hiện mọi người sẽ thấy sản phẩm của bạn, trạng thái ẩn mọi người sẽ không thấy sản phẩm của bạn."><QuestionCircleOutlined /></Tooltip></lable>} required={true}
                             valuePropName="checked"
                         >
                             <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />

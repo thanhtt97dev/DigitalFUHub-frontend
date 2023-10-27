@@ -7,12 +7,14 @@ import { formatStringToCurrencyVND, getUserId, ParseDateTime } from '~/utils/ind
 import { NotificationContext } from "~/context/NotificationContext";
 import dayjs from 'dayjs';
 import {
+    RESPONSE_CODE_NOT_ACCEPT,
     RESPONSE_CODE_SUCCESS,
 } from "~/constants";
 import Column from "antd/es/table/Column";
 import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { addCouponSeller, removeCouponSeller, getCouponsSeller, updateStatusCouponSeller, getCouponById, editCouponSeller } from "~/api/coupon";
+import { addCouponSeller, removeCouponSeller, getCouponsSeller, updateStatusCouponSeller, getCouponSellerById, editCouponSeller } from "~/api/coupon";
 import { checkCouponCodeExist } from "~/api/coupon";
+import { regexPattern } from "../../../../utils";
 
 const { Title } = Typography;
 
@@ -210,7 +212,7 @@ function Coupons() {
     }
     const handleOpenUpdateCouponModal = (couponId) => {
         setCouponIdUpdate(couponId);
-        getCouponById(getUserId(), couponId)
+        getCouponSellerById(couponId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setCouponUpdate(res.data.result);
@@ -463,22 +465,27 @@ function Coupons() {
                                     rules={[
                                         ({ getFieldValue }) => ({
                                             async validator(_, value) {
-                                                const data = value === undefined ? '' : value.trim();
-                                                if (!data) {
+                                                const data = value === undefined ? '' : value;
+                                                if (!data.trim()) {
                                                     return Promise.reject(new Error('Mã giảm giá không được trống.'));
                                                 } else if (data.length < 4) {
                                                     return Promise.reject(new Error('Mã giảm giá phải có ít nhất 4 kí tự.'));
-                                                } else {
+                                                } else if (!regexPattern(data, "^[a-zA-Z0-9]{4,}$")) {
+                                                    return Promise.reject(new Error('Mã giảm giá không chứa khoảng trắng và các ký tự đặc biệt.'));
+                                                }
+                                                else {
                                                     await checkCouponCodeExist('A', data)
                                                         .then((res) => {
                                                             if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                                                                 return Promise.resolve();
-                                                            } else {
+                                                            } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
                                                                 return Promise.reject(new Error('Mã giảm giá không hợp lệ.'));
+                                                            } else {
+                                                                return Promise.reject(new Error('Mã giảm giá không khả dụng.'));
                                                             }
                                                         })
                                                         .catch((err) => {
-                                                            return Promise.reject(new Error('Mã giảm giá không hợp lệ.'));
+                                                            return Promise.reject(new Error('Mã giảm giá không khả dụng.'));
                                                         })
                                                 }
                                             },
@@ -647,22 +654,27 @@ function Coupons() {
                                     rules={[
                                         ({ getFieldValue }) => ({
                                             async validator(_, value) {
-                                                const data = value === undefined ? '' : value.trim();
-                                                if (!data) {
+                                                const data = value === undefined ? '' : value;
+                                                if (!data.trim()) {
                                                     return Promise.reject(new Error('Mã giảm giá không được trống.'));
                                                 } else if (data.length < 4) {
                                                     return Promise.reject(new Error('Mã giảm giá phải có ít nhất 4 kí tự.'));
-                                                } else {
+                                                } else if (!regexPattern(data, "^[a-zA-Z0-9]{4,}$")) {
+                                                    return Promise.reject(new Error('Mã giảm giá không chứa khoảng trắng và các ký tự đặc biệt.'));
+                                                }
+                                                else {
                                                     await checkCouponCodeExist('U', data)
                                                         .then((res) => {
                                                             if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                                                                 return Promise.resolve();
-                                                            } else {
+                                                            } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
                                                                 return Promise.reject(new Error('Mã giảm giá không hợp lệ.'));
+                                                            } else {
+                                                                return Promise.reject(new Error('Mã giảm giá không khả dụng.'));
                                                             }
                                                         })
                                                         .catch((err) => {
-                                                            return Promise.reject(new Error('Mã giảm giá không hợp lệ.'));
+                                                            return Promise.reject(new Error('Mã giảm giá không khả dụng.'));
                                                         })
                                                 }
                                             },

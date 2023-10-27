@@ -1,11 +1,13 @@
 import CardOrderItem from "../CardOrderItem";
 import { Col, Empty, Row, Spin } from "antd";
 import { useEffect, useRef, useState } from "react";
-import { getAllOrdersCustomer } from "~/api/order";
+import { getListOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { getUserId } from "~/utils";
 
 function OrdersRefund({ status, loading, setLoading }) {
     const [paramSearch, setParamSearch] = useState({
+        userId: getUserId(),
         limit: 5,
         offset: 0,
         statusId: status
@@ -19,7 +21,7 @@ function OrdersRefund({ status, loading, setLoading }) {
                 setLoadingMoreData(true);
             }
             // call api
-            getAllOrdersCustomer(paramSearch)
+            getListOrdersCustomer(paramSearch)
                 .then(res => {
                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         setOrders([...orders, ...res.data.result.orders]);

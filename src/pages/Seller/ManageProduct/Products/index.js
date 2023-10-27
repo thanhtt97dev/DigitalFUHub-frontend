@@ -5,6 +5,7 @@ import { useAuthUser } from 'react-auth-kit'
 
 import { getAllProductsSeller } from "~/api/product";
 import Spinning from "~/components/Spinning";
+import { getUserId } from "~/utils";
 
 
 
@@ -96,7 +97,7 @@ function Products() {
     const [dataTable, setDataTable] = useState([]);
 
     useEffect(() => {
-        getAllProductsSeller()
+        getAllProductsSeller(getUserId())
             .then((res) => {
                 setDataTable(res.data);
                 setTimeout(() => {

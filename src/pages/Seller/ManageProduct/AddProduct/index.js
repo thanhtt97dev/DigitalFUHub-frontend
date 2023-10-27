@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { PlusOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, InputNumber, Upload, Modal, Table, Space, theme, Tag, Tooltip, Card, Spin } from 'antd';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
@@ -206,7 +206,6 @@ function AddProduct() {
 
     // submit form
     const onFinish = (values) => {
-        console.log(values);
         setLoading(true);
         let formData = new FormData();
         values.productImages.fileList.forEach((file, index) => {
@@ -223,6 +222,7 @@ function AddProduct() {
         });
 
         formData.append('productName', values.nameProduct);
+        formData.append('userId', getUserId());
         formData.append('description', descriptionValue);
         formData.append('category', values.category);
         formData.append('discount', values.discount);
@@ -279,7 +279,7 @@ function AddProduct() {
                         }}
                         onFinish={onFinish}
                     >
-                        <Form.Item name='nameProduct' label="Tên sản phẩm:" required
+                        <Form.Item name='nameProduct' label={<lable>Tên sản phẩm <Tooltip title="Tên sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             rules={[
                                 (getFieldValue) => ({
                                     validator(_, value) {
@@ -294,7 +294,7 @@ function AddProduct() {
                         >
                             <Input placeholder='Tên sản phẩm' />
                         </Form.Item>
-                        <Form.Item name='description' label="Mô tả:" required
+                        <Form.Item name='description' label={<lable>Mô tả <Tooltip title="Mô tả sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             rules={[
                                 (getFieldValue) => ({
                                     validator(_, value) {
@@ -327,7 +327,7 @@ function AddProduct() {
                                 }}
                             />
                         </Form.Item>
-                        <Form.Item name='thumbnailProduct' label='Ảnh đại diện sản phẩm:'
+                        <Form.Item name='thumbnailProduct' label={<lable>Ảnh đại diện sản phẩm <Tooltip title="Ảnh đại diện sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={[
                                 {
                                     required: true,
@@ -356,7 +356,7 @@ function AddProduct() {
                                 </div> : null}
                             </Upload>
                         </Form.Item>
-                        <Form.Item name='productImages' label='Ảnh chi tiết sản phẩm (tối đa 5 ảnh):'
+                        <Form.Item name='productImages' label={<lable>Ảnh chi tiết sản phẩm (tối đa 5 ảnh) <Tooltip title="Ảnh chi tiết của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={[
                                 {
                                     required: true,
@@ -386,16 +386,16 @@ function AddProduct() {
                                 </div> : null}
                             </Upload>
                         </Form.Item>
-                        <Form.Item name='discount' label="Giảm giá:"
+                        <Form.Item name='discount' label={<lable>Giảm giá <Tooltip title="Phần trăm giảm giá sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
                                     required: true,
                                     message: 'Giảm giá sản phẩm không để trống.'
                                 }]}
                         >
-                            <InputNumber style={{ width: '100%' }} placeholder='giảm giá' addonAfter="%" min={0} max={100} />
+                            <InputNumber style={{ width: '100%' }} placeholder='Giảm giá' addonAfter="%" min={0} max={100} />
                         </Form.Item>
-                        <Form.Item name='category' label="Danh mục:"
+                        <Form.Item name='category' label={<lable>Danh mục <Tooltip title="Danh mục của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
                                     required: true,
@@ -417,7 +417,7 @@ function AddProduct() {
                             {(fields, { add, remove }) => (
                                 <>
                                     <Space direction='horizontal'>
-                                        <Form.Item label={<div>Loại sản phẩm: (<a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a>)</div>} style={{ marginBottom: -30 }}
+                                        <Form.Item label={<div>Loại sản phẩm <a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a> <Tooltip title="Phân loại của sản phẩm, nếu chưa có mẫu nhập sản phẩm vui lòng nhấn vào tải mẫu nhập sản phẩm."><QuestionCircleOutlined /></Tooltip></div>} style={{ marginBottom: -30 }}
                                             required={true}
                                         />
                                     </Space>
@@ -536,7 +536,7 @@ function AddProduct() {
                                 </>
                             )}
                         </Form.List>
-                        <Form.Item name='tagsProduct' label="Nhãn:" required={true}
+                        <Form.Item name='tagsProduct' label={<lable>Nhãn <Tooltip title="Nhãn của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required={true}
 
                             validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={

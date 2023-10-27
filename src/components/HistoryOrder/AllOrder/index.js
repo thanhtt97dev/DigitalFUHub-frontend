@@ -2,7 +2,7 @@ import { Avatar, Button, Col, Empty, Image, Modal, Rate, Row, Spin, Typography, 
 import CardOrderItem from "../CardOrderItem";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ParseDateTime, getUserId } from "~/utils";
-import { customerUpdateStatusOrder, getAllOrdersCustomer } from "~/api/order";
+import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
@@ -14,6 +14,7 @@ const { Text, Title, Paragraph } = Typography;
 function AllOrder({ status = 0, loading, setLoading }) {
     const notification = useContext(NotificationContext);
     const [paramSearch, setParamSearch] = useState({
+        userId: getUserId(),
         limit: 5,
         offset: 0,
         statusId: status
@@ -27,7 +28,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
             if (nextOffset.current !== 0) {
                 setLoadingMoreData(true);
             }
-            getAllOrdersCustomer(paramSearch)
+            getListOrdersCustomer(paramSearch)
                 .then(res => {
                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         setOrders([...orders, ...res.data.result.orders]);
@@ -68,6 +69,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
     const handleOrderComplaint = (orderId, shopId) => {
         // call api
         const dataBody = {
+            userId: getUserId(),
             shopId: shopId,
             orderId: orderId,
             statusId: 3
@@ -92,6 +94,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
     const handleOrderComplete = (orderId, shopId) => {
         // call api
         const dataBody = {
+            userId: getUserId(),
             shopId: shopId,
             orderId: orderId,
             statusId: 2
@@ -141,7 +144,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
         setIsModalViewFeedbackOpen(false);
     }
     const handleCustomerViewFeedback = (orderId) => {
-        getFeedbackDetail(orderId)
+        getFeedbackDetail(getUserId(), orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setFeedbackDetail(res.data.result);

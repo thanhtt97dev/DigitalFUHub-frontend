@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { customerUpdateStatusOrder, getOrderDetailCustomer } from "~/api/order";
-import { ParseDateTime, formatStringToCurrencyVND } from "~/utils";
+import { ParseDateTime, formatStringToCurrencyVND, getUserId } from "~/utils";
 import {
     ShopOutlined,
     CheckCircleOutlined,
@@ -44,7 +44,7 @@ function OrderDetail() {
 
     const getOrderDetail = useCallback(() => {
         setLoading(true);
-        getOrderDetailCustomer(orderId)
+        getOrderDetailCustomer(getUserId(), orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrder(res.data.result);
@@ -70,6 +70,7 @@ function OrderDetail() {
     const handleOrderComplaint = () => {
         // call api
         const dataBody = {
+            userId: getUserId(),
             shopId: order.shopId,
             orderId: order.orderId,
             statusId: 3
@@ -93,6 +94,7 @@ function OrderDetail() {
     const handleOrderComplete = () => {
         // call api
         const dataBody = {
+            userId: getUserId(),
             shopId: order.shopId,
             orderId: order.orderId,
             statusId: 2
@@ -154,6 +156,7 @@ function OrderDetail() {
     };
     const handleSubmitFeedback = (values) => {
         var formData = new FormData();
+        formData.append("userId", getUserId());
         formData.append("orderId", orderId);
         formData.append("orderDetailId", orderDetailRef.current);
         formData.append("rate", values.rate);
@@ -188,7 +191,7 @@ function OrderDetail() {
         setIsModalViewFeedbackOpen(false);
     }
     const handleCustomerViewFeedback = (orderId) => {
-        getFeedbackDetail(orderId)
+        getFeedbackDetail(getUserId(), orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     showModalViewFeedback();

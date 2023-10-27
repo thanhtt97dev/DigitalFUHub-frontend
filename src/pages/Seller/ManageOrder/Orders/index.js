@@ -180,20 +180,12 @@ function Orders() {
                             title="Email khách hàng"
                             key="emailCustomer"
                             render={(_, record) => (
-                                <Link to={`/seller/order/${record.customerEmail}`}>{record.customerEmail}</Link>
+                                <p>{record.customerEmail}</p>
                             )}
                         />
                         <Column
                             width="15%"
-                            title="Tên cửa hàng"
-                            key="shopname"
-                            render={(_, record) => (
-                                <Link to={`/seller/${record.sellerId}`}>{record.shopName}</Link>
-                            )}
-                        />
-                        <Column
-                            width="15%"
-                            title="Thời gian đơn hàng"
+                            title="Thời gian mua"
                             key="orderDate"
                             render={(_, record) => (
                                 <p>{ParseDateTime(record.orderDate)}</p>
@@ -232,7 +224,7 @@ function Orders() {
                             width="9%"
                             key="orderId"
                             render={(_, record) => (
-                                <Link to={`/seller/order/${record.orderId}`}>
+                                <Link to={`/seller/order/${record.orderId}`} >
                                     <Button type="primary">Chi tiết</Button>
                                 </Link>
                             )}

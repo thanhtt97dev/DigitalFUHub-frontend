@@ -2,13 +2,14 @@ import CardOrderItem from "../CardOrderItem";
 import { Col, Empty, Row, Spin } from "antd";
 import { useEffect, useState, useContext, useRef } from "react";
 import { getUserId } from "~/utils";
-import { customerUpdateStatusOrder, getAllOrdersCustomer } from "~/api/order";
+import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 
 function OrdersWaitConfirm({ status, loading, setLoading }) {
     const notification = useContext(NotificationContext);
     const [paramSearch, setParamSearch] = useState({
+        userId: getUserId(),
         limit: 5,
         offset: 0,
         statusId: status
@@ -22,7 +23,7 @@ function OrdersWaitConfirm({ status, loading, setLoading }) {
                 setLoadingMoreData(true);
             }
             // call api
-            getAllOrdersCustomer(paramSearch)
+            getListOrdersCustomer(paramSearch)
                 .then(res => {
                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         setOrders([...orders, ...res.data.result.orders]);
