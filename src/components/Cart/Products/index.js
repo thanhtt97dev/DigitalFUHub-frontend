@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
 // import NumericInput from '../NumericInput';
@@ -9,7 +9,7 @@ import { formatPrice, discountPrice } from '~/utils';
 import { Link } from 'react-router-dom';
 import { updateCart, deleteCartDetail } from '~/api/cart';
 import { getCouponPublic } from '~/api/coupon';
-import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag } from 'antd';
+import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag, Space } from 'antd';
 import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/icons';
 import {
     RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_INVALID_QUANTITY,
@@ -26,9 +26,8 @@ const Products = ({ dataPropProductComponent }) => {
     const {
         userId,
         carts,
-        handleOnChangeCheckbox,
         cartDetailIdSelecteds,
-        handleCheckAll,
+        setCartDetailIdSelecteds,
         reloadCarts,
         couponCodeSelecteds,
         setCouponCodeSelecteds,
@@ -43,8 +42,9 @@ const Products = ({ dataPropProductComponent }) => {
     const [isOpenModalAlert, setIsOpenModalAlert] = useState(false);
     const [contentModalAlert, setContentModalAlert] = useState('');
     const [isOpenModalCoupons, setIsOpenModalCoupons] = useState(false);
+    const [totalCartDetails, setTotalCartDetails] = useState(0);
     const [shopIdSelected, setShopIdSelected] = useState(0);
-
+    const [cartIdSelecteds, setCartIdSelecteds] = useState([]);
 
     //
 
@@ -68,16 +68,9 @@ const Products = ({ dataPropProductComponent }) => {
     const closeModalCoupons = () => {
         setIsOpenModalCoupons(false);
     }
-    //
+    ///
 
-
-    // checkbox all
-    const checkAll = cartDetailIdSelecteds.length === carts.length
-    const indeterminate = cartDetailIdSelecteds.length > 0 && cartDetailIdSelecteds.length < carts.length;
-    //
-
-
-    // handles
+    /// handles
     const handleMinusOne = (quantity, cartDetailId, productVariantId) => {
         updateCart({ userId: userId, cartDetailId: cartDetailId, productVariantId: productVariantId, quantity: (quantity - 1) })
             .then((res) => {
@@ -147,7 +140,6 @@ const Products = ({ dataPropProductComponent }) => {
 
     const funcDeleteCartDetail = (cartDetailId) => {
 
-
         deleteCartDetail(cartDetailId)
             .then((res) => {
                 if (res.status === 200) {
@@ -166,12 +158,90 @@ const Products = ({ dataPropProductComponent }) => {
             })
     };
 
+    const handleCheckAll = (e) => {
+        console.log('handleCheckAll');
+        if (e.target.checked) {
+            const listCartDetailIds = [];
+            const listCartIds = [];
+            for (let i = 0; i < carts.length; i++) {
+                listCartIds.push(carts[i].cartId);
+                const products = carts[i].products;
+                if (products) {
+                    const cartDetailIds = products.map(product => product.cartDetailId);
+                    if (cartDetailIds) {
+                        listCartDetailIds.push(cartDetailIds);
+                    }
+                }
+            }
+
+            setCartIdSelecteds(listCartIds);
+            setCartDetailIdSelecteds([].concat(...listCartDetailIds));
+        } else {
+            setCartIdSelecteds([]);
+            setCartDetailIdSelecteds([]);
+        }
+    }
+
+    const handleOnChangeCheckboxCartItem = (cartId) => {
+        console.log('handleOnChangeCheckboxCartItem = ' + cartId)
+        // check and add cart id selectes
+        const cartIdSelectedFind = cartIdSelecteds.find(x => x === cartId);
+        if (!cartIdSelectedFind) {
+            setCartIdSelecteds((prev) => [...prev, cartId]);
+        } else {
+            const newCartIdSelecteds = cartIdSelecteds.filter(x => x !== cartId);
+            setCartIdSelecteds(newCartIdSelecteds);
+        }
+
+        // check and add cart detail id selectes
+        const cartFind = carts.find(x => x.cartId === cartId);
+        if (!cartFind) return;
+        const products = cartFind.products;
+        if (!products) return;
+        const cartDetailIds = products.map(product => product.cartDetailId);
+        if (!cartDetailIds) return;
+        const cartDetailIdSelectedFil = cartDetailIdSelecteds.filter(x => cartDetailIds.includes(x));
+        if (!cartDetailIdSelectedFil || cartDetailIdSelectedFil.length === 0) {
+            setCartDetailIdSelecteds((prev) => [...prev, ...cartDetailIds]);
+        } else {
+            const newCartDetailIdSelecteds = cartDetailIdSelecteds.filter(x => !cartDetailIdSelectedFil.some(y => x === y));
+            setCartDetailIdSelecteds(newCartDetailIdSelecteds);
+        }
+    }
+
+    const handleOnChangeCheckbox = (values) => {
+        if (values.length === 0) {
+            setCartDetailIdSelecteds([])
+            return;
+        }
+        // const newCartIdSelecteds = [];
+        // for (let i = 0; i < cartIdSelecteds.length; i++) {
+        //     const cartFind = carts.find(x => x.cartId === cartIdSelecteds[i]);
+        //     if (cartFind) {
+        //         const products = cartFind.products;
+        //         const cartDetailIdSelectedFil = values.filter(x => products.some(y => y.cartDetailId === x));
+        //         if (products.length === cartDetailIdSelectedFil.length) {
+        //             newCartIdSelecteds.push(cartIdSelecteds[i])
+        //         }
+        //     }
+        // }
+
+        // // set new Cart id selecteds
+        // setCartIdSelecteds(newCartIdSelecteds);
+
+        // set new Cart detail id selecteds
+        setCartDetailIdSelecteds([...values]);
+
+
+    }
+
+    console.log('cartIdSelecteds.length = ' + cartIdSelecteds.length);
+
     ///
 
     /// styles
     const styleCardHeader = { marginBottom: 10 }
     const styleCardBodyHeader = { padding: 20 }
-
     const styleCardCartItem = { marginBottom: 10 }
     const styleCardHeadCartItem = { paddingLeft: 20 }
     const styleCardBodyCartItem = { padding: 20 }
@@ -201,6 +271,64 @@ const Products = ({ dataPropProductComponent }) => {
     };
     ///
 
+    /// useEffect 
+    // calculator number cart details
+    useEffect(() => {
+        const CalculatorTotalCartDetails = () => {
+            const totalCartDetails = carts.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.products.length;
+            }, 0);
+
+            return totalCartDetails;
+        }
+
+        setTotalCartDetails(CalculatorTotalCartDetails())
+    }, [carts])
+
+
+    // useEffect(() => {
+    //     const checkboxAllCartItem = () => {
+    //         debugger
+    //         const cartFilters = carts.filter(x => cartIdSelecteds.includes(x.cartId));
+    //         for (let i = 0; i < cartFilters.length; i++) {
+    //             const products = cartFilters[i].products;
+    //             if (products) {
+    //                 const cartDetailIds = products.map(product => product.cartDetailId);
+    //                 const cartDetailIdSelectedFilter = cartDetailIdSelecteds.filter(x => !cartDetailIds.some(y => x === y));
+
+    //                 //set new cart id selecteds
+    //                 setCartDetailIdSelecteds([...cartDetailIdSelectedFilter, ...cartDetailIds]);
+    //             }
+    //         }
+    //     }
+
+    //     checkboxAllCartItem()
+
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [cartIdSelecteds])
+
+
+    useEffect(() => {
+        const indeterminateCheckboxAllCartItem = () => {
+            const newCartIdSelecteds = [];
+            for (let i = 0; i < carts.length; i++) {
+                const products = carts[i].products;
+                const cartDetailIdSelectedFil = cartDetailIdSelecteds.filter(x => products.some(y => y.cartDetailId === x));
+                if (products.length === cartDetailIdSelectedFil.length) {
+                    newCartIdSelecteds.push(carts[i].cartId)
+                }
+            }
+            // set new Cart id selecteds
+            setCartIdSelecteds(newCartIdSelecteds);
+        }
+
+        indeterminateCheckboxAllCartItem()
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cartDetailIdSelecteds])
+
+    ///
+
     /// props
     const dataPropCouponComponent = {
         isOpenModalCoupons: isOpenModalCoupons,
@@ -215,54 +343,68 @@ const Products = ({ dataPropProductComponent }) => {
 
     ///
 
+
+    // checkbox all cart
+    const checkAllCart = cartDetailIdSelecteds.length === totalCartDetails;
+    const indeterminateCheckAllCart = cartDetailIdSelecteds.length > 0 && cartDetailIdSelecteds.length < totalCartDetails;
+    //
+
+
     return (
         <>
             <Col span={18} style={{ padding: 5 }}>
                 <Card bodyStyle={styleCardBodyHeader} style={styleCardHeader}>
-                    <Row style={{ height: '3vh' }}>
-                        <Col><Checkbox onChange={handleCheckAll} ></Checkbox></Col>
-                        <Col offset={5}>Sản phẩm</Col>
-                        <Col offset={7}>Đơn giá</Col>
-                        <Col offset={1}>Số Lượng</Col>
-                        <Col offset={2}>Số Tiền</Col>
-                        <Col offset={1}>Thao Tác</Col>
+                    <Row>
+                        <Col span={1}><Checkbox onChange={handleCheckAll} indeterminate={indeterminateCheckAllCart} checked={checkAllCart}></Checkbox></Col>
+                        <Col span={7} className={cx('flex-item-center')}>Sản phẩm</Col>
+                        <Col span={5} className={cx('flex-item-center')}>Đơn giá</Col>
+                        <Col span={4} className={cx('flex-item-center')}>Số Lượng</Col>
+                        <Col span={4} className={cx('flex-item-center')}>Số Tiền</Col>
+                        <Col span={3} className={cx('flex-item-center')}>Thao Tác</Col>
                     </Row>
                 </Card>
-                <Checkbox.Group onChange={handleOnChangeCheckbox} style={{ display: 'block' }} >
+                <Checkbox.Group value={cartDetailIdSelecteds} onChange={handleOnChangeCheckbox} style={{ display: 'block' }} >
                     {
                         carts.map((cart, index) => (
                             <Card
                                 hoverable
-                                title={<><Checkbox value={cart.cartDetailId}></Checkbox><ShopOutlined className={cx('margin-left-40')} /> {cart.shopName}</>}
+                                title={
+                                    <Checkbox.Group value={cartIdSelecteds}>
+                                        <Space align="center" size={10}><Checkbox value={cart.cartId} onChange={() => { handleOnChangeCheckboxCartItem(cart.cartId) }}></Checkbox><ShopOutlined className={cx('margin-left-40')} /> {cart.shopName}</Space>
+                                    </Checkbox.Group>}
                                 key={index} bodyStyle={styleCardBodyCartItem} headStyle={styleCardHeadCartItem} style={styleCardCartItem}>
                                 {
                                     cart.products.map((product, index) => (
                                         <Row className={cx('margin-bottom-item')} key={index}>
-                                            <Col >
+                                            <Col span={1}>
                                                 <Checkbox value={product.cartDetailId}></Checkbox>
                                             </Col>
 
-                                            <Col offset={1}>
-                                                <Image
-                                                    width={80}
-                                                    src={product.productThumbnail}
-                                                />
+                                            <Col span={7} className={cx('flex-item-center')}>
+                                                <Space align="center" size={30}>
+                                                    <Image
+                                                        width={80}
+                                                        src={product.productThumbnail}
+                                                    />
+                                                    <Link to={'/product/' + product.productId} >{product.productName}</Link>
+                                                    <Text type="secondary">Loại: {product.productVariantName}</Text>
+                                                </Space>
                                             </Col>
-                                            <Col offset={1}><Link to={'/product/' + product.productId} >{product.productName}</Link></Col>
-                                            <Col offset={1}><Text type="secondary">Loại: {product.productVariantName}</Text></Col>
-                                            <Col offset={1}><Text type="secondary" delete>{formatPrice(product.productVariantPrice)}</Text></Col>
-                                            <Col offset={1}><Text>{formatPrice(discountPrice(product.productVariantPrice, product.productDiscount))}</Text></Col>
-                                            <Col offset={1}>
+                                            <Col span={5} className={cx('flex-item-center')}>
+                                                <Space align="center" size={15}>
+                                                    <Text type="secondary" delete>{formatPrice(product.productVariantPrice)}</Text>
+                                                    <Text>{formatPrice(discountPrice(product.productVariantPrice, product.productDiscount))}</Text>
+                                                </Space>
+                                            </Col>
+                                            <Col span={4} className={cx('flex-item-center')}>
                                                 <div>
                                                     <Button disabled={product.quantity === 1 ? true : false} onClick={() => handleMinusOne(product.quantity, product.cartDetailId, product.productVariantId)}>-</Button>
                                                     <NumericInput value={product.quantity} onBlur={(e) => onBlurQuantity(e, product.cartDetailId, product.productVariantId)} />
                                                     <Button disabled={product.quantity === product.productVariantQuantity ? true : false} onClick={() => handleAddOne(product.quantity, product.cartDetailId, product.productVariantId)}>+</Button>
-
                                                 </div>
-
                                             </Col>
-                                            <Col offset={1}><Text>{formatPrice(discountPrice(product.productVariantPrice, product.productDiscount) * product.quantity)}</Text></Col>
-                                            <Col offset={1}><Button icon={<DeleteOutlined />} danger onClick={() => funcDeleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
+                                            <Col span={4} className={cx('flex-item-center')}><Text>{formatPrice(discountPrice(product.productVariantPrice, product.productDiscount) * product.quantity)}</Text></Col>
+                                            <Col span={3} className={cx('flex-item-center')}><Button icon={<DeleteOutlined />} danger onClick={() => funcDeleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
                                         </Row>
                                     ))
                                 }
