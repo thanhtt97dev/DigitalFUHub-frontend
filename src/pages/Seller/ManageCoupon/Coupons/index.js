@@ -212,7 +212,7 @@ function Coupons() {
     }
     const handleOpenUpdateCouponModal = (couponId) => {
         setCouponIdUpdate(couponId);
-        getCouponSellerById(couponId)
+        getCouponSellerById(getUserId(), couponId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setCouponUpdate(res.data.result);

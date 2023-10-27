@@ -7,14 +7,14 @@ export const getCouponPublic = (shopId) => {
 export const getCouponPrivate = (couponCode, shopId) => {
     return apiGet(`api/Coupons/GetCouponPrivate?couponCode=${couponCode}&shopId=${shopId}`);
 };
-export const getCouponSellerById = (couponId) => {
-    return apiGetAuth(`api/Coupons/${couponId}`);
+export const getCouponSellerById = (userId, couponId) => {
+    return apiGetAuth(`api/Coupons/${userId}/${couponId}`);
 };
 export const checkCouponCodeExist = async (action, couponCode) => {
     return await apiGetAuth(`api/Coupons/IsExistCouponCode/${action}/${couponCode}`);
 };
 export const getCouponsSeller = (data) => {
-    return apiPostAuth('api/Coupons/List/Seller', data);
+    return apiPostAuth('api/Coupons/Seller/List', data);
 };
 export const addCouponSeller = (data) => {
     return apiPostAuth('api/Coupons/Add', data);
