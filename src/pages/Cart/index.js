@@ -36,7 +36,7 @@ const Cart = () => {
     const [isUseCoin, setIsUseCoin] = useState(false);
     const [balance, setBalance] = useState(0);
     const [coupons, setCoupons] = useState([]);
-    const [couponCodeSelecteds, setCouponCodeSelecteds] = useState([]);
+    const [couponCodeSelecteds, setCouponCodeSelecteds] = useState([]); // object type {shopId, couponCode}
     const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(false)
 
 
@@ -60,73 +60,6 @@ const Cart = () => {
         return couponCode;
     }
 
-    const handleOnChangeCheckbox = (values) => {
-        if (values.length === 0) {
-            setCartDetailIdSelecteds([])
-            return;
-        }
-
-        setCartDetailIdSelecteds([...values]);
-    }
-
-
-    const handleOnChangeCheckboxGroup = (values) => {
-        if (values.length === 0) {
-            setCartDetailIdSelecteds([])
-            return;
-        }
-        const cartItems = findCartItems(values)
-        setCartDetailIdSelecteds([...cartDetailIdSelecteds, ...cartItems])
-
-        // cartFilter.map((item) => {
-        //     return updateCart({ userId: getUserId(), productVariantId: item.productVariantId, quantity: 0 })
-        //         .then((res) => {
-        //             if (res.status === 200) {
-        //                 const data = res.data
-        //                 if (data.responseCode === CART_RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY) {
-        //                     setContentModel(data.message)
-        //                     setIsModelInvalidCartProductQuantity(true)
-        //                 } else if (data.responseCode === CART_RESPONSE_CODE_SUCCESS) {
-
-        //                     setItemCartSelected([...cartFilter])
-        //                 }
-        //                 loadDataCart()
-        //             }
-        //         })
-        //         .catch((error) => {
-        //             console.log(error)
-        //         })
-        // })
-    }
-
-    const handleCheckAll = (e) => {
-        if (e.target.checked) {
-            setCartDetailIdSelecteds(carts);
-        } else {
-            setCartDetailIdSelecteds([]);
-        }
-    }
-
-    const handleCheckAllGroup = (e) => {
-        const { value, checked } = e.target
-        const itemCarts = carts.find(x => x.shopId === value).products;
-        const itemCartSelectedFilter = cartDetailIdSelecteds.filter(x => !itemCarts.includes(x))
-        if (checked) {
-            setCartDetailIdSelecteds([...itemCartSelectedFilter, ...itemCarts]);
-        } else {
-            setCartDetailIdSelecteds([...itemCartSelectedFilter]);
-        }
-    }
-
-    const checkAllGroup = (shopId) => {
-        const itemCarts = carts.find(x => x.shopId === shopId).products;
-        const itemCartSelectedFilter = cartDetailIdSelecteds.filter(x => itemCarts.some(y => x === y))
-        if (itemCarts.length === itemCartSelectedFilter.length) {
-            return true;
-        } else {
-            return false
-        }
-    }
     ///
 
 
@@ -230,19 +163,16 @@ const Cart = () => {
 
                     // total price coin
                     let totalPriceCoinDiscount = 0;
-                    if (isUseCoin) {
-                        if (userCoin > 0) {
-                            if (totalOriginPrice >= userCoin) {
-                                totalPriceCoinDiscount = userCoin;
-                            } else {
-                                totalPriceCoinDiscount = totalOriginPrice;
-                            }
-                        } else {
-                            totalPriceCoinDiscount = 0;
-                        }
 
-                        // sub total discount price
-                        totalDiscountPrice -= totalPriceCoinDiscount;
+                    if (isUseCoin && userCoin > 0 && totalDiscountPrice > 0) {
+                        if (totalDiscountPrice <= userCoin) {
+                            totalPriceCoinDiscount = totalDiscountPrice;
+                            totalDiscountPrice = 0;
+                        }
+                        else {
+                            totalPriceCoinDiscount = userCoin;
+                            totalDiscountPrice -= totalPriceCoinDiscount;
+                        }
                     }
 
                     newTotalPrice = {
@@ -268,10 +198,7 @@ const Cart = () => {
     ///
 
 
-
-
     /// functions
-
     const filterCartDetail = (cartDetailIds) => {
         const cartDetails = [];
         for (let i = 0; i < carts.length; i++) {
@@ -288,15 +215,6 @@ const Cart = () => {
     const reloadCarts = () => {
         setReloadCartsFlag(!reloadCartsFlag);
     }
-
-    const findCartItems = (productVariantIds) => {
-        const cartItem = carts.map((cart) => {
-            const { products } = cart;
-            const productItem = products.filter(p => productVariantIds.includes(p.productVariantId))
-            return productItem;
-        })
-        return [].concat(...cartItem);
-    }
     ///
 
 
@@ -306,7 +224,6 @@ const Cart = () => {
         carts: carts,
         cartDetailIdSelecteds: cartDetailIdSelecteds,
         setCartDetailIdSelecteds: setCartDetailIdSelecteds,
-        handleOnChangeCheckbox: handleOnChangeCheckbox,
         reloadCarts: reloadCarts,
         couponCodeSelecteds: couponCodeSelecteds,
         setCouponCodeSelecteds: setCouponCodeSelecteds,
