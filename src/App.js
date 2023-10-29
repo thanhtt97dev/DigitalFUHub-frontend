@@ -2,6 +2,9 @@ import React from 'react';
 import { AuthProvider } from 'react-auth-kit';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ConfigProvider } from 'antd';
+import viVN from 'antd/locale/vi_VN';
+
 import Routing from './routes/Routing';
 import Auth from './routes/Auth';
 import ContextContainer from './context/ContextContainer';
@@ -21,9 +24,11 @@ function App() {
                     cookieSecure
                 >
                     <Auth>
-                        <Router>
-                            <Routing />
-                        </Router>
+                        <ConfigProvider locale={viVN}>
+                            <Router>
+                                <Routing />
+                            </Router>
+                        </ConfigProvider>
                     </Auth>
                 </AuthProvider>
             </GoogleOAuthProvider>
