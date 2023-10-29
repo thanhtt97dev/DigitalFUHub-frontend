@@ -162,7 +162,7 @@ function OrdersConfirmed({ status, loading, setLoading }) {
                                         </Col>
                                         <Col flex={5} >
                                             <Row >
-                                                <Col span={23}><Text>{v.fullname}</Text></Col>
+                                                <Col span={23}><Text>{v.username}</Text></Col>
                                                 <Col span={23}><Rate value={v.rate} disabled style={{ fontSize: "14px" }} /></Col>
                                                 <Col span={23}><Paragraph>{v.content}</Paragraph></Col>
                                                 <Col span={23} >

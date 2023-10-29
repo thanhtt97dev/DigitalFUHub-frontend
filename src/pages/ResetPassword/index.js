@@ -16,20 +16,20 @@ function ResetPassword() {
             .then((res) => {
                 setLoading(false);
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    notification('success', "Thành công", `Mật khẩu mới đã được gửi đến email ${values.email}.`)
+                    notification('success', `Mật khẩu mới đã được gửi đến email ${values.email}.`)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_RESET_PASSWORD_NOT_CONFIRM) {
-                    notification('success', "Thất bại", `Vui lòng xác nhận tài khoản trước khi đặt lại mật khẩu.`);
+                    notification('error', `Vui lòng xác nhận tài khoản trước khi đặt lại mật khẩu.`);
                 } else if (res.data.status.responseCode === RESPONSE_CODE_RESET_PASSWORD_SIGNIN_GOOGLE) {
-                    notification('success', "Thất bại", `Vui lòng tạo tài khoản trước khi đặt lại mật khẩu.`);
+                    notification('error', `Vui lòng tạo tài khoản trước khi đặt lại mật khẩu.`);
                 } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
-                    notification('success', "Thất bại", `Không tồn tại tài khoản.`);
+                    notification('error', `Không tồn tại tài khoản.`);
                 } else {
-                    notification('success', "Thất bại", `Vui lòng kiểm tra lại.`);
+                    notification('error', `Vui lòng kiểm tra lại.`);
                 }
             })
             .catch((err) => {
                 setLoading(false);
-                notification('error', "Lỗi", 'Đã có lỗi xảy ra.')
+                notification('error', 'Đã có lỗi xảy ra.')
             })
     }
     return <div style={{

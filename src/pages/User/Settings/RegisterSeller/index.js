@@ -53,18 +53,18 @@ function RegisterSeller() {
             .then(res => {
                 setLoading(false);
                 if (res.data.status.responseCode === "00") {
-                    notification('success', "Thành công", "Đăng ký thành công vui lòng đăng nhập lại.");
+                    notification('success', "Đăng ký thành công vui lòng đăng nhập lại.");
                     removeDataAuthInCookies();
                     signOut();
                     return navigate('/login');
 
                 } else {
-                    notification('error', "Thất bại", res.data.status.message);
+                    notification('error', res.data.status.message);
                 }
             })
             .catch(err => {
                 setLoading(false);
-                notification('error', "Thất bại", "Đã có lỗi xảy ra vui lòng thử lại sau.");
+                notification('error', "Đã có lỗi xảy ra vui lòng thử lại sau.");
             })
     }
     return (

@@ -19,14 +19,14 @@ function ConfirmEmail() {
             confirmEmail(tokenParam)
                 .then((res) => {
                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        notification('success', "Thành công", 'Xác thực tài khoản thành công.')
+                        notification('success', 'Xác thực tài khoản thành công.')
                         return navigate('/login');
                     } else {
-                        notification('error', "Thất bại", 'Vui lòng kiểm tra lại.')
+                        notification('error', 'Vui lòng kiểm tra lại.')
                     }
                 })
                 .catch((err) => {
-                    notification('error', "Lỗi", 'Đã có lỗi xảy ra.')
+                    notification('error', 'Đã có lỗi xảy ra.')
                 })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,11 +38,11 @@ function ConfirmEmail() {
             .then((res) => {
                 setLoading(false);
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    notification('success', "Thành công", `Vui lòng đi đến ${values.email} để xác thực tài khoản.`,)
+                    notification('success', `Vui lòng đi đến ${values.email} để xác thực tài khoản.`,)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
-                    notification('error', "Thất bại", `Vui lòng kiểm tra lại.`,)
+                    notification('error', `Vui lòng kiểm tra lại.`,)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_CONFIRM_PASSWORD_IS_CONFIRMED) {
-                    notification('error', "Thất bại", `Tài khoản đã được xác thực.`,)
+                    notification('error', `Tài khoản đã được xác thực.`,)
                 }
             })
             .catch((err) => {

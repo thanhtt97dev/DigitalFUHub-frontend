@@ -60,7 +60,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
 
     const onSearchCoupon = () => {
         if (!inputCouponCode) {
-            notification("error", "Lỗi", "Vui lòng nhập Code để tìm kiếm mã giảm giá.")
+            notification("error", "Vui lòng nhập Code để tìm kiếm mã giảm giá.")
             return;
         }
 

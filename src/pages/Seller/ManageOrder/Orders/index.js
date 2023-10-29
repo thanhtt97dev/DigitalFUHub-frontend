@@ -28,10 +28,10 @@ function Orders() {
     const [dataTable, setDataTable] = useState([]);
     const [searchData, setSearchData] = useState({
         orderId: '',
-        customerEmail: '',
+        username: '',
         userId: getUserId(),
-        fromDate: dayjs().subtract(30, 'day').format('M/D/YYYY'),
-        toDate: dayjs().format('M/D/YYYY'),
+        fromDate: null,
+        toDate: null,
         status: 0
     });
 
@@ -41,11 +41,11 @@ function Orders() {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setDataTable(res.data.result)
                 } else {
-                    notification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
+                    notification("error", "Vui lòng kiểm tra lại.")
                 }
             })
             .catch((err) => {
-                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Đã có lỗi xảy ra.")
             })
             .finally(() => {
                 setTimeout(() => { setLoading(false) }, 500)
@@ -60,16 +60,12 @@ function Orders() {
             value: searchData.orderId,
         },
         {
-            name: 'customerEmail',
-            value: searchData.customerEmail,
-        },
-        {
-            name: 'shopName',
-            value: searchData.shopName,
+            name: 'username',
+            value: searchData.username,
         },
         {
             name: 'date',
-            value: [dayjs(searchData.fromDate, 'M/D/YYYY'), dayjs(searchData.toDate, 'M/D/YYYY')]
+            value: [searchData.fromDate !== null ? dayjs(searchData.fromDate, 'M/D/YYYY') : null, searchData.toDate !== null ? dayjs(searchData.toDate, 'M/D/YYYY') : null]
         },
         {
             name: 'status',
@@ -79,17 +75,17 @@ function Orders() {
 
     const onFinish = (values) => {
         setLoading(true);
-        if (values.date === null) {
-            notification("error", "Thời gian đơn hàng không được trống!")
-            setLoading(false);
-            return;
-        }
+        // if (values.date === null) {
+        //     notification("error", "Thời gian đơn hàng không được trống!")
+        //     setLoading(false);
+        //     return;
+        // }
         setSearchData({
             orderId: values.orderId,
-            customerEmail: values.customerEmail,
+            username: values.username,
             userId: getUserId(),
-            fromDate: values.date[0].$d.toLocaleDateString(),
-            toDate: values.date[1].$d.toLocaleDateString(),
+            fromDate: values.date && values.date[0] ? values.date[0].$d.toLocaleDateString() : null,
+            toDate: values.date && values.date[1] ? values.date[1].$d.toLocaleDateString() : null,
             status: values.status
         });
     };
@@ -120,9 +116,9 @@ function Orders() {
                         </Row>
 
                         <Row>
-                            <Col span={3} offset={1}><label>Email khách hàng: </label></Col>
+                            <Col span={3} offset={1}><label>Người mua: </label></Col>
                             <Col span={6}>
-                                <Form.Item name="customerEmail" >
+                                <Form.Item name="username" >
                                     <Input />
                                 </Form.Item>
                             </Col>
@@ -177,10 +173,10 @@ function Orders() {
                         />
                         <Column
                             width="20%"
-                            title="Email khách hàng"
-                            key="emailCustomer"
+                            title="Người mua"
+                            key="username"
                             render={(_, record) => (
-                                <p>{record.customerEmail}</p>
+                                <p>{record.username}</p>
                             )}
                         />
                         <Column

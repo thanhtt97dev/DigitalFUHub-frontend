@@ -72,11 +72,11 @@ function OrdersComplaint({ status, loading, setLoading }) {
                         return [...prev]
                     })
                 } else {
-                    notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                    notification("error", "Đã có lỗi xảy ra.")
                 }
             })
             .catch(err => {
-                notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                notification("error", "Đã có lỗi xảy ra.")
             })
     }
 
@@ -97,10 +97,10 @@ function OrdersComplaint({ status, loading, setLoading }) {
                         return [...prev]
                     })
                 } else {
-                    notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                    notification("error", "Đã có lỗi xảy ra.")
                 }
             })
-            .catch(err => { notification("error", "Thất bại", "Đã có lỗi xảy ra.") })
+            .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
     }
     return (<div>
         {!loading ?

@@ -30,6 +30,7 @@ import Finance from '~/pages/Finance';
 import RegisterSeller from '~/pages/User/Settings/RegisterSeller';
 import HistoryOrder from '~/pages/HistoryOrder';
 import OrderDetail from '~/pages/OrderDetail';
+import Feedbacks from '~/pages/Seller/ManageFeedback/Feedbacks';
 
 const routesConfig = [
     {
@@ -186,6 +187,13 @@ const routesConfig = [
         path: '/seller/order/list',
         layout: <SellerLayout />,
         component: <Orders />,
+        role: [SELLER_ROLE],
+    },
+    {
+        title: 'Seller All Feedback',
+        path: '/seller/feedback/list',
+        layout: <SellerLayout />,
+        component: <Feedbacks />,
         role: [SELLER_ROLE],
     },
     {

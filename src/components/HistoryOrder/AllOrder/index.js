@@ -83,11 +83,11 @@ function AllOrder({ status = 0, loading, setLoading }) {
                         return [...prev]
                     })
                 } else {
-                    notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                    notification("error", "Đã có lỗi xảy ra.")
                 }
             })
             .catch(err => {
-                notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                notification("error", "Đã có lỗi xảy ra.")
             })
     }
 
@@ -108,10 +108,10 @@ function AllOrder({ status = 0, loading, setLoading }) {
                         return [...prev]
                     })
                 } else {
-                    notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                    notification("error", "Đã có lỗi xảy ra.")
                 }
             })
-            .catch(err => { notification("error", "Thất bại", "Đã có lỗi xảy ra.") })
+            .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
     }
 
     const handleCustomerFeedback = (formData) => {
@@ -222,7 +222,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
                                         </Col>
                                         <Col flex={5} >
                                             <Row >
-                                                <Col span={23}><Text>{v.fullname}</Text></Col>
+                                                <Col span={23}><Text>{v.username}</Text></Col>
                                                 <Col span={23}><Rate value={v.rate} disabled style={{ fontSize: "14px" }} /></Col>
                                                 <Col span={23}><Paragraph>{v.content}</Paragraph></Col>
                                                 <Col span={23} >

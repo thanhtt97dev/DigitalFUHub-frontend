@@ -154,7 +154,7 @@ const Products = ({ dataPropProductComponent }) => {
             })
             .catch((errors) => {
                 console.log(errors)
-                notification("error", "Lỗi", "Có lỗi trong quá trình xóa, vui lòng thử lại");
+                notification("error", "Có lỗi trong quá trình xóa, vui lòng thử lại");
             })
     };
 

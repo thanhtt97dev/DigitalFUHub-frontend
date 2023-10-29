@@ -268,15 +268,15 @@ function EditProduct() {
             .then(res => {
                 setLoading(false);
                 if (res.data.status.responseCode === '00') {
-                    notification('success', "Thành công", 'Cập nhật sản phẩm thành công.');
+                    notification('success', 'Cập nhật sản phẩm thành công.');
                 } else {
-                    notification('error', 'Thất bại', 'Cập nhật sản phẩm thất bại.');
+                    notification('error', 'Cập nhật sản phẩm thất bại.');
                 }
                 return navigate('/seller/product/list')
             })
             .catch(err => {
                 setLoading(false);
-                notification('error', 'Lỗi', 'Đã có lỗi xảy ra.');
+                notification('error', 'Đã có lỗi xảy ra.');
                 return navigate('/seller/product/list')
             })
 

@@ -52,12 +52,12 @@ function OrderDetail() {
                         setLoading(false);
                     }, 500);
                 } else {
-                    notification("error", "Lỗi", "Đã có lỗi xảy ra.")
+                    notification("error", "Đã có lỗi xảy ra.")
                     return navigate("/history/order");
                 }
             })
             .catch((err) => {
-                notification("error", "Lỗi", "Đã có lỗi xảy ra.")
+                notification("error", "Đã có lỗi xảy ra.")
                 return navigate("/history/order");
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,11 +83,11 @@ function OrderDetail() {
                         return { ...prev }
                     })
                 } else {
-                    notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                    notification("error", "Đã có lỗi xảy ra.")
                 }
             })
             .catch(err => {
-                notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                notification("error", "Đã có lỗi xảy ra.")
             })
     }
 
@@ -107,10 +107,10 @@ function OrderDetail() {
                         return { ...prev }
                     })
                 } else {
-                    notification("error", "Thất bại", "Đã có lỗi xảy ra.")
+                    notification("error", "Đã có lỗi xảy ra.")
                 }
             })
-            .catch(err => { notification("error", "Thất bại", "Đã có lỗi xảy ra.") })
+            .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
     }
     const [form] = Form.useForm();
     const [previewOpen, setPreviewOpen] = useState(false);
@@ -341,7 +341,7 @@ function OrderDetail() {
                             </Col>
                             <Col flex={5} >
                                 <Row >
-                                    <Col span={23}><Text>{v.fullname}</Text></Col>
+                                    <Col span={23}><Text>{v.username}</Text></Col>
                                     <Col span={23}><Rate value={v.rate} disabled style={{ fontSize: "14px" }} /></Col>
                                     <Col span={23}><Paragraph>{v.content}</Paragraph></Col>
                                     <Col span={23} >

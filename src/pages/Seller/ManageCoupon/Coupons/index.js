@@ -15,8 +15,11 @@ import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { addCouponSeller, removeCouponSeller, getCouponsSeller, updateStatusCouponSeller, getCouponSellerById, editCouponSeller } from "~/api/coupon";
 import { checkCouponCodeExist } from "~/api/coupon";
 import { regexPattern } from "../../../../utils";
-
+import styles from "./Coupon.module.scss"
+import classNames from "classnames/bind";
 const { Title } = Typography;
+
+const cx = classNames.bind(styles)
 
 const { RangePicker } = DatePicker;
 
@@ -78,12 +81,12 @@ function Coupons() {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setListCoupons(res.data.result);
                 } else {
-                    notification('error', 'Lỗi', 'Đã có lỗi xảy ra.')
+                    notification('error', 'Đã có lỗi xảy ra.')
                 }
             })
             .catch((err) => {
                 setLoading(false);
-                notification('error', 'Lỗi', 'Đã có lỗi xảy ra.')
+                notification('error', 'Đã có lỗi xảy ra.')
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,7 +117,7 @@ function Coupons() {
         addCouponSeller(data)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    notification("success", "Thành công", "Tạo mã giảm giá thành công.")
+                    notification("success", "Tạo mã giảm giá thành công.")
                     setSearchData({
                         couponCode: '',
                         userId: getUserId(),
@@ -123,11 +126,11 @@ function Coupons() {
                         status: 0
                     });
                 } else {
-                    notification("error", "Thất bại", "Tạo mã giảm giá thất bại.")
+                    notification("error", "Tạo mã giảm giá thất bại.")
                 }
             })
             .catch((err) => {
-                notification("error", "Lỗi", "Đã có lỗi xảy ra.")
+                notification("error", "Đã có lỗi xảy ra.")
             })
         handleModalOk();
     }
@@ -153,13 +156,13 @@ function Coupons() {
                                 ...searchData,
                                 userId: getUserId(),
                             });
-                            notification("success", "Thành công", "Cập nhật mã giảm giá thành công.")
+                            notification("success", "Cập nhật mã giảm giá thành công.")
                         } else {
-                            notification("error", "Thất bại", "Cập nhật mã giảm giá thất bại.")
+                            notification("error", "Cập nhật mã giảm giá thất bại.")
                         }
                     })
                     .catch((err) => {
-                        notification("error", "Lỗi", "Đã có lỗi xảy ra.")
+                        notification("error", "Đã có lỗi xảy ra.")
                     })
 
             },
@@ -184,13 +187,13 @@ function Coupons() {
                                 ...searchData,
                                 userId: getUserId(),
                             });
-                            notification("success", "Thành công", "Xóa mã giảm giá thành công.")
+                            notification("success", "Xóa mã giảm giá thành công.")
                         } else {
-                            notification("error", "Thất bại", "Xóa mã giảm giá thất bại.")
+                            notification("error", "Xóa mã giảm giá thất bại.")
                         }
                     })
                     .catch((err) => {
-                        notification("error", "Lỗi", "Đã có lỗi xảy ra.")
+                        notification("error", "Đã có lỗi xảy ra.")
                     })
             },
             onCancel() {
@@ -244,13 +247,13 @@ function Coupons() {
                         ...searchData,
                         userId: getUserId(),
                     });
-                    notification("success", "Thành công", "Cập nhật mã giảm giá thành công.")
+                    notification("success", "Cập nhật mã giảm giá thành công.")
                 } else {
-                    notification("error", "Thất bại", "Cập nhật mã giảm giá thất bại.")
+                    notification("error", "Cập nhật mã giảm giá thất bại.")
                 }
             })
             .catch((err) => {
-                notification("error", "Lỗi", "Đã có lỗi xảy ra.")
+                notification("error", "Đã có lỗi xảy ra.")
             })
     }
     const initialFielUpdate = [

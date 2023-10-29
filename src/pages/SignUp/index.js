@@ -113,7 +113,7 @@ function SignUp() {
             })
             .catch(err => {
                 setLoading(false);
-                notification("error", "Lỗi", "Đã có lỗi xảy ra")
+                notification("error", "Đã có lỗi xảy ra")
             })
     }
 
