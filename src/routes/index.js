@@ -31,6 +31,7 @@ import RegisterSeller from '~/pages/User/Settings/RegisterSeller';
 import HistoryOrder from '~/pages/HistoryOrder';
 import OrderDetail from '~/pages/OrderDetail';
 import Feedbacks from '~/pages/Seller/ManageFeedback/Feedbacks';
+import OrderDetailSeller from '~/pages/Seller/ManageOrder/OrderDetail';
 
 const routesConfig = [
     {
@@ -149,9 +150,9 @@ const routesConfig = [
     },
     {
         title: 'Seller order detail',
-        path: '/seller/order/:id',
+        path: '/seller/order/:orderId',
         layout: <SellerLayout />,
-        component: <></>,
+        component: <OrderDetailSeller />,
         role: [SELLER_ROLE],
     },
     {

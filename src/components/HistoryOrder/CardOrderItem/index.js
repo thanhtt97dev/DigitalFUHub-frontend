@@ -271,7 +271,21 @@ function CardOrderItem({
                 <Row>
                     <Col span={8} offset={1}><Text>Nội dung</Text></Col>
                     <Col span={15}>
-                        <Form.Item name="content">
+                        <Form.Item name="content"
+                            rules={[
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value) {
+                                            return Promise.resolve();
+                                        } else if (value.length > 200) {
+                                            return Promise.reject(new Error('Nội dung đánh giá không vượt quá 200 ký tự.'));
+                                        } else {
+                                            return Promise.resolve();
+                                        }
+                                    },
+                                }),
+                            ]}
+                        >
                             <TextArea />
                         </Form.Item>
                     </Col>

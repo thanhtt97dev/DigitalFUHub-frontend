@@ -13,7 +13,8 @@ import {
     ShoppingOutlined,
     UserOutlined,
     MessageOutlined,
-    ClockCircleOutlined
+    ClockCircleOutlined,
+    CommentOutlined
 
 } from '@ant-design/icons';
 import { Layout, Menu, Space, theme, Avatar, Button, Row, Col, Dropdown, Badge, Card } from 'antd';
@@ -89,6 +90,11 @@ const menuItems = [
         label: <Link to='/seller/coupon/list'>Mã giảm giá</Link>,
         key: 'coupon',
         icon: <DollarOutlined className={cx('menu-icon')} />,
+    },
+    {
+        label: <Link to='/seller/feedback/list'>Đánh giá cửa hàng</Link>,
+        key: 'feedback',
+        icon: <CommentOutlined className={cx('menu-icon')} />,
     },
 ];
 const SellerLayout = () => {
