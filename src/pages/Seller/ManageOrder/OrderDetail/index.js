@@ -319,7 +319,7 @@ function OrderDetailSeller() {
                                     <Col span={24} key={i}>
                                         <Row gutter={[8, 8]}>
                                             <Col flex={0}>
-                                                <Link to={`/product/${v.productId}`}>
+                                                <Link to={`/product/${v.productId}`} target="_blank" rel="noopener noreferrer" >
                                                     <Image
                                                         width={120}
                                                         src={v.thumbnail}

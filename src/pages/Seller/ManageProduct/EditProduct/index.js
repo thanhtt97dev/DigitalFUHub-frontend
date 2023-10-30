@@ -236,7 +236,7 @@ function EditProduct() {
         formData.append('productDescription', productDescription);
         formData.append('discount', values.discount);
         formData.append('categoryId', values.category);
-        formData.append('isActiveProduct', values.isActiveProduct ? PRODUCT_ACTIVE : PRODUCT_HIDE);
+        formData.append('isActiveProduct', values.isActiveProduct);
         formData.append('productThumbnail', productThumbnailSrc[0]?.file ? productThumbnailSrc[0]?.file : null);
         productImagesSrc.forEach((value, index) => {
             if (value.file) {
@@ -340,7 +340,7 @@ function EditProduct() {
                         }}
                         onFinish={onFinish}
                     >
-                        <Form.Item name='nameProduct' label={<lable>Tên sản phẩm <Tooltip title="Tên sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
+                        <Form.Item name='nameProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Tên sản phẩm <Tooltip title="Tên sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             rules={[
                                 (getFieldValue) => ({
                                     validator(_, value) {
@@ -355,7 +355,7 @@ function EditProduct() {
                         >
                             <Input placeholder='Tên sản phẩm' />
                         </Form.Item>
-                        <Form.Item name='description' label={<lable>Mô tả <Tooltip title="Mô tả sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
+                        <Form.Item name='description' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Mô tả <Tooltip title="Mô tả sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             rules={[
                                 (getFieldValue) => ({
                                     validator(_, value) {
@@ -387,7 +387,7 @@ function EditProduct() {
                             {/* </CKEditorContext> */}
                         </Form.Item>
                         {/* <UploadThumbnail /> */}
-                        <Form.Item name='thumbnailProduct' label={<lable>Ảnh đại diện sản phẩm <Tooltip title="Ảnh đại diện sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
+                        <Form.Item name='thumbnailProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh đại diện sản phẩm <Tooltip title="Ảnh đại diện sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={[
                                 (getFieldValue) => ({
@@ -439,7 +439,7 @@ function EditProduct() {
 
                         {/* <UploadImagesProduct /> */}
 
-                        <Form.Item name='productImages' label={<lable>Ảnh chi tiết sản phẩm (tối đa 5 ảnh) <Tooltip title="Ảnh chi tiết sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
+                        <Form.Item name='productImages' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh chi tiết sản phẩm (tối đa 5 ảnh) <Tooltip title="Ảnh chi tiết sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={[
                                 (getFieldValue) => ({
@@ -495,7 +495,7 @@ function EditProduct() {
 
                         </Form.Item>
 
-                        <Form.Item name='discount' label={<lable>Giảm giá <Tooltip title="Giảm giá của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
+                        <Form.Item name='discount' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Giảm giá <Tooltip title="Giảm giá của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
                                     required: true,
@@ -504,7 +504,7 @@ function EditProduct() {
                         >
                             <InputNumber style={{ width: '100%' }} placeholder='giảm giá' addonAfter="%" min={0} max={100} />
                         </Form.Item>
-                        <Form.Item name='category' label={<lable>Danh mục <Tooltip title="Danh mục của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
+                        <Form.Item name='category' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Danh mục <Tooltip title="Danh mục của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
                                     required: true,
@@ -524,7 +524,7 @@ function EditProduct() {
                             {(fields, { add, remove }) => (
                                 <>
                                     <Space direction='horizontal'>
-                                        <Form.Item label={<div>Loại sản phẩm <a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a>
+                                        <Form.Item label={<div style={{ fontWeight: 'bold', fontSize: 14 }}>Loại sản phẩm <a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a>
                                             <Tooltip title="Loại sản phẩm, nếu chưa có mẫu nhập sản phẩm vui lòng nhấn vào tải mẫu nhập sản phẩm. Khi cập nhật lại sản phẩm mọi dữ liệu cũ sẽ bị xóa."><QuestionCircleOutlined /></Tooltip></div>} style={{ marginBottom: -30, display: 'flex' }}
                                             required={true}
                                         >
@@ -543,7 +543,7 @@ function EditProduct() {
                                             align="baseline"
                                         >
                                             <Card style={{ width: '100%' }}
-                                                title={`Phân loại ${name + 1}`}
+                                                title={<lable style={{ fontWeight: 300, fontSize: 14 }}>Phân loại {name + 1}</lable>}
                                                 extra={fields.length > 1 ? (
                                                     <CloseOutlined onClick={() => {
                                                         remove(name)
@@ -663,7 +663,7 @@ function EditProduct() {
                             )}
                         </Form.List>
 
-                        <Form.Item name='tagsProduct' label={<lable>Nhãn <Tooltip title="Nhãn của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required={true}
+                        <Form.Item name='tagsProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Nhãn <Tooltip title="Nhãn của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required={true}
                             validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={
                                 [
@@ -727,7 +727,7 @@ function EditProduct() {
                                     )}
                             </Space>
                         </Form.Item>
-                        <Form.Item name='isActiveProduct' label={<lable>Trạng thái <Tooltip title="Trạng thái hiện mọi người sẽ thấy sản phẩm của bạn, trạng thái ẩn mọi người sẽ không thấy sản phẩm của bạn."><QuestionCircleOutlined /></Tooltip></lable>} required={true}
+                        <Form.Item name='isActiveProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Trạng thái <Tooltip title="Trạng thái hiện mọi người sẽ thấy sản phẩm của bạn, trạng thái ẩn mọi người sẽ không thấy sản phẩm của bạn."><QuestionCircleOutlined /></Tooltip></lable>} required={true}
                             valuePropName="checked"
                         >
                             <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
