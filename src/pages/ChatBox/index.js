@@ -28,6 +28,10 @@ const styleBodyCardMessage = {
     padding: 10
 }
 
+const styleTitleMessage = {
+    paddingLeft: 10
+}
+
 const styleTypography = {
     margin: 0
 }
@@ -188,18 +192,20 @@ const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef, conversatio
                         {
                             item.userId !== userId ?
                                 (<div style={{ marginBottom: 25 }}>
-                                    <Card className={cx('card-message')} bodyStyle={styleBodyCardMessage}>
-                                        <Space align="center">
-                                            <Avatar src={item.avatar} />
-                                            <Space>
-                                                <Space.Compact direction="vertical">
-                                                    <Text strong style={{ marginBottom: 7 }}>{getFullNameUserFromConversationSelected(item.userId)}</Text>
-                                                    {item.messageType === MESSAGE_TYPE_CONVERSATION_TEXT ? <p>{item.content}</p> : <Image style={styleMessageImage} width={150} src={item.content} />}
-                                                </Space.Compact>
-                                            </Space>
-                                        </Space>
-                                    </Card>
-                                    <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
+                                    <Space align="center">
+                                        <Avatar src={item.avatar} />
+                                        <Space.Compact direction="vertical">
+                                            <div style={styleTitleMessage}>
+                                                {conversationSelected.isGroup ? <Text type="secondary" style={{ marginBottom: 5 }}>{getFullNameUserFromConversationSelected(item.userId)}</Text> : <></>}
+                                            </div>
+                                            <Card className={cx('card-message')} bodyStyle={styleBodyCardMessage}>
+                                                {item.messageType === MESSAGE_TYPE_CONVERSATION_TEXT ? <p>{item.content}</p> : <Image style={styleMessageImage} width={150} src={item.content} />}
+                                            </Card>
+                                            <div style={styleTitleMessage}>
+                                                <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
+                                            </div>
+                                        </Space.Compact>
+                                    </Space>
                                 </div>)
                                 :
                                 (<div style={{ marginBottom: 25, position: 'relative' }}>
