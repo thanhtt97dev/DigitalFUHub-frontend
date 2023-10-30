@@ -78,7 +78,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                 item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<SmallUserAvatar srcAvatar={item.users[0].avatar} isActive={item.users[0].isOnline} />}
+                                                            avatar={<SmallUserAvatar srcAvatar={item.users[0].avatar} isActive={item.isOnline} />}
                                                             title={item.users[0].fullname}
                                                             description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
                                                         />
@@ -87,7 +87,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                     :
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<SmallUserAvatar srcAvatar={item.users[0].avatar} isActive={item.users[0].isOnline} />}
+                                                            avatar={<SmallUserAvatar srcAvatar={item.users[0].avatar} isActive={item.isOnline} />}
                                                             title={item.users[0].fullname}
                                                             description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
                                                         />
@@ -100,7 +100,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                 item.isRead === USER_CONVERSATION_TYPE_UN_READ ?
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<SmallUserAvatar srcAvatar={fptImage} isActive={item.users[0].isOnline} />}
+                                                            avatar={<SmallUserAvatar srcAvatar={fptImage} isActive={item.isOnline} />}
                                                             title={item.conversationName}
                                                             description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
                                                         />
@@ -109,7 +109,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                     :
                                                     (<div className={cx('space-div-flex')}>
                                                         <List.Item.Meta
-                                                            avatar={<SmallUserAvatar srcAvatar={fptImage} isActive={item.users[0].isOnline} />}
+                                                            avatar={<SmallUserAvatar srcAvatar={fptImage} isActive={item.isOnline} />}
                                                             title={item.conversationName}
                                                             description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
                                                         />
@@ -149,13 +149,13 @@ const HeaderMessageChat = ({ conversationSelected, lastTimeOnline }) => (
         {
             conversationSelected.isGroup === false ? (
                 <Meta
-                    avatar={<BigUserAvatar srcAvatar={conversationSelected.users[0].avatar} isActive={conversationSelected.users[0].isOnline} />}
+                    avatar={<BigUserAvatar srcAvatar={conversationSelected.users[0].avatar} isActive={conversationSelected.isOnline} />}
                     title={conversationSelected.users[0].fullname}
-                    description={conversationSelected.users[0].isOnline ? <p>Đang hoạt động</p> : <p>Hoạt động {lastTimeOnline ? lastTimeOnline : moment(conversationSelected.users[0].lastTimeOnline).fromNow()}</p>}
+                    description={conversationSelected.isOnline ? <p>Đang hoạt động</p> : <p>Hoạt động {lastTimeOnline ? lastTimeOnline : moment(conversationSelected.lastTimeOnline).fromNow()}</p>}
                 />
             ) : (
                 <Meta
-                    avatar={<BigUserAvatar srcAvatar={fptImage} isActive={conversationSelected.users[0].isOnline} />}
+                    avatar={<BigUserAvatar srcAvatar={fptImage} isActive={conversationSelected.isOnline} />}
                     title={conversationSelected.conversationName}
                 />
             )
@@ -464,7 +464,7 @@ const ChatBox = () => {
         if (conversationSelected === null || conversationSelected === undefined) return;
         const interval = setInterval(() => {
             if (conversationSelected.isGroup === false) {
-                setLastTimeOnline(moment(conversationSelected.users[0].lastTimeOnline).fromNow());
+                setLastTimeOnline(moment(conversationSelected.lastTimeOnline).fromNow());
             }
         }, 60000);
         return () => clearInterval(interval);
@@ -592,49 +592,32 @@ const ChatBox = () => {
                 // parse to json
                 const userOnlineStatusJson = JSON.parse(userOnlineStatusContext)
 
+                console.log('userOnlineStatusJson = ' + JSON.stringify(userOnlineStatusJson))
                 if (conversations.length === 0) return;
                 // update users status conversations
                 const updateUserStatusConversations = () => {
                     const findConversation = conversations.find(x => x.conversationId === userOnlineStatusJson.ConversationId);
-                    const newUserInConversation = findConversation.users.map((user) => {
-                        if (user.userId === userOnlineStatusJson.UserId) {
-                            const lastTimeOnline = new Date();
-                            const isOnline = userOnlineStatusJson.IsOnline;
-                            updateUserStatusConversationSelected(isOnline, lastTimeOnline)
-                            return { ...user, isOnline: isOnline, lastTimeOnline: lastTimeOnline }
-                        }
-                        return user;
-                    });
+                    if (findConversation) {
+                        const lastTimeOnline = new Date();
+                        const isOnline = userOnlineStatusJson.IsOnline;
 
-                    //set new users
-                    findConversation.users = newUserInConversation
-
-                    //
-                    const newUserChat = conversations.map((x) => {
-                        if (x.conversationId === findConversation.conversationId) {
-                            return { ...findConversation };
-                        }
-                        return x;
-                    })
-
-                    setConversations(newUserChat);
-                };
-
-                // update users status conversations selected
-                const updateUserStatusConversationSelected = (IsOnline, lastTimeOnline) => {
-                    if (conversationSelected !== null && conversationSelected !== undefined) {
-                        const newConversationSelected = conversationSelected;
-                        const newUserInConversation = newConversationSelected.users.map((user) => {
-                            if (user.userId === userOnlineStatusJson.UserId) {
-                                return { ...user, isOnline: IsOnline, lastTimeOnline: lastTimeOnline }
+                        const newConversations = conversations.map((item) => {
+                            if (item.conversationId === findConversation.conversationId) {
+                                return { ...findConversation, isOnline: isOnline, lastTimeOnline: lastTimeOnline }
                             }
-                            return user;
-                        });
+                            return item;
+                        })
 
-                        //set new users
-                        newConversationSelected.users = newUserInConversation
+                        // update conversation
+                        setConversations(newConversations);
 
-                        setConversationSelected(newConversationSelected);
+                        // update conversation selected
+                        if (conversationSelected !== null && conversationSelected !== undefined && conversationSelected.conversationId === userOnlineStatusJson.ConversationId) {
+                            const newConversationSelected = { ...conversationSelected, isOnline: isOnline, lastTimeOnline: lastTimeOnline };
+
+                            // set new conversation selected
+                            setConversationSelected(newConversationSelected);
+                        }
                     }
                 };
 
