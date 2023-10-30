@@ -35,6 +35,7 @@ function CardOrderItem({
     orderDate,
     shopId,
     shopName,
+    conversationId,
     statusId,
     totalAmount,
     totalCoinDiscount,
@@ -215,16 +216,7 @@ function CardOrderItem({
     }
 
     const handleOpenChatGroupForDepositeOrder = () => {
-        var data = { shopId, userId: user.id, isGroup: true }
-        getConversation(data)
-            .then((res) => {
-                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    navigate('/chatBox', { state: { data: res.data.result } })
-                }
-            })
-            .catch(() => {
-
-            })
+        navigate('/chatBox', { state: { data: conversationId } })
     }
 
     return <>
