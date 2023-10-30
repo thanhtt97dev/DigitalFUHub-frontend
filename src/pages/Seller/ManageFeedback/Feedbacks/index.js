@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import dayjs from 'dayjs';
-import { Button, Card, Col, DatePicker, Form, Input, Typography, Row, Select, Space, Rate, Image, Pagination, Empty } from "antd";
+import { Button, Card, Col, DatePicker, Form, Input, Typography, Row, Select, Space, Rate, Image, Pagination, Empty, Tooltip } from "antd";
 import Spinning from "~/components/Spinning";
 import { ParseDateTime, getUserId } from "~/utils";
 import locale from 'antd/es/date-picker/locale/vi_VN';
@@ -84,13 +84,13 @@ function Feedbacks() {
                         <Col span={3} offset={1}><label>Mã đơn:  </label></Col>
                         <Col span={6}>
                             <Form.Item name="orderId" >
-                                <Input />
+                                <Input placeholder="Mã đơn hàng" />
                             </Form.Item>
                         </Col>
                         <Col span={3} offset={1}><label>Người dùng:  </label></Col>
                         <Col span={6} style={{ marginLeft: '-1.6em' }}>
                             <Form.Item name="username" >
-                                <Input />
+                                <Input placeholder="Tên đăng nhập" />
                             </Form.Item>
                         </Col>
 
@@ -156,9 +156,9 @@ function Feedbacks() {
                         listFeedback.slice((page - 1) * pageSize, ((page - 1) * pageSize) + pageSize).map((v, i) => (
                             <Card.Grid style={{ width: '100%' }} key={i}>
                                 <Col span={24}>
-                                    <Row gutter={8} align="top">
+                                    <Row >
                                         <Col span={24}>
-                                            <Row gutter={[0, 8]}>
+                                            <Row gutter={[0, 8]} style={{ marginBottom: '0.5em' }}>
                                                 <Col span={8}>
                                                     <Text>Mã đơn hàng: {v.orderId}</Text>
                                                 </Col>
@@ -166,57 +166,68 @@ function Feedbacks() {
                                                     <Text>Người mua: {v.customerUsername}</Text>
                                                 </Col>
                                             </Row>
-                                            {v?.detail?.map((value, index) => (
-                                                <Row wrap key={index}>
-                                                    <Col span={2}>
-                                                        <Image
-                                                            width={80}
-                                                            src={value.thumbnail}
-                                                            preview={{
-                                                                movable: false,
-                                                            }}
-                                                        />
-                                                    </Col>
-                                                    <Col span={6}>
-                                                        <Row gutter={8}>
-                                                            <Col span={24}>
-                                                                <Text>{value.productName}</Text>
+                                            <Row gutter={[0, 16]}>
+                                                {v?.detail?.map((value, index) => (
+                                                    <Col span={24}>
+                                                        <Row wrap key={index}>
+                                                            <Col span={2}>
+                                                                <Image
+                                                                    width={80}
+                                                                    src={value.thumbnail}
+                                                                    preview={{
+                                                                        movable: false,
+                                                                    }}
+                                                                />
                                                             </Col>
-                                                            <Col span={24}>
-                                                                <Text>Phân loại: {value.productVariantName}</Text>
-                                                            </Col>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col span={16}>
-                                                        <Row gutter={8}>
-                                                            <Col span={24}>
-                                                                <Rate value={value.rate} style={{ fontSize: 13 }} disabled />
-                                                            </Col>
-                                                            <Col span={24}>
-                                                                <Paragraph style={{ fontSize: 16, marginBottom: 0 }}>{value.content}</Paragraph>
-                                                            </Col>
-                                                            <Col span={24}>
+                                                            <Col span={6}>
                                                                 <Row gutter={8}>
-                                                                    {value?.urlImageFeedback.map((url, i) =>
-                                                                        <Col key={i}>
-                                                                            <Image
-                                                                                width={90}
-                                                                                src={url}
-                                                                                preview={{
-                                                                                    movable: false,
-                                                                                }}
-                                                                            />
-                                                                        </Col>
-                                                                    )}
+                                                                    <Col span={24}>
+                                                                        {
+                                                                            value.productName.length > 38 ?
+                                                                                <Tooltip title={value.productName}>
+                                                                                    <Text>{value.productName.slice(0, 38)}...</Text>
+                                                                                </Tooltip>
+                                                                                :
+                                                                                <Text>{value.productName}</Text>
+                                                                        }
+                                                                    </Col>
+                                                                    <Col span={24}>
+                                                                        <Text>Phân loại: {value.productVariantName}</Text>
+                                                                    </Col>
                                                                 </Row>
                                                             </Col>
-                                                            <Col span={24}>
-                                                                <Text>{ParseDateTime(value.feedbackDate)}</Text>
+                                                            <Col span={16}>
+                                                                <Row gutter={8}>
+                                                                    <Col span={24}>
+                                                                        <Rate value={value.rate} style={{ fontSize: 13 }} disabled />
+                                                                    </Col>
+                                                                    <Col span={24}>
+                                                                        <Paragraph style={{ fontSize: 16, marginBottom: 0 }}>{value.content}</Paragraph>
+                                                                    </Col>
+                                                                    <Col span={24}>
+                                                                        <Row gutter={8}>
+                                                                            {value?.urlImageFeedback.map((url, i) =>
+                                                                                <Col key={i}>
+                                                                                    <Image
+                                                                                        width={90}
+                                                                                        src={url}
+                                                                                        preview={{
+                                                                                            movable: false,
+                                                                                        }}
+                                                                                    />
+                                                                                </Col>
+                                                                            )}
+                                                                        </Row>
+                                                                    </Col>
+                                                                    <Col span={24}>
+                                                                        <Text>{ParseDateTime(value.feedbackDate)}</Text>
+                                                                    </Col>
+                                                                </Row>
                                                             </Col>
                                                         </Row>
                                                     </Col>
-                                                </Row>
-                                            ))}
+                                                ))}
+                                            </Row>
                                         </Col>
                                     </Row>
                                 </Col>

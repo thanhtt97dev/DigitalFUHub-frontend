@@ -361,6 +361,19 @@ function Coupons() {
                             width="15%"
                             title="Mã giảm giá"
                             key="couponCode"
+                            sorter={
+                                {
+                                    compare: (a, b) => {
+                                        if (a.couponCode < b.couponCode) {
+                                            return -1;
+                                        } else if (a.couponCode > b.couponCode) {
+                                            return 1;
+                                        } else {
+                                            return 0;
+                                        }
+                                    }
+                                }
+                            }
                             render={(_, record) => (
                                 <p>{record.couponCode}</p>
                             )}
@@ -370,6 +383,7 @@ function Coupons() {
                             width="15%"
                             title="Số tiền giảm giá"
                             key="priceDiscount"
+                            sorter={(a, b) => a.priceDiscount - b.priceDiscount}
                             render={(_, record) => (
                                 <p>{formatStringToCurrencyVND(record.priceDiscount)} đ</p>
                             )}
@@ -378,6 +392,19 @@ function Coupons() {
                             width="15%"
                             title="Thời gian bắt đầu"
                             key="startDate"
+                            sorter={
+                                {
+                                    compare: (a, b) => {
+                                        if (a.startDate < b.startDate) {
+                                            return -1;
+                                        } else if (a.startDate > b.startDate) {
+                                            return 1;
+                                        } else {
+                                            return 0;
+                                        }
+                                    }
+                                }
+                            }
                             render={(_, record) => (
                                 <p>{ParseDateTime(record.startDate)}</p>
                             )}
@@ -386,6 +413,19 @@ function Coupons() {
                             width="15%"
                             title="Thời gian kết thúc"
                             key="endDate"
+                            sorter={
+                                {
+                                    compare: (a, b) => {
+                                        if (a.startDate < b.startDate) {
+                                            return -1;
+                                        } else if (a.startDate > b.startDate) {
+                                            return 1;
+                                        } else {
+                                            return 0;
+                                        }
+                                    }
+                                }
+                            }
                             render={(_, record) => (
                                 <p>{ParseDateTime(record.endDate)}</p>
                             )}
@@ -394,6 +434,7 @@ function Coupons() {
                             width="10%"
                             title="Số lượng"
                             key="quantity"
+                            sorter={(a, b) => a.quantity - b.quantity}
                             render={(_, record) => (
                                 <p>{record.quantity}</p>
                             )}
@@ -402,6 +443,7 @@ function Coupons() {
                             width="15%"
                             title="Đơn hàng tối thiểu"
                             key="minTotalOrderValue"
+                            sorter={(a, b) => a.minTotalOrderValue - b.minTotalOrderValue}
                             render={(_, record) => (
                                 <p>{formatStringToCurrencyVND(record.minTotalOrderValue)} đ</p>
                             )}

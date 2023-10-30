@@ -15,7 +15,8 @@ import {
     ORDER_COMPLAINT,
     ORDER_DISPUTE,
     ORDER_REJECT_COMPLAINT,
-    ORDER_SELLER_VIOLATES
+    ORDER_SELLER_VIOLATES,
+    ORDER_SELLER_REFUNDED
 } from "~/constants";
 import Column from "antd/es/table/Column";
 
@@ -113,10 +114,7 @@ function Orders() {
                                     <Input />
                                 </Form.Item>
                             </Col>
-                        </Row>
-
-                        <Row>
-                            <Col span={3} offset={1}><label>Người mua: </label></Col>
+                            <Col span={2} offset={1}><label>Người mua: </label></Col>
                             <Col span={6}>
                                 <Form.Item name="username" >
                                     <Input />
@@ -138,12 +136,13 @@ function Orders() {
                                 <Form.Item name="status" >
                                     <Select >
                                         <Select.Option value={0}>Tất cả</Select.Option>
-                                        <Select.Option value={1}>Chờ xác nhận</Select.Option>
-                                        <Select.Option value={2}>Đã xác nhận</Select.Option>
-                                        <Select.Option value={3}>Khiếu nại</Select.Option>
-                                        <Select.Option value={4}>Tranh chấp</Select.Option>
-                                        <Select.Option value={5}>Từ chối khiếu nại</Select.Option>
-                                        <Select.Option value={6}>Người bán vi phạm</Select.Option>
+                                        <Select.Option value={ORDER_WAIT_CONFIRMATION}>Chờ xác nhận</Select.Option>
+                                        <Select.Option value={ORDER_CONFIRMED}>Đã xác nhận</Select.Option>
+                                        <Select.Option value={ORDER_COMPLAINT}>Khiếu nại</Select.Option>
+                                        <Select.Option value={ORDER_DISPUTE}>Tranh chấp</Select.Option>
+                                        <Select.Option value={ORDER_SELLER_REFUNDED}>Hoàn lại tiền</Select.Option>
+                                        <Select.Option value={ORDER_REJECT_COMPLAINT}>Từ chối khiếu nại</Select.Option>
+                                        <Select.Option value={ORDER_SELLER_VIOLATES}>Người bán vi phạm</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </Col>
@@ -161,12 +160,13 @@ function Orders() {
                     </Form>
                     <Table
                         rowKey={(record) => record.orderId}
-                        dataSource={dataTable} size='small' scroll={{ y: 290 }}
+                        dataSource={dataTable} size='small' scroll={{ y: 350 }}
                     >
                         <Column
                             width="9%"
                             title="Mã đơn hàng"
                             key="orderId"
+                            sorter={(a, b) => a.orderId - b.orderId}
                             render={(_, record) => (
                                 <Link to={`/seller/order/${record.orderId}`}>{record.orderId}</Link>
                             )}
@@ -175,6 +175,19 @@ function Orders() {
                             width="20%"
                             title="Người mua"
                             key="username"
+                            sorter={
+                                {
+                                    compare: (a, b) => {
+                                        if (a.username < b.username) {
+                                            return -1;
+                                        } else if (a.username > b.username) {
+                                            return 1;
+                                        } else {
+                                            return 0;
+                                        }
+                                    }
+                                }
+                            }
                             render={(_, record) => (
                                 <p>{record.username}</p>
                             )}
@@ -183,6 +196,20 @@ function Orders() {
                             width="15%"
                             title="Thời gian mua"
                             key="orderDate"
+                            defaultSortOrder="ascend"
+                            sorter={
+                                {
+                                    compare: (a, b) => {
+                                        if (a.orderDate < b.orderDate) {
+                                            return -1;
+                                        } else if (a.orderDate > b.orderDate) {
+                                            return 1;
+                                        } else {
+                                            return 0;
+                                        }
+                                    }
+                                }
+                            }
                             render={(_, record) => (
                                 <p>{ParseDateTime(record.orderDate)}</p>
                             )}
@@ -191,6 +218,21 @@ function Orders() {
                             width="15%"
                             title="Số tiền"
                             key="totalAmount"
+                            sorter={
+                                {
+                                    compare: (a, b) => {
+                                        const totalA = a.totalAmount - a.totalCouponDiscount;
+                                        const totalB = b.totalAmount - b.totalCouponDiscount;
+                                        if (totalA < totalB) {
+                                            return -1;
+                                        } else if (totalA > totalB) {
+                                            return 1;
+                                        } else {
+                                            return 0;
+                                        }
+                                    }
+                                }
+                            }
                             render={(_, record) => (
                                 <p>{formatStringToCurrencyVND(record.totalAmount - record.totalCouponDiscount)}₫</p>
                             )}
@@ -199,7 +241,7 @@ function Orders() {
                             width="15%"
                             title="Trạng thái"
                             key="orderStatusId"
-
+                            // sorter={(a, b) => a.orderStatusId - b.orderStatusId}
                             render={(_, record) => {
                                 if (record.orderStatusId === ORDER_WAIT_CONFIRMATION) {
                                     return <Tag color="#108ee9">Chờ xác nhận</Tag>
@@ -209,6 +251,8 @@ function Orders() {
                                     return <Tag color="#c6e329">Khiếu nại</Tag>
                                 } else if (record.orderStatusId === ORDER_DISPUTE) {
                                     return <Tag color="#ffaa01">Tranh chấp</Tag>
+                                } else if (record.orderStatusId === ORDER_SELLER_REFUNDED) {
+                                    return <Tag color="cyan">Hoàn lại tiền</Tag>
                                 } else if (record.orderStatusId === ORDER_REJECT_COMPLAINT) {
                                     return <Tag color="#ca01ff">Từ chối khiếu nại</Tag>
                                 } else if (record.orderStatusId === ORDER_SELLER_VIOLATES) {
