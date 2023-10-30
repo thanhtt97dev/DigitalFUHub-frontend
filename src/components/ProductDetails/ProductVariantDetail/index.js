@@ -1,0 +1,234 @@
+import classNames from 'classnames/bind';
+import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
+import React, { useState, useEffect } from "react";
+import CarouselCustom from '~/components/Carousels/CarouselCustom';
+import { addProductToCart } from '~/api/cart';
+import { formatPrice } from '~/utils';
+import { useNavigate } from 'react-router-dom';
+import ModalAlert from '~/components/Modals/ModalAlert';
+import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS } from '~/constants';
+import { CreditCardOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Radio, Card, Typography } from 'antd';
+
+
+
+const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, openNotification, userId }) => {
+
+    /// states
+    const [quantity, setQuantity] = useState(1);
+    const [isModalNotifyQuantityOpen, setIsModalNotifyQuantityOpen] = useState(false);
+    const [contentProductInvalidQuantity, setContentProductInvalidQuantity] = useState('')
+    ///
+
+    const cx = classNames.bind(styles);
+    const { Title, Text } = Typography;
+    require('moment/locale/vi');
+    const navigate = useNavigate();
+
+    /// variables
+    let minPrice = 0
+    let maxPrice = 0
+    let minPriceDis = 0
+    let maxPriceDis = 0
+    ///
+
+
+
+    /// handles
+    const showModalNotifyQuantity = () => {
+        setIsModalNotifyQuantityOpen(true);
+    };
+
+    const handleOk = () => {
+        setIsModalNotifyQuantityOpen(false);
+    };
+
+    const handleChangeQuantity = (value) => {
+        setQuantity(value)
+    }
+
+    const handleAddProductToCart = async (isBuyNow) => {
+        console.log('productVariantsSelected: ' + JSON.stringify(productVariantsSelected));
+
+        if (userId === undefined) {
+            navigate('/login')
+            return;
+        }
+
+        if (!productVariantsSelected) {
+            openNotification("error", "Vui lòng chọn loại sản phẩm")
+            return;
+        }
+
+        const dataAddToCart = {
+            userId: userId,
+            shopId: product.shop.shopId,
+            productVariantId: productVariantsSelected.productVariantId,
+            quantity: quantity
+        }
+
+        addProductToCart(dataAddToCart)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    if (data.status.responseCode === RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY && data.status.ok === false) {
+                        const message = `Sản phẩm này đang có số lượng ${data.result} trong giỏ hàng của bạn,
+                        không thể thêm số lượng đã chọn vào giỏ hàng vì đã vượt quá số lượng sản phẩm có sẵn`
+                        setContentProductInvalidQuantity(message);
+                        showModalNotifyQuantity();
+
+                    } else if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS && data.status.ok === true) {
+                        if (!isBuyNow) {
+                            openNotification("success", "Sản phẩm đã được thêm vào trong giỏ hàng của bạn")
+                        } else {
+                            navigate('/cart')
+                        }
+                    }
+                }
+            })
+            .catch((errors) => {
+                console.log(errors)
+                openNotification("error", "Có lỗi xảy ra trong quá trình thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!")
+            })
+    }
+    ///
+
+    /// child components
+    const GridItems = ({ productVariants, handleSelectProductVariant }) => (
+        <div className={cx('grid-container')}>
+            {productVariants ? (
+                productVariants.map((item) =>
+                    <div className={cx('grid-item')} key={item.productVariantId}>
+                        <Button disabled={item.quantity > 0 ? false : true} type={productVariantsSelected ? (productVariantsSelected === item ? 'primary' : 'default') : ('default')} onClick={() => handleSelectProductVariant(item)}>{item.name}</Button>
+                    </div>)
+            ) : (
+                <Spin />
+            )}
+        </div>
+    )
+
+    const ProductMedias = ({ productMedias }) => {
+        return (
+            <CarouselCustom
+                data={productMedias}
+                style={carouselStyle}
+            />
+        )
+    }
+    ///
+
+    /// functions
+    const PriceFormat = ({ price }) => {
+        const formattedPrice = formatPrice(price);
+        return formattedPrice;
+    }
+
+    const discountPrice = (price, discount) => {
+        const result = price * discount / 100
+        return (price - result)
+    }
+
+    const rangePrice = (productVariants) => {
+        const prices = productVariants?.map(variant => variant.price);
+        return [Math.min(...prices), Math.max(...prices)]
+    }
+    ///
+
+    /// useEffect
+    useEffect(() => {
+        setQuantity(1)
+    }, [handleSelectProductVariant])
+    ///
+
+    /// styles
+    const carouselStyle = { width: '100%', height: '50vh' };
+    ///
+
+
+
+    if (product) {
+        minPrice = rangePrice(product.productVariants)[0];
+        maxPrice = rangePrice(product.productVariants)[1];
+        minPriceDis = discountPrice(minPrice, product.discount);
+        maxPriceDis = discountPrice(maxPrice, product.discount);
+    }
+
+
+    return (
+        <Card className={cx('margin-bottom')}>
+            <Row>
+                {product ? (<>
+                    <Col span={11} style={{ padding: 15 }}>
+                        <ProductMedias productMedias={product.productMedias} />
+                    </Col>
+                    <Col span={13} style={{ padding: 15 }}>
+                        <div>
+                            <Title level={3}>{product.productName}</Title>
+                            <div className={cx('space-div-flex')}>
+                                {productVariantsSelected ? (
+                                    <Title level={4}><PriceFormat price={discountPrice(productVariantsSelected.price, product.discount)} /></Title>
+                                ) : (
+                                    <>
+                                        {
+                                            product.productVariants.length > 1 ? (<Title level={4}>{<PriceFormat price={minPriceDis} />} - {<PriceFormat price={maxPriceDis} />}</Title>)
+                                                : (product.productVariants.length === 1 ? <Title level={4}>{<PriceFormat price={discountPrice(product.productVariants[0].price, product.discount)} />}</Title> : <></>)
+                                        }
+                                    </>
+                                )}
+                            </div>
+                            <div
+                                className={cx('space-div-flex')}>
+                                {productVariantsSelected ? (
+                                    <Text delete strong type="secondary">{<PriceFormat price={productVariantsSelected.price} />}</Text>
+                                ) : (
+                                    <>
+                                        {
+                                            product.productVariants.length > 1 ? (<Text delete strong type="secondary">
+                                                {<PriceFormat price={minPrice} />} - {<PriceFormat price={maxPrice} />}
+                                            </Text>)
+                                                : (product.productVariants.length === 1 ? <Text delete strong type="secondary">{<PriceFormat price={product.productVariants[0].price} />}</Text> : <></>)
+                                        }
+                                    </>
+                                )}
+                                <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
+                            </div>
+                            <Divider />
+                            <div style={{ marginBottom: 20 }}>
+                                <Title level={4}>Loại sản phẩm</Title>
+                                <Radio.Group>
+                                    <GridItems productVariants={productVariants} handleSelectProductVariant={handleSelectProductVariant} />
+                                </Radio.Group>
+                            </div>
+                            <div className={cx('space-div-flex')}>
+                                <Text strong>Số lượng: </Text>
+                                &nbsp;&nbsp;
+                                <InputNumber min={1} max={productVariantsSelected?.quantity || product.quantity} defaultValue={1} onChange={handleChangeQuantity} value={quantity} />
+                                &nbsp;&nbsp;
+                                {productVariantsSelected ? (<Text type="secondary" strong>{productVariantsSelected.quantity} sản phẩm có sẵn</Text>)
+                                    : (<Text type="secondary" strong>{product.quantity} sản phẩm có sẵn</Text>)}
+
+                            </div>
+                            <Divider />
+
+                            <div
+
+                            >
+                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
+                                    Mua ngay
+                                </Button>
+                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
+                                    Thêm vào giỏ
+                                </Button>
+                            </div>
+                        </div>
+
+                    </Col>
+
+                    <ModalAlert isOpen={isModalNotifyQuantityOpen} handleOk={handleOk} content={contentProductInvalidQuantity} />
+                </>) : (<Skeleton active />)}
+            </Row>
+        </Card>
+    )
+}
+
+export default ProductVariantDetail;
