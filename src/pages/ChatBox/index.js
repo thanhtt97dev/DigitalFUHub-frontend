@@ -1,7 +1,8 @@
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import fptImage from '~/assets/images/fpt-logo.jpg';
 import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
 import { ChatContext } from "~/context/ChatContext";
@@ -10,7 +11,6 @@ import { UserOnlineStatusContext } from "~/context/UserOnlineStatusContext";
 import { SendOutlined, FileImageOutlined } from '@ant-design/icons';
 import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
 import { Layout, Input, Button, Avatar, List, Card, Typography, Col, Row, Upload, Form, Image, Space } from 'antd';
-import fptImage from '~/assets/images/fpt-logo.jpg'
 import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
 
 const { Meta } = Card;
@@ -165,9 +165,20 @@ const HeaderMessageChat = ({ conversationSelected, lastTimeOnline }) => (
 
 const styleBodyMessage = { overflowY: 'auto', maxHeight: '50vh' }
 
-const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef }) => {
+const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef, conversationSelected }) => {
     var userId = +getUserId();
     if (userId === undefined || userId === null) return;
+
+
+    /// functions
+    const getFullNameUserFromConversationSelected = (userId) => {
+        if (!conversationSelected) return;
+        const users = conversationSelected.users;
+        if (!users) return;
+        const userFind = users.find(x => x.userId === userId);
+        if (!userFind) return;
+        return userFind.fullname;
+    }
 
     return (
         <div style={styleBodyMessage} ref={bodyMessageRef}>
@@ -179,8 +190,13 @@ const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef }) => {
                                 (<div style={{ marginBottom: 25 }}>
                                     <Card className={cx('card-message')} bodyStyle={styleBodyCardMessage}>
                                         <Space align="center">
-                                            <Avatar size={35} src={item.avatar} />
-                                            {item.messageType === MESSAGE_TYPE_CONVERSATION_TEXT ? <p>{item.content}</p> : <Image style={styleMessageImage} width={150} src={item.content} />}
+                                            <Avatar src={item.avatar} />
+                                            <Space>
+                                                <Space.Compact direction="vertical">
+                                                    <Text strong style={{ marginBottom: 7 }}>{getFullNameUserFromConversationSelected(item.userId)}</Text>
+                                                    {item.messageType === MESSAGE_TYPE_CONVERSATION_TEXT ? <p>{item.content}</p> : <Image style={styleMessageImage} width={150} src={item.content} />}
+                                                </Space.Compact>
+                                            </Space>
                                         </Space>
                                     </Card>
                                     <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
@@ -325,13 +341,14 @@ const ChatBox = () => {
     const [conversations, setConversations] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
     const [lastTimeOnline, setLastTimeOnline] = useState('');
-    const [reloadMessageFlag, setIsReloadMessageFlag] = useState(false);
+    const [reloadConversationFlag, setReloadConversationFlag] = useState(false);
+    // const [reloadMessageFlag, setReloadMessageFlag] = useState(false);
     const [isUploadFile, setIsUploadFile] = useState(false);
     const messagesEndRef = useRef(null);
     const bodyMessageRef = useRef(null);
 
     const reloadMessages = () => {
-        setIsReloadMessageFlag(!reloadMessageFlag);
+        setReloadConversationFlag(!reloadConversationFlag);
     }
 
     const handleOpenUploadFile = () => {
@@ -350,7 +367,7 @@ const ChatBox = () => {
         <Button type="primary" shape="circle" icon={<FileImageOutlined />} size={30} />
     );
 
-    // scroll
+    /// scroll
     const scrollToBottom = () => {
         if (bodyMessageRef.current && messagesEndRef.current) {
             const bodyMessageElement = bodyMessageRef.current;
@@ -359,10 +376,11 @@ const ChatBox = () => {
             bodyMessageElement.scrollTop = messagesEndElement.offsetTop;
         }
     };
+    ///
 
     useEffect(scrollToBottom, [messages]);
 
-    // Handles
+    /// Handles
 
     const onFinish = (values) => {
         if (user === null || user === undefined) return;
@@ -429,17 +447,22 @@ const ChatBox = () => {
         setConversations(newConversation)
 
 
-        setConversationSelected(conversation)
+        setConversationSelected(conversation);
     }
 
     const handleChangeNewMessage = (e) => {
         const { value } = e.target
         setNewMessage(value)
     }
+    ///
 
 
     useEffect(() => {
         if (conversationSelected === null || conversationSelected === undefined) return;
+        // if (reloadMessageFlag) return;
+
+        // setReloadMessageFlag(true);
+
         GetMessages(conversationSelected.conversationId)
             .then((response) => {
                 const messages = response.data
@@ -454,11 +477,18 @@ const ChatBox = () => {
 
                 setMessages(newMessages)
             })
+            .catch((error) => {
+                console.log(error);
+            })
+        // .finally(() => {
+        //     setReloadMessageFlag(false);
+        // })
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [conversationSelected])
 
 
-    // interval
+    /// interval
     const intervalTime = () => {
 
         if (conversationSelected === null || conversationSelected === undefined) return;
@@ -471,7 +501,7 @@ const ChatBox = () => {
     }
 
     intervalTime();
-    //
+    ///
 
 
     // get conversations
@@ -511,7 +541,7 @@ const ChatBox = () => {
 
         loadConversations();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [reloadMessageFlag]);
+    }, [reloadConversationFlag]);
 
 
     // message from signR
