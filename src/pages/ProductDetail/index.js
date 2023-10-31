@@ -8,7 +8,7 @@ import { useAuthUser } from 'react-auth-kit';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { useNavigate, useParams } from 'react-router-dom';
 import { notification } from 'antd';
-
+import { RESPONSE_CODE_PRODUCT_ACTIVE, RESPONSE_CODE_PRODUCT_BAN, RESPONSE_CODE_PRODUCT_REMOVE, RESPONSE_CODE_PRODUCT_HIDE } from '~/constants';
 
 const ProductDetail = () => {
 
@@ -54,13 +54,22 @@ const ProductDetail = () => {
         const getDetailProduct = () => {
             getProductById(initialProductId)
                 .then((response) => {
-                    const data = response.data;
-                    if (!data) {
-                        navigate('/notFound');
+                    if (response.status === 200) {
+                        const data = response.data;
+                        // status of response
+                        const status = data.status;
+                        if (status.responseCode === RESPONSE_CODE_PRODUCT_REMOVE) {
+                            navigate('/notFound');
+                        }
+
+                        // result of response
+                        const result = data.result;
+                        if (Object.keys(result).length === 0) {
+                            navigate('/notFound');
+                        }
+                        setProduct(result)
+                        setProductVariants([...result.productVariants])
                     }
-                    setProduct(data)
-                    console.log('data: ' + JSON.stringify(data))
-                    setProductVariants([...response.data.productVariants])
                 })
                 .catch((errors) => {
                     console.log(errors)

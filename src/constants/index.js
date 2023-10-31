@@ -144,6 +144,12 @@ export const PRODUCT_BAN = 2;
 export const PRODUCT_REMOVE = 3;
 export const PRODUCT_HIDE = 4;
 
+
+export const RESPONSE_CODE_PRODUCT_ACTIVE = "PRODUCT_01";
+export const RESPONSE_CODE_PRODUCT_BAN = "PRODUCT_02";
+export const RESPONSE_CODE_PRODUCT_REMOVE = "PRODUCT_03";
+export const RESPONSE_CODE_PRODUCT_HIDE = "PRODUCT_04";
+
 // reset password status
 export const RESPONSE_CODE_RESET_PASSWORD_NOT_CONFIRM = "RS_01";
 export const RESPONSE_CODE_RESET_PASSWORD_SIGNIN_GOOGLE = "RS_02";
