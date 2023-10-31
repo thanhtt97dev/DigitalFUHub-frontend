@@ -216,6 +216,7 @@ function CardOrderItem({
     }
 
     const handleOpenChatGroupForDepositeOrder = () => {
+        if (conversationId === 0) return;
         navigate('/chatBox', { state: { data: conversationId } })
     }
 
