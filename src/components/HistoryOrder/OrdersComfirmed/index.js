@@ -110,6 +110,7 @@ function OrdersConfirmed({ status, loading, setLoading }) {
                                     orderDate={v.orderDate}
                                     shopId={v.shopId}
                                     shopName={v.shopName}
+                                    conversationId={v.conversationId}
                                     statusId={v.statusId}
                                     totalAmount={v.totalAmount}
                                     totalCoinDiscount={v.totalCoinDiscount}

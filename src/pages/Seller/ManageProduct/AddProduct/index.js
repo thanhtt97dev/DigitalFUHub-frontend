@@ -209,12 +209,12 @@ function AddProduct() {
         setLoading(true);
         let formData = new FormData();
         values.productImages.fileList.forEach((file, index) => {
-            formData.append(`images`, file.originFileObj);
+            formData.append(`productDetailImageFiles`, file.originFileObj);
         });
         values.productVariants.forEach((value, index) => {
-            formData.append(`nameVariants`, value.typeProd);
-            formData.append(`priceVariants`, value.priceProd);
-            formData.append(`dataVariants`, excelFileList[index].originFileObj);
+            formData.append(`productVariantNames`, value.typeProd);
+            formData.append(`productVariantPrices`, value.priceProd);
+            formData.append(`assetInformationFiles`, excelFileList[index].originFileObj);
 
         });
         tags.forEach((value, index) => {
@@ -226,7 +226,7 @@ function AddProduct() {
         formData.append('description', descriptionValue);
         formData.append('category', values.category);
         formData.append('discount', values.discount);
-        formData.append('thumbnail', values.thumbnailProduct.file.originFileObj);
+        formData.append('thumbnailFile', values.thumbnailProduct.file.originFileObj);
         addProductSeller(formData)
             .then((res) => {
                 setLoading(false);

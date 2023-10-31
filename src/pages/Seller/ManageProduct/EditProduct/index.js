@@ -237,12 +237,12 @@ function EditProduct() {
         formData.append('discount', values.discount);
         formData.append('categoryId', values.category);
         formData.append('isActiveProduct', values.isActiveProduct);
-        formData.append('productThumbnail', productThumbnailSrc[0]?.file ? productThumbnailSrc[0]?.file : null);
+        formData.append('productThumbnailFileUpdate', productThumbnailSrc[0]?.file ? productThumbnailSrc[0]?.file : null);
         productImagesSrc.forEach((value, index) => {
             if (value.file) {
-                formData.append('productImagesNew', value.file);
+                formData.append('productDetailImagesAddNew', value.file);
             } else {
-                formData.append('productImagesOld', value.src);
+                formData.append('productDetailImagesCurrent', value.src);
             }
         });
         tags.forEach((tag, index) => {
@@ -252,16 +252,16 @@ function EditProduct() {
         productVariants.forEach((variant, index) => {
             // add new variant
             if (variant.data === undefined && variant.file !== undefined) {
-                formData.append('productVariantNameNew', values.productVariants[index].nameVariant);
-                formData.append('productVariantPriceNew', values.productVariants[index].price);
-                formData.append('productVariantFileNew', variant.file.originFileObj);
+                formData.append('productVariantNamesAddNew', values.productVariants[index].nameVariant);
+                formData.append('productVariantPricesAddNew', values.productVariants[index].price);
+                formData.append('assetInformationFilesAddNew', variant.file.originFileObj);
             }
             // update variant
             else {
-                formData.append('productVariantIdUpdate', variant.id);
-                formData.append('productVariantNameUpdate', values.productVariants[index].nameVariant);
-                formData.append('productVariantPriceUpdate', values.productVariants[index].price);
-                formData.append('productVariantFileUpdate', variant.file ? variant.file.originFileObj : null);
+                formData.append('productVariantIdsUpdate', variant.id);
+                formData.append('productVariantNamesUpdate', values.productVariants[index].nameVariant);
+                formData.append('productVariantPricesUpdate', values.productVariants[index].price);
+                formData.append('assetInformationFilesUpdate', variant.file ? variant.file.originFileObj : null);
             }
         })
         editProductSeller(formData)
@@ -730,7 +730,7 @@ function EditProduct() {
                         <Form.Item name='isActiveProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Trạng thái <Tooltip title="Trạng thái hiện mọi người sẽ thấy sản phẩm của bạn, trạng thái ẩn mọi người sẽ không thấy sản phẩm của bạn."><QuestionCircleOutlined /></Tooltip></lable>} required={true}
                             valuePropName="checked"
                         >
-                            <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
+                            <Switch value={isActiveProduct} checkedChildren="Hiện" unCheckedChildren="Ẩn" />
                         </Form.Item>
 
                         <Form.Item style={{ textAlign: 'center' }}>
