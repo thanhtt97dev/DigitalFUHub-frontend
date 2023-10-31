@@ -14,7 +14,7 @@ import {
     PlusOutlined,
     MessageOutlined
 } from "@ant-design/icons";
-import { Button, Card, Col, Divider, Image, Rate, Row, Space, Typography, Tag, Tooltip, Form, Upload, Modal, Avatar, Spin } from "antd";
+import { Button, Card, Col, Divider, Image, Rate, Row, Space, Typography, Tag, Tooltip, Form, Upload, Modal, Avatar, Spin, Descriptions } from "antd";
 import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
@@ -537,7 +537,7 @@ function OrderDetail() {
                                                         <Col span={24}>
                                                             <Row>
                                                                 <Col span={17}>
-                                                                    <Title level={5}>
+                                                                    <Title level={5} style={{ marginBottom: 0 }}>
                                                                         {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
                                                                     </Title>
                                                                 </Col>
@@ -584,9 +584,18 @@ function OrderDetail() {
                                                     </Row>
                                                 </Col>
                                                 <Col span={24}>
-                                                    <Row gutter={[0, 0]}>
-                                                        <Col span={24}><Divider style={{ marginBottom: '0' }}><Title level={5}>Dữ liệu sản phẩm</Title></Divider></Col>
-                                                        {v?.assetInformations?.map((v, i) => (<Col span={24} key={i}>{v}</Col>))}
+                                                    <Row justify='end'>
+                                                        <Col span={24}>
+                                                            <Descriptions bordered items={[
+                                                                {
+                                                                    key: '1',
+                                                                    label: 'Thông tin tài khoản',
+                                                                    labelStyle: { 'text-align': 'right', width: '30%', fontWeight: 'bold' },
+                                                                    span: '3',
+                                                                    children: v?.assetInformations?.map((v, i) => (<><Text key={i}>{v}</Text><br /></>))
+                                                                },
+                                                            ]} />
+                                                        </Col>
                                                     </Row>
                                                 </Col>
                                             </Row>
@@ -597,49 +606,42 @@ function OrderDetail() {
                             <Divider />
                             <Row gutter={[0, 16]}>
                                 <Col span={24}>
-                                    <Row justify="end">
-                                        {order?.totalAmount !== 0 && <Col span={24}>
-                                            <Row justify="end">
-                                                <Col style={{ textAlign: 'right' }}><Title level={5}>Tổng tiền:</Title></Col>
-                                                <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                                    <Text>{formatStringToCurrencyVND(order?.totalAmount)}₫</Text>
-                                                </Col>
-                                            </Row>
-                                        </Col>}
-
-                                        {order?.totalCouponDiscount !== 0 && <Col span={24}>
-                                            <Row justify="end">
-                                                <Col style={{ textAlign: 'right' }}><Title level={5}>Mã giảm giá:</Title></Col>
-                                                <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                                    <Text>-{formatStringToCurrencyVND(order?.totalCouponDiscount)}₫</Text>
-                                                </Col>
-                                            </Row>
-                                        </Col>}
-                                        {order?.totalCoinDiscount !== 0 && <Col span={24}>
-                                            <Row justify="end">
-                                                <Col style={{ textAlign: 'right' }}><Title level={5}>Xu:</Title></Col>
-                                                <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                                    <Text>-{formatStringToCurrencyVND(order?.totalCoinDiscount)}₫</Text>
-                                                </Col>
-                                            </Row>
-                                        </Col>}
-                                        <Col span={24}>
-                                            <Row justify="end">
-                                                <Col span={5}>
-                                                    <Divider />
-                                                </Col>
-                                            </Row>
-                                        </Col>
-                                        <Col span={24}>
-                                            <Row justify="end">
-                                                <Col style={{ textAlign: 'right' }}><Title level={5}>Thành tiền:</Title></Col>
-                                                <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                                    <Text>{`${formatStringToCurrencyVND(order.totalPayment)}₫`}</Text>
-                                                </Col>
-                                            </Row>
-                                        </Col>
+                                    <Row justify='end'>
+                                        {(() => {
+                                            let infoPayment = [];
+                                            infoPayment.push({
+                                                key: '1',
+                                                label: 'Tổng tiền sản phẩm',
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{formatStringToCurrencyVND(order?.totalAmount)}₫</Text>
+                                            })
+                                            if (order?.totalCouponDiscount !== 0) {
+                                                infoPayment.push({
+                                                    key: '2',
+                                                    label: 'Mã giảm giá',
+                                                    labelStyle: { 'text-align': 'right' },
+                                                    span: '3',
+                                                    children: <Text>-{formatStringToCurrencyVND(order?.totalCouponDiscount)}₫</Text>
+                                                })
+                                            }
+                                            infoPayment.push({
+                                                key: '3',
+                                                label: 'Số xu sử dụng',
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>-{formatStringToCurrencyVND(order?.totalCoinDiscount)} xu</Text>
+                                            })
+                                            infoPayment.push({
+                                                key: '4',
+                                                label: <Text style={{ fontWeight: 'bold' }}>Thành tiền</Text>,
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{`${formatStringToCurrencyVND(order.totalPayment)}₫`}</Text>
+                                            })
+                                            return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
+                                        })()}
                                     </Row>
-
                                 </Col>
                                 <Col span={24}>
                                     {getButtonsStatus()}
@@ -656,8 +658,8 @@ function OrderDetail() {
                             }
                         </Card>
                     }
-                </Spin>
-            </Card>
+                </Spin >
+            </Card >
         }
 
     </>);

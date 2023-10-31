@@ -31,8 +31,8 @@ function Orders() {
         orderId: '',
         username: '',
         userId: getUserId(),
-        fromDate: null,
-        toDate: null,
+        fromDate: dayjs().subtract(7, 'day').format('M/D/YYYY'),
+        toDate: dayjs().format('M/D/YYYY'),
         status: 0
     });
 
@@ -196,7 +196,7 @@ function Orders() {
                             width="15%"
                             title="Thời gian mua"
                             key="orderDate"
-                            defaultSortOrder="ascend"
+                            defaultSortOrder="descend"
                             sorter={
                                 {
                                     compare: (a, b) => {
@@ -265,7 +265,7 @@ function Orders() {
                             key="orderId"
                             render={(_, record) => (
                                 <Link to={`/seller/order/${record.orderId}`} >
-                                    <Button type="primary">Chi tiết</Button>
+                                    Chi tiết
                                 </Link>
                             )}
                         />

@@ -12,7 +12,8 @@ import {
     UserOutlined,
     ExclamationCircleOutlined
 } from "@ant-design/icons";
-import { Button, Card, Col, Divider, Image, Rate, Row, Space, Typography, Tag, Tooltip, Form, Upload, Modal, Avatar, Spin } from "antd";
+import logoFPT from '~/assets/images/fpt-logo.jpg'
+import { Button, Card, Col, Divider, Image, Rate, Row, Space, Typography, Tag, Tooltip, Form, Upload, Modal, Avatar, Spin, Descriptions } from "antd";
 import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 import { useAuthUser } from 'react-auth-kit'
@@ -291,9 +292,11 @@ function OrderDetailSeller() {
             <Spin spinning={loading}>
                 {!loading &&
                     <Card
+                        style={{ margin: '0 3em' }}
                         title={<Row gutter={[8, 0]} align="bottom">
                             <Col>
-                                <Title level={5}><UserOutlined style={{ fontSize: '18px' }} /></Title>
+                                {/* <Title level={5}><UserOutlined style={{ fontSize: '18px' }} /></Title> */}
+                                <Avatar src={order.customerAvatar || logoFPT} />
                             </Col>
                             <Col>
                                 <Title level={5}>{order.customerUsername}</Title>
@@ -332,7 +335,7 @@ function OrderDetailSeller() {
                                                     <Col span={24}>
                                                         <Row>
                                                             <Col span={17}>
-                                                                <Title level={5}>
+                                                                <Title level={5} style={{ marginBottom: 0 }}>
                                                                     {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
                                                                 </Title>
                                                             </Col>
@@ -369,38 +372,53 @@ function OrderDetailSeller() {
                         <Row gutter={[0, 16]}>
                             <Col span={24}>
                                 <Row justify="end">
-                                    {order?.totalAmount !== 0 && <Col span={24}>
-                                        <Row justify="end">
-                                            <Col style={{ textAlign: 'right' }}><Title level={5}>Tổng tiền:</Title></Col>
-                                            <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                                <Text>{formatStringToCurrencyVND(order?.totalAmount)}₫</Text>
-                                            </Col>
-                                        </Row>
-                                    </Col>}
+                                    {(() => {
+                                        let infoPayment = [];
 
-                                    {order?.totalCouponDiscount !== 0 && <Col span={24}>
-                                        <Row justify="end">
-                                            <Col style={{ textAlign: 'right' }}><Title level={5}>Mã giảm giá:</Title></Col>
-                                            <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                                <Text>-{formatStringToCurrencyVND(order?.totalCouponDiscount)}₫</Text>
-                                            </Col>
-                                        </Row>
-                                    </Col>}
-                                    <Col span={24}>
-                                        <Row justify="end">
-                                            <Col span={5}>
-                                                <Divider />
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                    <Col span={24}>
-                                        <Row justify="end">
-                                            <Col style={{ textAlign: 'right' }}><Title level={5}>Tổng đơn hàng:</Title></Col>
-                                            <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                                <Text>{`${formatStringToCurrencyVND(order.totalPayment - order.totalCouponDiscount)}₫`}</Text>
-                                            </Col>
-                                        </Row>
-                                    </Col>
+                                        infoPayment.push({
+                                            key: '1',
+                                            label: 'Tổng tiền sản phẩm',
+                                            labelStyle: { 'text-align': 'right' },
+                                            span: '3',
+                                            children: <Text>{formatStringToCurrencyVND(order?.totalAmount)}₫</Text>
+                                        })
+
+
+                                        infoPayment.push({
+                                            key: '2',
+                                            label: 'Mã giảm giá',
+                                            labelStyle: { 'text-align': 'right' },
+                                            span: '3',
+                                            children: <Text>{order?.totalCouponDiscount !== 0 ?
+                                                `-${formatStringToCurrencyVND(order?.totalCouponDiscount)}₫`
+                                                :
+                                                'Không áp dụng'
+                                            }</Text>
+                                        })
+
+                                        infoPayment.push({
+                                            key: '4',
+                                            label: <Text style={{ fontWeight: 'bold' }}>Tổng đơn hàng</Text>,
+                                            labelStyle: { 'text-align': 'right' },
+                                            span: '3',
+                                            children: <Text>{`${formatStringToCurrencyVND(order.totalAmount - order?.totalCouponDiscount)}₫`}</Text>
+                                        })
+                                        infoPayment.push({
+                                            key: '4',
+                                            label: <Text style={{ fontWeight: 'bold' }}>Phí dịch vụ</Text>,
+                                            labelStyle: { 'text-align': 'right' },
+                                            span: '3',
+                                            children: <Text>{`-${formatStringToCurrencyVND(order.bussinessFee)}₫`}</Text>
+                                        })
+                                        infoPayment.push({
+                                            key: '4',
+                                            label: <Text style={{ fontWeight: 'bold' }}>Số tiền người bán nhận</Text>,
+                                            labelStyle: { 'text-align': 'right' },
+                                            span: '3',
+                                            children: <Text>{`${formatStringToCurrencyVND(order.amountSellerReceive)}₫`}</Text>
+                                        })
+                                        return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
+                                    })()}
                                 </Row>
 
                             </Col>
