@@ -13,7 +13,7 @@ import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Inpu
 import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/icons';
 import {
     RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_INVALID_QUANTITY,
-    RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS
+    RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS, COUPON_TYPE_ALL_PRODUCTS, COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, COUPON_TYPE_SPECIFIC_PRODUCTS
 } from '~/constants';
 
 const { Text } = Typography;
@@ -183,7 +183,6 @@ const Products = ({ dataPropProductComponent }) => {
     }
 
     const handleOnChangeCheckboxCartItem = (cartId) => {
-        console.log('handleOnChangeCheckboxCartItem = ' + cartId)
         // check and add cart id selectes
         const cartIdSelectedFind = cartIdSelecteds.find(x => x === cartId);
         if (!cartIdSelectedFind) {
@@ -214,28 +213,8 @@ const Products = ({ dataPropProductComponent }) => {
             setCartDetailIdSelecteds([])
             return;
         }
-        // const newCartIdSelecteds = [];
-        // for (let i = 0; i < cartIdSelecteds.length; i++) {
-        //     const cartFind = carts.find(x => x.cartId === cartIdSelecteds[i]);
-        //     if (cartFind) {
-        //         const products = cartFind.products;
-        //         const cartDetailIdSelectedFil = values.filter(x => products.some(y => y.cartDetailId === x));
-        //         if (products.length === cartDetailIdSelectedFil.length) {
-        //             newCartIdSelecteds.push(cartIdSelecteds[i])
-        //         }
-        //     }
-        // }
-
-        // // set new Cart id selecteds
-        // setCartIdSelecteds(newCartIdSelecteds);
-
-        // set new Cart detail id selecteds
         setCartDetailIdSelecteds([...values]);
-
-
     }
-
-    console.log('cartIdSelecteds.length = ' + cartIdSelecteds.length);
 
     ///
 
@@ -284,28 +263,6 @@ const Products = ({ dataPropProductComponent }) => {
 
         setTotalCartDetails(CalculatorTotalCartDetails())
     }, [carts])
-
-
-    // useEffect(() => {
-    //     const checkboxAllCartItem = () => {
-    //         debugger
-    //         const cartFilters = carts.filter(x => cartIdSelecteds.includes(x.cartId));
-    //         for (let i = 0; i < cartFilters.length; i++) {
-    //             const products = cartFilters[i].products;
-    //             if (products) {
-    //                 const cartDetailIds = products.map(product => product.cartDetailId);
-    //                 const cartDetailIdSelectedFilter = cartDetailIdSelecteds.filter(x => !cartDetailIds.some(y => x === y));
-
-    //                 //set new cart id selecteds
-    //                 setCartDetailIdSelecteds([...cartDetailIdSelectedFilter, ...cartDetailIds]);
-    //             }
-    //         }
-    //     }
-
-    //     checkboxAllCartItem()
-
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [cartIdSelecteds])
 
 
     useEffect(() => {

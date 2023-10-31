@@ -131,7 +131,6 @@ const Prices = ({ dataPropPriceComponent }) => {
         }
 
 
-
         addOrder(finalDataOrder)
             .then((res) => {
                 if (res.status === 200) {

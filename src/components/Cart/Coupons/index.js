@@ -5,14 +5,13 @@ import styles from '~/pages/Cart/Cart.module.scss';
 import Spinning from "~/components/Spinning";
 import { formatPrice, getVietnamCurrentTime } from '~/utils';
 import { getCouponPrivate } from '~/api/coupon';
-import { Typography, Modal, List, Input, Radio } from 'antd';
+import { Typography, Modal, List, Input, Radio, Button } from 'antd';
 import { NotificationContext } from "~/context/NotificationContext";
-import { RESPONSE_CODE_SUCCESS } from '~/constants';
+import { RESPONSE_CODE_SUCCESS, COUPON_TYPE_ALL_PRODUCTS, COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, COUPON_TYPE_SPECIFIC_PRODUCTS } from '~/constants';
 
 const { Search } = Input;
 const { Text } = Typography;
 const cx = classNames.bind(styles);
-
 
 const Coupons = ({ dataPropCouponComponent }) => {
 
@@ -39,6 +38,13 @@ const Coupons = ({ dataPropCouponComponent }) => {
     // contexts
     const notification = useContext(NotificationContext);
     //
+
+    /// styles
+    const styleCouponType = {
+        marginTop: 5,
+        marginBottom: 5
+    }
+    ///
 
 
     /// handles
@@ -156,15 +162,23 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                 <List.Item key={item.couponId}>
                                     <List.Item.Meta
                                         title={item.couponName}
-                                        description={(<><p>Giảm {formatPrice(item.priceDiscount)} - Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}<br />
-
-                                            {
-                                                item.quantity > 0 ? (
-                                                    moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
-                                                        (<Text type="danger"> HSD: {moment(item.endDate).format('DD.MM.YYYY')} (Sắp hết hạn)</Text>)
-                                                        : (<> HSD: {moment(item.endDate).format('DD.MM.YYYY')}</>)) : (<Text type="danger"> Đã hết</Text>)
-                                            }
-                                        </p></>)}
+                                        description={
+                                            (<>
+                                                <p>Giảm {formatPrice(item.priceDiscount)} - Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}<br />
+                                                    {
+                                                        item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ?
+                                                            <Button size='small' danger style={styleCouponType}>Sản phẩm nhất định</Button> : <></>
+                                                    }
+                                                    <br />
+                                                    {
+                                                        item.quantity > 0 ? (
+                                                            moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
+                                                                (<Text type="danger"> HSD: {moment(item.endDate).format('DD.MM.YYYY')} (Sắp hết hạn)</Text>)
+                                                                : (<> HSD: {moment(item.endDate).format('DD.MM.YYYY')}</>)) : (<Text type="danger"> Đã hết</Text>)
+                                                    }
+                                                </p>
+                                            </>)
+                                        }
                                     />
                                     { }
                                     <div>
