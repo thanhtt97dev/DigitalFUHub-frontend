@@ -13,7 +13,7 @@ import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Inpu
 import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/icons';
 import {
     RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_INVALID_QUANTITY,
-    RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS, COUPON_TYPE_ALL_PRODUCTS, COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, COUPON_TYPE_SPECIFIC_PRODUCTS
+    RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS
 } from '~/constants';
 
 const { Text } = Typography;
@@ -35,6 +35,7 @@ const Products = ({ dataPropProductComponent }) => {
         totalPrice,
         setCoupons,
         getCouponCodeSelecteds,
+        cartDetails
     } = dataPropProductComponent;
     //
 
@@ -295,7 +296,9 @@ const Products = ({ dataPropProductComponent }) => {
         setCouponCodeSelecteds: setCouponCodeSelecteds,
         setCoupons: setCoupons,
         shopIdSelected: shopIdSelected,
-        totalPrice: totalPrice
+        totalPrice: totalPrice,
+        cartDetails: cartDetails,
+        cartDetailIdSelecteds
     }
 
     ///
