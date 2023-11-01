@@ -18,7 +18,7 @@ import { useAuthUser } from 'react-auth-kit'
 import { getConversation } from '~/api/chat'
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { formatStringToCurrencyVND, getDistanceDayTwoDate, getUserId } from "~/utils";
-import ModalChangeOrderStatus from "~/components/Modals/ModalChangeOrderStatus";
+import ModalChangeOrderStatusComplaint from "~/components/Modals/ModalChangeOrderStatusComplaint";
 
 const { Text, Title } = Typography;
 
@@ -85,7 +85,7 @@ function CardOrderItem({
         if (statusId === ORDER_WAIT_CONFIRMATION) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <ModalChangeOrderStatus orderId={orderId} shopId={shopId} callBack={onOrderComplaint} />
+                    <ModalChangeOrderStatusComplaint orderId={orderId} shopId={shopId} callBack={onOrderComplaint} />
                 </Col>
                 <Col>
                     <Button type="primary" onClick={onOrderComplete}>Xác nhận</Button>

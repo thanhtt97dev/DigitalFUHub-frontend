@@ -9,7 +9,6 @@ import {
     CUSTOMER_ROLE,
     SELLER_ROLE,
     ORDER_COMPLAINT,
-    ORDER_DISPUTE
 } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 
@@ -18,7 +17,7 @@ import { customerUpdateStatusOrder } from '~/api/order'
 const { TextArea } = Input;
 
 
-function ModalChangeOrderStatus({ orderId, shopId, style, callBack }) {
+function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
 
     var auth = useAuthUser();
     var user = auth();
@@ -48,7 +47,7 @@ function ModalChangeOrderStatus({ orderId, shopId, style, callBack }) {
             userId: user.id,
             shopId: shopId,
             orderId: orderId,
-            statusId: user.roleName === CUSTOMER_ROLE ? ORDER_COMPLAINT : ORDER_DISPUTE,
+            statusId: ORDER_COMPLAINT,
             note: data.note
         }
         customerUpdateStatusOrder(dataBody)
@@ -114,15 +113,7 @@ function ModalChangeOrderStatus({ orderId, shopId, style, callBack }) {
                 <>
                     <Divider />
                     <b style={{ marginLeft: "20px" }}>
-                        {(() => {
-                            if (user.roleName === CUSTOMER_ROLE) {
-                                return "Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng là khiếu nại không?"
-                            } else if (user.roleName === SELLER_ROLE) {
-                                return "Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng là khiếu nại không tranh chấp?"
-                            } else {
-                                return;
-                            }
-                        })()}
+                        Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng là khiếu nại không?
                     </b>
                     <Form
                         name="basic"
@@ -155,4 +146,4 @@ function ModalChangeOrderStatus({ orderId, shopId, style, callBack }) {
         </>)
 }
 
-export default ModalChangeOrderStatus;
+export default ModalChangeOrderStatusComplaint;
