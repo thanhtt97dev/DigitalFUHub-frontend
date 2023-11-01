@@ -19,6 +19,7 @@ import { NotificationContext } from "~/context/NotificationContext";
 import { useAuthUser } from 'react-auth-kit'
 import { getConversation } from '~/api/chat'
 import TextArea from "antd/es/input/TextArea";
+import ModalChangeOrderStatusDispute from "~/components/Modals/ModalChangeOrderStatusDispute";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -112,7 +113,12 @@ function OrderDetailSeller() {
                     <Button type="primary" onClick={() => setIsModalOpen(true)}>Hoàn trả tiền</Button>
                 </Col>
                 <Col>
-                    <Button type="default" danger onClick={handleDisputeOrder}>Tranh chấp</Button>
+                    <ModalChangeOrderStatusDispute
+                        shopId={order.shopId}
+                        customerId={order.customerId}
+                        orderId={order.orderId}
+                        callBack={handleDisputeOrder}
+                    />
                 </Col>
             </Row>
         } else if (order?.statusId === ORDER_DISPUTE) {
@@ -199,6 +205,12 @@ function OrderDetailSeller() {
             })
     }
     const handleDisputeOrder = () => {
+        setOrder(prev => {
+            prev.statusId = ORDER_DISPUTE;
+            return { ...prev }
+        })
+
+        return;
         Modal.confirm({
             title: 'Xác nhận tranh chấp đơn hàng',
             icon: <ExclamationCircleOutlined />,

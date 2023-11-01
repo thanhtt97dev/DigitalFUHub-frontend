@@ -31,6 +31,7 @@ const Cart = () => {
     const [carts, setCarts] = useState([])
     const [reloadCartsFlag, setReloadCartsFlag] = useState(false)
     const [cartDetailIdSelecteds, setCartDetailIdSelecteds] = useState([]);
+    const [cartDetails, setCartDetails] = useState([]); // all cart detail from carts
     const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
     const [userCoin, setUserCoin] = useState(0);
     const [isUseCoin, setIsUseCoin] = useState(false);
@@ -195,8 +196,23 @@ const Cart = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cartDetailIdSelecteds, carts, couponCodeSelecteds, isUseCoin])
-    ///
 
+    // get cart details from carts
+    useEffect(() => {
+        const getCartDetails = (carts) => {
+            const cartDetails = [];
+            for (let i = 0; i < carts.length; i++) {
+                const products = carts[i].products;
+                if (products) cartDetails.push(products);
+            }
+
+            // set cart detail state
+            setCartDetails([].concat(...cartDetails));
+        }
+
+        getCartDetails(carts);
+    }, [carts])
+    ///
 
     /// functions
     const filterCartDetail = (cartDetailIds) => {
@@ -231,6 +247,7 @@ const Cart = () => {
         setCoupons: setCoupons,
         getCouponCodeSelecteds: getCouponCodeSelecteds,
         totalPrice: totalPrice,
+        cartDetails: cartDetails
     }
 
     const dataPropPriceComponent = {
