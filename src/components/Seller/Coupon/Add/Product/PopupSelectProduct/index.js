@@ -40,7 +40,7 @@ const getInfoProducts = (rowsSelect, lsProductFixed, lsProductApplied) => {
 function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, onClose }) {
 
     const [count, setCount] = useState(0);
-    const [rowsSelect, setRowsSelect] = useState([]);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [lsProductFixed, setLsProductFixed] = useState([])
     const [lsProduct, setLsProduct] = useState([])
     const [paramSearchProduct, setParamSearchProduct] = useState({
@@ -48,10 +48,10 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
         productName: ''
     })
     const onSelectRowChange = (newSelectedRowKeys, selectedRows) => {
-        setRowsSelect(newSelectedRowKeys);
+        setSelectedRowKeys(newSelectedRowKeys);
     };
     const rowSelection = {
-        rowsSelect,
+        selectedRowKeys,
         onChange: onSelectRowChange,
         getCheckboxProps: (record) => {
             return {
@@ -61,7 +61,7 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
         },
     };
     useEffect(() => {
-        setRowsSelect(lsProductApplied.map(v => v.productId));
+        setSelectedRowKeys(lsProductApplied.map(v => v.productId));
     }, [lsProductApplied])
 
     useEffect(() => {
@@ -82,12 +82,12 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
 
 
     const handleConfirmRowSelected = () => {
-        const infoProducts = getInfoProducts(rowsSelect, lsProductFixed, lsProductApplied)
+        const infoProducts = getInfoProducts(selectedRowKeys, lsProductFixed, lsProductApplied)
         onSetLsProductApplied(prev => [...prev, ...infoProducts]);
         onClose();
     }
     const handleClosePopupSelectProduct = () => {
-        setRowsSelect(lsProductApplied.map((v) => v.productId))
+        setSelectedRowKeys(lsProductApplied.map((v) => v.productId))
         onClose();
     }
     const handleSearchProduct = ({ productId, productName }) => {
