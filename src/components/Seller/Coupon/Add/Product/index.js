@@ -5,7 +5,7 @@ import { Button, Col, DatePicker, Form, Image, Input, InputNumber, Modal, Row, S
 import dayjs from "dayjs";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { regexPattern } from "~/utils";
-import { RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { COUPON_TYPE_SPECIFIC_PRODUCTS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { checkCouponCodeExist } from "~/api/coupon";
 import { getAllProductsSeller } from "~/api/product";
 import PopupSelectProduct from "./PopupSelectProduct";
@@ -30,6 +30,8 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
         return current && current < dayjs().startOf('day');
     };
     const onFinish = (values) => {
+        values.typeId = COUPON_TYPE_SPECIFIC_PRODUCTS
+        values.productsApplied = lsProductApplied.map(v => v.productId);
         onAddCoupon(values);
     }
 

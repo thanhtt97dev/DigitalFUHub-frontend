@@ -138,6 +138,12 @@ export const RESPONSE_CODE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP = "ORDER_05";
 export const RESPONSE_CODE_ORDER_PRODUCT_HAS_BEEN_BANED = "ORDER_06";
 export const RESPONSE_CODE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT = "ORDER_07";
 
+//order status
+export const RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE = "ORDER_STATUS_01";
+
+//feedback
+export const RESPONSE_CODE_FEEDBACK_ORDER_UN_COMFIRM = "FEEDBACK_01";
+
 // product status
 export const PRODUCT_ACTIVE = 1;
 export const PRODUCT_BAN = 2;
@@ -179,6 +185,7 @@ export const USER_CONVERSATION_TYPE_INITIAL = 1;
 export const USER_CONVERSATION_TYPE_UN_READ = 2;
 export const USER_CONVERSATION_TYPE_IS_READ = 3;
 
-// case add coupon
-export const CASE_ADD_COUPON_FOR_SHOP = '2';
-export const CASE_ADD_COUPON_FOR_PRODUCT = '3';
+//Coupon Type
+export const COUPON_TYPE_ALL_PRODUCTS = 1; //admin
+export const COUPON_TYPE_ALL_PRODUCTS_OF_SHOP = 2;
+export const COUPON_TYPE_SPECIFIC_PRODUCTS = 3; 

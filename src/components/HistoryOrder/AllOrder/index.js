@@ -3,7 +3,7 @@ import CardOrderItem from "../CardOrderItem";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ParseDateTime, getUserId } from "~/utils";
 import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { ORDER_COMPLAINT, ORDER_CONFIRMED, RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
 import { Link } from "react-router-dom";
@@ -67,28 +67,11 @@ function AllOrder({ status = 0, loading, setLoading }) {
     }, [])
 
     const handleOrderComplaint = (orderId, shopId) => {
-        // call api
-        const dataBody = {
-            userId: getUserId(),
-            shopId: shopId,
-            orderId: orderId,
-            statusId: 3
-        }
-        customerUpdateStatusOrder(dataBody)
-            .then(res => {
-                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setOrders(prev => {
-                        const order = prev.find((value) => value.orderId === orderId);
-                        order.statusId = dataBody.statusId
-                        return [...prev]
-                    })
-                } else {
-                    notification("error", "Đã có lỗi xảy ra.")
-                }
-            })
-            .catch(err => {
-                notification("error", "Đã có lỗi xảy ra.")
-            })
+        setOrders(prev => {
+            const order = prev.find((value) => value.orderId === orderId);
+            order.statusId = ORDER_COMPLAINT
+            return [...prev]
+        })
     }
 
     const handleOrderComplete = (orderId, shopId) => {
@@ -97,7 +80,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
             userId: getUserId(),
             shopId: shopId,
             orderId: orderId,
-            statusId: 2
+            statusId: ORDER_CONFIRMED
         }
         customerUpdateStatusOrder(dataBody)
             .then(res => {
@@ -107,6 +90,8 @@ function AllOrder({ status = 0, loading, setLoading }) {
                         order.statusId = dataBody.statusId
                         return [...prev]
                     })
+                } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
+                    notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
                 } else {
                     notification("error", "Đã có lỗi xảy ra.")
                 }

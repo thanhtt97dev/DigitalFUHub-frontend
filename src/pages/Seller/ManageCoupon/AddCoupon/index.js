@@ -5,7 +5,7 @@ import { Card, DatePicker, } from "antd";
 import { useContext, useEffect, useLayoutEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { addCouponSeller } from "~/api/coupon";
-import { CASE_ADD_COUPON_FOR_PRODUCT, CASE_ADD_COUPON_FOR_SHOP, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { COUPON_TYPE_SPECIFIC_PRODUCTS, COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 import { getUserId } from "~/utils";
 import { AddCouponForShop, AddCouponForProduct } from "~/components/Seller/Coupon";
@@ -28,7 +28,7 @@ function AddCoupon() {
     const [searchParams] = useSearchParams();
     useLayoutEffect(() => {
         console.log(searchParams.get("case"))
-        if (searchParams.get("case") !== CASE_ADD_COUPON_FOR_SHOP && searchParams.get("case") !== CASE_ADD_COUPON_FOR_PRODUCT) {
+        if (searchParams.get("case") !== COUPON_TYPE_ALL_PRODUCTS_OF_SHOP + '' && searchParams.get("case") !== COUPON_TYPE_SPECIFIC_PRODUCTS + '') {
             return navigate("/notfound");
         }
     }, [])
@@ -45,7 +45,7 @@ function AddCoupon() {
             isPublic: values.isPublic,
             typeId: values.typeId
         }
-        if (values.case === CASE_ADD_COUPON_FOR_PRODUCT) {
+        if (values.typeId === COUPON_TYPE_SPECIFIC_PRODUCTS) {
             data.productsApplied = values.productsApplied
         }
         addCouponSeller(data)
@@ -65,9 +65,9 @@ function AddCoupon() {
 
     return (<Card title="">
         {(() => {
-            if (searchParams.get("case") === CASE_ADD_COUPON_FOR_SHOP) {
+            if (searchParams.get("case") === COUPON_TYPE_ALL_PRODUCTS_OF_SHOP + '') {
                 return <AddCouponForShop onAddCoupon={onAddCoupon} />;
-            } else if (searchParams.get("case") === CASE_ADD_COUPON_FOR_PRODUCT) {
+            } else if (searchParams.get("case") === COUPON_TYPE_SPECIFIC_PRODUCTS + '') {
                 return <AddCouponForProduct onAddCoupon={onAddCoupon} />;
             } else {
                 return <NotFound />

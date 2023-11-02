@@ -5,14 +5,13 @@ import styles from '~/pages/Cart/Cart.module.scss';
 import Spinning from "~/components/Spinning";
 import { formatPrice, getVietnamCurrentTime } from '~/utils';
 import { getCouponPrivate } from '~/api/coupon';
-import { Typography, Modal, List, Input, Radio } from 'antd';
+import { Typography, Modal, List, Input, Radio, Button, Space } from 'antd';
 import { NotificationContext } from "~/context/NotificationContext";
-import { RESPONSE_CODE_SUCCESS } from '~/constants';
+import { RESPONSE_CODE_SUCCESS, COUPON_TYPE_SPECIFIC_PRODUCTS } from '~/constants';
 
 const { Search } = Input;
 const { Text } = Typography;
 const cx = classNames.bind(styles);
-
 
 const Coupons = ({ dataPropCouponComponent }) => {
 
@@ -26,19 +25,29 @@ const Coupons = ({ dataPropCouponComponent }) => {
         couponCodeSelecteds,
         setCouponCodeSelecteds,
         shopIdSelected,
-        totalPrice
+        totalPrice,
+        cartDetails,
+        cartDetailIdSelecteds
     } = dataPropCouponComponent;
     ///
 
-    // states
+    /// states
     const [inputCouponCode, setInputCouponCode] = useState('');
     const [isCouponInfoSuccess, setIsCouponInfoSuccess] = useState(false);
     const [couponCodeSelected, setCouponCodeSelected] = useState('');
-    //
+    ///
 
     // contexts
     const notification = useContext(NotificationContext);
     //
+
+    /// styles
+    const styleCouponType = {
+        marginTop: 5,
+        marginBottom: 5,
+        width: 'fit-content'
+    }
+    ///
 
 
     /// handles
@@ -109,15 +118,34 @@ const Coupons = ({ dataPropCouponComponent }) => {
         if (!couponCodeSelected) return;
         const couponFind = coupons.find(x => x.couponCode === couponCodeSelected);
         if (!couponFind) return;
-        const priceCoupon = couponFind.priceDiscount;
-        if (totalPrice.originPrice < priceCoupon) {
+        const minTotalOrderValue = couponFind.minTotalOrderValue;
+        if (totalPrice.originPrice < minTotalOrderValue) {
             setCouponCodeSelected(undefined);
             const newCouponCodeSelectedsFilter = couponCodeSelecteds.filter(x => x.couponCode !== couponFind.couponCode);
             setCouponCodeSelecteds(newCouponCodeSelectedsFilter);
         }
 
+
+
+
+
+
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [totalPrice.originPrice]);
+    ///
+
+    /// functions
+    const isSatisfyCouponTypeSpecificProduct = (productIds) => {
+        const cartDetailSelecteds = cartDetails.filter(x => cartDetailIdSelecteds.includes(x.cartDetailId));
+        if (cartDetailSelecteds) {
+            const cartDetailSelectedFil = cartDetailSelecteds.filter(x => productIds.includes(x.productId));
+            if (cartDetailSelectedFil.length > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
     ///
 
 
@@ -156,20 +184,40 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                 <List.Item key={item.couponId}>
                                     <List.Item.Meta
                                         title={item.couponName}
-                                        description={(<><p>Giảm {formatPrice(item.priceDiscount)} - Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}<br />
-
-                                            {
-                                                item.quantity > 0 ? (
-                                                    moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
-                                                        (<Text type="danger"> HSD: {moment(item.endDate).format('DD.MM.YYYY')} (Sắp hết hạn)</Text>)
-                                                        : (<> HSD: {moment(item.endDate).format('DD.MM.YYYY')}</>)) : (<Text type="danger"> Đã hết</Text>)
-                                            }
-                                        </p></>)}
+                                        description={
+                                            (<Space>
+                                                <Space.Compact direction='vertical'>
+                                                    <p>Giảm {formatPrice(item.priceDiscount)} - Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}</p>
+                                                    {
+                                                        item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ?
+                                                            <Button size='small' danger style={styleCouponType}>Sản phẩm nhất định</Button> : <></>
+                                                    }
+                                                    <p>
+                                                        {
+                                                            item.quantity > 0 ? (
+                                                                moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
+                                                                    (<Text type="danger"> HSD: {moment(item.endDate).format('DD.MM.YYYY')} (Sắp hết hạn)</Text>)
+                                                                    : (<> HSD: {moment(item.endDate).format('DD.MM.YYYY')}</>)) : (<Text type="danger"> Đã hết</Text>)
+                                                        }
+                                                    </p>
+                                                </Space.Compact>
+                                            </Space>)
+                                        }
                                     />
                                     { }
                                     <div>
-                                        <Radio disabled={item.quantity <= 0 || ((totalPrice.originPrice - totalPrice.totalPriceProductDiscount) < item.minTotalOrderValue) ? true : false}
-                                            value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                        {
+                                            item.quantity <= 0 || totalPrice.originPrice === 0 || ((totalPrice.originPrice - totalPrice.totalPriceProductDiscount) < item.minTotalOrderValue) ?
+                                                <Radio disabled={true}
+                                                    value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                                : item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ? isSatisfyCouponTypeSpecificProduct(item.productIds) ?
+                                                    <Radio disabled={false}
+                                                        value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                                    : <Radio disabled={true}
+                                                        value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                                    : <Radio disabled={false}
+                                                        value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                        }
                                     </div>
                                 </List.Item>
                             )}

@@ -7,9 +7,8 @@ import { formatStringToCurrencyVND, getUserId, ParseDateTime } from '~/utils/ind
 import { NotificationContext } from "~/context/NotificationContext";
 import dayjs from 'dayjs';
 import {
-    CASE_ADD_COUPON_FOR_PRODUCT,
-    CASE_ADD_COUPON_FOR_SHOP,
-    RESPONSE_CODE_NOT_ACCEPT,
+    COUPON_TYPE_ALL_PRODUCTS_OF_SHOP,
+    COUPON_TYPE_SPECIFIC_PRODUCTS,
     RESPONSE_CODE_SUCCESS,
 } from "~/constants";
 import Column from "antd/es/table/Column";
@@ -164,12 +163,12 @@ function Coupons() {
             >
                 <Row gutter={[12, 12]}>
                     <Col span={12}>
-                        <Link to={`/seller/coupon/add?case=${CASE_ADD_COUPON_FOR_SHOP}`}>
+                        <Link to={`/seller/coupon/add?case=${COUPON_TYPE_ALL_PRODUCTS_OF_SHOP}`}>
                             <Button type="primary">Thêm mã giảm cho shop</Button>
                         </Link>
                     </Col>
                     <Col span={12}>
-                        <Link to={`/seller/coupon/add?case=${CASE_ADD_COUPON_FOR_PRODUCT}`}>
+                        <Link to={`/seller/coupon/add?case=${COUPON_TYPE_SPECIFIC_PRODUCTS}`}>
                             <Button type="primary">Thêm mã giảm cho sản phẩm chỉ định</Button>
                         </Link>
                     </Col>

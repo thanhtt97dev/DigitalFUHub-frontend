@@ -131,7 +131,6 @@ const Prices = ({ dataPropPriceComponent }) => {
         }
 
 
-
         addOrder(finalDataOrder)
             .then((res) => {
                 if (res.status === 200) {
@@ -142,7 +141,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                             .then((res) => {
                                 if (res.status === 200) {
                                     const data = res.data;
-                                    if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                                    if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
                                         unLoadingButton();
                                     }
                                 }

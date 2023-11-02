@@ -2,7 +2,7 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Button, Col, DatePicker, Form, Input, InputNumber, Row, Switch, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { checkCouponCodeExist } from "~/api/coupon";
-import { CASE_ADD_COUPON_FOR_SHOP, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { regexPattern } from "~/utils";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
@@ -12,7 +12,7 @@ function AddCouponForShop({ onAddCoupon = () => { } }) {
         return current && current < dayjs().startOf('day');
     };
     const onFinish = (values) => {
-        values.typeId = CASE_ADD_COUPON_FOR_SHOP;
+        values.typeId = COUPON_TYPE_ALL_PRODUCTS_OF_SHOP;
         onAddCoupon(values);
     }
     return (<Form

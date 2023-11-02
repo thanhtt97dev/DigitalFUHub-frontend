@@ -3,7 +3,7 @@ import { Col, Empty, Row, Spin } from "antd";
 import { useEffect, useState, useContext, useRef } from "react";
 import { getUserId } from "~/utils";
 import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { ORDER_COMPLAINT, ORDER_CONFIRMED, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 
 function OrdersWaitConfirm({ status, loading, setLoading }) {
@@ -57,29 +57,11 @@ function OrdersWaitConfirm({ status, loading, setLoading }) {
     }, [])
 
     const handleOrderComplaint = (orderId, shopId) => {
-        // call api
-        const dataBody = {
-            userId: getUserId(),
-            shopId: shopId,
-            orderId: orderId,
-            statusId: 3
-        }
-        customerUpdateStatusOrder(dataBody)
-            .then(res => {
-                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setOrders(prev => {
-                        const order = prev.find((value) => value.orderId === orderId);
-                        order.statusId = dataBody.statusId
-                        console.log(prev)
-                        return [...prev]
-                    })
-                } else {
-                    notification("error", "Đã có lỗi xảy ra.")
-                }
-            })
-            .catch(err => {
-                notification("error", "Đã có lỗi xảy ra.")
-            })
+        setOrders(prev => {
+            const order = prev.find((value) => value.orderId === orderId);
+            order.statusId = ORDER_COMPLAINT
+            return [...prev]
+        })
     }
 
     const handleOrderComplete = (orderId, shopId) => {
@@ -88,7 +70,7 @@ function OrdersWaitConfirm({ status, loading, setLoading }) {
             userId: getUserId(),
             shopId: shopId,
             orderId: orderId,
-            statusId: 2
+            statusId: ORDER_CONFIRMED
         }
         customerUpdateStatusOrder(dataBody)
             .then(res => {

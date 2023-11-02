@@ -35,6 +35,7 @@ const Products = ({ dataPropProductComponent }) => {
         totalPrice,
         setCoupons,
         getCouponCodeSelecteds,
+        cartDetails
     } = dataPropProductComponent;
     //
 
@@ -183,7 +184,6 @@ const Products = ({ dataPropProductComponent }) => {
     }
 
     const handleOnChangeCheckboxCartItem = (cartId) => {
-        console.log('handleOnChangeCheckboxCartItem = ' + cartId)
         // check and add cart id selectes
         const cartIdSelectedFind = cartIdSelecteds.find(x => x === cartId);
         if (!cartIdSelectedFind) {
@@ -214,28 +214,8 @@ const Products = ({ dataPropProductComponent }) => {
             setCartDetailIdSelecteds([])
             return;
         }
-        // const newCartIdSelecteds = [];
-        // for (let i = 0; i < cartIdSelecteds.length; i++) {
-        //     const cartFind = carts.find(x => x.cartId === cartIdSelecteds[i]);
-        //     if (cartFind) {
-        //         const products = cartFind.products;
-        //         const cartDetailIdSelectedFil = values.filter(x => products.some(y => y.cartDetailId === x));
-        //         if (products.length === cartDetailIdSelectedFil.length) {
-        //             newCartIdSelecteds.push(cartIdSelecteds[i])
-        //         }
-        //     }
-        // }
-
-        // // set new Cart id selecteds
-        // setCartIdSelecteds(newCartIdSelecteds);
-
-        // set new Cart detail id selecteds
         setCartDetailIdSelecteds([...values]);
-
-
     }
-
-    console.log('cartIdSelecteds.length = ' + cartIdSelecteds.length);
 
     ///
 
@@ -286,28 +266,6 @@ const Products = ({ dataPropProductComponent }) => {
     }, [carts])
 
 
-    // useEffect(() => {
-    //     const checkboxAllCartItem = () => {
-    //         debugger
-    //         const cartFilters = carts.filter(x => cartIdSelecteds.includes(x.cartId));
-    //         for (let i = 0; i < cartFilters.length; i++) {
-    //             const products = cartFilters[i].products;
-    //             if (products) {
-    //                 const cartDetailIds = products.map(product => product.cartDetailId);
-    //                 const cartDetailIdSelectedFilter = cartDetailIdSelecteds.filter(x => !cartDetailIds.some(y => x === y));
-
-    //                 //set new cart id selecteds
-    //                 setCartDetailIdSelecteds([...cartDetailIdSelectedFilter, ...cartDetailIds]);
-    //             }
-    //         }
-    //     }
-
-    //     checkboxAllCartItem()
-
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [cartIdSelecteds])
-
-
     useEffect(() => {
         const indeterminateCheckboxAllCartItem = () => {
             const newCartIdSelecteds = [];
@@ -338,7 +296,9 @@ const Products = ({ dataPropProductComponent }) => {
         setCouponCodeSelecteds: setCouponCodeSelecteds,
         setCoupons: setCoupons,
         shopIdSelected: shopIdSelected,
-        totalPrice: totalPrice
+        totalPrice: totalPrice,
+        cartDetails: cartDetails,
+        cartDetailIdSelecteds
     }
 
     ///
