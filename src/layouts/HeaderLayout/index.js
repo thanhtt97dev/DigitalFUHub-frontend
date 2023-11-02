@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
-import { Layout, Image, Space, Button, Dropdown, Avatar, Input } from 'antd';
+import { Layout, Space, Button, Dropdown, Avatar, Input } from 'antd';
 import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
 import {
     MessageOutlined, ShoppingCartOutlined, BellFilled,
-    SettingOutlined, CreditCardOutlined, ShopOutlined, ShoppingOutlined, UserOutlined
+    CreditCardOutlined, ShopOutlined, ShoppingOutlined, UserOutlined
 } from '@ant-design/icons';
 
-import logo from '~/assets/images/Logo.png';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ModalRequestDeposit from '../../components/Modals/ModalRequestDeposit';
-import AccountBalance from '../../components/AccountBalance';
+// import AccountBalance from '../../components/AccountBalance';
 
 import classNames from 'classnames/bind';
 import styles from './HeaderLayout.module.scss';
@@ -147,12 +146,14 @@ function HeaderLayout() {
                         </>
                     ) : (
                         <>
-                            {isGridVisible && (
+                            {/* {isGridVisible && (
                                 <>
                                     <AccountBalance />
                                     <ModalRequestDeposit userId={user.id} style={{ background: 'black' }} />
                                 </>
-                            )}
+                            )} */}
+                            <ModalRequestDeposit userId={user.id} style={{ background: 'black' }} />
+
                             <Link to={'/cart'}>
                                 <ShoppingCartOutlined className={cx("icon")} />
                             </Link>
