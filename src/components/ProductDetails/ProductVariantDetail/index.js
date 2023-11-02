@@ -6,7 +6,7 @@ import { addProductToCart } from '~/api/cart';
 import { formatPrice } from '~/utils';
 import { useNavigate } from 'react-router-dom';
 import ModalAlert from '~/components/Modals/ModalAlert';
-import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS } from '~/constants';
+import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS, PRODUCT_BAN } from '~/constants';
 import { CreditCardOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Radio, Card, Typography } from 'antd';
 
@@ -132,6 +132,10 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         const prices = productVariants?.map(variant => variant.price);
         return [Math.min(...prices), Math.max(...prices)]
     }
+
+    const disableProduct = () => {
+        return product?.productStatusId === PRODUCT_BAN ? true : false;
+    }
     ///
 
     /// useEffect
@@ -146,6 +150,8 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
 
 
+
+
     if (product) {
         minPrice = rangePrice(product.productVariants)[0];
         maxPrice = rangePrice(product.productVariants)[1];
@@ -155,14 +161,17 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
 
     return (
-        <Card className={cx('margin-bottom')}>
+        <Card className={disableProduct() ? cx('margin-bottom', 'opacity-disabled') : cx('margin-bottom')}>
             <Row>
                 {product ? (<>
-                    <Col span={11} style={{ padding: 15 }}>
+                    <Col span={11} style={{ padding: 15, position: 'relative' }}>
                         <ProductMedias productMedias={product.productMedias} />
+                        {
+                            disableProduct() ? <div className={cx('circle')}> Sản phẩm này đã bị BAN</div> : <></>
+                        }
                     </Col>
                     <Col span={13} style={{ padding: 15 }}>
-                        <div>
+                        <div className={disableProduct() ? cx('pointer-events-item') : ''}>
                             <Title level={3}>{product.productName}</Title>
                             <div className={cx('space-div-flex')}>
                                 {productVariantsSelected ? (
@@ -213,10 +222,10 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                             <div
 
                             >
-                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
+                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={disableProduct() || product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
                                     Mua ngay
                                 </Button>
-                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
+                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={disableProduct() || product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
                                     Thêm vào giỏ
                                 </Button>
                             </div>
