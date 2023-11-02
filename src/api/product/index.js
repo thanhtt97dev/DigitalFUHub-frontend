@@ -11,11 +11,12 @@ export const getAllProducts = () => {
 export const getAllProductsSeller = (userId) => {
     return apiGetAuth(`api/Products/Seller/${userId}/All`);
 };
-
+export const getListProductOfSeller = (productId, productName) => {
+    return apiGetAuth(`api/Products/Seller/List?productId=${productId}&productName=${productName}`);
+};
 export const getProductSellerById = (userId, productId) => {
     return apiGetAuth(`api/Products/Seller/${userId}/${productId}`);
 };
-
 export const addProductSeller = (formData) => {
     return apiPostAuthForm('api/Products/Add', formData);
 };
