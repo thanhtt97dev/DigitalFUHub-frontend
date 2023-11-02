@@ -8,7 +8,7 @@ import {
     RESPONSE_CODE_SUCCESS,
     CUSTOMER_ROLE,
     SELLER_ROLE,
-    ORDER_COMPLAINT,
+    RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE
 } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 
@@ -54,8 +54,10 @@ function ModalChangeOrderStatusDispute({ orderId, customerId, shopId, style, cal
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     callBack();
                     notification("success", "Đơn hàng được chuyển sang tranh chấp, vui lòng vào chat để người quản lý giải quyết.");
+                } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
+                    notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng load lại trang!")
                 } else {
-                    notification("error", "Vui lòng kiểm tra lại.");
+                    notification("error", "Đã có lỗi xảy ra.")
                 }
             })
             .catch((err) => { notification("error", "Đã có lỗi xảy ra."); })

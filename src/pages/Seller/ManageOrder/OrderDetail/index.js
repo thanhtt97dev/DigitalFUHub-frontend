@@ -14,7 +14,7 @@ import {
 } from "@ant-design/icons";
 import logoFPT from '~/assets/images/fpt-logo.jpg'
 import { Button, Card, Col, Divider, Image, Rate, Row, Space, Typography, Tag, Tooltip, Form, Upload, Modal, Avatar, Spin, Descriptions } from "antd";
-import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
+import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 import { useAuthUser } from 'react-auth-kit'
 import { getConversation } from '~/api/chat'
@@ -194,8 +194,10 @@ function OrderDetailSeller() {
                         return { ...prev }
                     })
                     notification("success", "Hoàn tiền đơn hàng thành công.");
+                } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
+                    notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng load lại trang!")
                 } else {
-                    notification("error", "Vui lòng kiểm tra lại.");
+                    notification("error", "Đã có lỗi xảy ra.")
                 }
                 setIsModalOpen(false);
             })

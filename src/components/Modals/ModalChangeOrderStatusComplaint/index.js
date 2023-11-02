@@ -9,6 +9,7 @@ import {
     CUSTOMER_ROLE,
     SELLER_ROLE,
     ORDER_COMPLAINT,
+    RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE
 } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
 
@@ -54,6 +55,8 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     callBack()
+                } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
+                    notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng load lại trang!")
                 } else {
                     notification("error", "Đã có lỗi xảy ra.")
                 }
