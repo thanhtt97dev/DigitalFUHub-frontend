@@ -55,7 +55,7 @@ function ModalChangeOrderStatusDispute({ orderId, customerId, shopId, style, cal
                     callBack();
                     notification("success", "Đơn hàng được chuyển sang tranh chấp, vui lòng vào chat để người quản lý giải quyết.");
                 } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
-                    notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng load lại trang!")
+                    notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
                 } else {
                     notification("error", "Đã có lỗi xảy ra.")
                 }

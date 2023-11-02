@@ -56,7 +56,7 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     callBack()
                 } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
-                    notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng load lại trang!")
+                    notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
                 } else {
                     notification("error", "Đã có lỗi xảy ra.")
                 }
