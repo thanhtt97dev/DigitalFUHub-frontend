@@ -124,6 +124,12 @@ function OrderDetailSeller() {
         } else if (order?.statusId === ORDER_DISPUTE) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
+                    <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
+                </Col>
+                <Col>
+                    <Button type="primary" onClick={() => setIsModalOpen(true)}>Hoàn trả tiền</Button>
+                </Col>
+                <Col>
                     <Button
                         type="primary"
                         danger
@@ -132,9 +138,6 @@ function OrderDetailSeller() {
                     >
                         Nhắn tin với người mua và quản trị viên
                     </Button>
-                </Col>
-                <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
                 </Col>
             </Row>
         } else if (order?.statusId === ORDER_REJECT_COMPLAINT) {
@@ -212,35 +215,6 @@ function OrderDetailSeller() {
             return { ...prev }
         })
 
-        return;
-        Modal.confirm({
-            title: 'Xác nhận tranh chấp đơn hàng',
-            icon: <ExclamationCircleOutlined />,
-            content: 'Bạn có muốn tranh chấp đơn hàng này không?',
-            okText: 'Xác nhận',
-            cancelText: 'Hủy',
-            onOk: () => {
-                const data = {
-                    customerId: order.customerId,
-                    sellerId: getUserId(),
-                    orderId: order.orderId
-                }
-                updateDisputeOrder(data)
-                    .then((res) => {
-                        if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                            setOrder(prev => {
-                                prev.statusId = ORDER_DISPUTE;
-                                return { ...prev }
-                            })
-                            notification("success", "Đơn hàng được chuyển sang tranh chấp, vui lòng vào chat để người quản lý giải quyết.");
-                        } else {
-                            notification("error", "Vui lòng kiểm tra lại.");
-                        }
-                    })
-                    .catch((err) => { notification("error", "Đã có lỗi xảy ra."); })
-            }
-
-        });
     };
     return (<>
         <Modal
