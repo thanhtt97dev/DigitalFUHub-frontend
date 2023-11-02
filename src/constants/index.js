@@ -178,3 +178,7 @@ export const MESSAGE_TYPE_CONVERSATION_IMAGE = "1";
 export const USER_CONVERSATION_TYPE_INITIAL = 1;
 export const USER_CONVERSATION_TYPE_UN_READ = 2;
 export const USER_CONVERSATION_TYPE_IS_READ = 3;
+
+// case add coupon
+export const CASE_ADD_COUPON_FOR_SHOP = '2';
+export const CASE_ADD_COUPON_FOR_PRODUCT = '3';
