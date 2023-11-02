@@ -8,7 +8,7 @@ import { useAuthUser } from 'react-auth-kit';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { useNavigate, useParams } from 'react-router-dom';
 import { notification } from 'antd';
-import { RESPONSE_CODE_PRODUCT_ACTIVE, RESPONSE_CODE_PRODUCT_BAN, RESPONSE_CODE_PRODUCT_REMOVE, RESPONSE_CODE_PRODUCT_HIDE } from '~/constants';
+import { RESPONSE_CODE_PRODUCT_ACTIVE, RESPONSE_CODE_PRODUCT_BAN, RESPONSE_CODE_PRODUCT_REMOVE, RESPONSE_CODE_PRODUCT_HIDE, RESPONSE_CODE_DATA_NOT_FOUND } from '~/constants';
 
 const ProductDetail = () => {
 
@@ -58,17 +58,20 @@ const ProductDetail = () => {
                         const data = response.data;
                         // status of response
                         const status = data.status;
-                        if (status.responseCode === RESPONSE_CODE_PRODUCT_REMOVE) {
+                        const responseCode = status.responseCode;
+                        if (responseCode === RESPONSE_CODE_PRODUCT_REMOVE
+                            ||
+                            responseCode === RESPONSE_CODE_PRODUCT_HIDE
+                            ||
+                            responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
                             navigate('/notFound');
+                        } else if (responseCode === RESPONSE_CODE_PRODUCT_ACTIVE || responseCode === RESPONSE_CODE_PRODUCT_BAN) {
+                            // result of response
+                            const result = data.result;
+                            setProduct(result)
+                            setProductVariants([...result.productVariants])
                         }
 
-                        // result of response
-                        const result = data.result;
-                        if (Object.keys(result).length === 0) {
-                            navigate('/notFound');
-                        }
-                        setProduct(result)
-                        setProductVariants([...result.productVariants])
                     }
                 })
                 .catch((errors) => {

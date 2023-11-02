@@ -143,6 +143,9 @@ function CardOrderItem({
                     <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
                 </Col>
                 <Col>
+                    <Button type="primary" onClick={onOrderComplete}>Xác nhận đơn hàng</Button>
+                </Col>
+                <Col>
                     <Link to={`/history/order/${orderId}`}>
                         <Button type="default">Chi tiết</Button>
                     </Link>
