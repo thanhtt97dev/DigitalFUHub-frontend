@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Col, Form, Image, Input, Modal, Row, Table } from "antd";
+import { Button, Checkbox, Col, Form, Image, Input, Modal, Row, Table } from "antd";
 import { memo, useEffect, useLayoutEffect, useState } from "react";
 import { getListProductOfSeller } from "~/api/product";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
@@ -26,11 +26,13 @@ const columns = [
     },
 ];
 
-const getInfoProducts = (rowsSelect, lsProductFixed) => {
+const getInfoProducts = (rowsSelect, lsProductFixed, lsProductApplied) => {
     let products = [];
     for (let index = 0; index < rowsSelect.length; index++) {
-        const product = lsProductFixed.find(p => p.productId === rowsSelect[index]);
-        products.push(product)
+        if (!lsProductApplied.some(v => v.productId === rowsSelect[index])) {
+            const product = lsProductFixed.find(p => p.productId === rowsSelect[index]);
+            products.push(product)
+        }
     }
     return products;
 }
@@ -47,11 +49,16 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
     })
     const onSelectRowChange = (newSelectedRowKeys, selectedRows) => {
         setRowsSelect(newSelectedRowKeys);
-        console.log(selectedRows);
     };
     const rowSelection = {
-        lsProductApplied,
+        rowsSelect,
         onChange: onSelectRowChange,
+        getCheckboxProps: (record) => {
+            return {
+                disabled: lsProductApplied.some(v => v.productId === record.productId),
+                name: record.productId,
+            };
+        },
     };
     useEffect(() => {
         setRowsSelect(lsProductApplied.map(v => v.productId));
@@ -75,8 +82,8 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
 
 
     const handleConfirmRowSelected = () => {
-        const infoProducts = getInfoProducts(rowsSelect, lsProductFixed)
-        onSetLsProductApplied(infoProducts);
+        const infoProducts = getInfoProducts(rowsSelect, lsProductFixed, lsProductApplied)
+        onSetLsProductApplied(prev => [...prev, ...infoProducts]);
         onClose();
     }
     const handleClosePopupSelectProduct = () => {
@@ -135,7 +142,13 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
                 </Col>
             </Row>
         </Form>
-        <Table scroll={{ y: 400 }} pagination={false} rowKey={(record) => record.productId} selectedRowKeys={rowSelection} rowSelection={rowSelection} columns={columns} dataSource={lsProduct} />
+        <Table
+            rowClassName={record => lsProductApplied.some(v => v.productId === record.productId) && "disabled-row"}
+            scroll={{ y: 400 }}
+            rowKey={(record) => record.productId}
+            rowSelection={rowSelection}
+            columns={columns}
+            dataSource={lsProduct} />
     </Modal >
 }
 

@@ -8,3 +8,7 @@
 .ck.ck-powered-by {
     display: none;
 }
+.disabled-row {
+    background-color: #ebebeb; /*#dcdcdc*/
+    pointer-events: none;
+}

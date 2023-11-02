@@ -36,12 +36,12 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
     }
 
     return (<>
-        <PopupSelectProduct
+        {isOpenPopupSelectProduct && <PopupSelectProduct
             lsProductApplied={lsProductApplied}
             onSetLsProductApplied={setLsProductApplied}
             onClose={handleClosePopupSelectProduct}
             isOpen={isOpenPopupSelectProduct}
-        />
+        />}
         <Form
             // style={{
             //     maxWidth: '600px'
