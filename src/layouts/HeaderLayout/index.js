@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
 import { Layout, Space, Button, Dropdown, Avatar, Input } from 'antd';
 import Logout from '~/components/Logout';
+import Message from '~/components/Message';
 import Notificaion from '~/components/Notification';
 import {
     MessageOutlined, ShoppingCartOutlined, BellFilled,
@@ -164,9 +165,10 @@ function HeaderLayout() {
                                 <ShoppingCartOutlined className={cx("icon")} />
                             </Link>
                             <Notificaion />
-                            <Link to={'/chatBox'}>
+                            <Message />
+                            {/* <Link to={'/chatBox'}>
                                 <MessageOutlined className={cx("icon")} />
-                            </Link>
+                            </Link> */}
                             <Dropdown
                                 menu={{ items }}
                                 placement="bottomRight"
