@@ -95,32 +95,46 @@ const WishList = () => {
     }
     ///
 
+    /// styles
+    const styleImage = { width: '100%', height: '35vh', borderRadius: 7 }
+    const styleCardItem = {
+        width: '35vh',
+        height: '61vh',
+        backgroundColor: '#fff',
+        borderRadius: '10px',
+        boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.2)',
+    }
+    const styleContainerImage = { width: '100%', textAlign: 'center' }
+    ///
+
     return (
         <Card title="Danh sách các sản phẩm yêu thích">
             {
                 <Space size={[10, 16]} wrap>
                     {products.map((product, index) => (
-                        <Card hoverable style={{ width: '35vh', height: '55vh' }} bodyStyle={{ padding: 10 }}>
-                            <Row>
-                                <Col>
-                                    <Image width={160} height={200} src={product.thumbnail} />
-                                </Col>
-                            </Row>
-                            <Row>
+                        <Card key={index} style={styleCardItem} bodyStyle={{ padding: 10, }}>
+                            <div style={styleContainerImage} className={cx('margin-bottom')}>
+                                <Image style={styleImage} src={product.thumbnail} />
+                            </div>
+                            <Row className={cx('margin-bottom')}>
                                 <Col>
                                     <Space>
-                                        <Space.Compact direction="vertical">
+                                        <Space.Compact direction="vertical" className={cx('flex-item-center')}>
                                             <Link to={'/product/' + product.productId} ><Title level={4}>{product.productName}</Title></Link>
-                                            <Space align="center">
-                                                {product.productVariants.length > 1 ? (<RangeOriginPriceProductVariant productVariants={product.productVariants} />)
-                                                    : (product.productVariants.length === 1 ? <Text delete strong type="secondary">{formatPrice(product.productVariants[0].price)}</Text> : <></>)}
-                                                <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
+                                            <Space className={cx('margin-bottom')}>
+                                                <Space.Compact direction="vertical">
+                                                    <Space align="center" className={cx('flex-item-center')}>
+                                                        {product.productVariants.length > 1 ? (<RangeOriginPriceProductVariant productVariants={product.productVariants} />)
+                                                            : (product.productVariants.length === 1 ? <Text delete strong type="secondary">{formatPrice(product.productVariants[0].price)}</Text> : <></>)}
+                                                        <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
+                                                    </Space>
+                                                    <div>
+                                                        {product.productVariants.length > 1 ? (<RangeDiscountPriceProductVariant productVariants={product.productVariants} discount={product.discount} />)
+                                                            : (product.productVariants.length === 1 ? <Text strong>{formatPrice(discountPrice(product.productVariants[0].price, product.discount))}</Text> : <></>)}
+                                                    </div>
+
+                                                </Space.Compact>
                                             </Space>
-
-                                            {product.productVariants.length > 1 ? (<RangeDiscountPriceProductVariant productVariants={product.productVariants} discount={product.discount} />)
-                                                : (product.productVariants.length === 1 ? <Text strong>{formatPrice(discountPrice(product.productVariants[0].price, product.discount))}</Text> : <></>)}
-
-
                                             <Space align="center">
                                                 <Link to={'/product/' + product.productId} >
                                                     <Button type="link" icon={<ShoppingCartOutlined />}>
@@ -139,23 +153,6 @@ const WishList = () => {
                             </Row>
                         </Card>
                     ))}
-
-                    {/* <Col span={10}>
-                                    <Space>
-                                        <Space.Compact direction="vertical">
-                                            <Title level={3}>{product.productName}</Title>
-                                            <Button type="link" icon={<ShoppingCartOutlined />}>
-                                                Thêm vào giỏ
-                                            </Button>
-                                        </Space.Compact>
-                                    </Space>
-                                </Col>
-                                <Col span={5}>
-
-                                </Col>
-                                <Col span={3}>
-
-                                </Col> */}
                 </Space>
 
 
