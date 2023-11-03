@@ -9,7 +9,8 @@ import {
     BankOutlined,
     ShopOutlined,
     ShoppingOutlined,
-    CreditCardOutlined
+    CreditCardOutlined,
+    HeartFilled
 } from '@ant-design/icons';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import { useAuthUser } from 'react-auth-kit';
@@ -43,6 +44,12 @@ const items = [
         label: 'Giao dịch tài chính',
         link: '/finance',
         role: [CUSTOMER_ROLE, SELLER_ROLE]
+    },
+    {
+        icon: HeartFilled,
+        label: 'Sản phẩm yêu thích',
+        link: '/settings/wishlist',
+        role: [CUSTOMER_ROLE]
     },
     {
         icon: ShoppingOutlined,

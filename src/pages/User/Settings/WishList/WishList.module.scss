@@ -1,0 +1,25 @@
+.red-box {
+    width: 5vh;
+    height: 5vh;
+    background-color: #dc3545;
+    margin-left: 10px;
+    border-radius: 5px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.text-discount {
+    font-size: 12px;
+    color: white;
+}
+
+.flex-item-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.margin-bottom {
+    margin-bottom: 10px;
+}

@@ -25,7 +25,7 @@ const ProductDetail = () => {
     /// variables
     const auth = useAuthUser();
     const user = auth();
-    const userId = user.id;
+    const userId = user?.id;
     const initialProductId = id;
     ///
 

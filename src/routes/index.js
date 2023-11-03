@@ -6,6 +6,7 @@ import Verification2FA from '~/pages/Verification2FA';
 import SettingsLayout from '~/pages/User/Settings/SettingsLayout';
 import Personal from '~/pages/User/Settings/Personal';
 import Security from '~/pages/User/Settings/Security';
+import WishList from '~/pages/User/Settings/WishList';
 import ChatBox from '~/pages/ChatBox';
 import NotFound from '~/pages/NotFound';
 import Deposit from '~/pages/User/Deposit';
@@ -90,6 +91,14 @@ const routesConfig = [
         component: <SettingsLayout><Security /></SettingsLayout>,
         role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
+    {
+        title: 'user settings',
+        path: '/settings/wishlist',
+        layout: <NormalLayout />,
+        component: <SettingsLayout><WishList /></SettingsLayout>,
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
+    },
+
     {
         title: 'user settings',
         path: '/settings/bankAccount',
