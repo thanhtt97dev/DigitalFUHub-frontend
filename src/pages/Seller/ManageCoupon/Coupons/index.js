@@ -12,14 +12,14 @@ import {
     RESPONSE_CODE_SUCCESS,
 } from "~/constants";
 import Column from "antd/es/table/Column";
-import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { EditOutlined, PlusOutlined, QuestionCircleOutlined, ShopOutlined, ShoppingOutlined } from "@ant-design/icons";
 import { addCouponSeller, removeCouponSeller, getCouponsSeller, updateStatusCouponSeller, getCouponSellerById, editCouponSeller } from "~/api/coupon";
 import { checkCouponCodeExist } from "~/api/coupon";
 import { regexPattern } from "../../../../utils";
 import styles from "./Coupon.module.scss"
 import classNames from "classnames/bind";
 import { Link } from "react-router-dom";
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const cx = classNames.bind(styles)
 
@@ -157,19 +157,46 @@ function Coupons() {
     const [isOpenOptionAddCouponModal, setIsOpenOptionAddCouponModal] = useState(false);
     return (
         <>
-            <Modal title="Basic Modal" open={isOpenOptionAddCouponModal}
+            <Modal title="Chọn loại mã giảm giá" open={isOpenOptionAddCouponModal}
                 onOk={() => { setIsOpenOptionAddCouponModal(false) }}
                 onCancel={() => { setIsOpenOptionAddCouponModal(false) }}
+                footer={null}
             >
                 <Row gutter={[12, 12]}>
                     <Col span={12}>
                         <Link to={`/seller/coupon/add?case=${COUPON_TYPE_ALL_PRODUCTS_OF_SHOP}`}>
-                            <Button type="primary">Thêm mã giảm cho shop</Button>
+                            <Space
+                                align="center"
+                                direction="vertical"
+                                style={{
+                                    backgroundColor: '#1565C0',
+                                    borderRadius: '10px',
+                                    padding: '10px',
+                                    color: 'white',
+                                    height: '115px'
+                                }}
+                            >
+                                <ShopOutlined style={{ fontSize: '40px' }} />
+                                <Title level={5} style={{ color: 'inherit', textAlign: 'center' }}>Thêm mã giảm giá cho cửa hàng</Title>
+                            </Space>
                         </Link>
                     </Col>
                     <Col span={12}>
                         <Link to={`/seller/coupon/add?case=${COUPON_TYPE_SPECIFIC_PRODUCTS}`}>
-                            <Button type="primary">Thêm mã giảm cho sản phẩm chỉ định</Button>
+                            <Space
+                                align="center"
+                                direction="vertical"
+                                style={{
+                                    backgroundColor: '#1565C0',
+                                    borderRadius: '10px',
+                                    padding: '10px',
+                                    color: 'white',
+                                    maxHeight: '115px'
+                                }}
+                            >
+                                <ShoppingOutlined style={{ fontSize: '40px' }} />
+                                <Title level={5} style={{ color: 'inherit', textAlign: 'center' }}>Thêm mã giảm cho sản phẩm chỉ định</Title>
+                            </Space>
                         </Link>
                     </Col>
                 </Row>
@@ -228,12 +255,10 @@ function Coupons() {
                         </Row>
                         <Row>
                             <Col offset={1}>
-                                <Button type="primary" onClick={() => setIsOpenOptionAddCouponModal(true)}>Thêm mã giảm giá</Button>
+
+                                <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsOpenOptionAddCouponModal(true)}>Tạo mã giảm giá</Button>
                             </Col>
                         </Row>
-                        <Form.Item style={{ position: 'absolute', top: 180, left: 550 }}>
-
-                        </Form.Item>
                     </Form>
                     <Table
                         style={{
