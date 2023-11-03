@@ -6,7 +6,8 @@ import Logout from '~/components/Logout';
 import Notificaion from '~/components/Notification';
 import {
     MessageOutlined, ShoppingCartOutlined, BellFilled,
-    CreditCardOutlined, ShopOutlined, ShoppingOutlined, UserOutlined
+    CreditCardOutlined, ShopOutlined, ShoppingOutlined, UserOutlined,
+    HeartFilled
 } from '@ant-design/icons';
 
 import logoFPT from '~/assets/images/fpt-logo.jpg';
@@ -32,6 +33,11 @@ const itemsFixed = [
     {
         key: 'history orders',
         label: <Link to={"/history/order"}><ShoppingOutlined /> Lịch sử mua hàng</Link>,
+        roles: [CUSTOMER_ROLE, SELLER_ROLE]
+    },
+    {
+        key: 'wishlist',
+        label: <Link to={"/settings/wishlist"}><HeartFilled /> Sản phẩm yêu thích</Link>,
         roles: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {

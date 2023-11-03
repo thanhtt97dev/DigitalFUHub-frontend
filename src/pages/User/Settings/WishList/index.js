@@ -154,8 +154,6 @@ const WishList = () => {
                         </Card>
                     ))}
                 </Space>
-
-
             }
         </Card>
     )
