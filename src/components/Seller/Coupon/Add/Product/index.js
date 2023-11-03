@@ -276,7 +276,9 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
             <Row>
                 <Col span={8} offset={1}><label>Sản phẩm được áp dụng: <Tooltip title={<div>Mã giảm giá sẽ được áp dụng cho những sản phẩm được chọn.</div>}><QuestionCircleOutlined /></Tooltip></label></Col>
                 <Col span={15}>
+
                     <Form.Item name="applicableProducts">
+                        <span>Đã chọn ({lsProductApplied.length}) sản phẩm</span>
                         <Button type="dashed" danger icon={<PlusOutlined />} onClick={handleOpenPopupSelectProduct}>Chọn sản phẩm</Button>
                     </Form.Item>
                     {lsProductApplied.length > 0 &&

@@ -44,12 +44,52 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
         productId: '',
         productName: ''
     })
-    const onSelectRowChange = (newSelectedRowKeys, selectedRows) => {
-        setSelectedRows(selectedRows);
-    };
+    // const onSelectRowChange = (newSelectedRowKeys, selectedRows) => {
+    //     setSelectedRows(selectedRows);
+    // };
+    const onSelectandDeselectRowChange = (record, selected, selectedRows, nativeEvent) => {
+        if (!selected) {
+            setSelectedRows(prev => {
+                const result = prev.filter(v => v.productId !== record.productId);
+                return [...result];
+            })
+        } else {
+            setSelectedRows(prev => [...prev, record])
+        }
+    }
+    const onSelectandDeselectAllRowChange = (selected, selectedRows, changeRows) => {
+        console.log(selected, selectedRows, changeRows);
+        if (selected) {
+            setSelectedRows(prev => {
+                if (changeRows.length > 0) {
+                    let newSelectedRows = [];
+                    for (let i = 0; i < changeRows.length; i++) {
+                        if (!prev.some(v => v.productId === changeRows[i].productId)) {
+                            newSelectedRows.push(changeRows[i])
+                        }
+                    }
+                    return [...prev, ...newSelectedRows];
+                } else {
+                    return [...prev]
+                }
+            });
+        } else {
+            setSelectedRows(prev => {
+                if (changeRows.length > 0) {
+                    const newSelectedRows = prev.filter(v => !changeRows.some(cr => cr.productId === v.productId));
+                    return newSelectedRows;
+                } else {
+                    return [...prev]
+                }
+            })
+        }
+
+    }
     const rowSelection = {
-        selectedRowKeys: selectedRows.map(v => v.productId),
-        onChange: onSelectRowChange,
+        selectedRowKeys: selectedRows.map(v => v?.productId),
+        // onChange: onSelectRowChange,
+        onSelect: onSelectandDeselectRowChange,
+        onSelectAll: onSelectandDeselectAllRowChange,
         getCheckboxProps: (record) => {
             return {
                 disabled: lsProductApplied.some(v => v.productId === record.productId),
@@ -135,9 +175,13 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
                 </Col>
             </Row>
         </Form>
+        <div>Đã lựa chọn ({selectedRows.length})</div>
         <Table
             rowClassName={record => lsProductApplied.some(v => v.productId === record.productId) && "disabled-row"}
             scroll={{ y: 400 }}
+            pagination={
+                { pageSize: 2 }
+            }
             rowKey={(record) => record.productId}
             rowSelection={rowSelection}
             columns={columns}
