@@ -26,12 +26,11 @@ const columns = [
     },
 ];
 
-const getInfoProducts = (rowsSelect, lsProductFixed, lsProductApplied) => {
+const getInfoProducts = (rowsSelect, lsProductApplied) => {
     let products = [];
     for (let index = 0; index < rowsSelect.length; index++) {
-        if (!lsProductApplied.some(v => v.productId === rowsSelect[index])) {
-            const product = lsProductFixed.find(p => p.productId === rowsSelect[index]);
-            products.push(product)
+        if (!lsProductApplied.some(v => v.productId === rowsSelect[index].productId)) {
+            products.push(rowsSelect[index])
         }
     }
     return products;
@@ -39,19 +38,17 @@ const getInfoProducts = (rowsSelect, lsProductFixed, lsProductApplied) => {
 
 function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, onClose }) {
 
-    const [count, setCount] = useState(0);
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const [lsProductFixed, setLsProductFixed] = useState([])
+    const [selectedRows, setSelectedRows] = useState([]);
     const [lsProduct, setLsProduct] = useState([])
     const [paramSearchProduct, setParamSearchProduct] = useState({
         productId: '',
         productName: ''
     })
     const onSelectRowChange = (newSelectedRowKeys, selectedRows) => {
-        setSelectedRowKeys(newSelectedRowKeys);
+        setSelectedRows(selectedRows);
     };
     const rowSelection = {
-        selectedRowKeys,
+        selectedRowKeys: selectedRows.map(v => v.productId),
         onChange: onSelectRowChange,
         getCheckboxProps: (record) => {
             return {
@@ -61,7 +58,7 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
         },
     };
     useEffect(() => {
-        setSelectedRowKeys(lsProductApplied.map(v => v.productId));
+        setSelectedRows(lsProductApplied);
     }, [lsProductApplied])
 
     useEffect(() => {
@@ -69,10 +66,6 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setLsProduct(res.data.result);
-                    if (count === 0) {
-                        setLsProductFixed(res.data.result)
-                    }
-                    setCount(prev => prev++);
                 }
             })
             .catch((err) => {
@@ -82,12 +75,12 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
 
 
     const handleConfirmRowSelected = () => {
-        const infoProducts = getInfoProducts(selectedRowKeys, lsProductFixed, lsProductApplied)
+        const infoProducts = getInfoProducts(selectedRows, lsProductApplied)
         onSetLsProductApplied(prev => [...prev, ...infoProducts]);
         onClose();
     }
     const handleClosePopupSelectProduct = () => {
-        setSelectedRowKeys(lsProductApplied.map((v) => v.productId))
+        // setSelectedRows(lsProductApplied);
         onClose();
     }
     const handleSearchProduct = ({ productId, productName }) => {
