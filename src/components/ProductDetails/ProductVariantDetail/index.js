@@ -91,6 +91,53 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                 openNotification("error", "Có lỗi xảy ra trong quá trình thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!")
             })
     }
+
+    const handleClickWishList = () => {
+        if (userId === undefined) {
+            navigate('/login')
+            return;
+        }
+
+        // data request dto
+        const dataRequest = {
+            userId: userId,
+            productId: product.productId
+        }
+
+        if (isWishList) {
+            // remove wish list
+            removeWishList(dataRequest)
+                .then((res) => {
+                    if (res.status === 200) {
+                        const data = res.data;
+                        const status = data.status;
+                        if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                            setIsWishList(false);
+                            openNotification("success", "Xóa thành công khỏi mục sản phẩm yêu thích");
+                        }
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        } else {
+            // add wish list
+            addWishList(dataRequest)
+                .then((res) => {
+                    if (res.status === 200) {
+                        const data = res.data;
+                        const status = data.status;
+                        if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                            setIsWishList(true);
+                            openNotification("success", "Thêm thành công vào mục sản phẩm yêu thích");
+                        }
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+    }
     ///
 
     /// child components
@@ -158,6 +205,9 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                             setIsWishList(result);
                         }
                     }
+                })
+                .catch((err) => {
+                    console.log(err)
                 })
         } else {
             setIsWishList(false);
@@ -230,11 +280,16 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                 )}
                                 <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
                             </div>
-                            <Space align='center'>
-                                <button style={buttonStyle}>
-                                    <HeartFilled style={iconStyle} />
-                                </button>
-                            </Space>
+                            {
+                                userId !== product.shop.shopId ? (
+                                    <Space align='center'>
+                                        <button style={buttonStyle} onClick={handleClickWishList}>
+                                            <HeartFilled style={iconStyle} />
+                                        </button>
+                                    </Space>
+                                ) : (<></>)
+                            }
+
                             <Divider />
                             <div style={{ marginBottom: 20 }}>
                                 <Title level={4}>Loại sản phẩm</Title>
@@ -252,10 +307,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
                             </div>
                             <Divider />
-
-                            <div
-
-                            >
+                            <div>
                                 <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={disableProduct() || product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
                                     Mua ngay
                                 </Button>
