@@ -3,21 +3,21 @@ import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 import React, { useState, useEffect } from "react";
 import CarouselCustom from '~/components/Carousels/CarouselCustom';
 import { addProductToCart } from '~/api/cart';
+import { isProductWishList, addWishList, removeWishList } from '~/api/wishList';
 import { formatPrice } from '~/utils';
 import { useNavigate } from 'react-router-dom';
 import ModalAlert from '~/components/Modals/ModalAlert';
-import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS, PRODUCT_BAN } from '~/constants';
-import { CreditCardOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Radio, Card, Typography } from 'antd';
-
-
+import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS, PRODUCT_BAN, RESPONSE_CODE_SUCCESS } from '~/constants';
+import { CreditCardOutlined, ShoppingCartOutlined, HeartFilled } from '@ant-design/icons';
+import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Radio, Card, Typography, Space } from 'antd';
 
 const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, openNotification, userId }) => {
 
     /// states
     const [quantity, setQuantity] = useState(1);
     const [isModalNotifyQuantityOpen, setIsModalNotifyQuantityOpen] = useState(false);
-    const [contentProductInvalidQuantity, setContentProductInvalidQuantity] = useState('')
+    const [contentProductInvalidQuantity, setContentProductInvalidQuantity] = useState('');
+    const [isWishList, setIsWishList] = useState(false);
     ///
 
     const cx = classNames.bind(styles);
@@ -141,16 +141,45 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     /// useEffect
     useEffect(() => {
         setQuantity(1)
-    }, [handleSelectProductVariant])
+    }, [handleSelectProductVariant]);
+
+    console.log('userId = ' + userId);
+
+    // wish list
+    useEffect(() => {
+        if (product && userId) {
+            isProductWishList(product.productId, userId)
+                .then((res) => {
+                    if (res.status === 200) {
+                        const data = res.data;
+                        const status = data.status;
+                        if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                            const result = data.result;
+                            setIsWishList(result);
+                        }
+                    }
+                })
+        } else {
+            setIsWishList(false);
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [product, userId]);
     ///
 
     /// styles
     const carouselStyle = { width: '100%', height: '50vh' };
+    const buttonStyle = {
+        background: 'white',
+        border: 'none',
+        padding: 0,
+        cursor: 'pointer',
+    };
+    const iconStyle = {
+        fontSize: '24px',
+        color: isWishList ? '#dc3545' : 'gray'
+    };
     ///
-
-
-
-
 
     if (product) {
         minPrice = rangePrice(product.productVariants)[0];
@@ -201,6 +230,11 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                 )}
                                 <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
                             </div>
+                            <Space align='center'>
+                                <button style={buttonStyle}>
+                                    <HeartFilled style={iconStyle} />
+                                </button>
+                            </Space>
                             <Divider />
                             <div style={{ marginBottom: 20 }}>
                                 <Title level={4}>Loại sản phẩm</Title>
@@ -236,7 +270,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                     <ModalAlert isOpen={isModalNotifyQuantityOpen} handleOk={handleOk} content={contentProductInvalidQuantity} />
                 </>) : (<Skeleton active />)}
             </Row>
-        </Card>
+        </Card >
     )
 }
 
