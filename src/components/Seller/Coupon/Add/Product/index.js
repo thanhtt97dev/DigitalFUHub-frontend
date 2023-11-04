@@ -291,7 +291,19 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                 <Col span={5} offset={1}><label>Sản phẩm được áp dụng <Tooltip title={<div>Mã giảm giá sẽ được áp dụng cho những sản phẩm được chọn.</div>}><QuestionCircleOutlined /></Tooltip></label></Col>
                 <Col span={15}>
 
-                    <Form.Item name="applicableProducts">
+                    <Form.Item name="applicableProducts"
+                        rules={[
+                            ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                    if (lsProductApplied.length <= 0) {
+                                        return Promise.reject(new Error('Vui lòng chọn ít nhất một sản phẩm'));
+                                    } else {
+                                        return Promise.resolve();
+                                    }
+                                },
+                            }),
+                        ]}
+                    >
                         <Space size={[16, 8]}>
                             <span>Đã chọn ({lsProductApplied.length}) sản phẩm</span>
                             <Button type="dashed" danger icon={<PlusOutlined />} onClick={handleOpenPopupSelectProduct}>Chọn sản phẩm</Button>

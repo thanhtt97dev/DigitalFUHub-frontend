@@ -123,37 +123,36 @@ function Coupons() {
             }
         })
     }
-    // const handleRemoveCoupon = (couponId) => {
-    //     confirm({
-    //         title: `Bạn có muốn xóa mã giảm giá này không?`,
-    //         okText: 'Đồng ý',
-    //         cancelText: 'Hủy',
-    //         onOk() {
-    //             const data = {
-    //                 userId: getUserId(),
-    //                 couponId: couponId,
-    //             }
-    //             removeCouponSeller(data)
-    //                 .then((res) => {
-    //                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-    //                         setSearchData({
-    //                             ...searchData,
-    //                             userId: getUserId(),
-    //                         });
-    //                         notification("success", "Xóa mã giảm giá thành công.")
-    //                     } else {
-    //                         notification("error", "Xóa mã giảm giá thất bại.")
-    //                     }
-    //                 })
-    //                 .catch((err) => {
-    //                     notification("error", "Đã có lỗi xảy ra.")
-    //                 })
-    //         },
-    //         onCancel() {
-    //         }
-    //     })
-
-    // }
+    const handleRemoveCoupon = (couponId) => {
+        confirm({
+            title: `Bạn có muốn xóa mã giảm giá này không?`,
+            okText: 'Đồng ý',
+            cancelText: 'Hủy',
+            onOk() {
+                const data = {
+                    userId: getUserId(),
+                    couponId: couponId,
+                }
+                removeCouponSeller(data)
+                    .then((res) => {
+                        if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                            setSearchData({
+                                ...searchData,
+                                userId: getUserId(),
+                            });
+                            notification("success", "Xóa mã giảm giá thành công.")
+                        } else {
+                            notification("error", "Xóa mã giảm giá thất bại.")
+                        }
+                    })
+                    .catch((err) => {
+                        notification("error", "Đã có lỗi xảy ra.")
+                    })
+            },
+            onCancel() {
+            }
+        })
+    }
     const [isOpenOptionAddCouponModal, setIsOpenOptionAddCouponModal] = useState(false);
     return (
         <>
@@ -387,7 +386,12 @@ function Coupons() {
                                             <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
                                         </Col>
                                         <Col>
-                                            <Button type="link" style={{ width: '80px' }}  >Xóa</Button>
+                                            <Link to={`/seller/coupon/edit/${record.couponId}`} >
+                                                <Button type="link" style={{ width: '80px' }}>Chỉnh sửa</Button>
+                                            </Link>
+                                        </Col>
+                                        <Col>
+                                            <Button type="link" style={{ width: '80px' }} onClick={() => handleRemoveCoupon(record.couponId)}>Xóa</Button>
                                         </Col>
                                     </Row>
                                 } else {
@@ -399,7 +403,6 @@ function Coupons() {
                                 }
                             }}
                         />
-
                     </Table>
                 </Card>
             </Spinning>
