@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Switch, InputNumber, Tooltip, Typography } from "antd";
+import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Switch, InputNumber, Tooltip, Typography, Tag } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
 import Spinning from "~/components/Spinning";
@@ -177,7 +177,7 @@ function Coupons() {
                                 }}
                             >
                                 <ShopOutlined style={{ fontSize: '40px' }} />
-                                <Title level={5} style={{ color: 'inherit', textAlign: 'center' }}>Thêm mã giảm giá cho cửa hàng</Title>
+                                <Title level={5} style={{ color: 'inherit', textAlign: 'center' }}>Mã giảm giá cho cửa hàng</Title>
                             </Space>
                         </Link>
                     </Col>
@@ -195,7 +195,7 @@ function Coupons() {
                                 }}
                             >
                                 <ShoppingOutlined style={{ fontSize: '40px' }} />
-                                <Title level={5} style={{ color: 'inherit', textAlign: 'center' }}>Thêm mã giảm cho sản phẩm chỉ định</Title>
+                                <Title level={5} style={{ color: 'inherit', textAlign: 'center' }}>Mã giảm cho sản phẩm chỉ định</Title>
                             </Space>
                         </Link>
                     </Col>
@@ -247,7 +247,7 @@ function Coupons() {
                             </Col>
                             <Col offset={1}>
                                 <Space>
-                                    <Button type="primary" htmlType="submit">
+                                    <Button type="primary" htmlType="submit" >
                                         Tìm kiếm
                                     </Button>
                                 </Space>
@@ -255,8 +255,7 @@ function Coupons() {
                         </Row>
                         <Row>
                             <Col offset={1}>
-
-                                <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsOpenOptionAddCouponModal(true)}>Tạo mã giảm giá</Button>
+                                <Button type="primary" icon={<PlusOutlined />} ghost onClick={() => setIsOpenOptionAddCouponModal(true)}>Tạo mã giảm giá</Button>
                             </Col>
                         </Row>
                     </Form>
@@ -271,19 +270,19 @@ function Coupons() {
                             width="15%"
                             title="Mã giảm giá"
                             key="couponCode"
-                            sorter={
-                                {
-                                    compare: (a, b) => {
-                                        if (a.couponCode < b.couponCode) {
-                                            return -1;
-                                        } else if (a.couponCode > b.couponCode) {
-                                            return 1;
-                                        } else {
-                                            return 0;
-                                        }
-                                    }
-                                }
-                            }
+                            // sorter={
+                            //     {
+                            //         compare: (a, b) => {
+                            //             if (a.couponCode < b.couponCode) {
+                            //                 return -1;
+                            //             } else if (a.couponCode > b.couponCode) {
+                            //                 return 1;
+                            //             } else {
+                            //                 return 0;
+                            //             }
+                            //         }
+                            //     }
+                            // }
                             render={(_, record) => (
                                 <p>{record.couponCode}</p>
                             )}
@@ -293,7 +292,7 @@ function Coupons() {
                             width="15%"
                             title="Số tiền giảm giá"
                             key="priceDiscount"
-                            sorter={(a, b) => a.priceDiscount - b.priceDiscount}
+                            // sorter={(a, b) => a.priceDiscount - b.priceDiscount}
                             render={(_, record) => (
                                 <p>{formatStringToCurrencyVND(record.priceDiscount)} đ</p>
                             )}
@@ -302,19 +301,19 @@ function Coupons() {
                             width="15%"
                             title="Thời gian bắt đầu"
                             key="startDate"
-                            sorter={
-                                {
-                                    compare: (a, b) => {
-                                        if (a.startDate < b.startDate) {
-                                            return -1;
-                                        } else if (a.startDate > b.startDate) {
-                                            return 1;
-                                        } else {
-                                            return 0;
-                                        }
-                                    }
-                                }
-                            }
+                            // sorter={
+                            //     {
+                            //         compare: (a, b) => {
+                            //             if (a.startDate < b.startDate) {
+                            //                 return -1;
+                            //             } else if (a.startDate > b.startDate) {
+                            //                 return 1;
+                            //             } else {
+                            //                 return 0;
+                            //             }
+                            //         }
+                            //     }
+                            // }
                             render={(_, record) => (
                                 <p>{ParseDateTime(record.startDate)}</p>
                             )}
@@ -323,19 +322,19 @@ function Coupons() {
                             width="15%"
                             title="Thời gian kết thúc"
                             key="endDate"
-                            sorter={
-                                {
-                                    compare: (a, b) => {
-                                        if (a.startDate < b.startDate) {
-                                            return -1;
-                                        } else if (a.startDate > b.startDate) {
-                                            return 1;
-                                        } else {
-                                            return 0;
-                                        }
-                                    }
-                                }
-                            }
+                            // sorter={
+                            //     {
+                            //         compare: (a, b) => {
+                            //             if (a.startDate < b.startDate) {
+                            //                 return -1;
+                            //             } else if (a.startDate > b.startDate) {
+                            //                 return 1;
+                            //             } else {
+                            //                 return 0;
+                            //             }
+                            //         }
+                            //     }
+                            // }
                             render={(_, record) => (
                                 <p>{ParseDateTime(record.endDate)}</p>
                             )}
@@ -344,7 +343,7 @@ function Coupons() {
                             width="10%"
                             title="Số lượng"
                             key="quantity"
-                            sorter={(a, b) => a.quantity - b.quantity}
+                            // sorter={(a, b) => a.quantity - b.quantity}
                             render={(_, record) => (
                                 <p>{record.quantity}</p>
                             )}
@@ -353,7 +352,7 @@ function Coupons() {
                             width="15%"
                             title="Đơn hàng tối thiểu"
                             key="minTotalOrderValue"
-                            sorter={(a, b) => a.minTotalOrderValue - b.minTotalOrderValue}
+                            // sorter={(a, b) => a.minTotalOrderValue - b.minTotalOrderValue}
                             render={(_, record) => (
                                 <p>{formatStringToCurrencyVND(record.minTotalOrderValue)} đ</p>
                             )}
@@ -362,24 +361,43 @@ function Coupons() {
                             width="15%"
                             title="Trạng thái"
                             key="isPublic"
-                            render={(_, record) => (
-                                <Switch checkedChildren="Công khai" onClick={(checked) => handleChangeStatus(record.couponId, checked)} unCheckedChildren="Riêng tư" checked={record.isPublic} />
-                            )}
+                            render={(_, record) => {
+                                const now = dayjs();
+                                const startDate = dayjs(record.startDate)
+                                const endDate = dayjs(record.endDate)
+                                if (startDate.isBefore(now) && now.isBefore(endDate)) {
+                                    return <Tag color="green">Đang diễn ra</Tag>
+                                } else if (endDate.isBefore(now)) {
+                                    return <Tag color="red">Đã kết thúc</Tag>
+                                } else {
+                                    return <Tag>Sắp diễn ra </Tag>
+                                }
+                            }}
                         />
                         <Column
                             width="15%"
-                            title="Trạng thái"
-                            key="isPublic"
-                            render={(_, record) => (
-                                <Row gutter={[8, 8]}>
-                                    <Col>
-                                        <Button type="primary" style={{ width: '80px' }}>Chi tiết</Button>
-                                    </Col>
-                                    <Col>
-                                        <Button type="dashed" style={{ width: '80px' }} danger >Xóa</Button>
-                                    </Col>
-                                </Row>
-                            )}
+                            title=""
+                            key="actions"
+                            render={(_, record) => {
+                                const now = dayjs();
+                                const startDate = dayjs(record.startDate)
+                                if (now.isBefore(startDate)) {
+                                    return <Row gutter={[8, 0]}>
+                                        <Col>
+                                            <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
+                                        </Col>
+                                        <Col>
+                                            <Button type="link" style={{ width: '80px' }}  >Xóa</Button>
+                                        </Col>
+                                    </Row>
+                                } else {
+                                    return <Row gutter={[8, 0]}>
+                                        <Col>
+                                            <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
+                                        </Col>
+                                    </Row>
+                                }
+                            }}
                         />
 
                     </Table>

@@ -1,15 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { Button, Col, DatePicker, Form, Image, Input, InputNumber, Modal, Row, Switch, Table, Tooltip } from "antd";
+import { Button, Col, DatePicker, Form, Image, Input, InputNumber, Row, Space, Switch, Table, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { regexPattern } from "~/utils";
 import { COUPON_TYPE_SPECIFIC_PRODUCTS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { checkCouponCodeExist } from "~/api/coupon";
-import { getAllProductsSeller } from "~/api/product";
 import PopupSelectProduct from "./PopupSelectProduct";
 import Column from "antd/es/table/Column";
+import debounce from "debounce-promise";
+const debounceCheckCouponCodeExist = debounce((value) => {
+    const res = checkCouponCodeExist('A', value)
+    return Promise.resolve({ res: res });
+}, 500);
 function AddCouponForProduct({ onAddCoupon = () => { } }) {
     const [formAdd] = Form.useForm();
     const [lsProductApplied, setLsProductApplied] = useState([])
@@ -50,8 +54,8 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
             onFinish={onFinish}
         >
             <Row>
-                <Col span={8} offset={1}><label>Tên mã giảm giá: <Tooltip title="Tên mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
-                <Col span={15}>
+                <Col span={5} offset={1}><label>Tên mã giảm giá <Tooltip title="Tên mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
+                <Col span={10}>
                     <Form.Item name="couponName"
                         rules={[
                             ({ getFieldValue }) => ({
@@ -70,9 +74,10 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                 </Col>
             </Row>
             <Row>
-                <Col span={8} offset={1}><label>Mã giảm giá: <Tooltip title="Mã giảm giá áp dụng cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
-                <Col span={15}>
+                <Col span={5} offset={1}><label>Mã giảm giá <Tooltip title="Mã giảm giá áp dụng cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
+                <Col span={10}>
                     <Form.Item name="couponCode"
+                        validateDebounce={2000}
                         rules={[
                             ({ getFieldValue }) => ({
                                 async validator(_, value) {
@@ -80,35 +85,41 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                                     if (!data.trim()) {
                                         return Promise.reject(new Error('Mã giảm giá không được trống.'));
                                     } else if (data.length < 4) {
-                                        return Promise.reject(new Error('Mã giảm giá phải có ít nhất 4 kí tự.'));
-                                    } else if (!regexPattern(data, "^[a-zA-Z0-9]{4,}$")) {
+                                        return Promise.reject(new Error('Mã giảm giá phải có ít nhất 4 ký tự.'));
+                                    } else if (data.length > 10) {
+                                        return Promise.reject(new Error('Mã giảm giá có tối đa 10 ký tự.'));
+                                    }
+                                    else if (!regexPattern(data, "^[a-zA-Z0-9]{4,10}$")) {
                                         return Promise.reject(new Error('Mã giảm giá không chứa khoảng trắng và các ký tự đặc biệt.'));
                                     }
                                     else {
-                                        await checkCouponCodeExist('A', data)
-                                            .then((res) => {
-                                                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                                                    return Promise.resolve();
-                                                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
-                                                    return Promise.reject(new Error('Mã giảm giá không hợp lệ.'));
-                                                } else {
-                                                    return Promise.reject(new Error('Mã giảm giá không khả dụng.'));
-                                                }
-                                            })
-                                            .catch((err) => {
-                                                return Promise.reject(new Error('Mã giảm giá không khả dụng.'));
-                                            })
+                                        return new Promise((resolve, reject) => {
+                                            debounceCheckCouponCodeExist(data)
+                                                .then(({ res }) => {
+                                                    res.then(res => {
+                                                        if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                                                            resolve();
+                                                        } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
+                                                            reject(new Error('Mã giảm giá không hợp lệ.'));
+                                                        } else {
+                                                            reject(new Error('Mã giảm giá không khả dụng.'));
+                                                        }
+                                                    }).catch(err => {
+                                                        reject(new Error('Mã giảm giá không khả dụng.'));
+                                                    })
+                                                });
+                                        })
                                     }
                                 },
                             }),
                         ]}>
-                        <Input />
+                        <Input onInput={e => e.target.value = e.target.value.toUpperCase()} />
                     </Form.Item>
                 </Col>
             </Row>
             <Row>
-                <Col span={8} offset={1}><label>Thời gian giảm giá: <Tooltip title="Thời gian áp dụng mã giảm giá cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
-                <Col span={15}>
+                <Col span={5} offset={1}><label>Thời gian giảm giá <Tooltip title="Thời gian áp dụng mã giảm giá cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
+                <Col span={10}>
                     <Row gutter={[16, 0]}>
                         <Col span={11}>
                             <Form.Item name="startDate"
@@ -193,16 +204,19 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                 </Col>
             </Row>
             <Row>
-                <Col span={8} offset={1}><label>Giá trị đơn hàng tối thiểu: <Tooltip title="Số tiền tối thiểu của đơn hàng để có thể áp dụng được mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
-                <Col span={15}>
+                <Col span={5} offset={1}><label>Giá trị đơn hàng tối thiểu <Tooltip title="Số tiền tối thiểu của đơn hàng để có thể áp dụng được mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
+                <Col span={10}>
                     <Form.Item name="minTotalOrderValue"
                         rules={[
                             ({ getFieldValue }) => ({
                                 validator(_, value) {
                                     if (value === undefined || value === null) {
-                                        return Promise.reject(new Error('Số tiền đơn hàng tối thiểu không được để trống.'));
-                                    } else if (value < 1000) {
-                                        return Promise.reject(new Error('Số tiền đơn hàng tối thiểu phải lớn hơn hoặc bằng 1000đ.'));
+                                        return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không được để trống.'));
+                                    }
+                                    else if (value < 0) {
+                                        return Promise.reject(new Error('Giá trị đơn hàng tối thiểu phải lớn hơn hoặc bằng 1000đ.'));
+                                    } else if (value > 100000000) {
+                                        return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không vượt quá 100.000.000đ'));
                                     } else {
                                         return Promise.resolve();
                                     }
@@ -215,8 +229,8 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                 </Col>
             </Row>
             <Row>
-                <Col span={8} offset={1}><label>Số tiền giảm giá: <Tooltip title="Số tiền được giảm khi áp dụng mã cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
-                <Col span={15}>
+                <Col span={5} offset={1}><label>Số tiền giảm giá <Tooltip title="Số tiền được giảm khi áp dụng mã cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
+                <Col span={10}>
                     <Form.Item name="priceDiscount"
                         rules={[
                             ({ getFieldValue }) => ({
@@ -244,8 +258,8 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                 </Col>
             </Row>
             <Row>
-                <Col span={8} offset={1}><label>Số lượng: <Tooltip title="Số lượng mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
-                <Col span={15}>
+                <Col span={5} offset={1}><label>Số lượng <Tooltip title="Số lượng mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
+                <Col span={10}>
                     <Form.Item name="quantity"
                         rules={[
                             ({ getFieldValue }) => ({
@@ -266,20 +280,22 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                 </Col>
             </Row>
             <Row>
-                <Col span={8} offset={1}><label>Thể loại: <Tooltip title={<div><p>Công khai: mọi người được đề xuất mã giảm giá này khi đặt hàng.</p><br /><p>Riêng tư: mọi người sẽ phải nhập mã để tìm thấy mã giảm giá này.</p></div>}><QuestionCircleOutlined /></Tooltip></label></Col>
-                <Col span={15}>
+                <Col span={5} offset={1}><label>Thể loại <Tooltip title={<div><p>Công khai: mọi người được đề xuất mã giảm giá này khi đặt hàng.</p><br /><p>Riêng tư: mọi người sẽ phải nhập mã để tìm thấy mã giảm giá này.</p></div>}><QuestionCircleOutlined /></Tooltip></label></Col>
+                <Col span={10}>
                     <Form.Item name="isPublic" valuePropName="checked" initialValue={true}>
                         <Switch checkedChildren="Công khai" unCheckedChildren="Riêng tư" />
                     </Form.Item>
                 </Col>
             </Row>
             <Row>
-                <Col span={8} offset={1}><label>Sản phẩm được áp dụng: <Tooltip title={<div>Mã giảm giá sẽ được áp dụng cho những sản phẩm được chọn.</div>}><QuestionCircleOutlined /></Tooltip></label></Col>
+                <Col span={5} offset={1}><label>Sản phẩm được áp dụng <Tooltip title={<div>Mã giảm giá sẽ được áp dụng cho những sản phẩm được chọn.</div>}><QuestionCircleOutlined /></Tooltip></label></Col>
                 <Col span={15}>
 
                     <Form.Item name="applicableProducts">
-                        <span>Đã chọn ({lsProductApplied.length}) sản phẩm</span>
-                        <Button type="dashed" danger icon={<PlusOutlined />} onClick={handleOpenPopupSelectProduct}>Chọn sản phẩm</Button>
+                        <Space size={[16, 8]}>
+                            <span>Đã chọn ({lsProductApplied.length}) sản phẩm</span>
+                            <Button type="dashed" danger icon={<PlusOutlined />} onClick={handleOpenPopupSelectProduct}>Chọn sản phẩm</Button>
+                        </Space>
                     </Form.Item>
                     {lsProductApplied.length > 0 &&
                         <Table
@@ -319,8 +335,8 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                     }
                 </Col>
             </Row>
-            <Row justify="center">
-                <Col offset={1}>
+            <Row>
+                <Col span={16} style={{ textAlign: 'center' }}>
                     <Button htmlType="submit" type="primary">Xác nhận</Button>
                 </Col>
             </Row>

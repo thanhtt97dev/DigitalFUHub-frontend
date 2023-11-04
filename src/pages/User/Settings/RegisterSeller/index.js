@@ -10,28 +10,12 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { checkExistShopName } from "~/api/shop";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/NotificationContext";
+import debounce from "debounce-promise";
 
-const validatorFields = {
-    checkExistShopName: () => ({
-        async validator(_, value) {
-            const data = value === undefined ? '' : value.trim();
-            if (!data.trim()) return Promise.resolve();
-            let isExist = false;
-            await checkExistShopName(data)
-                .then((res) => {
-                    isExist = res.data.status.responseCode === RESPONSE_CODE_SUCCESS ? false : true;
-                })
-                .catch((err) => {
-                    isExist = true;
-                });
-            if (isExist === false) {
-                return Promise.resolve();
-            }
-            return Promise.reject(new Error('Tên cửa hàng không hợp lệ.'));
-        },
-    })
-}
-
+const debounceCheckExistShopName = debounce((data) => {
+    const res = checkExistShopName(data);
+    return Promise.resolve({ res: res });
+}, 500);
 
 function RegisterSeller() {
     const notification = useContext(NotificationContext);
@@ -96,13 +80,25 @@ function RegisterSeller() {
                                         validator(_, value) {
                                             const data = value === undefined ? '' : value.trim();
                                             if (data) {
-                                                return Promise.resolve();
+                                                return new Promise((resolve, reject) => {
+                                                    debounceCheckExistShopName(data)
+                                                        .then(({ res }) => {
+                                                            res.then(res => {
+                                                                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                                                                    resolve();
+                                                                } else {
+                                                                    reject(new Error('Tên cửa hàng không khả dụng.'));
+                                                                }
+                                                            }).catch(err => {
+                                                                reject(new Error('Tên cửa hàng không khả dụng.'));
+                                                            })
+                                                        });
+                                                })
                                             } else {
                                                 return Promise.reject(new Error('Tên cửa hàng không để trống.'));
                                             }
                                         },
                                     }),
-                                    validatorFields.checkExistShopName(),
                                 ]}
                             >
                                 <Input />
@@ -110,7 +106,7 @@ function RegisterSeller() {
 
                             <Form.Item name='shopDescription' label="Mô tả cửa hàng:" required
                                 rules={[
-                                    (getFieldValue) => ({
+                                    ({ getFieldValue }) => ({
                                         validator(_, value) {
                                             if (shopDescription.trim()) {
                                                 return Promise.resolve();

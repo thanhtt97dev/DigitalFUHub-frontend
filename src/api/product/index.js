@@ -11,8 +11,8 @@ export const getAllProducts = () => {
 export const getAllProductsSeller = (userId) => {
     return apiGetAuth(`api/Products/Seller/${userId}/All`);
 };
-export const getListProductOfSeller = (productId, productName) => {
-    return apiGetAuth(`api/Products/Seller/List?productId=${productId}&productName=${productName}`);
+export const getListProductOfSeller = (productId, productName, page) => {
+    return apiGetAuth(`api/Products/Seller/List?productId=${productId}&productName=${productName}&page=${page}`);
 };
 export const getProductSellerById = (userId, productId) => {
     return apiGetAuth(`api/Products/Seller/${userId}/${productId}`);
