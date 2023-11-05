@@ -12,6 +12,7 @@ import { UserOnlineStatusContext } from "~/context/UserOnlineStatusContext";
 import { FileImageOutlined } from '@ant-design/icons';
 import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
 import { Button, Form } from 'antd';
+import { NotificationMessageContext } from "~/context/NotificationMessageContext";
 import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
 
 require('moment/locale/vi');
@@ -19,11 +20,27 @@ const moment = require('moment');
 const cx = classNames.bind(styles);
 
 const ChatBox = () => {
+    /// router
     const location = useLocation();
     let conversationIdPath = location.state?.data || null;
+    ///
+
+    /// context
+    const contextData = useContext(NotificationMessageContext);
+    ///
+
+    /// variables
+    const numberConversationUnRead = contextData.numberConversationUnRead;
+    const setIsOpenChat = contextData.setIsOpenChat;
+    setIsOpenChat(true);
+    ///
+
+    /// auth
     const auth = useAuthUser();
     const user = auth();
+    ///
 
+    /// states
     const [form] = Form.useForm();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -31,14 +48,12 @@ const ChatBox = () => {
     const [conversationSelected, setConversationSelected] = useState(null);
     const [lastTimeOnline, setLastTimeOnline] = useState('');
     const [reloadConversationFlag, setReloadConversationFlag] = useState(false);
-    // const [reloadMessageFlag, setReloadMessageFlag] = useState(false);
     const [isUploadFile, setIsUploadFile] = useState(false);
     const messagesEndRef = useRef(null);
     const bodyMessageRef = useRef(null);
+    ///
 
-    const reloadMessages = () => {
-        setReloadConversationFlag(!reloadConversationFlag);
-    }
+
 
     const handleOpenUploadFile = () => {
         setIsUploadFile(!isUploadFile)
@@ -70,6 +85,26 @@ const ChatBox = () => {
     useEffect(scrollToBottom, [messages]);
 
     /// Handles
+    const handleReloadNumberConversation = () => {
+        if (contextData) {
+            const reloadNumberConversation = contextData.reloadNumberConversation;
+            reloadNumberConversation();
+        }
+    }
+
+    const handleAddOneNumberConversation = () => {
+        if (contextData) {
+            const addOneNumberConversation = contextData.addOneNumberConversation;
+            addOneNumberConversation();
+        }
+    }
+
+    const handleMinusOneNumberConversation = () => {
+        if (contextData) {
+            const minusOneNumberConversation = contextData.minusOneNumberConversation;
+            minusOneNumberConversation();
+        }
+    }
 
     const onFinish = (values) => {
         if (user === null || user === undefined) return;
@@ -109,9 +144,16 @@ const ChatBox = () => {
             IsRead: IsRead,
             UserId: UserId,
         }
-        updateUserConversation(dataUpdate).catch((error) => {
-            console.log(error)
-        })
+        // update isRead user conversation
+        updateUserConversation(dataUpdate)
+            .then((res) => {
+                if (res.status === 200) {
+                    handleReloadNumberConversation();
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
 
@@ -122,6 +164,8 @@ const ChatBox = () => {
         if (userId === undefined || userId === null) return;
 
         if (conversation.isRead === USER_CONVERSATION_TYPE_UN_READ) {
+            // update icon header
+            handleMinusOneNumberConversation();
             updateIsReadConversation(conversation.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
         }
 
@@ -144,6 +188,8 @@ const ChatBox = () => {
         setNewMessage(value)
     }
     ///
+
+
 
 
     useEffect(() => {
@@ -192,7 +238,7 @@ const ChatBox = () => {
     intervalTime();
     ///
 
-
+    /// useEffects
     // get conversations
     useEffect(() => {
         if (user === null || user === undefined) return;
@@ -237,12 +283,12 @@ const ChatBox = () => {
     const message = useContext(ChatContext);
 
     useEffect(() => {
-        const userId = +getUserId()
 
         const setMessage = () => {
             if (message) {
                 if ('messageId' in message) {
-
+                    console.log('update message')
+                    const userId = +getUserId()
                     //set default avatar
                     if (message.avatar === null) {
                         message.avatar = fptImage;
@@ -258,9 +304,22 @@ const ChatBox = () => {
                         if (item.conversationId === message.conversationId) {
                             if (message.userId !== userId) {
                                 if (conversationSelected?.conversationId === message.conversationId) {
+                                    // update icon header
+                                    if (numberConversationUnRead > 0) {
+                                        handleMinusOneNumberConversation();
+                                    }
+
+                                    // update isRead conversation 
+                                    // update db
                                     updateIsReadConversation(conversationSelected.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
+
+                                    // update UI
                                     return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
                                 } else {
+                                    // update icon header
+                                    if (item.isRead === USER_CONVERSATION_TYPE_IS_READ) {
+                                        handleAddOneNumberConversation();
+                                    }
                                     return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_UN_READ }
                                 }
 

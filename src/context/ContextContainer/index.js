@@ -1,5 +1,6 @@
 import Notification from '~/context/NotificationContext';
 import { Chat } from "~/context/ChatContext";
+import NotificationMessageContext from '~/context/NotificationMessageContext';
 import { UserOnlineStatus } from "~/context/UserOnlineStatusContext";
 
 function ContextContainer({ children }) {
@@ -8,7 +9,9 @@ function ContextContainer({ children }) {
             <Notification>
                 <UserOnlineStatus>
                     <Chat>
-                        {children}
+                        <NotificationMessageContext>
+                            {children}
+                        </NotificationMessageContext>
                     </Chat>
                 </UserOnlineStatus>
             </Notification>
