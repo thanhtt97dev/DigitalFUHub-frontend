@@ -85,6 +85,36 @@ const ChatBox = () => {
     useEffect(scrollToBottom, [messages]);
 
     /// Handles
+
+    const sortConversationByMessageCreationDate = (conversations) => {
+        const currentDate = new Date();
+        const conversationSort = conversations.sort((conversationA, conversationB) => {
+            const dateA = new Date(conversationA.latestMessage.dateCreate);
+            const dateB = new Date(conversationB.latestMessage.dateCreate);
+
+            const differenceA = Math.abs(currentDate - dateA);
+            const differenceB = Math.abs(currentDate - dateB);
+
+            return differenceA - differenceB;
+        });
+        return conversationSort;
+    }
+
+    const sortConversationByCreationDate = (conversations) => {
+        const currentDate = new Date();
+        const conversationSort = conversations.sort((conversationA, conversationB) => {
+            const dateA = new Date(conversationA.dateCreate);
+            const dateB = new Date(conversationB.dateCreate);
+
+            const differenceA = Math.abs(currentDate - dateA);
+            const differenceB = Math.abs(currentDate - dateB);
+
+            return differenceA - differenceB;
+        });
+
+        return conversationSort;
+    }
+
     const handleReloadNumberConversation = () => {
         if (contextData) {
             const reloadNumberConversation = contextData.reloadNumberConversation;
@@ -190,8 +220,22 @@ const ChatBox = () => {
     ///
 
 
+    /// interval
+    const intervalTime = () => {
 
+        if (conversationSelected === null || conversationSelected === undefined) return;
+        const interval = setInterval(() => {
+            if (conversationSelected.isGroup === false) {
+                setLastTimeOnline(moment(conversationSelected.lastTimeOnline).fromNow());
+            }
+        }, 60000);
+        return () => clearInterval(interval);
+    }
 
+    intervalTime();
+    ///
+
+    /// useEffects
     useEffect(() => {
         if (conversationSelected === null || conversationSelected === undefined) return;
         // if (reloadMessageFlag) return;
@@ -222,23 +266,6 @@ const ChatBox = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [conversationSelected])
 
-
-    /// interval
-    const intervalTime = () => {
-
-        if (conversationSelected === null || conversationSelected === undefined) return;
-        const interval = setInterval(() => {
-            if (conversationSelected.isGroup === false) {
-                setLastTimeOnline(moment(conversationSelected.lastTimeOnline).fromNow());
-            }
-        }, 60000);
-        return () => clearInterval(interval);
-    }
-
-    intervalTime();
-    ///
-
-    /// useEffects
     // get conversations
     useEffect(() => {
         if (user === null || user === undefined) return;
@@ -261,8 +288,12 @@ const ChatBox = () => {
                         return conversation;
                     })
 
-                    //set 
-                    setConversations(newConversation);
+                    // sort conversation by message creation date 
+                    const conversationSorted = sortConversationByMessageCreationDate(newConversation);
+
+                    // update conversations
+                    setConversations(conversationSorted);
+
                     if (conversationIdPath) {
                         const conversationFilter = newConversation.find(c => c.conversationId === conversationIdPath);
                         setConversationSelected(conversationFilter)
@@ -287,7 +318,7 @@ const ChatBox = () => {
         const setMessage = () => {
             if (message) {
                 if ('messageId' in message) {
-                    console.log('update message')
+                    const currentDate = new Date();
                     const userId = +getUserId()
                     //set default avatar
                     if (message.avatar === null) {
@@ -314,24 +345,27 @@ const ChatBox = () => {
                                     updateIsReadConversation(conversationSelected.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
 
                                     // update UI
-                                    return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_IS_READ }
                                 } else {
                                     // update icon header
                                     if (item.isRead === USER_CONVERSATION_TYPE_IS_READ) {
                                         handleAddOneNumberConversation();
                                     }
-                                    return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_UN_READ }
+                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_UN_READ }
                                 }
 
                             } else {
-                                return { ...item, latestMessage: message.content, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                                return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_IS_READ }
                             }
                         }
                         return item;
                     })
 
+                    // sort conversation by message creation date
+                    const conversationSort = sortConversationByMessageCreationDate(newConversations);
+
                     // update user chat
-                    setConversations(newConversations)
+                    setConversations(conversationSort)
                 } else {
                     const filterUserChat = conversations.find(x => x.conversationId === message.conversationId);
                     if (!filterUserChat) {
@@ -344,7 +378,14 @@ const ChatBox = () => {
                         })
                         message.users = newUsers;
 
-                        setConversations((prev) => [...prev, message])
+                        // new conversation
+                        const newConversations = [...conversations, message];
+
+                        // sort conversation by creation date
+                        const conversationSort = sortConversationByCreationDate(newConversations);
+
+                        // update user chat
+                        setConversations(conversationSort)
                     }
                 }
             }
@@ -370,7 +411,6 @@ const ChatBox = () => {
                 // parse to json
                 const userOnlineStatusJson = JSON.parse(userOnlineStatusContext)
 
-                console.log('userOnlineStatusJson = ' + JSON.stringify(userOnlineStatusJson))
                 if (conversations.length === 0) return;
                 // update users status conversations
                 const updateUserStatusConversations = () => {
@@ -388,6 +428,8 @@ const ChatBox = () => {
 
                         // update conversation
                         setConversations(newConversations);
+
+
 
                         // update conversation selected
                         if (conversationSelected !== null && conversationSelected !== undefined && conversationSelected.conversationId === userOnlineStatusJson.ConversationId) {
