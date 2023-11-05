@@ -11,11 +11,12 @@ import { EuroCircleOutlined } from '@ant-design/icons';
 import { NotificationContext } from "~/context/NotificationContext";
 import { Button, Col, Typography, Checkbox, Divider, Card } from 'antd';
 import {
-    RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_COUPON_USED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY,
-    RESPONSE_MESSAGE_ORDER_COUPON_USED, RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_CART_SUCCESS,
+    RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_COUPON_NOT_EXISTED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY,
+    RESPONSE_MESSAGE_ORDER_COUPON_NOT_EXISTED, RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_CART_SUCCESS,
     RESPONSE_CODE_ORDER_NOT_ELIGIBLE, RESPONSE_CODE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP, RESPONSE_CODE_ORDER_PRODUCT_HAS_BEEN_BANED,
     RESPONSE_CODE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT, RESPONSE_MESSAGE_ORDER_NOT_ELIGIBLE, RESPONSE_MESSAGE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP,
-    RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED, RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT
+    RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED, RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT,
+    RESPONSE_CODE_ORDER_COUPON_INVALID_PRODUCT_APPLY, RESPONSE_MESSAGE_ORDER_COUPON_INVALID_PRODUCT_APPLY
 } from '~/constants';
 
 const { Title, Text } = Typography;
@@ -155,8 +156,8 @@ const Prices = ({ dataPropPriceComponent }) => {
                                 }, 500)
                             })
                     } else {
-                        if (data.status.responseCode === RESPONSE_CODE_ORDER_COUPON_USED) {
-                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_COUPON_USED)
+                        if (data.status.responseCode === RESPONSE_CODE_ORDER_COUPON_NOT_EXISTED) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_COUPON_NOT_EXISTED)
                         } else if (data.status.responseCode === RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE) {
                             setContentModalAlert(RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE)
                         } else if (data.status.responseCode === RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY) {
@@ -169,6 +170,10 @@ const Prices = ({ dataPropPriceComponent }) => {
                             setContentModalAlert(RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED);
                         } else if (data.status.responseCode === RESPONSE_CODE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT) {
                             setContentModalAlert(RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT);
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_COUPON_INVALID_PRODUCT_APPLY) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_COUPON_INVALID_PRODUCT_APPLY);
+                        } else {
+                            setContentModalAlert("Có lỗi xảy ra! Vui lòng thử lại sau!");
                         }
                         openModalAlert();
                         unLoadingButton();
