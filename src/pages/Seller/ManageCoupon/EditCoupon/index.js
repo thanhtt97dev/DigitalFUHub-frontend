@@ -4,7 +4,7 @@ import { Card, Spin, } from "antd";
 import { getUserId } from "~/utils";
 import { COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, COUPON_TYPE_SPECIFIC_PRODUCTS, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { useNavigate, useParams } from "react-router-dom";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { editCouponSeller, getCouponSellerById } from "~/api/coupon";
 import { EditCouponForProduct, EditCouponForShop } from "~/components/Seller/Coupon";
 

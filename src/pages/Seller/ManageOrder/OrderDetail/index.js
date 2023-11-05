@@ -15,7 +15,7 @@ import {
 import logoFPT from '~/assets/images/fpt-logo.jpg'
 import { Button, Card, Col, Divider, Image, Rate, Row, Space, Typography, Tag, Tooltip, Form, Upload, Modal, Avatar, Spin, Descriptions } from "antd";
 import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE } from "~/constants";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { useAuthUser } from 'react-auth-kit'
 import { getConversation } from '~/api/chat'
 import TextArea from "antd/es/input/TextArea";

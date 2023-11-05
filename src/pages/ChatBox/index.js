@@ -6,13 +6,13 @@ import LayoutUserChat from '~/components/ChatBox/LayoutUserChat';
 import LayoutMessageChat from '~/components/ChatBox/LayoutMessageChat';
 import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
-import { ChatContext } from "~/context/ChatContext";
+import { ChatContext } from "~/context/SignalR/ChatContext";
 import { getUserId, getVietnamCurrentTime } from '~/utils';
-import { UserOnlineStatusContext } from "~/context/UserOnlineStatusContext";
+import { UserOnlineStatusContext } from "~/context/SignalR/UserOnlineStatusContext";
 import { FileImageOutlined } from '@ant-design/icons';
 import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
 import { Button, Form } from 'antd';
-import { NotificationMessageContext } from "~/context/NotificationMessageContext";
+import { NotificationMessageContext } from "~/context/UI/NotificationMessageContext";
 import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
 
 require('moment/locale/vi');

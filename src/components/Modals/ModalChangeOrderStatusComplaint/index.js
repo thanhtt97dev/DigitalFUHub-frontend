@@ -11,7 +11,7 @@ import {
     ORDER_COMPLAINT,
     RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE
 } from "~/constants";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 
 import { customerUpdateStatusOrder } from '~/api/order'
 

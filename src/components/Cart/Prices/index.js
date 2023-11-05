@@ -8,7 +8,7 @@ import { addOrder } from '~/api/order';
 import { deleteCart } from '~/api/cart';
 import { formatNumberToK } from '~/utils';
 import { EuroCircleOutlined } from '@ant-design/icons';
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { Button, Col, Typography, Checkbox, Divider, Card } from 'antd';
 import {
     RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_COUPON_NOT_EXISTED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY,

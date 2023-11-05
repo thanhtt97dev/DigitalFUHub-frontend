@@ -2,7 +2,7 @@ import React, { useEffect, useState, createContext, useContext } from 'react';
 import { getUserId } from '~/utils';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import { getNumberConversationUnRead } from '~/api/chat';
-import { ChatContext } from "~/context/ChatContext";
+import { ChatContext } from "~/context/SignalR/ChatContext";
 
 export const NotificationMessageContext = createContext();
 

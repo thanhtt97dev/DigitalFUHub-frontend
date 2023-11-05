@@ -4,7 +4,7 @@ import { useEffect, useState, useContext, useRef } from "react";
 import { getUserId } from "~/utils";
 import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
 import { ORDER_COMPLAINT, ORDER_CONFIRMED, RESPONSE_CODE_SUCCESS } from "~/constants";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 
 function OrdersWaitConfirm({ status, loading, setLoading }) {
     const notification = useContext(NotificationContext);

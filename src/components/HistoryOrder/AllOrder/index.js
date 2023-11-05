@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { ParseDateTime, getUserId } from "~/utils";
 import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
 import { ORDER_COMPLAINT, ORDER_CONFIRMED, RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE } from "~/constants";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
 import { Link } from "react-router-dom";
 import logoFPT from '~/assets/images/fpt-logo.jpg'

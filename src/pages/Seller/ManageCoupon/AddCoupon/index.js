@@ -6,7 +6,7 @@ import { useContext, useEffect, useLayoutEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { addCouponSeller } from "~/api/coupon";
 import { COUPON_TYPE_SPECIFIC_PRODUCTS, COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, RESPONSE_CODE_SUCCESS } from "~/constants";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { getUserId } from "~/utils";
 import { AddCouponForShop, AddCouponForProduct } from "~/components/Seller/Coupon";
 import NotFound from "~/pages/NotFound";

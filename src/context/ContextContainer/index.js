@@ -1,7 +1,7 @@
-import Notification from '~/context/NotificationContext';
-import { Chat } from "~/context/ChatContext";
-import NotificationMessageContext from '~/context/NotificationMessageContext';
-import { UserOnlineStatus } from "~/context/UserOnlineStatusContext";
+import Notification from '~/context/UI/NotificationContext';
+import { Chat } from "~/context/SignalR/ChatContext";
+import NotificationMessageContext from '~/context/UI/NotificationMessageContext';
+import { UserOnlineStatus } from "~/context/SignalR/UserOnlineStatusContext";
 
 function ContextContainer({ children }) {
     return (
