@@ -32,7 +32,6 @@ const ChatBox = () => {
     /// variables
     const numberConversationUnRead = contextData.numberConversationUnRead;
     const setIsOpenChat = contextData.setIsOpenChat;
-    setIsOpenChat(true);
     ///
 
     /// auth
@@ -265,6 +264,12 @@ const ChatBox = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [conversationSelected])
+
+    // update Notification message
+    useEffect(() => {
+        setIsOpenChat(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     // get conversations
     useEffect(() => {

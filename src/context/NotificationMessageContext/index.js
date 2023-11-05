@@ -58,7 +58,6 @@ function NotificationMessage({ children }) {
     useEffect(() => {
         if (isOpenChat) return;
         if (message) {
-            console.log('reload context')
             reloadNumberConversation();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
