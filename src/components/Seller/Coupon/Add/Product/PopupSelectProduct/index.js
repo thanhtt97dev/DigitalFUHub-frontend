@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Col, Form, Image, Input, Modal, Row, Table } from "antd";
+import { Button, Col, Form, Image, Input, Modal, Pagination, Row, Table } from "antd";
 import { memo, useEffect, useState } from "react";
 import { getListProductOfSeller } from "~/api/product";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
@@ -26,7 +26,7 @@ const columns = [
     },
 ];
 
-const getInfoProducts = (rowsSelect, lsProductApplied) => {
+const filterProductsDuplicate = (rowsSelect, lsProductApplied) => {
     let products = [];
     for (let index = 0; index < rowsSelect.length; index++) {
         if (!lsProductApplied.some(v => v.productId === rowsSelect[index].productId)) {
@@ -37,12 +37,14 @@ const getInfoProducts = (rowsSelect, lsProductApplied) => {
 }
 
 function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, onClose }) {
-
+    const [page, setPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
     const [selectedRows, setSelectedRows] = useState([]);
     const [lsProduct, setLsProduct] = useState([])
     const [paramSearchProduct, setParamSearchProduct] = useState({
         productId: '',
-        productName: ''
+        productName: '',
+        page: page
     })
     // const onSelectRowChange = (newSelectedRowKeys, selectedRows) => {
     //     setSelectedRows(selectedRows);
@@ -58,7 +60,7 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
         }
     }
     const onSelectandDeselectAllRowChange = (selected, selectedRows, changeRows) => {
-        console.log(selected, selectedRows, changeRows);
+        // console.log(selected, selectedRows, changeRows);
         if (selected) {
             setSelectedRows(prev => {
                 if (changeRows.length > 0) {
@@ -102,10 +104,11 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
     }, [lsProductApplied])
 
     useEffect(() => {
-        getListProductOfSeller(paramSearchProduct.productId, paramSearchProduct.productName)
+        getListProductOfSeller(paramSearchProduct.productId, paramSearchProduct.productName, page)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setLsProduct(res.data.result);
+                    setLsProduct(res.data.result.products);
+                    setTotalItems(res.data.result.totalItems);
                 }
             })
             .catch((err) => {
@@ -115,8 +118,8 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
 
 
     const handleConfirmRowSelected = () => {
-        const infoProducts = getInfoProducts(selectedRows, lsProductApplied)
-        onSetLsProductApplied(prev => [...prev, ...infoProducts]);
+        const products = filterProductsDuplicate(selectedRows, lsProductApplied)
+        onSetLsProductApplied(prev => [...prev, ...products]);
         onClose();
     }
     const handleClosePopupSelectProduct = () => {
@@ -124,14 +127,16 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
         onClose();
     }
     const handleSearchProduct = ({ productId, productName }) => {
+        setPage(1);
         setParamSearchProduct({
             productId,
-            productName
+            productName,
+            page
         })
     }
 
     return <Modal
-        width={900}
+        width={850}
         style={{
             height: '500px'
         }}
@@ -159,33 +164,36 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
         >
             <Row>
                 <Col span={3} offset={1}><label>Mã sản phẩm:  </label></Col>
-                <Col span={6}>
+                <Col span={5}>
                     <Form.Item name="productId" >
                         <Input />
                     </Form.Item>
                 </Col>
                 <Col span={3} offset={1}><label>Tên sản phẩm:  </label></Col>
-                <Col span={6}>
+                <Col span={5}>
                     <Form.Item name="productName" >
                         <Input />
                     </Form.Item>
                 </Col>
-                <Col span={6}>
-                    <Button type="primary" htmlType="submit">Tìm kiếm</Button>
+                <Col span={3} offset={1}>
+                    <Button type="primary" htmlType="submit" ghost>Tìm kiếm</Button>
                 </Col>
             </Row>
         </Form>
-        <div>Đã lựa chọn ({selectedRows.length})</div>
+        <div>Đã chọn ({selectedRows.length} sản phẩm)</div>
         <Table
             rowClassName={record => lsProductApplied.some(v => v.productId === record.productId) && "disabled-row"}
             scroll={{ y: 400 }}
-            pagination={
-                { pageSize: 2 }
-            }
+            pagination={false}
             rowKey={(record) => record.productId}
             rowSelection={rowSelection}
             columns={columns}
             dataSource={lsProduct} />
+        <Row justify="end">
+            <Col>
+                <Pagination onChange={(page) => setPage(page)} hideOnSinglePage current={page} total={totalItems} pageSize={10} />
+            </Col>
+        </Row>
     </Modal >
 }
 

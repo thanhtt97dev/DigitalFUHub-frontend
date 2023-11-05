@@ -121,7 +121,7 @@ function Products() {
                 hoverable
                 title="Tất cả sản phẩm"
             >
-                <Table columns={columns} pagination={{ size: 10 }} dataSource={dataTable} />
+                <Table columns={columns} pagination={{ pageSize: 10 }} dataSource={dataTable} />
             </Card>
         </Spinning>
     </>

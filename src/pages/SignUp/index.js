@@ -12,82 +12,19 @@ import { checkExistEmail, signUp, checkExistUsername } from '~/api/user';
 import { encryptPassword, regexPattern } from '~/utils';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import { NotificationContext } from '~/context/NotificationContext';
+import debounce from "debounce-promise";
+
+const debounceCheckExistUsername = debounce((data) => {
+    const res = checkExistUsername(data);
+    return Promise.resolve({ res: res });
+}, 500);
+
+const debounceCheckExistEmail = debounce((data) => {
+    const res = checkExistEmail(data);
+    return Promise.resolve({ res: res });
+}, 500);
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
-
-const validatorFields = {
-    checkExistUsername: () => ({
-        async validator(_, value) {
-            if (!value) return Promise.resolve();
-            await checkExistUsername(value)
-                .then(res => {
-                    if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        return Promise.resolve();
-                    } else {
-                        return Promise.reject(new Error('Tên tài khoản không hợp lệ!'));
-                    }
-                })
-                .catch(err => {
-                    return Promise.reject(new Error('Tên tài khoản không hợp lệ!'));
-                });
-        },
-    }),
-    checkExistEmail: () => ({
-        async validator(_, value) {
-            if (!value) return Promise.resolve();
-            await checkExistEmail(value)
-                .then(res => {
-                    if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        return Promise.resolve();
-                    } else {
-                        return Promise.reject(new Error('Email không hợp lệ!'));
-                    }
-                })
-                .catch(err => {
-                    return Promise.reject(new Error('Email không hợp lệ!'));
-                });
-        },
-    }),
-    checkFormatUsername: () => ({
-        validator(_, value) {
-            if (!value) return Promise.resolve();
-            const result = regexPattern(value, "^[a-z][a-z\\d]{6,12}$")
-            if (result) {
-                return Promise.resolve();
-            }
-            return Promise.reject(new Error('Tên tài khoản phải bắt đầu với kí tự chữ thường và có độ dài 6 - 12 kí tự!'));
-        },
-    }),
-
-    checkFormatFullname: () => ({
-        validator(_, value) {
-            if (!value) return Promise.resolve();
-            if (value.trim()) {
-                return Promise.resolve();
-            }
-            return Promise.reject(new Error('Họ tên không được trống!'));
-        },
-    }),
-    checkFormatPassword: (message) => ({
-        validator(_, value) {
-            if (!value) return Promise.resolve();
-            const result = regexPattern(value, "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,16}$")
-            if (result) {
-                return Promise.resolve();
-            }
-            return Promise.reject(new Error(message));
-        },
-    }),
-
-    checkCfPasswordMatch: (getFieldValue) => ({
-        validator(_, value) {
-            if (!value || getFieldValue('password') === value) {
-                return Promise.resolve();
-            }
-            return Promise.reject(new Error('Mật khẩu xác nhận đã nhập không khớp!'));
-        },
-    }),
-}
 
 function SignUp() {
     const notification = useContext(NotificationContext);
@@ -142,16 +79,16 @@ function SignUp() {
                     <Form.Item label="Họ tên" name='fullname'
                         required
                         rules={[
-                            (getFieldValue) => ({
+                            ({ getFieldValue }) => ({
                                 validator(_, value) {
                                     const data = value === undefined ? '' : value.trim();
                                     if (data) {
                                         return Promise.resolve();
+                                    } else {
+                                        return Promise.reject(new Error('Họ tên không để trống'));
                                     }
-                                    return Promise.reject(new Error('Họ tên không để trống!'));
                                 },
                             }),
-                            validatorFields.checkFormatFullname(),
                         ]}
                     >
                         <Input placeholder='Họ tên' size='large' />
@@ -159,17 +96,34 @@ function SignUp() {
                     <Form.Item label="Tên tài khoản" name='username'
                         required
                         rules={[
-                            (getFieldValue) => ({
+                            ({ getFieldValue }) => ({
                                 validator(_, value) {
                                     const data = value === undefined ? '' : value.trim();
                                     if (data) {
-                                        return Promise.resolve();
+                                        const result = regexPattern(value, "^(?=[a-z])[a-z\\d]{6,12}$")
+                                        if (result) {
+                                            return new Promise((resolve, reject) => {
+                                                debounceCheckExistUsername(value)
+                                                    .then(({ res }) => {
+                                                        res.then(res => {
+                                                            if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                                                                resolve();
+                                                            } else {
+                                                                reject(new Error('Tên tài khoản không khả dụng'));
+                                                            }
+                                                        }).catch(err => {
+                                                            reject(new Error('Tên tài khoản không khả dụng'));
+                                                        });
+                                                    })
+                                            })
+                                        } else {
+                                            return Promise.reject(new Error('Tên tài khoản phải bắt đầu với kí tự chữ thường và có độ dài 6 - 12 kí tự'));
+                                        }
+                                    } else {
+                                        return Promise.reject(new Error('Tên tài khoản không để trống'));
                                     }
-                                    return Promise.reject(new Error('Tên tài khoản không để trống!'));
                                 },
                             }),
-                            validatorFields.checkFormatUsername(),
-                            validatorFields.checkExistUsername(),
                         ]}
                     >
                         <Input placeholder='Tên tài khoản' size='large' />
@@ -182,16 +136,29 @@ function SignUp() {
                                 type: 'email',
                                 message: 'Email nhập không hợp lệ!',
                             },
-                            (getFieldValue) => ({
+                            ({ getFieldValue }) => ({
                                 validator(_, value) {
                                     const data = value === undefined ? '' : value.trim();
                                     if (data) {
-                                        return Promise.resolve();
+                                        return new Promise((resolve, reject) => {
+                                            debounceCheckExistEmail(value)
+                                                .then(({ res }) => {
+                                                    res.then(res => {
+                                                        if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                                                            resolve();
+                                                        } else {
+                                                            reject(new Error('Email không khả dụng'));
+                                                        }
+                                                    }).catch(err => {
+                                                        reject(new Error('Email không khả dụng'));
+                                                    });
+                                                })
+                                        })
+                                    } else {
+                                        return Promise.reject(new Error('Email không được để trống'));
                                     }
-                                    return Promise.reject(new Error('Email không được để trống!'));
                                 },
                             }),
-                            validatorFields.checkExistEmail(),
                         ]}
                     >
                         <Input placeholder='Email' size='large' />
@@ -201,16 +168,21 @@ function SignUp() {
                         required
                         // hasFeedback
                         rules={[
-                            (getFieldValue) => ({
+                            ({ getFieldValue }) => ({
                                 validator(_, value) {
                                     const data = value === undefined ? '' : value.trim();
                                     if (data) {
-                                        return Promise.resolve();
+                                        const result = regexPattern(value, "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,16}$")
+                                        if (result) {
+                                            return Promise.resolve();
+                                        } else {
+                                            return Promise.reject(new Error('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự'));
+                                        }
+                                    } else {
+                                        return Promise.reject(new Error('Mật khẩu không để trống'));
                                     }
-                                    return Promise.reject(new Error('Mật khẩu không để trống!'));
                                 },
                             }),
-                            validatorFields.checkFormatPassword('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
                         ]}>
                         <Input.Password placeholder='Mật khẩu' size='large' />
                     </Form.Item>
@@ -220,17 +192,20 @@ function SignUp() {
                         required
                         // hasFeedback
                         rules={[
-                            (getFieldValue) => ({
+                            ({ getFieldValue }) => ({
                                 validator(_, value) {
                                     const data = value === undefined ? '' : value.trim();
                                     if (data) {
-                                        return Promise.resolve();
+                                        if (getFieldValue('password') === value) {
+                                            return Promise.resolve();
+                                        } else {
+                                            return Promise.reject(new Error('Mật khẩu xác nhận đã nhập không khớp'));
+                                        }
+                                    } else {
+                                        return Promise.reject(new Error('Mật khẩu xác nhận không để trống'));
                                     }
-                                    return Promise.reject(new Error('Mật khẩu xác nhận không để trống!'));
                                 },
                             }),
-                            ({ getFieldValue }) => validatorFields.checkCfPasswordMatch(getFieldValue),
-                            // validatorFields.checkFormatPassword('Mật khẩu xác nhận chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự!'),
                         ]}>
                         <Input.Password placeholder='Mật khẩu xác nhận' size='large' />
                     </Form.Item>
