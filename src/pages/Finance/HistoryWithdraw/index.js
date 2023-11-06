@@ -7,7 +7,7 @@ import { useAuthUser } from 'react-auth-kit'
 import { getWithdrawTransaction } from '~/api/bank'
 import Spinning from "~/components/Spinning";
 import ModalRequestWithdraw from "~/components/Modals/ModalRequestWithdraw";
-import { formatStringToCurrencyVND, ParseDateTime } from '~/utils/index'
+import { formatPrice, ParseDateTime } from '~/utils/index'
 import {
     RESPONSE_CODE_SUCCESS,
     WITHDRAW_TRANSACTION_IN_PROCESSING,
@@ -31,7 +31,7 @@ const columns = [
         width: '15%',
         render: (amount) => {
             return (
-                <p>{formatStringToCurrencyVND(amount)} VND</p>
+                <p>{formatPrice(amount)}</p>
             )
         }
     },

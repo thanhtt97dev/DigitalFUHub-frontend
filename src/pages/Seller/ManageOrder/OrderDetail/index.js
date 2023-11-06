@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { customerUpdateStatusOrder, getOrderDetailCustomer, getOrderDetailSeller, updateDisputeOrder, updateRefundOrder } from "~/api/order";
-import { ParseDateTime, formatStringToCurrencyVND, getUserId } from "~/utils";
+import { ParseDateTime, formatPrice, getUserId } from "~/utils";
 import {
     ShopOutlined,
     CheckCircleOutlined,
@@ -338,11 +338,11 @@ function OrderDetailSeller() {
                                                             <Col span={23}>
                                                                 <Row justify="end">
                                                                     {v.discount === 0 ?
-                                                                        <Text>{formatStringToCurrencyVND(v.price)}₫</Text>
+                                                                        <Text>{formatPrice(v.price)}</Text>
                                                                         :
                                                                         <Space size={[8, 0]}>
-                                                                            <Text delete>{formatStringToCurrencyVND(v.price)}₫</Text>
-                                                                            <Text>{formatStringToCurrencyVND(v.price - (v.price * v.discount / 100))}₫</Text>
+                                                                            <Text delete>{formatPrice(v.price)}</Text>
+                                                                            <Text>{formatPrice(v.price - (v.price * v.discount / 100))}</Text>
                                                                         </Space>
                                                                     }
                                                                 </Row>
@@ -368,7 +368,7 @@ function OrderDetailSeller() {
                                             label: 'Tổng tiền sản phẩm',
                                             labelStyle: { 'text-align': 'right' },
                                             span: '3',
-                                            children: <Text>{formatStringToCurrencyVND(order?.totalAmount)}₫</Text>
+                                            children: <Text>{formatPrice(order?.totalAmount)}</Text>
                                         })
 
 
@@ -378,7 +378,7 @@ function OrderDetailSeller() {
                                             labelStyle: { 'text-align': 'right' },
                                             span: '3',
                                             children: <Text>{order?.totalCouponDiscount !== 0 ?
-                                                `-${formatStringToCurrencyVND(order?.totalCouponDiscount)}₫`
+                                                `-${formatPrice(order?.totalCouponDiscount)}`
                                                 :
                                                 'Không áp dụng'
                                             }</Text>
@@ -389,21 +389,21 @@ function OrderDetailSeller() {
                                             label: <Text style={{ fontWeight: 'bold' }}>Tổng đơn hàng</Text>,
                                             labelStyle: { 'text-align': 'right' },
                                             span: '3',
-                                            children: <Text>{`${formatStringToCurrencyVND(order.totalAmount - order?.totalCouponDiscount)}₫`}</Text>
+                                            children: <Text>{`${formatPrice(order.totalAmount - order?.totalCouponDiscount)}`}</Text>
                                         })
                                         infoPayment.push({
                                             key: '4',
                                             label: <Text style={{ fontWeight: 'bold' }}>Phí dịch vụ</Text>,
                                             labelStyle: { 'text-align': 'right' },
                                             span: '3',
-                                            children: <Text>{`-${formatStringToCurrencyVND(order.bussinessFee)}₫`}</Text>
+                                            children: <Text>{`-${formatPrice(order.bussinessFee)}`}</Text>
                                         })
                                         infoPayment.push({
                                             key: '4',
                                             label: <Text style={{ fontWeight: 'bold' }}>Số tiền người bán nhận</Text>,
                                             labelStyle: { 'text-align': 'right' },
                                             span: '3',
-                                            children: <Text>{`${formatStringToCurrencyVND(order.amountSellerReceive)}₫`}</Text>
+                                            children: <Text>{`${formatPrice(order.amountSellerReceive)}`}</Text>
                                         })
                                         return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
                                     })()}

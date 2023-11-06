@@ -9,7 +9,7 @@ import {
     RESPONSE_CODE_BANK_WITHDRAW_BILL_NOT_FOUND,
     RESPONSE_CODE_BANK_WITHDRAW_REJECT
 } from '~/constants'
-import { ParseDateTime, formatStringToCurrencyVND } from '~/utils/index'
+import { ParseDateTime, formatPrice } from '~/utils/index'
 
 function DrawerWithdrawTransactionBill({ userId, withdrawTransactionId }) {
 
@@ -82,7 +82,7 @@ function DrawerWithdrawTransactionBill({ userId, withdrawTransactionId }) {
                         {
                             key: '5',
                             label: 'Số tiền',
-                            children: <p>{formatStringToCurrencyVND(data.debitAmount)} VND</p>,
+                            children: <p>{formatPrice(data.debitAmount)}</p>,
                             span: 3
                         },
                         {

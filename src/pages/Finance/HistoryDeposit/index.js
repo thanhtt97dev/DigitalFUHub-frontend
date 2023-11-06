@@ -7,7 +7,7 @@ import { useAuthUser } from 'react-auth-kit'
 
 import { getDepositTransaction } from '~/api/bank'
 import Spinning from "~/components/Spinning";
-import { formatStringToCurrencyVND, ParseDateTime } from '~/utils/index'
+import { formatPrice, ParseDateTime } from '~/utils/index'
 import dayjs from 'dayjs';
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import ModalRequestDeposit from "~/components/Modals/ModalRequestDeposit";
@@ -28,7 +28,7 @@ const columns = [
         width: '15%',
         render: (amount) => {
             return (
-                <p>{formatStringToCurrencyVND(amount)} VND</p>
+                <p>{formatPrice(amount)}</p>
             )
         }
     },
