@@ -390,7 +390,7 @@ function Coupons() {
                             key="priceDiscount"
                             // sorter={(a, b) => a.priceDiscount - b.priceDiscount}
                             render={(_, record) => (
-                                <p>{formatPrice(record.priceDiscount)} đ</p>
+                                <p>{formatPrice(record.priceDiscount)}</p>
                             )}
                         />
                         <Column
