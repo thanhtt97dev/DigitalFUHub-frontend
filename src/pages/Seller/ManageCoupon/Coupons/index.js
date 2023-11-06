@@ -7,19 +7,21 @@ import { formatStringToCurrencyVND, getUserId, ParseDateTime } from '~/utils/ind
 import { NotificationContext } from "~/context/NotificationContext";
 import dayjs from 'dayjs';
 import {
+    COUPON_STATUS_ALL,
+    COUPON_STATUS_COMING_SOON,
+    COUPON_STATUS_FINISHED,
+    COUPON_STATUS_ONGOING,
     COUPON_TYPE_ALL_PRODUCTS_OF_SHOP,
     COUPON_TYPE_SPECIFIC_PRODUCTS,
     RESPONSE_CODE_SUCCESS,
 } from "~/constants";
 import Column from "antd/es/table/Column";
-import { EditOutlined, PlusOutlined, QuestionCircleOutlined, ShopOutlined, ShoppingOutlined } from "@ant-design/icons";
-import { addCouponSeller, removeCouponSeller, getCouponsSeller, updateStatusCouponSeller, getCouponSellerById, editCouponSeller } from "~/api/coupon";
-import { checkCouponCodeExist } from "~/api/coupon";
-import { regexPattern } from "../../../../utils";
+import { PlusOutlined, ShopOutlined, ShoppingOutlined } from "@ant-design/icons";
+import { removeCouponSeller, getCouponsSeller, updateStatusCouponSeller } from "~/api/coupon";
 import styles from "./Coupon.module.scss"
 import classNames from "classnames/bind";
 import { Link } from "react-router-dom";
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const cx = classNames.bind(styles)
 
@@ -27,7 +29,7 @@ const { RangePicker } = DatePicker;
 
 const { confirm } = Modal;
 
-const removeSecondOfDateTime = (date) => date.slice(0, date.length - 6) + ' ' + date.slice(-2)
+// const removeSecondOfDateTime = (date) => date.slice(0, date.length - 6) + ' ' + date.slice(-2)
 
 function Coupons() {
     const notification = useContext(NotificationContext)
@@ -40,7 +42,8 @@ function Coupons() {
         userId: getUserId(),
         startDate: null,
         endDate: null,
-        status: 0
+        isPublic: 0,
+        status: COUPON_STATUS_COMING_SOON
     });
 
     const initFormValues = [
@@ -53,6 +56,10 @@ function Coupons() {
             value: [searchData.startDate !== null ? dayjs(searchData.startDate, 'M/D/YYYY') : null, searchData.endDate !== null ? dayjs(searchData.endDate, 'M/D/YYYY') : null]
         },
         {
+            name: 'isPublic',
+            value: searchData.isPublic,
+        },
+        {
             name: 'status',
             value: searchData.status,
         },
@@ -61,7 +68,7 @@ function Coupons() {
     useEffect(() => {
         const data = {
             ...searchData,
-            status: searchData.status === 0 ? null : searchData.status === 1 ? true : false
+            isPublic: searchData.isPublic === 0 ? null : searchData.isPublic === 1 ? true : false
         }
         setLoading(true);
         getCouponsSeller(data)
@@ -87,42 +94,43 @@ function Coupons() {
             userId: getUserId(),
             startDate: values.date && values.date[0] ? values.date[0].$d.toLocaleDateString() : null,
             endDate: values.date && values.date[1] ? values.date[1].$d.toLocaleDateString() : null,
+            isPublic: values.isPublic,
             status: values.status
         });
 
     }
-    const handleChangeStatus = (couponId, checked) => {
-        confirm({
-            title: `Bạn có muốn thay đổi trạng thái sang ${checked ? "công khai" : "riêng tư"} không?`,
-            okText: 'Đồng ý',
-            cancelText: 'Hủy',
-            onOk() {
-                const data = {
-                    userId: getUserId(),
-                    couponId: couponId,
-                    isPublic: checked
-                }
-                updateStatusCouponSeller(data)
-                    .then((res) => {
-                        if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                            setSearchData({
-                                ...searchData,
-                                userId: getUserId(),
-                            });
-                            notification("success", "Cập nhật mã giảm giá thành công.")
-                        } else {
-                            notification("error", "Cập nhật mã giảm giá thất bại.")
-                        }
-                    })
-                    .catch((err) => {
-                        notification("error", "Đã có lỗi xảy ra.")
-                    })
+    // const handleChangeStatus = (couponId, checked) => {
+    //     confirm({
+    //         title: `Bạn có muốn thay đổi trạng thái sang ${checked ? "công khai" : "riêng tư"} không?`,
+    //         okText: 'Đồng ý',
+    //         cancelText: 'Hủy',
+    //         onOk() {
+    //             const data = {
+    //                 userId: getUserId(),
+    //                 couponId: couponId,
+    //                 isPublic: checked
+    //             }
+    //             updateStatusCouponSeller(data)
+    //                 .then((res) => {
+    //                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+    //                         setSearchData({
+    //                             ...searchData,
+    //                             userId: getUserId(),
+    //                         });
+    //                         notification("success", "Cập nhật mã giảm giá thành công.")
+    //                     } else {
+    //                         notification("error", "Cập nhật mã giảm giá thất bại.")
+    //                     }
+    //                 })
+    //                 .catch((err) => {
+    //                     notification("error", "Đã có lỗi xảy ra.")
+    //                 })
 
-            },
-            onCancel() {
-            }
-        })
-    }
+    //         },
+    //         onCancel() {
+    //         }
+    //     })
+    // }
     const handleRemoveCoupon = (couponId) => {
         confirm({
             title: `Bạn có muốn xóa mã giảm giá này không?`,
@@ -167,16 +175,10 @@ function Coupons() {
                             <Space
                                 align="center"
                                 direction="vertical"
-                                style={{
-                                    backgroundColor: '#1565C0',
-                                    borderRadius: '10px',
-                                    padding: '10px',
-                                    color: 'white',
-                                    height: '115px'
-                                }}
+                                className={cx('option')}
                             >
                                 <ShopOutlined style={{ fontSize: '40px' }} />
-                                <Title level={5} style={{ color: 'inherit', textAlign: 'center' }}>Mã giảm giá cho cửa hàng</Title>
+                                <Title level={5} style={{ color: 'inherit', textAlign: 'center' }}>Mã giảm giá cho tất cả sản phẩm</Title>
                             </Space>
                         </Link>
                     </Col>
@@ -185,16 +187,10 @@ function Coupons() {
                             <Space
                                 align="center"
                                 direction="vertical"
-                                style={{
-                                    backgroundColor: '#1565C0',
-                                    borderRadius: '10px',
-                                    padding: '10px',
-                                    color: 'white',
-                                    maxHeight: '115px'
-                                }}
+                                className={cx('option')}
                             >
                                 <ShoppingOutlined style={{ fontSize: '40px' }} />
-                                <Title level={5} style={{ color: 'inherit', textAlign: 'center' }}>Mã giảm cho sản phẩm chỉ định</Title>
+                                <Title level={5} style={{ color: 'inherit', textAlign: 'center' }}>Mã giảm giá cho các sản phẩm chỉ định</Title>
                             </Space>
                         </Link>
                     </Col>
@@ -214,17 +210,27 @@ function Coupons() {
                         fields={initFormValues}
                     >
                         <Row>
-                            <Col span={3} offset={1}><label>Mã giảm giá:  </label></Col>
+                            <Col span={3} offset={1}><label>Mã giảm giá</label></Col>
                             <Col span={6}>
                                 <Form.Item name="couponCode" >
                                     <Input />
                                 </Form.Item>
                             </Col>
-
+                            <Col span={2} offset={1}><label>Trạng thái</label></Col>
+                            <Col span={6}>
+                                <Form.Item name="status" >
+                                    <Select >
+                                        <Select.Option value={COUPON_STATUS_ALL}>Tất cả</Select.Option>
+                                        <Select.Option value={COUPON_STATUS_COMING_SOON}>Sắp diễn ra</Select.Option>
+                                        <Select.Option value={COUPON_STATUS_ONGOING}>Đang diễn ra</Select.Option>
+                                        <Select.Option value={COUPON_STATUS_FINISHED}>Đã kết thúc</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </Col>
                         </Row>
 
                         <Row>
-                            <Col span={3} offset={1}><label>Thời gian giảm giá: </label></Col>
+                            <Col span={3} offset={1}><label>Thời gian giảm giá</label></Col>
                             <Col span={6}>
                                 <Form.Item name="date" >
                                     <RangePicker locale={locale}
@@ -234,9 +240,9 @@ function Coupons() {
                                         placement={"bottomLeft"} />
                                 </Form.Item>
                             </Col>
-                            <Col span={2} offset={1}><label>Trạng thái: </label></Col>
+                            <Col span={2} offset={1}><label>Hiển thị</label></Col>
                             <Col span={6}>
-                                <Form.Item name="status" >
+                                <Form.Item name="isPublic" >
                                     <Select >
                                         <Select.Option value={0}>Tất cả</Select.Option>
                                         <Select.Option value={1}>Công khai</Select.Option>
@@ -263,10 +269,40 @@ function Coupons() {
                             marginTop: '10px'
                         }}
                         rowKey={(record) => record.couponId}
-                        dataSource={listCoupons} size='small' scroll={{ y: 290 }}
+                        dataSource={listCoupons}
+                        size='small'
+                        scroll={
+                            {
+                                y: 290,
+                                x: 1300
+                            }
+                        }
                     >
                         <Column
-                            width="15%"
+                            fixed='left'
+                            width="25%"
+                            title="Tên Mã giảm giá"
+                            key="couponName"
+                            // sorter={
+                            //     {
+                            //         compare: (a, b) => {
+                            //             if (a.couponCode < b.couponCode) {
+                            //                 return -1;
+                            //             } else if (a.couponCode > b.couponCode) {
+                            //                 return 1;
+                            //             } else {
+                            //                 return 0;
+                            //             }
+                            //         }
+                            //     }
+                            // }
+                            render={(_, record) => (
+                                <p>{record.couponName}</p>
+                            )}
+                        />
+                        <Column
+                            fixed='left'
+                            width="20%"
                             title="Mã giảm giá"
                             key="couponCode"
                             // sorter={
@@ -287,17 +323,9 @@ function Coupons() {
                             )}
                         />
 
+
                         <Column
-                            width="15%"
-                            title="Số tiền giảm giá"
-                            key="priceDiscount"
-                            // sorter={(a, b) => a.priceDiscount - b.priceDiscount}
-                            render={(_, record) => (
-                                <p>{formatStringToCurrencyVND(record.priceDiscount)} đ</p>
-                            )}
-                        />
-                        <Column
-                            width="15%"
+                            width="25%"
                             title="Thời gian bắt đầu"
                             key="startDate"
                             // sorter={
@@ -318,7 +346,7 @@ function Coupons() {
                             )}
                         />
                         <Column
-                            width="15%"
+                            width="25%"
                             title="Thời gian kết thúc"
                             key="endDate"
                             // sorter={
@@ -339,16 +367,16 @@ function Coupons() {
                             )}
                         />
                         <Column
-                            width="10%"
-                            title="Số lượng"
-                            key="quantity"
-                            // sorter={(a, b) => a.quantity - b.quantity}
+                            width="25%"
+                            title="Sản phẩm áp dụng"
+                            key="productApplied"
+                            // sorter={(a, b) => a.minTotalOrderValue - b.minTotalOrderValue}
                             render={(_, record) => (
-                                <p>{record.quantity}</p>
+                                <p>{record.couponTypeId === COUPON_TYPE_ALL_PRODUCTS_OF_SHOP ? 'Tất cả sản phẩm' : `Tổng cộng ${record.productsApplied.length} sản phẩm`}</p>
                             )}
                         />
                         <Column
-                            width="15%"
+                            width="25%"
                             title="Đơn hàng tối thiểu"
                             key="minTotalOrderValue"
                             // sorter={(a, b) => a.minTotalOrderValue - b.minTotalOrderValue}
@@ -357,9 +385,38 @@ function Coupons() {
                             )}
                         />
                         <Column
+                            width="25%"
+                            title="Số tiền giảm giá"
+                            key="priceDiscount"
+                            // sorter={(a, b) => a.priceDiscount - b.priceDiscount}
+                            render={(_, record) => (
+                                <p>{formatStringToCurrencyVND(record.priceDiscount)} đ</p>
+                            )}
+                        />
+                        <Column
                             width="15%"
-                            title="Trạng thái"
+                            title="Số lượng"
+                            key="quantity"
+                            // sorter={(a, b) => a.quantity - b.quantity}
+                            render={(_, record) => (
+                                <p>{record.quantity}</p>
+                            )}
+                        />
+
+                        <Column
+                            width="15%"
+                            title="Hiển thị"
                             key="isPublic"
+                            // sorter={(a, b) => a.minTotalOrderValue - b.minTotalOrderValue}
+                            render={(_, record) => (
+                                <p>{record.isPublic ? 'Công khai' : 'Riêng tư'}</p>
+                            )}
+                        />
+                        <Column
+                            width="20%"
+                            fixed='right'
+                            title="Trạng thái"
+                            key="status"
                             render={(_, record) => {
                                 const now = dayjs();
                                 const startDate = dayjs(record.startDate)
@@ -374,8 +431,9 @@ function Coupons() {
                             }}
                         />
                         <Column
-                            width="15%"
-                            title=""
+                            width="18%"
+                            fixed='right'
+                            title="Thao tác"
                             key="actions"
                             render={(_, record) => {
                                 const now = dayjs();
@@ -383,7 +441,9 @@ function Coupons() {
                                 if (now.isBefore(startDate)) {
                                     return <Row gutter={[8, 0]}>
                                         <Col>
-                                            <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
+                                            <Link to={`/seller/coupon/detail/${record.couponId}`}>
+                                                <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
+                                            </Link>
                                         </Col>
                                         <Col>
                                             <Link to={`/seller/coupon/edit/${record.couponId}`} >
@@ -397,7 +457,9 @@ function Coupons() {
                                 } else {
                                     return <Row gutter={[8, 0]}>
                                         <Col>
-                                            <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
+                                            <Link to={`/seller/coupon/detail/${record.couponId}`}>
+                                                <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
+                                            </Link>
                                         </Col>
                                     </Row>
                                 }

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Col, Form, Image, Input, Modal, Pagination, Row, Table } from "antd";
+import { Button, Col, Form, Image, Input, Modal, Pagination, Row, Space, Table } from "antd";
 import { memo, useEffect, useState } from "react";
 import { getListProductOfSeller } from "~/api/product";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
@@ -14,13 +14,14 @@ const columns = [
     {
         title: 'Tên sản phẩm',
         dataIndex: 'productName',
-        render: (_, record) => <div>
+        render: (_, record) => <Space size={[8, 8]}>
             <Image width={90} src={record.thumbnail} />
             <p>{record.productName}</p>
-        </div>
+        </Space>
     },
     {
         title: 'Điểm đánh giá',
+        width: '20%',
         dataIndex: 'totalRating',
         render: (_, record) => <div>{record.numberFeedback !== 0 ? record.totalRatingStar / record.numberFeedback : 0}</div>
     },

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState } from "react";
-import { PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { PlusOutlined, QuestionCircleOutlined, ShoppingOutlined } from "@ant-design/icons";
 import { Button, Col, DatePicker, Form, Image, Input, InputNumber, Row, Space, Switch, Table, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import locale from 'antd/es/date-picker/locale/vi_VN';
@@ -53,6 +53,28 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
             form={formAdd}
             onFinish={onFinish}
         >
+            <Row>
+                <Col span={5} offset={1}><label>Loại mã giảm giá</label></Col>
+                <Col span={10}>
+                    <Form.Item>
+                        <div>
+                            <Space
+                                align="center"
+                                style={{
+                                    border: '1px solid #1677ff',
+                                    borderRadius: '10px',
+                                    padding: '10px',
+                                    color: '#1677ff',
+                                    cursor: 'default'
+                                }}
+                            >
+                                <ShoppingOutlined style={{ fontSize: '20px' }} />
+                                <div level={5} style={{ color: 'inherit', textAlign: 'center' }}>Mã giảm giá cho các sản phẩm chỉ định</div>
+                            </Space>
+                        </div>
+                    </Form.Item>
+                </Col>
+            </Row>
             <Row>
                 <Col span={5} offset={1}><label>Tên mã giảm giá <Tooltip title="Tên mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
                 <Col span={10}>
@@ -280,7 +302,7 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                 </Col>
             </Row>
             <Row>
-                <Col span={5} offset={1}><label>Thể loại <Tooltip title={<div><p>Công khai: mọi người được đề xuất mã giảm giá này khi đặt hàng.</p><br /><p>Riêng tư: mọi người sẽ phải nhập mã để tìm thấy mã giảm giá này.</p></div>}><QuestionCircleOutlined /></Tooltip></label></Col>
+                <Col span={5} offset={1}><label>Thiết lập hiển thị <Tooltip title={<div><p>Công khai: mọi người được đề xuất mã giảm giá này khi đặt hàng.</p><br /><p>Riêng tư: mọi người sẽ phải nhập mã để tìm thấy mã giảm giá này.</p></div>}><QuestionCircleOutlined /></Tooltip></label></Col>
                 <Col span={10}>
                     <Form.Item name="isPublic" valuePropName="checked" initialValue={true}>
                         <Switch checkedChildren="Công khai" unCheckedChildren="Riêng tư" />
@@ -317,7 +339,7 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                             dataSource={lsProductApplied}
                         >
                             <Column
-                                width="15%"
+                                width="20%"
                                 title="ID sản phẩm"
                                 key="productId"
                                 render={(_, record) => (
@@ -325,19 +347,19 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                                 )}
                             />
                             <Column
-                                width="70%"
+                                width="65%"
                                 title="Tên sản phẩm"
                                 key="productName"
                                 render={(_, record) => (
-                                    <div>
+                                    <Space size={[8, 8]}>
                                         <Image width={90} src={record.thumbnail} />
                                         <p>{record.productName}</p>
-                                    </div>
+                                    </Space>
                                 )}
                             />
                             <Column
                                 width="15%"
-                                title=""
+                                title="Thao tác"
                                 key="actions"
                                 render={(_, record) => (
                                     <Button type="link" onClick={() => handleRemoveProductSelected(record.productId)}>Xóa</Button>
@@ -348,7 +370,7 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
                 </Col>
             </Row>
             <Row>
-                <Col span={16} style={{ textAlign: 'center' }}>
+                <Col span={16} style={{ textAlign: 'center', marginTop: '2em' }}>
                     <Button htmlType="submit" type="primary">Xác nhận</Button>
                 </Col>
             </Row>

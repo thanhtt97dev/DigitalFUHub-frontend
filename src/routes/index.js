@@ -35,6 +35,7 @@ import Feedbacks from '~/pages/Seller/ManageFeedback/Feedbacks';
 import OrderDetailSeller from '~/pages/Seller/ManageOrder/OrderDetail';
 import AddCoupon from '~/pages/Seller/ManageCoupon/AddCoupon';
 import EditCoupon from '~/pages/Seller/ManageCoupon/EditCoupon';
+import CouponDetail from '~/pages/Seller/ManageCoupon/Detail';
 
 const routesConfig = [
     {
@@ -164,6 +165,13 @@ const routesConfig = [
         path: '/seller/coupon/add',
         layout: <SellerLayout />,
         component: <AddCoupon />,
+        role: [SELLER_ROLE],
+    },
+    {
+        title: 'Coupon',
+        path: '/seller/coupon/detail/:couponId',
+        layout: <SellerLayout />,
+        component: <CouponDetail />,
         role: [SELLER_ROLE],
     },
     {

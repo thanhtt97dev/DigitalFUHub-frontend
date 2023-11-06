@@ -63,14 +63,14 @@ function AddCoupon() {
     }
 
 
-    return (<Card title="">
+    return (<Card title="Thêm mã giảm giá">
         {(() => {
             if (searchParams.get("case") === COUPON_TYPE_ALL_PRODUCTS_OF_SHOP + '') {
                 return <AddCouponForShop onAddCoupon={onAddCoupon} />;
             } else if (searchParams.get("case") === COUPON_TYPE_SPECIFIC_PRODUCTS + '') {
                 return <AddCouponForProduct onAddCoupon={onAddCoupon} />;
             } else {
-                return <NotFound />
+                return null
             }
         })()
         }
