@@ -107,6 +107,8 @@ function SettingsLayout({ children }) {
                                     icon: React.createElement(item.icon),
                                     label: <Link to={item.link}>{item.label}</Link>,
                                 }
+                            } else {
+                                return <></>
                             }
                         })}
                     />
