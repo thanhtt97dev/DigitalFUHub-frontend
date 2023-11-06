@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { MessageOutlined } from '@ant-design/icons';
 import classNames from 'classnames/bind';
@@ -14,6 +15,8 @@ const cx = classNames.bind(styles);
 
 const Message = () => {
 
+    const location = useLocation();
+
     var auth = useAuthUser();
     var user = auth();
 
@@ -23,6 +26,16 @@ const Message = () => {
     /// states
     const [conversationIdUnReads, setConversationIdUnReads] = useState([]);
     const [newMessage, setNewMessage] = useState(null)
+    const [hideUI, setHideUI] = useState(false)
+
+    useEffect(() => {
+        console.log(location)
+        if (location.pathname === "/chatBox") {
+            setHideUI(true)
+        } else {
+            setHideUI(false)
+        }
+    }, [location])
 
     /// useEffects
     useEffect(() => {
@@ -59,11 +72,15 @@ const Message = () => {
     }
 
     return (
-        <Link to={'/chatBox'} onClick={handleClickChatIcon}>
-            <Badge count={conversationIdUnReads.length} size="small">
-                <MessageOutlined className={cx("icon")} />
-            </Badge>
-        </Link>
+        <>
+            {hideUI ? "" :
+                <Link to={'/chatBox'} onClick={handleClickChatIcon}>
+                    <Badge count={conversationIdUnReads.length} size="small">
+                        <MessageOutlined className={cx("icon")} />
+                    </Badge>
+                </Link>
+            }
+        </>
     )
 }
 
