@@ -5,7 +5,7 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 
 import { createWithdrawTransaction, getUserBankAccount } from "~/api/bank";
 import { getCustomerBalance } from '~/api/user'
-import { NotificationContext } from '~/context/NotificationContext';
+import { NotificationContext } from '~/context/UI/NotificationContext';
 import {
     RESPONSE_CODE_SUCCESS,
     RESPONSE_CODE_DATA_NOT_FOUND,

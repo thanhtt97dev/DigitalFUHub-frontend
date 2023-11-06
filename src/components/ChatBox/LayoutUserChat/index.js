@@ -6,8 +6,11 @@ import fptImage from '~/assets/images/fpt-logo.jpg';
 import SmallUserAvatar from '../SmallUserAvatar';
 import { Layout, List, Card, Typography } from 'antd';
 import { USER_CONVERSATION_TYPE_UN_READ } from '~/constants';
+import { Space } from 'antd/lib';
 
 const cx = classNames.bind(styles);
+require('moment/locale/vi');
+const moment = require('moment');
 
 const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) => {
 
@@ -47,7 +50,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                         <List.Item.Meta
                                                             avatar={<SmallUserAvatar srcAvatar={item.users[0].avatar} isActive={item.isOnline} />}
                                                             title={item.users[0].fullname}
-                                                            description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
+                                                            description={<Space align='center'><p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage.content}</p><p>·</p><p>{moment(item.latestMessage.dateCreate).fromNow()}</p></Space>}
                                                         />
                                                         <div className={cx('circle')}></div>
                                                     </div>)
@@ -56,7 +59,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                         <List.Item.Meta
                                                             avatar={<SmallUserAvatar srcAvatar={item.users[0].avatar} isActive={item.isOnline} />}
                                                             title={item.users[0].fullname}
-                                                            description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
+                                                            description={<Space align='center'><p className={cx('text-ellipsis')}>{item.latestMessage.content}</p><p>·</p><p>{moment(item.latestMessage.dateCreate).fromNow()}</p></Space>}
                                                         />
                                                     </div>)
                                             }
@@ -69,7 +72,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                         <List.Item.Meta
                                                             avatar={<SmallUserAvatar srcAvatar={fptImage} isActive={item.isOnline} />}
                                                             title={item.conversationName}
-                                                            description={<p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage}</p>}
+                                                            description={<Space align='center'><p className={cx('text-ellipsis', 'text-un-read')} >{item.latestMessage.content}</p><p>·</p><p>{moment(item.latestMessage.dateCreate).fromNow()}</p></Space>}
                                                         />
                                                         <div className={cx('circle')}></div>
                                                     </div>)
@@ -78,7 +81,7 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected }) =>
                                                         <List.Item.Meta
                                                             avatar={<SmallUserAvatar srcAvatar={fptImage} isActive={item.isOnline} />}
                                                             title={item.conversationName}
-                                                            description={<p className={cx('text-ellipsis')}>{item.latestMessage}</p>}
+                                                            description={<Space align='center'><p className={cx('text-ellipsis')}>{item.latestMessage.content}</p><p>·</p><p>{moment(item.latestMessage.dateCreate).fromNow()}</p></Space>}
                                                         />
                                                     </div>)
                                             }

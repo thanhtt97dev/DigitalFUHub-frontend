@@ -9,7 +9,7 @@ import { COUPON_TYPE_SPECIFIC_PRODUCTS, RESPONSE_CODE_SUCCESS } from "~/constant
 import { getCouponSellerById } from "~/api/coupon";
 import Column from "antd/es/table/Column";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 
 
 function CouponDetail() {

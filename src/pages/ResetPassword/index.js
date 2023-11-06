@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Form, Input, Spin } from 'antd';
 import { resetPassword } from "~/api/user";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { useContext } from "react";
 import { RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_RESET_PASSWORD_NOT_CONFIRM, RESPONSE_CODE_RESET_PASSWORD_SIGNIN_GOOGLE, RESPONSE_CODE_SUCCESS } from "~/constants";
 function ResetPassword() {

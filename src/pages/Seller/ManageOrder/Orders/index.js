@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 
 import { getOrdersSeller } from '~/api/order'
 import Spinning from "~/components/Spinning";
-import { formatStringToCurrencyVND, getUserId, ParseDateTime } from '~/utils/index'
-import { NotificationContext } from "~/context/NotificationContext";
+import { formatPrice, getUserId, ParseDateTime } from '~/utils/index'
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import dayjs from 'dayjs';
 import {
     RESPONSE_CODE_SUCCESS,
@@ -234,7 +234,7 @@ function Orders() {
                                 }
                             }
                             render={(_, record) => (
-                                <p>{formatStringToCurrencyVND(record.totalAmount - record.totalCouponDiscount)}₫</p>
+                                <p>{formatPrice(record.totalAmount - record.totalCouponDiscount)}</p>
                             )}
                         />
                         <Column

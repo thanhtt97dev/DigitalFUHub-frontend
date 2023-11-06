@@ -17,7 +17,7 @@ import { useAuthUser } from 'react-auth-kit'
 
 import { getConversation } from '~/api/chat'
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_SUCCESS } from "~/constants";
-import { formatStringToCurrencyVND, getDistanceDayTwoDate, getUserId } from "~/utils";
+import { formatPrice, getDistanceDayTwoDate, getUserId } from "~/utils";
 import ModalChangeOrderStatusComplaint from "~/components/Modals/ModalChangeOrderStatusComplaint";
 
 const { Text, Title } = Typography;
@@ -393,11 +393,11 @@ function CardOrderItem({
                                             <Col span={23}>
                                                 <Row justify="end">
                                                     {v.discount === 0 ?
-                                                        <Text>{formatStringToCurrencyVND(v.price)}₫</Text>
+                                                        <Text>{formatPrice(v.price)}₫</Text>
                                                         :
                                                         <Space size={[8, 0]}>
-                                                            <Text delete>{formatStringToCurrencyVND(v.price)}₫</Text>
-                                                            <Text>{formatStringToCurrencyVND(v.price - (v.price * v.discount / 100))}₫</Text>
+                                                            <Text delete>{formatPrice(v.price)}</Text>
+                                                            <Text>{formatPrice(v.price - (v.price * v.discount / 100))}</Text>
                                                         </Space>
                                                     }
                                                 </Row>
@@ -420,7 +420,7 @@ function CardOrderItem({
                             <Row justify="end">
                                 <Col style={{ textAlign: 'right' }}><Title level={5}>Thành tiền:</Title></Col>
                                 <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                    <Text>{`${formatStringToCurrencyVND(totalPayment)}đ`}</Text>
+                                    <Text>{`${formatPrice(totalPayment)}`}</Text>
                                 </Col>
                             </Row>
                         </Col>

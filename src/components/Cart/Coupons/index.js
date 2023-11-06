@@ -6,7 +6,7 @@ import Spinning from "~/components/Spinning";
 import { formatPrice, getVietnamCurrentTime } from '~/utils';
 import { getCouponPrivate } from '~/api/coupon';
 import { Typography, Modal, List, Input, Radio, Button, Space } from 'antd';
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { RESPONSE_CODE_SUCCESS, COUPON_TYPE_SPECIFIC_PRODUCTS } from '~/constants';
 
 const { Search } = Input;

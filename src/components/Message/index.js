@@ -1,73 +1,86 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { getUserId } from '~/utils';
 import { MessageOutlined } from '@ant-design/icons';
 import classNames from 'classnames/bind';
 import styles from './Message.module.scss';
 import { Badge } from 'antd';
+import { getConversationsUnRead } from "~/api/chat"
 import { useAuthUser } from 'react-auth-kit';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
-import { ChatContext } from "~/context/ChatContext";
-import { getNumberConversationUnRead } from '~/api/chat';
+import { ChatContext } from "~/context/SignalR/ChatContext";
 
 const cx = classNames.bind(styles);
+
+
 const Message = () => {
-    /// variables
-    const auth = useAuthUser();
-    const user = auth();
-    ///
 
-    /// states
-    const [numberConversationUnRead, setNumberConversationUnRead] = useState(0);
-    ///
+    const location = useLocation();
 
-    /// useEffects
-    useEffect(() => {
-        if (user === undefined || user === null) return;
-        getNumberConversationUnRead(user.id)
-            .then((res) => {
-                if (res.status === 200) {
-                    const data = res.data;
-                    const status = data.status;
-                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        const result = data.result;
-                        setNumberConversationUnRead(result);
-                    }
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-
-    }, [])
-
+    var auth = useAuthUser();
+    var user = auth();
 
     // message from signR
     const message = useContext(ChatContext);
 
+    /// states
+    const [conversationIdUnReads, setConversationIdUnReads] = useState([]);
+    const [newMessage, setNewMessage] = useState(null)
+    const [hideUI, setHideUI] = useState(false)
+
     useEffect(() => {
-
-        const setMessage = () => {
-            console.log('mess = ' + message)
+        console.log(location)
+        if (location.pathname === "/chatBox") {
+            setHideUI(true)
+        } else {
+            setHideUI(false)
         }
+    }, [location])
 
-        setMessage();
+    /// useEffects
+    useEffect(() => {
+        getConversationsUnRead(user.id)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setConversationIdUnReads(res.data.result)
+                }
+            })
+            .catch(() => {
 
+            })
         // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    useEffect(() => {
+        setNewMessage(message)
     }, [message])
 
+    useEffect(() => {
+        handleReciveNewMessage()
+    })
 
+    const handleReciveNewMessage = () => {
+        if (newMessage === "" || newMessage === null || newMessage === undefined) return;
+        if (!conversationIdUnReads.includes(newMessage.conversationId)) {
+            setConversationIdUnReads((prev) => [...prev, newMessage.conversationId])
+            setNewMessage(null)
+        }
+    }
+
+    const handleClickChatIcon = () => {
+        setConversationIdUnReads([])
+    }
 
     return (
-        <Link to={'/chatBox'}>
-            <Badge count={numberConversationUnRead} size="small">
-                <MessageOutlined className={cx("icon")} />
-            </Badge>
-        </Link>
-
-        // <Badge count={numberConversationUnRead} size="small">
-        //     <MessageOutlined className={cx("icon")} />
-        // </Badge>
+        <>
+            {hideUI ? "" :
+                <Link to={'/chatBox'} onClick={handleClickChatIcon}>
+                    <Badge count={conversationIdUnReads.length} size="small">
+                        <MessageOutlined className={cx("icon")} />
+                    </Badge>
+                </Link>
+            }
+        </>
     )
 }
 

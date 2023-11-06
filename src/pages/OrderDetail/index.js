@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { customerUpdateStatusOrder, getOrderDetailCustomer } from "~/api/order";
-import { ParseDateTime, formatStringToCurrencyVND, getUserId } from "~/utils";
+import { ParseDateTime, formatPrice, getUserId } from "~/utils";
 import {
     ShopOutlined,
     CheckCircleOutlined,
@@ -16,7 +16,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Card, Col, Divider, Image, Rate, Row, Space, Typography, Tag, Tooltip, Form, Upload, Modal, Avatar, Spin, Descriptions } from "antd";
 import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
 import TextArea from "antd/es/input/TextArea";
 import logoFPT from '~/assets/images/fpt-logo.jpg'
@@ -570,11 +570,11 @@ function OrderDetail() {
                                                                 <Col span={23}>
                                                                     <Row justify="end">
                                                                         {v.discount === 0 ?
-                                                                            <Text>{formatStringToCurrencyVND(v.price)}₫</Text>
+                                                                            <Text>{formatPrice(v.price)}</Text>
                                                                             :
                                                                             <Space size={[8, 0]}>
-                                                                                <Text delete>{formatStringToCurrencyVND(v.price)}₫</Text>
-                                                                                <Text>{formatStringToCurrencyVND(v.price - (v.price * v.discount / 100))}₫</Text>
+                                                                                <Text delete>{formatPrice(v.price)}</Text>
+                                                                                <Text>{formatPrice(v.price - (v.price * v.discount / 100))}</Text>
                                                                             </Space>
                                                                         }
                                                                     </Row>
@@ -614,7 +614,7 @@ function OrderDetail() {
                                                 label: 'Tổng tiền sản phẩm',
                                                 labelStyle: { 'text-align': 'right' },
                                                 span: '3',
-                                                children: <Text>{formatStringToCurrencyVND(order?.totalAmount)}₫</Text>
+                                                children: <Text>{formatPrice(order?.totalAmount)}</Text>
                                             })
                                             if (order?.totalCouponDiscount !== 0) {
                                                 infoPayment.push({
@@ -622,7 +622,7 @@ function OrderDetail() {
                                                     label: 'Mã giảm giá',
                                                     labelStyle: { 'text-align': 'right' },
                                                     span: '3',
-                                                    children: <Text>-{formatStringToCurrencyVND(order?.totalCouponDiscount)}₫</Text>
+                                                    children: <Text>-{formatPrice(order?.totalCouponDiscount)}</Text>
                                                 })
                                             }
                                             infoPayment.push({
@@ -630,14 +630,14 @@ function OrderDetail() {
                                                 label: 'Số xu sử dụng',
                                                 labelStyle: { 'text-align': 'right' },
                                                 span: '3',
-                                                children: <Text>-{formatStringToCurrencyVND(order?.totalCoinDiscount)} xu</Text>
+                                                children: <Text>-{formatPrice(order?.totalCoinDiscount)} xu</Text>
                                             })
                                             infoPayment.push({
                                                 key: '4',
                                                 label: <Text style={{ fontWeight: 'bold' }}>Thành tiền</Text>,
                                                 labelStyle: { 'text-align': 'right' },
                                                 span: '3',
-                                                children: <Text>{`${formatStringToCurrencyVND(order.totalPayment)}₫`}</Text>
+                                                children: <Text>{`${formatPrice(order.totalPayment)}`}</Text>
                                             })
                                             return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
                                         })()}

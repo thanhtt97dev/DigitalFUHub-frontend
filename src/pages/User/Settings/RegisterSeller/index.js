@@ -9,7 +9,7 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { checkExistShopName } from "~/api/shop";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import debounce from "debounce-promise";
 
 const debounceCheckExistShopName = debounce((data) => {

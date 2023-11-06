@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import { checkExistEmail, signUp, checkExistUsername } from '~/api/user';
 import { encryptPassword, regexPattern } from '~/utils';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
-import { NotificationContext } from '~/context/NotificationContext';
+import { NotificationContext } from '~/context/UI/NotificationContext';
 import debounce from "debounce-promise";
 
 const debounceCheckExistUsername = debounce((data) => {

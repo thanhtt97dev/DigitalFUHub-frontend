@@ -10,7 +10,7 @@ import {
     SELLER_ROLE,
     RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE
 } from "~/constants";
-import { NotificationContext } from "~/context/NotificationContext";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 
 import { updateDisputeOrder } from '~/api/order'
 

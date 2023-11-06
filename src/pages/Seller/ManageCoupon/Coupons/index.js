@@ -3,8 +3,8 @@ import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
 import Spinning from "~/components/Spinning";
-import { formatStringToCurrencyVND, getUserId, ParseDateTime } from '~/utils/index'
-import { NotificationContext } from "~/context/NotificationContext";
+import { formatPrice, getUserId, ParseDateTime } from '~/utils/index'
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import dayjs from 'dayjs';
 import {
     COUPON_STATUS_ALL,
@@ -381,7 +381,7 @@ function Coupons() {
                             key="minTotalOrderValue"
                             // sorter={(a, b) => a.minTotalOrderValue - b.minTotalOrderValue}
                             render={(_, record) => (
-                                <p>{formatStringToCurrencyVND(record.minTotalOrderValue)} đ</p>
+                                <p>{formatPrice(record.minTotalOrderValue)}</p>
                             )}
                         />
                         <Column
@@ -390,7 +390,7 @@ function Coupons() {
                             key="priceDiscount"
                             // sorter={(a, b) => a.priceDiscount - b.priceDiscount}
                             render={(_, record) => (
-                                <p>{formatStringToCurrencyVND(record.priceDiscount)} đ</p>
+                                <p>{formatPrice(record.priceDiscount)} đ</p>
                             )}
                         />
                         <Column

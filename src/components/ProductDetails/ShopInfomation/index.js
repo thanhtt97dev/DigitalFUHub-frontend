@@ -46,7 +46,13 @@ const ShopInfomations = ({ product, userId }) => {
             addConversation(dataAddConversation)
                 .then((res) => {
                     if (res.status === 200) {
-                        navigate('/chatBox', { state: { data: res.data } })
+
+                        // data state
+                        const data = {
+                            from: 'product-detail',
+                            data: res.data
+                        }
+                        navigate('/chatBox', { state: data })
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -54,6 +60,7 @@ const ShopInfomations = ({ product, userId }) => {
         }
     }
     ///
+
 
 
     return (<>

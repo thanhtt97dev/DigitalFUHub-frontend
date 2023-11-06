@@ -29,3 +29,7 @@ export const getNumberConversationUnRead = (userId) => {
     return apiGetAuth(`api/Conversations/getNumberConversationUnRead?userId=${userId}`);
 };
 
+export const getConversationsUnRead = (userId) => {
+    return apiGetAuth(`api/Conversations/GetConversationsUnRead/${userId}`);
+};
+

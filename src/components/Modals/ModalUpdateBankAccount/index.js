@@ -29,7 +29,7 @@ BANKS_INFO.forEach((bank) => {
     bankOptions.push(bankOption)
 })
 
-function ModalUpdateBankAccount({ userId }) {
+function ModalUpdateBankAccount({ userId, callBack }) {
 
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
@@ -118,7 +118,7 @@ function ModalUpdateBankAccount({ userId }) {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOpenModal(false)
                     openNotification("success", "Thay đổi tài khoản ngân hàng thành công!")
-                    window.location.reload();
+                    callBack();
                 } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
                     openNotification("error", "Mỗi lần thay đổi bạn cần chờ 15 ngày mới có thể thay đổi tài khoản khác!")
                 } else {
