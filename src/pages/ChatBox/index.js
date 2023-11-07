@@ -12,7 +12,6 @@ import { UserOnlineStatusContext } from "~/context/SignalR/UserOnlineStatusConte
 import { FileImageOutlined } from '@ant-design/icons';
 import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
 import { Button, Form } from 'antd';
-import { NotificationMessageContext } from "~/context/UI/NotificationMessageContext";
 import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
 
 require('moment/locale/vi');
@@ -25,14 +24,6 @@ const ChatBox = () => {
     let conversationIdPath = location.state?.data || null;
     ///
 
-    /// context
-    const contextData = useContext(NotificationMessageContext);
-    ///
-
-    /// variables
-    const numberConversationUnRead = contextData.numberConversationUnRead;
-    const setIsOpenChat = contextData.setIsOpenChat;
-    ///
 
     /// auth
     const auth = useAuthUser();
@@ -114,26 +105,6 @@ const ChatBox = () => {
         return conversationSort;
     }
 
-    const handleReloadNumberConversation = () => {
-        if (contextData) {
-            const reloadNumberConversation = contextData.reloadNumberConversation;
-            reloadNumberConversation();
-        }
-    }
-
-    const handleAddOneNumberConversation = () => {
-        if (contextData) {
-            const addOneNumberConversation = contextData.addOneNumberConversation;
-            addOneNumberConversation();
-        }
-    }
-
-    const handleMinusOneNumberConversation = () => {
-        if (contextData) {
-            const minusOneNumberConversation = contextData.minusOneNumberConversation;
-            minusOneNumberConversation();
-        }
-    }
 
     const onFinish = (values) => {
         if (user === null || user === undefined) return;
@@ -175,11 +146,6 @@ const ChatBox = () => {
         }
         // update isRead user conversation
         updateUserConversation(dataUpdate)
-            .then((res) => {
-                if (res.status === 200) {
-                    handleReloadNumberConversation();
-                }
-            })
             .catch((error) => {
                 console.log(error)
             })
@@ -193,8 +159,6 @@ const ChatBox = () => {
         if (userId === undefined || userId === null) return;
 
         if (conversation.isRead === USER_CONVERSATION_TYPE_UN_READ) {
-            // update icon header
-            handleMinusOneNumberConversation();
             updateIsReadConversation(conversation.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
         }
 
@@ -265,12 +229,6 @@ const ChatBox = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [conversationSelected])
 
-    // update Notification message
-    useEffect(() => {
-        setIsOpenChat(true);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
     // get conversations
     useEffect(() => {
         if (user === null || user === undefined) return;
@@ -340,10 +298,6 @@ const ChatBox = () => {
                         if (item.conversationId === message.conversationId) {
                             if (message.userId !== userId) {
                                 if (conversationSelected?.conversationId === message.conversationId) {
-                                    // update icon header
-                                    if (numberConversationUnRead > 0) {
-                                        handleMinusOneNumberConversation();
-                                    }
 
                                     // update isRead conversation 
                                     // update db
@@ -352,10 +306,7 @@ const ChatBox = () => {
                                     // update UI
                                     return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_IS_READ }
                                 } else {
-                                    // update icon header
-                                    if (item.isRead === USER_CONVERSATION_TYPE_IS_READ) {
-                                        handleAddOneNumberConversation();
-                                    }
+
                                     return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_UN_READ }
                                 }
 
