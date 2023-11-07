@@ -11,7 +11,6 @@ const cx = classNames.bind(styles);
 ///
 
 const LayoutMessageChat = (props) => {
-    console.log('render LayoutMessageChat');
     const {
         conversationSelected,
         messages,

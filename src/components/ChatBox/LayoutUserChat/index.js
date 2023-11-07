@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames/bind';
 import ConversationFormated from './ConversationFormated';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
@@ -9,12 +9,12 @@ import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, MESSAGE
 
 ///
 const cx = classNames.bind(styles);
-require('moment/locale/vi');
 ///
 
 const LayoutUserChat = ({ propsUserChat }) => {
-    console.log('render LayoutUserChat');
-
+    /// states
+    const [reloadComponentFlag, setReloadComponentFlag] = useState(false);
+    ///
     /// distructuring
     const { conversations,
         conversationSelected,
@@ -32,6 +32,20 @@ const LayoutUserChat = ({ propsUserChat }) => {
     const bodyCardHeader = { padding: 15 }
     const styleTypography = { margin: 0 }
     const styleScrollUserChat = { height: '100%', overflow: 'auto', padding: '0 16px' }
+    ///
+
+    /// useEffects
+
+    /// useEffect
+    useEffect(() => {
+        if (conversations.length === 0) return;
+        const interval = setInterval(() => {
+            console.log('interval user chat');
+            reloadComponent();
+        }, 60000);
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [conversations, reloadComponentFlag])
     ///
 
     /// handles
@@ -83,6 +97,10 @@ const LayoutUserChat = ({ propsUserChat }) => {
     const isYourLatestMessage = (latestMessage) => {
         if (user === null || user === undefined) return;
         return latestMessage.userId === user.id ? true : false;
+    }
+
+    const reloadComponent = () => {
+        setReloadComponentFlag(!reloadComponentFlag);
     }
     ///
 

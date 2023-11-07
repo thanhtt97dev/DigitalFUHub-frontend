@@ -79,8 +79,6 @@ const InputMessageChat = ({ conversationSelected }) => {
     }
     ///
 
-    console.log('Render InputMessageChat')
-
     return (
         <Form
             name="control-hooks"

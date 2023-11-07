@@ -12,14 +12,10 @@ import { GetUsersConversation, GetMessages, updateUserConversation } from '~/api
 import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
 
 ///
-require('moment/locale/vi');
-const moment = require('moment');
 const cx = classNames.bind(styles);
 ///
 
 const ChatBox = () => {
-
-    console.log('render chat box');
 
     /// router
     const location = useLocation();
@@ -35,7 +31,6 @@ const ChatBox = () => {
     const [messages, setMessages] = useState([]);
     const [conversations, setConversations] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
-    const [lastTimeOnline, setLastTimeOnline] = useState('');
     ///
 
     ///contexts
@@ -86,27 +81,6 @@ const ChatBox = () => {
                 console.log(error)
             })
     }
-
-
-    const setDefaultLastTime = () => {
-        setLastTimeOnline('');
-    }
-    ///
-
-
-    /// interval
-    const intervalTime = () => {
-
-        if (conversationSelected === null || conversationSelected === undefined) return;
-        const interval = setInterval(() => {
-            if (conversationSelected.isGroup === false) {
-                setLastTimeOnline(moment(conversationSelected.lastTimeOnline).fromNow());
-            }
-        }, 60000);
-        return () => clearInterval(interval);
-    }
-
-    intervalTime();
     ///
 
     /// useEffects
@@ -264,10 +238,8 @@ const ChatBox = () => {
     useEffect(() => {
         const setOnlineStatus = () => {
             if (userOnlineStatusContext) {
-                setDefaultLastTime();
                 // parse to json
                 const userOnlineStatusJson = JSON.parse(userOnlineStatusContext)
-
                 if (conversations.length === 0) return;
                 // update users status conversations
                 const updateUserStatusConversations = () => {
@@ -314,8 +286,7 @@ const ChatBox = () => {
     /// data props
     const propsMessageChat = {
         conversationSelected: conversationSelected,
-        messages: messages,
-        lastTimeOnline: lastTimeOnline
+        messages: messages
     }
 
     const propsUserChat = {

@@ -29,8 +29,6 @@ const ConversationFormated = ({ conversation, handleClickUser, conversationSelec
     }</>)
 
     const DescriptionFormated = ({ latestMessage, isRead, users, isGroup }) => {
-
-        console.log('getFullNameUser(users, latestMessage.userId) = ' + getFullNameUser(users, latestMessage.userId));
         return (
             <Space align='center' size={5}>
                 <p className={isRead === USER_CONVERSATION_TYPE_UN_READ ? cx('text-ellipsis', 'text-un-read') : cx('text-ellipsis')}>

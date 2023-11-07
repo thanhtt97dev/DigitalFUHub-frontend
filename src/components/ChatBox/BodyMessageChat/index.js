@@ -23,8 +23,6 @@ const BodyMessageChat = ({ messages, conversationSelected }) => {
     const bodyMessageRef = useRef(null);
     ///
 
-    console.log('BodyMessageChat')
-
     /// styles
     const styleBodyMessage = { overflowY: 'auto', maxHeight: '50vh' }
     const styleTitleMessage = { paddingLeft: 10 }
