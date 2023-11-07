@@ -189,4 +189,10 @@ export const USER_CONVERSATION_TYPE_IS_READ = true;
 //Coupon Type
 export const COUPON_TYPE_ALL_PRODUCTS = 1; //admin
 export const COUPON_TYPE_ALL_PRODUCTS_OF_SHOP = 2;
-export const COUPON_TYPE_SPECIFIC_PRODUCTS = 3; 
+export const COUPON_TYPE_SPECIFIC_PRODUCTS = 3;
+
+// Coupon Status
+export const COUPON_STATUS_ALL = 0;
+export const COUPON_STATUS_COMING_SOON = 1;
+export const COUPON_STATUS_ONGOING = 2;
+export const COUPON_STATUS_FINISHED = 3;

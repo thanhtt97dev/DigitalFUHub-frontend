@@ -1,5 +1,5 @@
-import { QuestionCircleOutlined } from "@ant-design/icons";
-import { Button, Col, DatePicker, Form, Input, InputNumber, Row, Switch, Tooltip } from "antd";
+import { QuestionCircleOutlined, ShopOutlined } from "@ant-design/icons";
+import { Button, Col, DatePicker, Form, Input, InputNumber, Row, Space, Switch, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { checkCouponCodeExist } from "~/api/coupon";
 import { COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
@@ -27,6 +27,28 @@ function AddCouponForShop({ onAddCoupon = () => { } }) {
         form={formAdd}
         onFinish={onFinish}
     >
+        <Row>
+            <Col span={5} offset={1}><label>Loại mã giảm giá</label></Col>
+            <Col span={10}>
+                <Form.Item>
+                    <div>
+                        <Space
+                            align="center"
+                            style={{
+                                border: '1px solid #1677ff',
+                                borderRadius: '10px',
+                                padding: '10px',
+                                color: '#1677ff',
+                                cursor: 'default'
+                            }}
+                        >
+                            <ShopOutlined style={{ fontSize: '20px' }} />
+                            <div level={5} style={{ color: 'inherit', textAlign: 'center' }}>Mã giảm giá cho tất cả sản phẩm</div>
+                        </Space>
+                    </div>
+                </Form.Item>
+            </Col>
+        </Row>
         <Row>
             <Col span={5} offset={1}><label>Tên mã giảm giá <Tooltip title="Tên mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
             <Col span={10}>
@@ -253,7 +275,7 @@ function AddCouponForShop({ onAddCoupon = () => { } }) {
             </Col>
         </Row>
         <Row>
-            <Col span={5} offset={1}><label>Thể loại: <Tooltip title={<div><p>Công khai: mọi người được đề xuất mã giảm giá này khi đặt hàng.</p><br /><p>Riêng tư: mọi người sẽ phải nhập mã để tìm thấy mã giảm giá này.</p></div>}><QuestionCircleOutlined /></Tooltip></label></Col>
+            <Col span={5} offset={1}><label>Thiết lập hiển thị <Tooltip title={<div><p>Công khai: mọi người được đề xuất mã giảm giá này khi đặt hàng.</p><br /><p>Riêng tư: mọi người sẽ phải nhập mã để tìm thấy mã giảm giá này.</p></div>}><QuestionCircleOutlined /></Tooltip></label></Col>
             <Col span={10}>
                 <Form.Item name="isPublic" valuePropName="checked" initialValue={true}>
                     <Switch checkedChildren="Công khai" unCheckedChildren="Riêng tư" />
