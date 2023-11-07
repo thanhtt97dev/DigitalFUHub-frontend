@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
 import { useAuthUser } from 'react-auth-kit';
@@ -12,11 +12,17 @@ const moment = require('moment');
 const cx = classNames.bind(styles);
 ///
 
-const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef, conversationSelected }) => {
+const BodyMessageChat = ({ messages, conversationSelected }) => {
     /// auth
     const auth = useAuthUser();
     const user = auth();
     ///
+
+    /// refs
+    const messagesEndRef = useRef(null);
+    const bodyMessageRef = useRef(null);
+    ///
+
     console.log('BodyMessageChat')
 
     /// styles
@@ -24,6 +30,14 @@ const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef, conversatio
     const styleTitleMessage = { paddingLeft: 10 }
     const styleBodyCardMessage = { padding: 10 }
     const styleMessageImage = { borderRadius: 5 }
+    ///
+
+    ///useEffects
+
+    useEffect(() => {
+        scrollToBottom()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [messages])
     ///
 
     /// functions
@@ -35,6 +49,15 @@ const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef, conversatio
         if (!userFind) return;
         return userFind.fullname;
     }
+
+    const scrollToBottom = () => {
+        if (bodyMessageRef.current && messagesEndRef.current) {
+            const bodyMessageElement = bodyMessageRef.current;
+            const messagesEndElement = messagesEndRef.current;
+
+            bodyMessageElement.scrollTop = messagesEndElement.offsetTop;
+        }
+    };
     ///
 
     return (

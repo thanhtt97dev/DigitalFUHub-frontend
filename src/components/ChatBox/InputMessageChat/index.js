@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import uploadButton from '../UploadButton';
+import uploadButton from './UploadButton';
 import { sendMessage } from '~/api/chat';
 import { useAuthUser } from 'react-auth-kit';
 import { getVietnamCurrentTime } from '~/utils';

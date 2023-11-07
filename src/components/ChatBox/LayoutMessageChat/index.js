@@ -15,9 +15,7 @@ const LayoutMessageChat = (props) => {
     const {
         conversationSelected,
         messages,
-        messagesEndRef,
-        lastTimeOnline,
-        bodyMessageRef
+        lastTimeOnline
     } = props.propsMessageChat
 
     return (
@@ -27,9 +25,7 @@ const LayoutMessageChat = (props) => {
                     conversationSelected ? (<>
                         <HeaderMessageChat conversationSelected={conversationSelected} lastTimeOnline={lastTimeOnline} />
                         <BodyMessageChat messages={messages}
-                            conversationSelected={conversationSelected}
-                            messagesEndRef={messagesEndRef}
-                            bodyMessageRef={bodyMessageRef} />
+                            conversationSelected={conversationSelected} />
                         <InputMessageChat conversationSelected={conversationSelected} />
                     </>) : (<></>)
                 }

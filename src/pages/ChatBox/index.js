@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import fptImage from '~/assets/images/fpt-logo.jpg';
+import React, { useState, useEffect, useContext } from 'react';
 import classNames from 'classnames/bind';
-import styles from './Chatbox.module.scss'
+import styles from './Chatbox.module.scss';
+import fptImage from '~/assets/images/fpt-logo.jpg';
 import LayoutUserChat from '~/components/ChatBox/LayoutUserChat';
 import LayoutMessageChat from '~/components/ChatBox/LayoutMessageChat';
 import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
-import { getUserId } from '~/utils';
 import { ChatContext } from "~/context/SignalR/ChatContext";
 import { UserOnlineStatusContext } from "~/context/SignalR/UserOnlineStatusContext";
-import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
 import { GetUsersConversation, GetMessages, updateUserConversation } from '~/api/chat';
+import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
 
 ///
 require('moment/locale/vi');
@@ -37,28 +36,12 @@ const ChatBox = () => {
     const [conversations, setConversations] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
     const [lastTimeOnline, setLastTimeOnline] = useState('');
-    const messagesEndRef = useRef(null);
-    const bodyMessageRef = useRef(null);
     ///
 
     ///contexts
     const userOnlineStatusContext = useContext(UserOnlineStatusContext);
     const message = useContext(ChatContext);
     ///
-
-    /// functions
-
-    const scrollToBottom = () => {
-        if (bodyMessageRef.current && messagesEndRef.current) {
-            const bodyMessageElement = bodyMessageRef.current;
-            const messagesEndElement = messagesEndRef.current;
-
-            bodyMessageElement.scrollTop = messagesEndElement.offsetTop;
-        }
-    };
-    ///
-
-    useEffect(scrollToBottom, [messages]);
 
     /// Handles
 
@@ -91,8 +74,6 @@ const ChatBox = () => {
         return conversationSort;
     }
 
-
-
     const updateIsReadConversation = (ConversationId, IsRead, UserId) => {
         const dataUpdate = {
             ConversationId: ConversationId,
@@ -106,30 +87,6 @@ const ChatBox = () => {
             })
     }
 
-
-    const handleClickUser = (conversation) => {
-
-        //update is Read db
-        var userId = getUserId();
-        if (userId === undefined || userId === null) return;
-
-        if (conversation.isRead === USER_CONVERSATION_TYPE_UN_READ) {
-            updateIsReadConversation(conversation.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
-        }
-
-        //update new isRead state
-        const newConversation = conversations.map((item) => {
-            if (item.conversationId === conversation.conversationId) {
-
-                return { ...item, isRead: USER_CONVERSATION_TYPE_IS_READ }
-            }
-            return item;
-        })
-        setConversations(newConversation)
-
-
-        setConversationSelected(conversation);
-    }
 
     const setDefaultLastTime = () => {
         setLastTimeOnline('');
@@ -230,7 +187,11 @@ const ChatBox = () => {
             if (message) {
                 if ('messageId' in message) {
                     const currentDate = new Date();
-                    const userId = +getUserId()
+
+                    if (user === null || user === undefined) return;
+
+                    const userId = user.id;
+
                     //set default avatar
                     if (message.avatar === null) {
                         message.avatar = fptImage;
@@ -252,13 +213,13 @@ const ChatBox = () => {
                                     updateIsReadConversation(conversationSelected.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
 
                                     // update UI
-                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId }, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId, messageType: message.messageType }, isRead: USER_CONVERSATION_TYPE_IS_READ }
                                 } else {
-                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId }, isRead: USER_CONVERSATION_TYPE_UN_READ }
+                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId, messageType: message.messageType }, isRead: USER_CONVERSATION_TYPE_UN_READ }
                                 }
 
                             } else {
-                                return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId }, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                                return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId, messageType: message.messageType }, isRead: USER_CONVERSATION_TYPE_IS_READ }
                             }
                         }
                         return item;
@@ -354,19 +315,21 @@ const ChatBox = () => {
     const propsMessageChat = {
         conversationSelected: conversationSelected,
         messages: messages,
-        messagesEndRef: messagesEndRef,
-        lastTimeOnline: lastTimeOnline,
-        bodyMessageRef: bodyMessageRef
+        lastTimeOnline: lastTimeOnline
+    }
+
+    const propsUserChat = {
+        conversations: conversations,
+        setConversations: setConversations,
+        conversationSelected: conversationSelected,
+        setConversationSelected: setConversationSelected,
+        updateIsReadConversation: updateIsReadConversation
     }
     ///
 
     return (
         <div className={cx('container')}>
-            <LayoutUserChat
-                userChats={conversations}
-                handleClickUser={handleClickUser}
-                conversationSelected={conversationSelected}
-                user={user} />
+            <LayoutUserChat propsUserChat={propsUserChat} />
             <LayoutMessageChat propsMessageChat={propsMessageChat} />
         </div>
 
