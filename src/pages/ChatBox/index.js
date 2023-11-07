@@ -302,13 +302,13 @@ const ChatBox = () => {
                                     updateIsReadConversation(conversationSelected.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
 
                                     // update UI
-                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId }, isRead: USER_CONVERSATION_TYPE_IS_READ }
                                 } else {
-                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_UN_READ }
+                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId }, isRead: USER_CONVERSATION_TYPE_UN_READ }
                                 }
 
                             } else {
-                                return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                                return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId }, isRead: USER_CONVERSATION_TYPE_IS_READ }
                             }
                         }
                         return item;
@@ -429,7 +429,8 @@ const ChatBox = () => {
             <LayoutUserChat
                 userChats={conversations}
                 handleClickUser={handleClickUser}
-                conversationSelected={conversationSelected} />
+                conversationSelected={conversationSelected}
+                user={user} />
             <LayoutMessageChat propsMessageChat={propsMessageChat} />
         </div>
 
