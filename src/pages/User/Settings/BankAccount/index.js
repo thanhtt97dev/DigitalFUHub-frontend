@@ -33,7 +33,11 @@ function BankAccount() {
 
     // get data
     useEffect(() => {
+        getUserBankAccountInfo()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
+    const getUserBankAccountInfo = () => {
         getUserBankAccount(userId)
             .then((res) => {
                 if (res.data.status.ok) {
@@ -48,10 +52,7 @@ function BankAccount() {
                     SetGetUserBankInfoSuccess(true)
                 }, 500)
             })
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
+    }
 
     return (
         <>
@@ -60,7 +61,7 @@ function BankAccount() {
             <Spinning spinning={!getUserBankInfoSuccess}>
                 <Card
                     title="Tài khoản ngân hàng"
-                    extra={userBank !== null ? <> <ModalUpdateBankAccount userId={userId} /></> : <><ModalAddBankAccount userId={userId} /></>}
+                    extra={userBank !== null ? <> <ModalUpdateBankAccount userId={userId} callBack={getUserBankAccountInfo} /></> : <><ModalAddBankAccount userId={userId} /></>}
                     style={{
                         width: '100%',
                         height: "60vh"

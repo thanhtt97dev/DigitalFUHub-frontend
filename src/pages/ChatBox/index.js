@@ -37,7 +37,6 @@ const ChatBox = () => {
     const [conversations, setConversations] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
     const [lastTimeOnline, setLastTimeOnline] = useState('');
-    const [reloadConversationFlag, setReloadConversationFlag] = useState(false);
     const [isUploadFile, setIsUploadFile] = useState(false);
     const messagesEndRef = useRef(null);
     const bodyMessageRef = useRef(null);
@@ -104,7 +103,6 @@ const ChatBox = () => {
 
         return conversationSort;
     }
-
 
     const onFinish = (values) => {
         if (user === null || user === undefined) return;
@@ -270,7 +268,7 @@ const ChatBox = () => {
 
         loadConversations();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [reloadConversationFlag]);
+    }, []);
 
 
     // message from signR
@@ -306,7 +304,6 @@ const ChatBox = () => {
                                     // update UI
                                     return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_IS_READ }
                                 } else {
-
                                     return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_UN_READ }
                                 }
 
