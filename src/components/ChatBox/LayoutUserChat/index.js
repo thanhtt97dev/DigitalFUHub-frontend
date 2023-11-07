@@ -1,25 +1,26 @@
 import React from 'react';
 import classNames from 'classnames/bind';
+import SmallUserAvatar from '../SmallUserAvatar';
+import fptImage from '~/assets/images/fpt-logo.jpg';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import fptImage from '~/assets/images/fpt-logo.jpg';
-import SmallUserAvatar from '../SmallUserAvatar';
-import { useAuthUser } from 'react-auth-kit';
 import { Layout, List, Card, Typography, Space } from 'antd';
 import { USER_CONVERSATION_TYPE_UN_READ } from '~/constants';
 
+///
 const cx = classNames.bind(styles);
 require('moment/locale/vi');
 const moment = require('moment');
+///
 
 const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected, user }) => {
-    console.log('user = ' + JSON.stringify(user));
-
+    console.log('render LayoutUserChat');
     /// styles
     const bodyCardHeader = { padding: 15 }
     const styleTypography = { margin: 0 }
     const styleScrollUserChat = { height: '100%', overflow: 'auto', padding: '0 16px' }
     ///
+
     return (
         <Layout className={cx('layout-user-chat')}>
             <Card
@@ -109,13 +110,11 @@ const LayoutUserChat = ({ userChats, handleClickUser, conversationSelected, user
                                         </Card>
                                     )
                                 }
-
                             </List.Item>
                         )}
                     />
                 </InfiniteScroll>
             </div>
-
         </Layout>
     )
 }

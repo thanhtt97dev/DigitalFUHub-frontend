@@ -1,27 +1,21 @@
 import React from 'react';
 import classNames from 'classnames/bind';
-import styles from '~/pages/ChatBox/Chatbox.module.scss';
-import HeaderMessageChat from '../HeaderMessageChat';
 import BodyMessageChat from '../BodyMessageChat';
 import InputMessageChat from '../InputMessageChat';
+import HeaderMessageChat from '../HeaderMessageChat';
+import styles from '~/pages/ChatBox/Chatbox.module.scss';
 import { Layout } from 'antd';
 
+///
 const cx = classNames.bind(styles);
+///
 
 const LayoutMessageChat = (props) => {
+    console.log('render LayoutMessageChat');
     const {
         conversationSelected,
         messages,
-        styleBodyCardMessage,
         messagesEndRef,
-        form,
-        onFinish,
-        normFile,
-        uploadButton,
-        newMessage,
-        handleChangeNewMessage,
-        isUploadFile,
-        handleOpenUploadFile,
         lastTimeOnline,
         bodyMessageRef
     } = props.propsMessageChat
@@ -33,18 +27,10 @@ const LayoutMessageChat = (props) => {
                     conversationSelected ? (<>
                         <HeaderMessageChat conversationSelected={conversationSelected} lastTimeOnline={lastTimeOnline} />
                         <BodyMessageChat messages={messages}
-                            styleBodyCardMessage={styleBodyCardMessage}
                             conversationSelected={conversationSelected}
                             messagesEndRef={messagesEndRef}
                             bodyMessageRef={bodyMessageRef} />
-                        <InputMessageChat form={form}
-                            onFinish={onFinish}
-                            normFile={normFile}
-                            uploadButton={uploadButton}
-                            newMessage={newMessage}
-                            handleChangeNewMessage={handleChangeNewMessage}
-                            isUploadFile={isUploadFile}
-                            handleOpenUploadFile={handleOpenUploadFile} />
+                        <InputMessageChat conversationSelected={conversationSelected} />
                     </>) : (<></>)
                 }
             </Layout>

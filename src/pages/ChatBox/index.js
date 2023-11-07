@@ -6,24 +6,26 @@ import LayoutUserChat from '~/components/ChatBox/LayoutUserChat';
 import LayoutMessageChat from '~/components/ChatBox/LayoutMessageChat';
 import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
+import { getUserId } from '~/utils';
 import { ChatContext } from "~/context/SignalR/ChatContext";
-import { getUserId, getVietnamCurrentTime } from '~/utils';
 import { UserOnlineStatusContext } from "~/context/SignalR/UserOnlineStatusContext";
-import { FileImageOutlined } from '@ant-design/icons';
-import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
-import { Button, Form } from 'antd';
 import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
+import { GetUsersConversation, GetMessages, updateUserConversation } from '~/api/chat';
 
+///
 require('moment/locale/vi');
 const moment = require('moment');
 const cx = classNames.bind(styles);
+///
 
 const ChatBox = () => {
+
+    console.log('render chat box');
+
     /// router
     const location = useLocation();
     let conversationIdPath = location.state?.data || null;
     ///
-
 
     /// auth
     const auth = useAuthUser();
@@ -31,36 +33,21 @@ const ChatBox = () => {
     ///
 
     /// states
-    const [form] = Form.useForm();
     const [messages, setMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState('');
     const [conversations, setConversations] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
     const [lastTimeOnline, setLastTimeOnline] = useState('');
-    const [isUploadFile, setIsUploadFile] = useState(false);
     const messagesEndRef = useRef(null);
     const bodyMessageRef = useRef(null);
     ///
 
+    ///contexts
+    const userOnlineStatusContext = useContext(UserOnlineStatusContext);
+    const message = useContext(ChatContext);
+    ///
 
+    /// functions
 
-    const handleOpenUploadFile = () => {
-        setIsUploadFile(!isUploadFile)
-    }
-
-    const normFile = (e) => {
-        if (Array.isArray(e)) {
-            return e;
-        }
-        return e?.fileList;
-    };
-
-
-    const uploadButton = (
-        <Button type="primary" shape="circle" icon={<FileImageOutlined />} size={30} />
-    );
-
-    /// scroll
     const scrollToBottom = () => {
         if (bodyMessageRef.current && messagesEndRef.current) {
             const bodyMessageElement = bodyMessageRef.current;
@@ -104,37 +91,7 @@ const ChatBox = () => {
         return conversationSort;
     }
 
-    const onFinish = (values) => {
-        if (user === null || user === undefined) return;
-        const { fileUpload } = values;
-        if ((newMessage === undefined || newMessage.length === 0) && fileUpload === undefined) return;
-        const currentTime = getVietnamCurrentTime();
 
-        var bodyFormData = new FormData();
-        bodyFormData.append('conversationId', conversationSelected.conversationId);
-        bodyFormData.append('UserId', user.id);
-        bodyFormData.append('content', newMessage);
-        for (var i = 0; i < fileUpload?.length || 0; i++) {
-            bodyFormData.append('Images', fileUpload[i].originFileObj);
-        }
-        for (var j = 0; j < conversationSelected.users.length || 0; j++) {
-            bodyFormData.append('RecipientIds', conversationSelected.users[j].userId);
-        }
-        bodyFormData.append('dateCreate', currentTime);
-
-        sendMessage(bodyFormData)
-            .then((res) => {
-                if (res.status === 200) {
-                    form.resetFields();
-                    setIsUploadFile(false);
-                    setNewMessage('');
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            });
-
-    };
 
     const updateIsReadConversation = (ConversationId, IsRead, UserId) => {
         const dataUpdate = {
@@ -174,9 +131,8 @@ const ChatBox = () => {
         setConversationSelected(conversation);
     }
 
-    const handleChangeNewMessage = (e) => {
-        const { value } = e.target
-        setNewMessage(value)
+    const setDefaultLastTime = () => {
+        setLastTimeOnline('');
     }
     ///
 
@@ -197,11 +153,10 @@ const ChatBox = () => {
     ///
 
     /// useEffects
+
+    //get messages
     useEffect(() => {
         if (conversationSelected === null || conversationSelected === undefined) return;
-        // if (reloadMessageFlag) return;
-
-        // setReloadMessageFlag(true);
 
         GetMessages(conversationSelected.conversationId)
             .then((response) => {
@@ -220,9 +175,6 @@ const ChatBox = () => {
             .catch((error) => {
                 console.log(error);
             })
-        // .finally(() => {
-        //     setReloadMessageFlag(false);
-        // })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [conversationSelected])
@@ -271,9 +223,7 @@ const ChatBox = () => {
     }, []);
 
 
-    // message from signR
-    const message = useContext(ChatContext);
-
+    // get message from signR
     useEffect(() => {
 
         const setMessage = () => {
@@ -349,14 +299,7 @@ const ChatBox = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [message])
 
-    const setDefaultLastTime = () => {
-        setLastTimeOnline('')
-    }
-
-
     // user online status
-    const userOnlineStatusContext = useContext(UserOnlineStatusContext);
-
     useEffect(() => {
         const setOnlineStatus = () => {
             if (userOnlineStatusContext) {
@@ -407,22 +350,15 @@ const ChatBox = () => {
 
 
 
-
+    /// data props
     const propsMessageChat = {
         conversationSelected: conversationSelected,
         messages: messages,
         messagesEndRef: messagesEndRef,
-        form: form,
-        onFinish: onFinish,
-        uploadButton: uploadButton,
-        newMessage: newMessage,
-        handleChangeNewMessage: handleChangeNewMessage,
-        normFile: normFile,
-        isUploadFile: isUploadFile,
-        handleOpenUploadFile: handleOpenUploadFile,
         lastTimeOnline: lastTimeOnline,
         bodyMessageRef: bodyMessageRef
     }
+    ///
 
     return (
         <div className={cx('container')}>

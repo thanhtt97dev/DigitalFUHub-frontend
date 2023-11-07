@@ -1,18 +1,20 @@
 import React from 'react';
+import BigUserAvatar from '../BigUserAvatar';
 import fptImage from '~/assets/images/fpt-logo.jpg';
-import BigUserAvatar from '../BigUserAvatar'
 import { Card } from 'antd';
 
+///
 const { Meta } = Card;
 require('moment/locale/vi');
 const moment = require('moment');
+///
 
 /// styles
-const bodyCardHeader = {
-    padding: 15,
-}
+const bodyCardHeader = { padding: 15 }
 ///
+
 const HeaderMessageChat = ({ conversationSelected, lastTimeOnline }) => (
+
     <Card
         bodyStyle={bodyCardHeader}>
         {

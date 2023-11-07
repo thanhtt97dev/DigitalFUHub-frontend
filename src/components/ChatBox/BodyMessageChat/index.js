@@ -1,19 +1,23 @@
 import React from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
-import { getUserId } from '~/utils';
-import { Avatar, Card, Typography, Image, Space } from 'antd';
+import { useAuthUser } from 'react-auth-kit';
 import { MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
+import { Avatar, Card, Typography, Image, Space } from 'antd';
 
+///
 const { Text } = Typography;
 require('moment/locale/vi');
 const moment = require('moment');
 const cx = classNames.bind(styles);
+///
 
 const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef, conversationSelected }) => {
-    var userId = +getUserId();
-    if (userId === undefined || userId === null) return;
-
+    /// auth
+    const auth = useAuthUser();
+    const user = auth();
+    ///
+    console.log('BodyMessageChat')
 
     /// styles
     const styleBodyMessage = { overflowY: 'auto', maxHeight: '50vh' }
@@ -39,7 +43,7 @@ const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef, conversatio
                 messages.map((item) => (
                     <>
                         {
-                            item.userId !== userId ?
+                            item.userId !== user?.id ?
                                 (<div style={{ marginBottom: 25 }}>
                                     <Space align="center">
                                         <Avatar src={item.avatar} />

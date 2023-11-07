@@ -1,16 +1,74 @@
-import React from 'react';
-import { SendOutlined, FileImageOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import uploadButton from '../UploadButton';
+import { sendMessage } from '~/api/chat';
+import { useAuthUser } from 'react-auth-kit';
+import { getVietnamCurrentTime } from '~/utils';
 import { Input, Button, Col, Row, Upload, Form } from 'antd';
+import { SendOutlined, FileImageOutlined } from '@ant-design/icons';
 
+const InputMessageChat = ({ conversationSelected }) => {
+    /// auth
+    const auth = useAuthUser();
+    const user = auth();
+    ///
 
-const InputMessageChat = ({ form,
-    onFinish,
-    normFile,
-    uploadButton,
-    newMessage,
-    handleChangeNewMessage,
-    isUploadFile,
-    handleOpenUploadFile }) => {
+    /// states
+    const [form] = Form.useForm();
+    const [newMessage, setNewMessage] = useState('');
+    const [isUploadFile, setIsUploadFile] = useState(false);
+    ///
+
+    ///handles
+    const handleOpenUploadFile = () => {
+        setIsUploadFile(!isUploadFile)
+    }
+
+    const onFinish = (values) => {
+        if (user === null || user === undefined) return;
+        const { fileUpload } = values;
+        if ((newMessage === undefined || newMessage.length === 0) && fileUpload === undefined) return;
+        const currentTime = getVietnamCurrentTime();
+
+        var bodyFormData = new FormData();
+        bodyFormData.append('conversationId', conversationSelected.conversationId);
+        bodyFormData.append('UserId', user.id);
+        bodyFormData.append('content', newMessage);
+        for (var i = 0; i < fileUpload?.length || 0; i++) {
+            bodyFormData.append('Images', fileUpload[i].originFileObj);
+        }
+        for (var j = 0; j < conversationSelected.users.length || 0; j++) {
+            bodyFormData.append('RecipientIds', conversationSelected.users[j].userId);
+        }
+        bodyFormData.append('dateCreate', currentTime);
+
+        sendMessage(bodyFormData)
+            .then((res) => {
+                if (res.status === 200) {
+                    form.resetFields();
+                    setIsUploadFile(false);
+                    setNewMessage('');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+    };
+
+    const handleChangeNewMessage = (e) => {
+        const { value } = e.target
+        setNewMessage(value)
+    }
+    ///
+
+    /// functions
+    const normFile = (e) => {
+        if (Array.isArray(e)) {
+            return e;
+        }
+        return e?.fileList;
+    };
+    ///
 
     ///styles
     const styleFormInputMessage = {
@@ -20,6 +78,8 @@ const InputMessageChat = ({ form,
         marginBottom: 15
     }
     ///
+
+    console.log('Render InputMessageChat')
 
     return (
         <Form
