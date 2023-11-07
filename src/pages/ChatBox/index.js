@@ -8,8 +8,8 @@ import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
 import { ChatContext } from "~/context/SignalR/ChatContext";
 import { UserOnlineStatusContext } from "~/context/SignalR/UserOnlineStatusContext";
-import { GetUsersConversation, GetMessages, updateUserConversation } from '~/api/chat';
-import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
+import { GetConversations, GetMessages, updateUserConversation } from '~/api/chat';
+import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, RESPONSE_CODE_SUCCESS } from '~/constants';
 
 ///
 const cx = classNames.bind(styles);
@@ -91,17 +91,23 @@ const ChatBox = () => {
 
         GetMessages(conversationSelected.conversationId)
             .then((response) => {
-                const messages = response.data
+                if (response.status === 200) {
+                    const data = response.data;
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        const messages = data.result;
 
-                // set avt default for empty avt
-                const newMessages = messages.map((message) => {
-                    if (message.avatar.length === 0) {
-                        return { ...message, avatar: fptImage }
+                        // set avt default for empty avt
+                        const newMessages = messages.map((message) => {
+                            if (message.avatar.length === 0) {
+                                return { ...message, avatar: fptImage }
+                            }
+                            return message;
+                        })
+
+                        setMessages(newMessages);
                     }
-                    return message;
-                })
-
-                setMessages(newMessages)
+                }
             })
             .catch((error) => {
                 console.log(error);
@@ -115,33 +121,39 @@ const ChatBox = () => {
         if (user === null || user === undefined) return;
 
         const loadConversations = () => {
-            GetUsersConversation(user.id)
+            GetConversations(user.id)
                 .then((response) => {
-                    const conversations = response.data
+                    if (response.status === 200) {
+                        const data = response.data;
+                        const status = data.status;
+                        if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                            const conversations = data.result;
+                            // Set avt default for empty avt
+                            const newConversation = conversations.map((conversation) => {
+                                const newUsers = conversation.users.map((user) => {
+                                    if (user.avatar.length === 0) {
+                                        return { ...user, avatar: fptImage }
+                                    }
+                                    return user;
+                                })
 
-                    // set avt default for empty avt
-                    const newConversation = conversations.map((conversation) => {
-                        const newUsers = conversation.users.map((user) => {
-                            if (user.avatar.length === 0) {
-                                return { ...user, avatar: fptImage }
+                                conversation.users = newUsers
+                                return conversation;
+                            })
+
+                            // Sort conversation by message creation date 
+                            const conversationSorted = sortConversationByMessageCreationDate(newConversation);
+
+                            // Update conversations
+                            setConversations(conversationSorted);
+
+                            if (conversationIdPath) {
+                                const conversationFilter = newConversation.find(c => c.conversationId === conversationIdPath);
+                                setConversationSelected(conversationFilter)
                             }
-                            return user;
-                        })
-
-                        conversation.users = newUsers
-                        return conversation;
-                    })
-
-                    // sort conversation by message creation date 
-                    const conversationSorted = sortConversationByMessageCreationDate(newConversation);
-
-                    // update conversations
-                    setConversations(conversationSorted);
-
-                    if (conversationIdPath) {
-                        const conversationFilter = newConversation.find(c => c.conversationId === conversationIdPath);
-                        setConversationSelected(conversationFilter)
+                        }
                     }
+
                 })
                 .catch((errors) => {
                     console.log(errors)

@@ -34,7 +34,7 @@ const InputMessageChat = ({ conversationSelected }) => {
         bodyFormData.append('UserId', user.id);
         bodyFormData.append('content', newMessage);
         for (var i = 0; i < fileUpload?.length || 0; i++) {
-            bodyFormData.append('Images', fileUpload[i].originFileObj);
+            bodyFormData.append('Image', fileUpload[i].originFileObj);
         }
         for (var j = 0; j < conversationSelected.users.length || 0; j++) {
             bodyFormData.append('RecipientIds', conversationSelected.users[j].userId);
@@ -92,7 +92,11 @@ const InputMessageChat = ({ conversationSelected }) => {
                         <Col span={24}>
                             <Form.Item name="fileUpload" valuePropName="fileList" getValueFromEvent={normFile}>
                                 <Upload
+                                    beforeUpload={false}
                                     listType="picture-card"
+                                    multiple={false}
+                                    maxCount={1}
+                                    accept=".png, .jpeg, .jpg"
                                 >
                                     {uploadButton}
                                 </Upload>
@@ -109,6 +113,7 @@ const InputMessageChat = ({ conversationSelected }) => {
                         placeholder="Type a message..."
                         value={newMessage}
                         onChange={handleChangeNewMessage}
+                        disabled={isUploadFile}
                         suffix={
                             <Button
                                 type="primary"
