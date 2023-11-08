@@ -160,6 +160,7 @@ const Products = ({ dataPropProductComponent }) => {
     };
 
     const handleCheckAll = (e) => {
+
         if (e.target.checked) {
             const listCartDetailIds = [];
             const listCartIds = [];
@@ -167,9 +168,11 @@ const Products = ({ dataPropProductComponent }) => {
                 listCartIds.push(carts[i].cartId);
                 const products = carts[i].products;
                 if (products) {
-                    const cartDetailIds = products.map(product => product.cartDetailId);
-                    if (cartDetailIds) {
-                        listCartDetailIds.push(cartDetailIds);
+                    // Add cart detail id product quantityProductRemaining > 0
+                    for (let j = 0; j < products.length; j++) {
+                        if (products[j].quantityProductRemaining > 0) {
+                            listCartDetailIds.push(products[j].cartDetailId);
+                        }
                     }
                 }
             }
@@ -197,7 +200,14 @@ const Products = ({ dataPropProductComponent }) => {
         if (!cartFind) return;
         const products = cartFind.products;
         if (!products) return;
-        const cartDetailIds = products.map(product => product.cartDetailId);
+        // Add cart detail id product quantityProductRemaining > 0
+        let cartDetailIds = [];
+        for (let j = 0; j < products.length; j++) {
+            if (products[j].quantityProductRemaining > 0) {
+                cartDetailIds.push(products[j].cartDetailId);
+            }
+        }
+
         if (!cartDetailIds) return;
         const cartDetailIdSelectedFil = cartDetailIdSelecteds.filter(x => cartDetailIds.includes(x));
         if (!cartDetailIdSelectedFil || cartDetailIdSelectedFil.length === 0) {
@@ -214,6 +224,12 @@ const Products = ({ dataPropProductComponent }) => {
             return;
         }
         setCartDetailIdSelecteds([...values]);
+    }
+
+    const isProductOutOfStock = (cartItem) => {
+        if (cartItem) {
+            return cartItem.quantityProductRemaining > 0 ? false : true;
+        }
     }
 
     ///
@@ -334,17 +350,24 @@ const Products = ({ dataPropProductComponent }) => {
                                 key={index} bodyStyle={styleCardBodyCartItem} headStyle={styleCardHeadCartItem} style={styleCardCartItem}>
                                 {
                                     cart.products.map((product, index) => (
-                                        <Row className={cx('margin-bottom-item')} key={index}>
+                                        <Row className={isProductOutOfStock(product) ? cx('disable-item', 'margin-bottom-item') : cx('margin-bottom-item')} key={index}>
                                             <Col span={1}>
                                                 <Checkbox value={product.cartDetailId}></Checkbox>
                                             </Col>
 
                                             <Col span={7} className={cx('flex-item-center')}>
                                                 <Space align="center" size={30}>
-                                                    <Image
-                                                        width={80}
-                                                        src={product.productThumbnail}
-                                                    />
+                                                    <div style={{ padding: 15, position: 'relative' }}>
+                                                        <Image
+                                                            width={100}
+                                                            height={100}
+                                                            src={product.productThumbnail}
+                                                        />
+                                                        {
+                                                            isProductOutOfStock(product) ? <div className={cx('circle')}> Hết hàng</div> : <></>
+                                                        }
+                                                    </div>
+
                                                     <Link to={'/product/' + product.productId} >{product.productName}</Link>
                                                     <Text type="secondary">Loại: {product.productVariantName}</Text>
                                                 </Space>
@@ -363,7 +386,7 @@ const Products = ({ dataPropProductComponent }) => {
                                                 </div>
                                             </Col>
                                             <Col span={4} className={cx('flex-item-center')}><Text>{formatPrice(discountPrice(product.productVariantPrice, product.productDiscount) * product.quantity)}</Text></Col>
-                                            <Col span={3} className={cx('flex-item-center')}><Button icon={<DeleteOutlined />} danger onClick={() => funcDeleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
+                                            <Col span={3} className={cx('flex-item-center')}><Button style={{ pointerEvents: 'all' }} className={cx('button-delete')} icon={<DeleteOutlined />} danger onClick={() => funcDeleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
                                         </Row>
                                     ))
                                 }

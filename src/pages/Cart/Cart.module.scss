@@ -36,11 +36,27 @@
     align-items: center;
 }
 
-.price-title {
-    font-size: 24px; /* Điều chỉnh kích thước chữ */
-    font-weight: bold; /* In đậm chữ */
-    color: #007bff; /* Chọn màu sắc phù hợp */
-    /* Các thuộc tính khác tùy theo ý muốn của bạn */
+.opacity-disabled {
+    opacity: 0.4;
 }
 
-// coupon
+.disable-item > :not(button) {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.circle {
+    width: 70px;
+    height: 70px;
+    background-color: gray;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
