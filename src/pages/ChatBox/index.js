@@ -41,10 +41,11 @@ const ChatBox = () => {
     /// Handles
 
     const sortConversationByMessageCreationDate = (conversations) => {
+        if (conversations.length === 0) return [];
         const currentDate = new Date();
         const conversationSort = conversations.sort((conversationA, conversationB) => {
-            const dateA = new Date(conversationA.latestMessage.dateCreate);
-            const dateB = new Date(conversationB.latestMessage.dateCreate);
+            const dateA = new Date(conversationA.latestMessage?.dateCreate);
+            const dateB = new Date(conversationB.latestMessage?.dateCreate);
 
             const differenceA = Math.abs(currentDate - dateA);
             const differenceB = Math.abs(currentDate - dateB);
@@ -55,10 +56,11 @@ const ChatBox = () => {
     }
 
     const sortConversationByCreationDate = (conversations) => {
+        if (conversations.length === 0) return [];
         const currentDate = new Date();
         const conversationSort = conversations.sort((conversationA, conversationB) => {
-            const dateA = new Date(conversationA.dateCreate);
-            const dateB = new Date(conversationB.dateCreate);
+            const dateA = new Date(conversationA?.dateCreate);
+            const dateB = new Date(conversationB?.dateCreate);
 
             const differenceA = Math.abs(currentDate - dateA);
             const differenceB = Math.abs(currentDate - dateB);
