@@ -4,9 +4,8 @@ import Prices from '~/components/Cart/Prices';
 import Spinning from "~/components/Spinning";
 import classNames from 'classnames/bind';
 import styles from './Cart.module.scss';
-import { Typography } from 'antd';
 import { useAuthUser } from 'react-auth-kit';
-import { getCustomerBalance, getCoinUser } from '~/api/user';
+import { getCoinUser } from '~/api/user';
 import { getCartsByUserId } from '~/api/cart';
 import { Row } from 'antd';
 import { discountPrice } from '~/utils';
@@ -14,7 +13,6 @@ import { RESPONSE_CODE_SUCCESS } from '~/constants';
 
 
 const Cart = () => {
-    const { Title } = Typography;
     const auth = useAuthUser();
     const user = auth();
     const userId = user.id;
@@ -35,7 +33,7 @@ const Cart = () => {
     const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
     const [userCoin, setUserCoin] = useState(0);
     const [isUseCoin, setIsUseCoin] = useState(false);
-    const [balance, setBalance] = useState(0);
+
     const [coupons, setCoupons] = useState([]);
     const [couponCodeSelecteds, setCouponCodeSelecteds] = useState([]); // object type {shopId, couponCode}
     const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(false)
@@ -80,25 +78,6 @@ const Cart = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reloadCartsFlag])
-
-
-    useEffect(() => {
-        getCustomerBalance(userId)
-            .then((res) => {
-                if (res.status === 200) {
-                    const data = res.data;
-                    if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        if (balance !== data.result) {
-                            setBalance(data.result)
-                        }
-                    }
-                }
-            }).catch((err) => {
-                console.log(err.message)
-            })
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
 
     useEffect(() => {
         getCoinUser(userId)
@@ -256,9 +235,9 @@ const Cart = () => {
         totalPrice: totalPrice,
         userCoin: userCoin,
         setIsUseCoin: setIsUseCoin,
-        balance: balance,
         filterCartDetail: filterCartDetail,
         cartDetailIdSelecteds: cartDetailIdSelecteds,
+        setCartDetailIdSelecteds: setCartDetailIdSelecteds,
         isUseCoin: isUseCoin,
         reloadCarts: reloadCarts,
         couponCodeSelecteds,
@@ -269,15 +248,12 @@ const Cart = () => {
     return (
         <>
             {
-                carts.length > 0 ? (<div id='container-cart'>
-                    <Spinning wrapperClassName={cx('ant-spin-container', 'ant-spin-dot')} spinning={isLoadingCartInfo}>
-                        <Row>
-                            <Products dataPropProductComponent={dataPropProductComponent} />
-                            <Prices dataPropPriceComponent={dataPropPriceComponent} />
-                        </Row>
-                    </Spinning>
-                </div>
-                ) : (<Title level={4} style={{ width: '100%', textAlign: 'center' }}>Không có sản phẩm nào trong giỏ hàng</Title>)
+                <Spinning wrapperClassName={cx('ant-spin-container', 'ant-spin-dot')} spinning={isLoadingCartInfo}>
+                    <Row>
+                        <Products dataPropProductComponent={dataPropProductComponent} />
+                        <Prices dataPropPriceComponent={dataPropPriceComponent} />
+                    </Row>
+                </Spinning>
             }
 
         </>

@@ -160,7 +160,6 @@ const Products = ({ dataPropProductComponent }) => {
     };
 
     const handleCheckAll = (e) => {
-        console.log('handleCheckAll');
         if (e.target.checked) {
             const listCartDetailIds = [];
             const listCartIds = [];
@@ -305,7 +304,7 @@ const Products = ({ dataPropProductComponent }) => {
 
 
     // checkbox all cart
-    const checkAllCart = cartDetailIdSelecteds.length === totalCartDetails;
+    const checkAllCart = totalCartDetails > 0 && cartDetailIdSelecteds.length === totalCartDetails;
     const indeterminateCheckAllCart = cartDetailIdSelecteds.length > 0 && cartDetailIdSelecteds.length < totalCartDetails;
     //
 
