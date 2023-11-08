@@ -87,15 +87,18 @@ const LayoutUserChat = ({ propsUserChat }) => {
     }
 
     const isLatestMessageTypeText = (latestMessage) => {
+        if (!latestMessage) return;
         return latestMessage.messageType === MESSAGE_TYPE_CONVERSATION_TEXT ? true : false;
     }
 
     const isLatestMessageTypeImage = (latestMessage) => {
+        if (!latestMessage) return;
         return latestMessage.messageType === MESSAGE_TYPE_CONVERSATION_IMAGE ? true : false;
     }
 
     const isYourLatestMessage = (latestMessage) => {
         if (user === null || user === undefined) return;
+        if (!latestMessage) return;
         return latestMessage.userId === user.id ? true : false;
     }
 

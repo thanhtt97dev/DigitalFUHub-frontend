@@ -61,11 +61,11 @@ const BodyMessageChat = ({ messages, conversationSelected }) => {
     return (
         <div style={styleBodyMessage} ref={bodyMessageRef}>
             {
-                messages.map((item) => (
+                messages.map((item, index) => (
                     <>
                         {
                             item.userId !== user?.id ?
-                                (<div style={{ marginBottom: 25 }}>
+                                (<div style={{ marginBottom: 25 }} key={index}>
                                     <Space align="center">
                                         <Avatar src={item.avatar} />
                                         <Space.Compact direction="vertical">
@@ -82,7 +82,7 @@ const BodyMessageChat = ({ messages, conversationSelected }) => {
                                     </Space>
                                 </div>)
                                 :
-                                (<div style={{ marginBottom: 25, position: 'relative' }}>
+                                (<div style={{ marginBottom: 25, position: 'relative' }} key={index}>
                                     <div className={cx('style-message-sender-1')}>
                                         <Card className={cx('card-message-sender')} bodyStyle={styleBodyCardMessage}>
                                             <Space align="center">

@@ -50,7 +50,7 @@ const ConversationFormated = ({ conversation, handleClickUser, conversationSelec
                     }
                 </p>
                 <p>·</p>
-                <p>{moment(conversation.latestMessage.dateCreate).fromNow()}</p>
+                <p>{moment(conversation.latestMessage?.dateCreate).fromNow()}</p>
             </Space>
         )
     }
