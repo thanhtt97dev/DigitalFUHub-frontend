@@ -327,7 +327,7 @@ function AddProduct() {
                                 }}
                             />
                         </Form.Item>
-                        <Form.Item name='thumbnailProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh đại diện sản phẩm <Tooltip title="Ảnh đại diện sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
+                        <Form.Item name='thumbnailProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh đại diện sản phẩm (Hình ảnh tỷ lệ 1:1) <Tooltip title="Ảnh đại diện sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={[
                                 {
                                     required: true,
@@ -356,7 +356,7 @@ function AddProduct() {
                                 </div> : null}
                             </Upload>
                         </Form.Item>
-                        <Form.Item name='productImages' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh chi tiết sản phẩm (tối đa 5 ảnh) <Tooltip title="Ảnh chi tiết của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
+                        <Form.Item name='productImages' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh chi tiết sản phẩm (Hình ảnh tỷ lệ 1:1, tối đa 5 ảnh) <Tooltip title="Ảnh chi tiết của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={[
                                 {
                                     required: true,

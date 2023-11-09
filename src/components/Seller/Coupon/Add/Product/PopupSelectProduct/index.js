@@ -130,11 +130,21 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
     const handleSearchProduct = ({ productId, productName }) => {
         setPage(1);
         setParamSearchProduct({
-            productId,
-            productName,
+            productId: !productId ? '' : productId.trim(),
+            productName: !productName ? '' : productName.trim(),
             page
         })
     }
+    const handleTableChange = (pagination, filters, sorter) => {
+        if (pagination.current !== page && pagination.current <= pagination.total) {
+            setPage(pagination.current)
+            setParamSearchProduct({
+                productId: paramSearchProduct.productId,
+                productName: paramSearchProduct.productName,
+                page: pagination.current
+            })
+        }
+    };
 
     return <Modal
         width={850}
@@ -185,16 +195,16 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
         <Table
             rowClassName={record => lsProductApplied.some(v => v.productId === record.productId) && "disabled-row"}
             scroll={{ y: 400 }}
-            pagination={false}
+            pagination={{
+                current: page,
+                total: totalItems,
+                pageSize: 10,
+            }}
+            onChange={handleTableChange}
             rowKey={(record) => record.productId}
             rowSelection={rowSelection}
             columns={columns}
             dataSource={lsProduct} />
-        <Row justify="end">
-            <Col>
-                <Pagination onChange={(page) => setPage(page)} hideOnSinglePage current={page} total={totalItems} pageSize={10} />
-            </Col>
-        </Row>
     </Modal >
 }
 

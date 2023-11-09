@@ -11,6 +11,7 @@ const { Title, Text, Paragraph } = Typography
 function Feedbacks() {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
     const [pageSize] = useState(5);
     const [formSearch] = Form.useForm();
     const [listFeedback, setListFeedback] = useState([]);
@@ -19,7 +20,8 @@ function Feedbacks() {
         username: '',
         userId: getUserId(),
         fromDate: null,
-        rate: 0
+        rate: 0,
+        page: page
     });
     const initFormValues = [
         {
@@ -44,27 +46,31 @@ function Feedbacks() {
         getListFeedbackSeller(searchData)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setPage(1)
-                    setListFeedback(res.data.result);
+                    setListFeedback(res.data.result.feedbacks);
+                    setTotalItems(res.data.result.totalItems);
                 }
                 setLoading(false);
             })
             .catch((err) => { setLoading(false); })
     }, [searchData])
     const onFinishSearch = (values) => {
+        setPage(1);
         setSearchData({
             username: !values.username ? "" : values.username.trim(),
             orderId: !values.orderId ? "" : values.orderId.trim(),
             userId: getUserId(),
             fromDate: values.fromDate ? values.fromDate.$d.toLocaleDateString() : null,
-            rate: values.rate
+            rate: values.rate,
+            page: 1
         });
 
     }
     const handleSelectPage = (page) => {
-        setLoading(true);
         setPage(page);
-        setLoading(false);
+        setSearchData({
+            ...searchData,
+            page: page
+        });
     }
     return (<>
         <Spinning spinning={loading}>
@@ -153,7 +159,7 @@ function Feedbacks() {
                     {listFeedback.length <= 0 ?
                         <Card.Grid style={{ width: '100%' }} hoverable={false} ><Empty /></Card.Grid>
                         :
-                        listFeedback.slice((page - 1) * pageSize, ((page - 1) * pageSize) + pageSize).map((v, i) => (
+                        listFeedback.map((v, i) => (
                             <Card.Grid style={{ width: '100%' }} key={i}>
                                 <Col span={24}>
                                     <Row >
@@ -236,7 +242,7 @@ function Feedbacks() {
                     }
                 </Row>
                 <Row justify="end" style={{ marginTop: '2em' }}>
-                    <Pagination onChange={handleSelectPage} hideOnSinglePage current={page} total={listFeedback.length} pageSize={pageSize} />
+                    <Pagination onChange={handleSelectPage} hideOnSinglePage current={page} total={totalItems} pageSize={pageSize} />
                 </Row>
             </Card>
         </Spinning>

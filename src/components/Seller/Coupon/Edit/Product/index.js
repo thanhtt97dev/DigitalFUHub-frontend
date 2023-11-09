@@ -5,7 +5,7 @@ import { Button, Col, DatePicker, Form, Image, Input, InputNumber, Row, Space, S
 import dayjs from "dayjs";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { regexPattern } from "~/utils";
-import { COUPON_TYPE_SPECIFIC_PRODUCTS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { checkCouponCodeExist } from "~/api/coupon";
 import PopupSelectProduct from "../../Add/Product/PopupSelectProduct";
 import Column from "antd/es/table/Column";
@@ -269,6 +269,7 @@ function AddCouponForProduct({ coupon, onEditCoupon = () => { } }) {
                         rules={[
                             ({ getFieldValue }) => ({
                                 validator(_, value) {
+                                    const priceDiscount = getFieldValue("priceDiscount")
                                     if (value === undefined || value === null) {
                                         return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không được để trống.'));
                                     }
@@ -277,7 +278,19 @@ function AddCouponForProduct({ coupon, onEditCoupon = () => { } }) {
                                     } else if (value > 100000000) {
                                         return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không vượt quá 100.000.000đ'));
                                     } else {
-                                        return Promise.resolve();
+                                        if (value === 0) {
+                                            return Promise.resolve();
+                                        } else {
+                                            if (!priceDiscount) {
+                                                return Promise.resolve();
+                                            } else {
+                                                if (priceDiscount > value) {
+                                                    return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không nhỏ hơn số tiền giảm giá'));
+                                                } else {
+                                                    return Promise.resolve();
+                                                }
+                                            }
+                                        }
                                     }
                                 },
                             }),
@@ -294,19 +307,21 @@ function AddCouponForProduct({ coupon, onEditCoupon = () => { } }) {
                         rules={[
                             ({ getFieldValue }) => ({
                                 validator(_, value) {
-                                    // if (getFieldValue('amountOrderConditionNew') === undefined || getFieldValue('amountOrderConditionNew') === null) {
-                                    //     return Promise.reject(new Error('Vui lòng nhập số tiền cho đơn hàng tối thiểu.'));
-                                    // } else 
+                                    const minTotalOrderValue = getFieldValue("minTotalOrderValue");
                                     if (value === undefined || value === null) {
-                                        return Promise.reject(new Error('Số tiền giảm giá không được để trống.'));
+                                        return Promise.reject(new Error('Số tiền giảm giá không được để trống'));
                                     } else if (value < 1000) {
-                                        return Promise.reject(new Error('Số tiền giảm giá phải lớn hơn hoặc bằng 1000đ.'));
-                                    }
-                                    // else if (value > getFieldValue('amountOrderConditionNew')) {
-                                    //     return Promise.reject(new Error('Số tiền giảm giá phải nhỏ hơn hoặc bằng giá tiền đơn hàng tối thiểu.'));
-                                    // }
-                                    else {
-                                        return Promise.resolve();
+                                        return Promise.reject(new Error('Số tiền giảm giá phải lớn hơn hoặc bằng 1000đ'));
+                                    } else {
+                                        if (!minTotalOrderValue) {
+                                            return Promise.resolve();
+                                        } else {
+                                            if (value > (parseInt(minTotalOrderValue * 0.7))) {
+                                                return Promise.reject(new Error('Số tiền giảm giá không được lớn hơn 70% Giá trị đơn hàng tối thiểu'));
+                                            } else {
+                                                return Promise.resolve();
+                                            }
+                                        }
                                     }
                                 },
                             }),

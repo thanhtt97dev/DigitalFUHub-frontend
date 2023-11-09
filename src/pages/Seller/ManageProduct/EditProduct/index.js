@@ -387,7 +387,7 @@ function EditProduct() {
                             {/* </CKEditorContext> */}
                         </Form.Item>
                         {/* <UploadThumbnail /> */}
-                        <Form.Item name='thumbnailProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh đại diện sản phẩm <Tooltip title="Ảnh đại diện sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
+                        <Form.Item name='thumbnailProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh đại diện sản phẩm (Hình ảnh tỷ lệ 1:1) <Tooltip title="Ảnh đại diện sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={[
                                 (getFieldValue) => ({
@@ -439,7 +439,7 @@ function EditProduct() {
 
                         {/* <UploadImagesProduct /> */}
 
-                        <Form.Item name='productImages' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh chi tiết sản phẩm (tối đa 5 ảnh) <Tooltip title="Ảnh chi tiết sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
+                        <Form.Item name='productImages' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh chi tiết sản phẩm (Hình ảnh tỷ lệ 1:1, tối đa 5 ảnh) <Tooltip title="Ảnh chi tiết sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={[
                                 (getFieldValue) => ({

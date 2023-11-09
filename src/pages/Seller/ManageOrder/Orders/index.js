@@ -26,21 +26,25 @@ function Orders() {
     const notification = useContext(NotificationContext)
     const [loading, setLoading] = useState(true)
     const [form] = Form.useForm();
-    const [dataTable, setDataTable] = useState([]);
+    const [orders, setOrders] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(0)
     const [searchData, setSearchData] = useState({
         orderId: '',
         username: '',
         userId: getUserId(),
         fromDate: dayjs().subtract(7, 'day').format('M/D/YYYY'),
         toDate: dayjs().format('M/D/YYYY'),
-        status: 0
+        status: 0,
+        page: page
     });
 
     useEffect(() => {
         getOrdersSeller(searchData)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setDataTable(res.data.result)
+                    setOrders(res.data.result.orders);
+                    setTotalItems(res.data.result.totalItems);
                 } else {
                     notification("error", "Vui lòng kiểm tra lại.")
                 }
@@ -76,21 +80,26 @@ function Orders() {
 
     const onFinish = (values) => {
         setLoading(true);
-        // if (values.date === null) {
-        //     notification("error", "Thời gian đơn hàng không được trống!")
-        //     setLoading(false);
-        //     return;
-        // }
+        setPage(1);
         setSearchData({
             orderId: values.orderId,
             username: values.username,
             userId: getUserId(),
             fromDate: values.date && values.date[0] ? values.date[0].$d.toLocaleDateString() : null,
             toDate: values.date && values.date[1] ? values.date[1].$d.toLocaleDateString() : null,
-            status: values.status
+            status: values.status,
+            page: 1
         });
     };
-
+    const handleTableChange = (pagination, filters, sorter) => {
+        if (pagination.current !== page && pagination.current <= pagination.total) {
+            setPage(pagination.current)
+            setSearchData({
+                ...searchData,
+                page: pagination.current
+            })
+        }
+    };
     return (
         <>
             <Spinning spinning={loading}>
@@ -102,7 +111,6 @@ function Orders() {
                     title="Lịch sử các đơn hàng"
                 >
                     <Form
-                        name="basic"
                         form={form}
                         onFinish={onFinish}
                         fields={initFormValues}
@@ -154,19 +162,23 @@ function Orders() {
                                 </Space>
                             </Col>
                         </Row>
-                        <Form.Item style={{ position: 'absolute', top: 180, left: 550 }}>
-
-                        </Form.Item>
                     </Form>
                     <Table
+                        pagination={{
+                            current: page,
+                            total: totalItems,
+                            pageSize: 10,
+                        }}
                         rowKey={(record) => record.orderId}
-                        dataSource={dataTable} size='small' scroll={{ y: 350 }}
+                        dataSource={orders}
+                        size='small'
+                        scroll={{ y: 350 }}
+                        onChange={handleTableChange}
                     >
                         <Column
                             width="9%"
                             title="Mã đơn hàng"
                             key="orderId"
-                            sorter={(a, b) => a.orderId - b.orderId}
                             render={(_, record) => (
                                 <Link to={`/seller/order/${record.orderId}`}>{record.orderId}</Link>
                             )}
@@ -175,19 +187,6 @@ function Orders() {
                             width="20%"
                             title="Người mua"
                             key="username"
-                            sorter={
-                                {
-                                    compare: (a, b) => {
-                                        if (a.username < b.username) {
-                                            return -1;
-                                        } else if (a.username > b.username) {
-                                            return 1;
-                                        } else {
-                                            return 0;
-                                        }
-                                    }
-                                }
-                            }
                             render={(_, record) => (
                                 <p>{record.username}</p>
                             )}
@@ -197,19 +196,6 @@ function Orders() {
                             title="Thời gian mua"
                             key="orderDate"
                             defaultSortOrder="descend"
-                            sorter={
-                                {
-                                    compare: (a, b) => {
-                                        if (a.orderDate < b.orderDate) {
-                                            return -1;
-                                        } else if (a.orderDate > b.orderDate) {
-                                            return 1;
-                                        } else {
-                                            return 0;
-                                        }
-                                    }
-                                }
-                            }
                             render={(_, record) => (
                                 <p>{ParseDateTime(record.orderDate)}</p>
                             )}
@@ -218,21 +204,6 @@ function Orders() {
                             width="15%"
                             title="Số tiền"
                             key="totalAmount"
-                            sorter={
-                                {
-                                    compare: (a, b) => {
-                                        const totalA = a.totalAmount - a.totalCouponDiscount;
-                                        const totalB = b.totalAmount - b.totalCouponDiscount;
-                                        if (totalA < totalB) {
-                                            return -1;
-                                        } else if (totalA > totalB) {
-                                            return 1;
-                                        } else {
-                                            return 0;
-                                        }
-                                    }
-                                }
-                            }
                             render={(_, record) => (
                                 <p>{formatPrice(record.totalAmount - record.totalCouponDiscount)}</p>
                             )}
@@ -241,7 +212,6 @@ function Orders() {
                             width="15%"
                             title="Trạng thái"
                             key="orderStatusId"
-                            // sorter={(a, b) => a.orderStatusId - b.orderStatusId}
                             render={(_, record) => {
                                 if (record.orderStatusId === ORDER_WAIT_CONFIRMATION) {
                                     return <Tag color="#108ee9">Chờ xác nhận</Tag>

@@ -4,12 +4,13 @@ import { EditOutlined, PlusOutlined, QuestionCircleOutlined, ShopOutlined, Shopp
 import { Button, Card, Col, DatePicker, Form, Image, Input, InputNumber, Row, Space, Switch, Table, Tag, Tooltip } from "antd";
 import dayjs from "dayjs";
 import locale from 'antd/es/date-picker/locale/vi_VN';
-import { getUserId } from "~/utils";
+import { ParseDateTime, formatPrice, getUserId } from "~/utils";
 import { COUPON_TYPE_SPECIFIC_PRODUCTS, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { getCouponSellerById } from "~/api/coupon";
 import Column from "antd/es/table/Column";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { NotificationContext } from "~/context/UI/NotificationContext";
+import { getListOrdersByCoupon } from "~/api/order";
 
 
 function CouponDetail() {
@@ -17,6 +18,9 @@ function CouponDetail() {
     const notification = useContext(NotificationContext);
     const { couponId } = useParams();
     const [coupon, setCoupon] = useState();
+    const [page, setPage] = useState(1)
+    const [totalItems, setTotalItems] = useState(0)
+    const [orders, setOrders] = useState()
 
     useEffect(() => {
         getCouponSellerById(getUserId(), couponId)
@@ -31,6 +35,20 @@ function CouponDetail() {
                 return navigate("/seller/coupon/list")
             })
     }, []);
+    useEffect(() => {
+        getListOrdersByCoupon(couponId, page)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setOrders(res.data.result.orders);
+                    setTotalItems(res.data.result.totalItems);
+                } else {
+                    return navigate("/seller/coupon/list")
+                }
+            })
+            .catch((err) => {
+                return navigate("/seller/coupon/list")
+            })
+    }, [couponId, page]);
     const initialFieldsForm = [
         {
             name: 'couponName',
@@ -269,6 +287,71 @@ function CouponDetail() {
                                 </Table>
                             </Col>
                         </Row>
+                    }
+                    {
+                        (() => {
+                            const now = dayjs();
+                            const startDate = dayjs(coupon.startDate)
+                            if (now.isBefore(startDate)) {
+                                return null;
+                            } else {
+                                return <Row>
+                                    <Col span={5} offset={1}><label>Đơn hàng đã dùng mã </label></Col>
+                                    <Col span={10}>
+                                        <Form.Item name="status">
+                                            <Space>
+                                                <div>Tổng ({totalItems}) đơn hàng đã áp dụng mã giảm giá</div>
+                                                {totalItems > 0 &&
+                                                    <Table
+                                                        scroll={{ y: 500 }}
+                                                        pagination={{
+                                                            pageSize: 10,
+                                                            current: page,
+                                                            onChange: (page) => setPage(page)
+                                                        }}
+                                                        dataSource={orders}
+                                                        rowKey={record => record.orderId}
+                                                    >
+                                                        <Column
+                                                            width="20%"
+                                                            title="Mã đơn hàng"
+                                                            key="orderId"
+                                                            render={(_, record) => {
+                                                                <Link to={`/seller/order/detail/${record.orderId}`}><p>{record.orderId}</p></Link>
+                                                            }}
+                                                        />
+                                                        <Column
+                                                            width="20%"
+                                                            title="Người mua"
+                                                            key="username"
+                                                            render={(_, record) => {
+                                                                <p>{record.username}</p>
+                                                            }}
+                                                        />
+                                                        <Column
+                                                            width="20%"
+                                                            title="Ngày mua"
+                                                            key="orderDate"
+                                                            render={(_, record) => {
+                                                                <p>{ParseDateTime(record.orderDate)}</p>
+                                                            }}
+                                                        />
+                                                        <Column
+                                                            width="20%"
+                                                            title="Tổng tiền đơn hàng"
+                                                            key="totalAmount"
+                                                            render={(_, record) => {
+                                                                <p>{formatPrice(record.totalAmount - record.totalCouponDiscount)}</p>
+                                                            }}
+                                                        />
+                                                    </Table>
+                                                }
+                                            </Space>
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                            }
+                        })()
                     }
 
                 </Form>

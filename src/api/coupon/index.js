@@ -26,7 +26,9 @@ export const editCouponSeller = (data) => {
 export const updateStatusCouponSeller = (data) => {
     return apiPostAuth('api/Coupons/Edit/Status', data);
 };
-
+export const updateCouponFinish = (couponId) => {
+    return apiPostAuth(`api/Coupons/Edit/Finish/${couponId}`);
+};
 export const removeCouponSeller = (data) => {
     return apiPostAuth('api/Coupons/Remove', data);
 };

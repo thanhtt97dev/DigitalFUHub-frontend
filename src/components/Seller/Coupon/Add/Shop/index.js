@@ -206,14 +206,28 @@ function AddCouponForShop({ onAddCoupon = () => { } }) {
                     rules={[
                         ({ getFieldValue }) => ({
                             validator(_, value) {
+                                const priceDiscount = getFieldValue("priceDiscount")
                                 if (value === undefined || value === null) {
                                     return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không được để trống.'));
-                                } else if (value < 0) {
-                                    return Promise.reject(new Error('Giá trị đơn hàng tối thiểu phải lớn hơn hoặc bằng 0đ.'));
+                                }
+                                else if (value < 0) {
+                                    return Promise.reject(new Error('Giá trị đơn hàng tối thiểu phải lớn hơn hoặc bằng 1000đ.'));
                                 } else if (value > 100000000) {
                                     return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không vượt quá 100.000.000đ'));
                                 } else {
-                                    return Promise.resolve();
+                                    if (value === 0) {
+                                        return Promise.resolve();
+                                    } else {
+                                        if (!priceDiscount) {
+                                            return Promise.resolve();
+                                        } else {
+                                            if (priceDiscount > value) {
+                                                return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không nhỏ hơn số tiền giảm giá'));
+                                            } else {
+                                                return Promise.resolve();
+                                            }
+                                        }
+                                    }
                                 }
                             },
                         }),
@@ -230,19 +244,21 @@ function AddCouponForShop({ onAddCoupon = () => { } }) {
                     rules={[
                         ({ getFieldValue }) => ({
                             validator(_, value) {
-                                // if (getFieldValue('amountOrderConditionNew') === undefined || getFieldValue('amountOrderConditionNew') === null) {
-                                //     return Promise.reject(new Error('Vui lòng nhập số tiền cho đơn hàng tối thiểu.'));
-                                // } else 
+                                const minTotalOrderValue = getFieldValue("minTotalOrderValue");
                                 if (value === undefined || value === null) {
-                                    return Promise.reject(new Error('Số tiền giảm giá không được để trống.'));
+                                    return Promise.reject(new Error('Số tiền giảm giá không được để trống'));
                                 } else if (value < 1000) {
-                                    return Promise.reject(new Error('Số tiền giảm giá phải lớn hơn hoặc bằng 1000đ.'));
-                                }
-                                // else if (value > getFieldValue('amountOrderConditionNew')) {
-                                //     return Promise.reject(new Error('Số tiền giảm giá phải nhỏ hơn hoặc bằng giá tiền đơn hàng tối thiểu.'));
-                                // }
-                                else {
-                                    return Promise.resolve();
+                                    return Promise.reject(new Error('Số tiền giảm giá phải lớn hơn hoặc bằng 1000đ'));
+                                } else {
+                                    if (!minTotalOrderValue) {
+                                        return Promise.resolve();
+                                    } else {
+                                        if (value > (parseInt(minTotalOrderValue * 0.7))) {
+                                            return Promise.reject(new Error('Số tiền giảm giá không được lớn hơn 70% Giá trị đơn hàng tối thiểu'));
+                                        } else {
+                                            return Promise.resolve();
+                                        }
+                                    }
                                 }
                             },
                         }),

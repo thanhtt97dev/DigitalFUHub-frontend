@@ -6,6 +6,7 @@ export const addOrder = (data) => {
 export const getListOrdersCustomer = (data) => {
     return apiPostAuth(`api/Orders/Customer/List`, data);
 };
+
 export const getOrderDetailCustomer = (userId, orderId) => {
     return apiGetAuth(`api/Orders/Customer/${userId}/${orderId}`);
 };
@@ -14,6 +15,9 @@ export const customerUpdateStatusOrder = (data) => {
 };
 export const getOrdersSeller = (data) => {
     return apiPostAuth('api/Orders/Seller/List', data);
+};
+export const getListOrdersByCoupon = (couponId, page) => {
+    return apiGetAuth(`api/Orders/Seller/Coupon?couponId=${couponId}&page=${page}`);
 };
 export const getOrderDetailSeller = (userId, orderId) => {
     return apiGetAuth(`api/Orders/Seller/${userId}/${orderId}`);
