@@ -281,7 +281,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     ///
 
     /// styles
-    const carouselStyle = { width: 450, height: 450 };
+    const carouselStyle = { width: 600, height: 400 };
     const buttonStyle = {
         background: 'white',
         cursor: 'pointer',
@@ -330,7 +330,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         <Card className={disableProduct() ? cx('margin-bottom', 'disable-item') : cx('margin-bottom')}>
             <Row>
                 {product ? (<>
-                    <Col span={11} style={{ padding: 15, position: 'relative' }}>
+                    <Col span={11} style={{ padding: 15 }}>
                         <ProductMedias productMedias={product.productMedias} />
                         {
                             disableProduct() ? <div className={cx('circle')}> Sản phẩm này đã bị BAN</div> : <></>
