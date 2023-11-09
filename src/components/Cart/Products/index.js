@@ -1,30 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import Coupons from '../Coupons';
 import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
-// import NumericInput from '../NumericInput';
 import ModalAlert from '~/components/Modals/ModalAlert';
 import ModalConfirmation from '~/components/Modals/ModalConfirmation';
-import Coupons from '../Coupons'
-import { formatPrice, discountPrice } from '~/utils';
 import { Link } from 'react-router-dom';
-import { updateCart, deleteCartDetail } from '~/api/cart';
+import { useAuthUser } from 'react-auth-kit';
 import { getCouponPublic } from '~/api/coupon';
-import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag, Space } from 'antd';
+import { formatPrice, discountPrice } from '~/utils';
+import { updateCart, deleteCartDetail } from '~/api/cart';
 import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/icons';
+import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag, Space } from 'antd';
 import {
     RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_INVALID_QUANTITY,
     RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS
 } from '~/constants';
 
+///
 const { Text } = Typography;
 const cx = classNames.bind(styles);
-
-
+///
 
 const Products = ({ dataPropProductComponent }) => {
-    // distructuring props
+    /// distructuring props
     const {
-        userId,
         carts,
         cartDetailIdSelecteds,
         setCartDetailIdSelecteds,
@@ -37,9 +36,14 @@ const Products = ({ dataPropProductComponent }) => {
         getCouponCodeSelecteds,
         cartDetails
     } = dataPropProductComponent;
-    //
+    ///
 
-    //states
+    /// variables
+    const auth = useAuthUser();
+    const user = auth();
+    ///
+
+    /// states
     const [isOpenModalAlert, setIsOpenModalAlert] = useState(false);
     const [contentModalAlert, setContentModalAlert] = useState('');
     const [isOpenModalCoupons, setIsOpenModalCoupons] = useState(false);
@@ -47,10 +51,10 @@ const Products = ({ dataPropProductComponent }) => {
     const [shopIdSelected, setShopIdSelected] = useState(0);
     const [cartIdSelecteds, setCartIdSelecteds] = useState([]);
 
-    //
+    ///
 
 
-    // modal Alert
+    /// modal Alert
     const openModalAlert = () => {
         setIsOpenModalAlert(true);
     }
@@ -58,10 +62,10 @@ const Products = ({ dataPropProductComponent }) => {
     const closeModalAlert = () => {
         setIsOpenModalAlert(false);
     }
-    //
+    ///
 
 
-    // modal confirmation
+    /// modal confirmation
     const openModalCoupons = () => {
         setIsOpenModalCoupons(true);
     }
@@ -73,7 +77,9 @@ const Products = ({ dataPropProductComponent }) => {
 
     /// handles
     const handleMinusOne = (quantity, cartDetailId, productVariantId) => {
-        updateCart({ userId: userId, cartDetailId: cartDetailId, productVariantId: productVariantId, quantity: (quantity - 1) })
+        if (user === null || user === undefined) return;
+
+        updateCart({ userId: user.id, cartDetailId: cartDetailId, productVariantId: productVariantId, quantity: (quantity - 1) })
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data
@@ -90,7 +96,9 @@ const Products = ({ dataPropProductComponent }) => {
     }
 
     const handleAddOne = (quantity, cartDetailId, productVariantId) => {
-        updateCart({ userId: userId, cartDetailId: cartDetailId, productVariantId: productVariantId, quantity: (quantity + 1) })
+        if (user === null || user === undefined) return;
+
+        updateCart({ userId: user.id, cartDetailId: cartDetailId, productVariantId: productVariantId, quantity: (quantity + 1) })
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data
@@ -107,8 +115,10 @@ const Products = ({ dataPropProductComponent }) => {
     }
 
     const onBlurQuantity = (e, cartDetailId, productVariantId) => {
+        if (user === null || user === undefined) return;
+
         const value = e.target.value
-        updateCart({ userId: userId, cartDetailId: cartDetailId, productVariantId: productVariantId, quantity: value })
+        updateCart({ userId: user.id, cartDetailId: cartDetailId, productVariantId: productVariantId, quantity: value })
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data
@@ -405,9 +415,9 @@ const Products = ({ dataPropProductComponent }) => {
                 </Checkbox.Group>
             </Col>
 
+            <ModalConfirmation />
             <Coupons dataPropCouponComponent={dataPropCouponComponent} />
             <ModalAlert isOpen={isOpenModalAlert} handleOk={closeModalAlert} content={contentModalAlert} />
-            <ModalConfirmation />
         </>
 
     )

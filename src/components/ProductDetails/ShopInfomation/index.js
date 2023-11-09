@@ -1,13 +1,14 @@
 import React from "react";
 import classNames from 'classnames/bind';
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
+import fptImage from '~/assets/images/fpt-logo.jpg';
 import { addConversation } from '~/api/chat';
-import { formatNumberToK, getVietnamCurrentTime, getUserId } from '~/utils';
 import { Link, useNavigate } from 'react-router-dom';
+import { faCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { formatNumberToK, getVietnamCurrentTime } from '~/utils';
 import { MessageOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
 import { Col, Row, Button, Skeleton, Avatar, Card, Space, Typography } from 'antd';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCircle } from "@fortawesome/free-solid-svg-icons"
 
 
 const { Title, Text } = Typography;
@@ -72,7 +73,7 @@ const ShopInfomations = ({ product, userId }) => {
                         <Card style={styleFirstCard}>
                             <Row>
                                 <Col className={cx('flex-item-center')}>
-                                    <Avatar size={64} icon={<UserOutlined />} />
+                                    <Avatar size={64} src={product.shop.avatar ? product.shop.avatar : fptImage} />
                                 </Col>
                                 <Col className={cx('padding-left-element')}>
                                     <Space direction='vertical'>

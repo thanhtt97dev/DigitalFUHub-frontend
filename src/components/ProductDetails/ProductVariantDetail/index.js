@@ -9,21 +9,23 @@ import { useNavigate } from 'react-router-dom';
 import ModalAlert from '~/components/Modals/ModalAlert';
 import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS, PRODUCT_BAN, RESPONSE_CODE_SUCCESS } from '~/constants';
 import { CreditCardOutlined, ShoppingCartOutlined, HeartFilled } from '@ant-design/icons';
-import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Radio, Card, Typography, Space } from 'antd';
+import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Radio, Card, Typography, Space, Rate } from 'antd';
 
-const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, openNotification, userId }) => {
+const cx = classNames.bind(styles);
+const { Title, Text } = Typography;
+require('moment/locale/vi');
+
+const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, openNotification, userId, scrollToStartFeedback }) => {
 
     /// states
     const [quantity, setQuantity] = useState(1);
     const [isModalNotifyQuantityOpen, setIsModalNotifyQuantityOpen] = useState(false);
     const [contentProductInvalidQuantity, setContentProductInvalidQuantity] = useState('');
+    const [isLoadingButtonWishList, setIsLoadingButtonWishList] = useState(false);
+    const [isLoadingButtonBuyNow, setIsLoadingButtonBuyNow] = useState(false);
+    const [isLoadingButtonAddToCart, setIsLoadingButtonAddToCart] = useState(false);
     const [isWishList, setIsWishList] = useState(false);
     ///
-
-    const cx = classNames.bind(styles);
-    const { Title, Text } = Typography;
-    require('moment/locale/vi');
-    const navigate = useNavigate();
 
     /// variables
     let minPrice = 0
@@ -32,9 +34,17 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     let maxPriceDis = 0
     ///
 
-
+    /// router
+    const navigate = useNavigate();
+    ///
 
     /// handles
+
+    const calculatorRatingStarProduct = () => {
+        if (!product) return 0;
+        return product.totalRatingStar / product.numberFeedback;
+    }
+
     const showModalNotifyQuantity = () => {
         setIsModalNotifyQuantityOpen(true);
     };
@@ -47,16 +57,45 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         setQuantity(value)
     }
 
+    const loadingButtonWishList = () => {
+        setIsLoadingButtonWishList(true);
+    }
+
+    const unLoadingButtonWishList = () => {
+        setIsLoadingButtonWishList(false);
+    }
+
+    const loadingButtonBuyNow = () => {
+        setIsLoadingButtonBuyNow(true);
+    }
+
+    const unLoadingButtonBuyNow = () => {
+        setIsLoadingButtonBuyNow(false);
+    }
+
+    const loadingButtonAddToCart = () => {
+        setIsLoadingButtonAddToCart(true);
+    }
+
+    const unLoadingButtonAddToCart = () => {
+        setIsLoadingButtonAddToCart(false);
+    }
+
     const handleAddProductToCart = async (isBuyNow) => {
-        console.log('productVariantsSelected: ' + JSON.stringify(productVariantsSelected));
+        // loading button
+        isBuyNow ? loadingButtonBuyNow() : loadingButtonAddToCart();
 
         if (userId === undefined) {
-            navigate('/login')
+            // un loading button
+            isBuyNow ? unLoadingButtonBuyNow() : unLoadingButtonAddToCart();
+            navigate('/login');
             return;
         }
 
         if (!productVariantsSelected) {
-            openNotification("error", "Vui lòng chọn loại sản phẩm")
+            // un loading button
+            isBuyNow ? unLoadingButtonBuyNow() : unLoadingButtonAddToCart();
+            openNotification("error", "Vui lòng chọn loại sản phẩm");
             return;
         }
 
@@ -89,12 +128,20 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
             .catch((errors) => {
                 console.log(errors)
                 openNotification("error", "Có lỗi xảy ra trong quá trình thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!")
-            })
+            }).finally(() => {
+                setTimeout(() => {
+                    // un loading button
+                    isBuyNow ? unLoadingButtonBuyNow() : unLoadingButtonAddToCart();
+                }, 500)
+            });
     }
 
     const handleClickWishList = () => {
+        // loading button wish list is TRUE
+        loadingButtonWishList();
+
         if (userId === undefined) {
-            navigate('/login')
+            navigate('/login');
             return;
         }
 
@@ -113,12 +160,17 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                         const status = data.status;
                         if (status.responseCode === RESPONSE_CODE_SUCCESS) {
                             setIsWishList(false);
-                            openNotification("success", "Xóa thành công khỏi mục sản phẩm yêu thích");
                         }
                     }
                 })
                 .catch((err) => {
                     console.log(err);
+                }).finally(() => {
+                    setTimeout(() => {
+                        // loading button wish list is FALSE
+                        unLoadingButtonWishList();
+                        openNotification("success", "Xóa thành công khỏi mục sản phẩm yêu thích");
+                    }, 500)
                 });
         } else {
             // add wish list
@@ -129,13 +181,18 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                         const status = data.status;
                         if (status.responseCode === RESPONSE_CODE_SUCCESS) {
                             setIsWishList(true);
-                            openNotification("success", "Thêm thành công vào mục sản phẩm yêu thích");
                         }
                     }
                 })
                 .catch((err) => {
                     console.log(err);
-                });
+                }).finally(() => {
+                    setTimeout(() => {
+                        // loading button wish list is FALSE
+                        unLoadingButtonWishList();
+                        openNotification("success", "Thêm thành công vào mục sản phẩm yêu thích");
+                    }, 500)
+                });;
         }
     }
     ///
@@ -218,17 +275,39 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     ///
 
     /// styles
-    const carouselStyle = { width: '100%', height: '50vh' };
+    const carouselStyle = { width: 450, height: 450 };
     const buttonStyle = {
         background: 'white',
-        border: 'none',
-        padding: 0,
         cursor: 'pointer',
     };
     const iconStyle = {
-        fontSize: '24px',
+        fontSize: '25px',
         color: isWishList ? '#dc3545' : 'gray'
     };
+
+    const numberRatingStarStyle = {
+        color: '#ee4d2d',
+        fontSize: 19,
+        borderBottom: '1px solid #ee4d2d'
+    }
+
+    const ratingStarStyle = {
+        color: '#ee4d2d',
+        fontSize: 19,
+        borderBottom: '1px solid white'
+    }
+
+    const numberFeedbackProductStyle = {
+        fontSize: 19,
+        borderBottom: '1px solid black'
+    }
+
+    const feedbackProductStyle = {
+        fontSize: 16,
+    }
+
+    const spaceRatingStarStyle = { paddingRight: 25, borderRight: '1px solid rgb(232, 232, 232)', cursor: 'pointer' }
+    const spaceFeedbackStyle = { paddingLeft: 25, cursor: 'pointer' }
     ///
 
     if (product) {
@@ -237,6 +316,8 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         minPriceDis = discountPrice(minPrice, product.discount);
         maxPriceDis = discountPrice(maxPrice, product.discount);
     }
+
+
 
 
     return (
@@ -252,6 +333,15 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                     <Col span={13} style={{ padding: 15 }}>
                         <div className={disableProduct() ? cx('pointer-events-item') : ''}>
                             <Title level={3}>{product.productName}</Title>
+                            <Space align='center' style={spaceRatingStarStyle} onClick={scrollToStartFeedback}>
+                                <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct().toFixed(1)}</Text>
+                                <Rate disabled defaultValue={calculatorRatingStarProduct()} style={ratingStarStyle} />
+                            </Space>
+                            <Space align='center' style={spaceFeedbackStyle} onClick={scrollToStartFeedback}>
+                                <Text style={numberFeedbackProductStyle}>{product.numberFeedback}</Text>
+                                <Text style={feedbackProductStyle} type="secondary">Đánh giá</Text>
+                            </Space>
+                            <Divider />
                             <div className={cx('space-div-flex')}>
                                 {productVariantsSelected ? (
                                     <Title level={4}><PriceFormat price={discountPrice(productVariantsSelected.price, product.discount)} /></Title>
@@ -280,15 +370,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                 )}
                                 <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
                             </div>
-                            {
-                                userId !== product.shop.shopId ? (
-                                    <Space align='center'>
-                                        <button style={buttonStyle} onClick={handleClickWishList}>
-                                            <HeartFilled style={iconStyle} />
-                                        </button>
-                                    </Space>
-                                ) : (<></>)
-                            }
 
                             <Divider />
                             <div style={{ marginBottom: 20 }}>
@@ -307,14 +388,21 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
                             </div>
                             <Divider />
-                            <div>
-                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={disableProduct() || product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<CreditCardOutlined />} size={'large'}>
+                            <Space align='center'>
+                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={disableProduct() || product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<CreditCardOutlined />} size={'large'} loading={isLoadingButtonBuyNow}>
                                     Mua ngay
                                 </Button>
-                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={disableProduct() || product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" shape="round" icon={<ShoppingCartOutlined />} size={'large'}>
+                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={disableProduct() || product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<ShoppingCartOutlined />} size={'large'} loading={isLoadingButtonAddToCart}>
                                     Thêm vào giỏ
                                 </Button>
-                            </div>
+                                {
+                                    userId !== product.shop.shopId ? (
+                                        <Button style={buttonStyle} onClick={handleClickWishList} size={'large'} className={cx('flex-item-center')} loading={isLoadingButtonWishList}>
+                                            <HeartFilled style={iconStyle} />
+                                        </Button>
+                                    ) : (<></>)
+                                }
+                            </Space>
                         </div>
 
                     </Col>

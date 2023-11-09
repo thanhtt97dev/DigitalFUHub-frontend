@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ProductVariantDetail from '~/components/ProductDetails/ProductVariantDetail';
 import ShopInfomations from '~/components/ProductDetails/ShopInfomation';
 import ProductDescription from '~/components/ProductDetails/ProductDescription';
@@ -20,6 +20,11 @@ const ProductDetail = () => {
     const [feedback, setFeedback] = useState([])
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate()
+    ///
+
+
+    /// refs
+    const feedbackStartRef = useRef(null);
     ///
 
     /// variables
@@ -45,6 +50,10 @@ const ProductDetail = () => {
             setProductVariantsSelected(item)
         }
     }
+
+    const scrollToStartFeedback = () => {
+        feedbackStartRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
     ///
 
 
@@ -105,9 +114,11 @@ const ProductDetail = () => {
                 productVariantsSelected={productVariantsSelected}
                 product={product}
                 openNotification={openNotification}
+                scrollToStartFeedback={scrollToStartFeedback}
                 userId={userId} />
             <ShopInfomations product={product} userId={userId} />
             <ProductDescription product={product} />
+            <div ref={feedbackStartRef} />
             <ProductFeedback feedback={feedback}
                 product={product} />
         </>
