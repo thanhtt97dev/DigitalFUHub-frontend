@@ -240,7 +240,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
 
     return (
-        <Card className={disableProduct() ? cx('margin-bottom', 'opacity-disabled') : cx('margin-bottom')}>
+        <Card className={disableProduct() ? cx('margin-bottom', 'disable-item') : cx('margin-bottom')}>
             <Row>
                 {product ? (<>
                     <Col span={11} style={{ padding: 15, position: 'relative' }}>

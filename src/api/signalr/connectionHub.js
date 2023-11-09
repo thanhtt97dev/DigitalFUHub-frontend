@@ -1,6 +1,6 @@
 import * as signalR from '@microsoft/signalr';
 
-import { getTokenInCookies, getUserId } from "~/utils/index"
+import { getTokenInCookies } from "~/utils/index"
 
 const baseURL = process.env.REACT_APP_API_BASE_URL;
 

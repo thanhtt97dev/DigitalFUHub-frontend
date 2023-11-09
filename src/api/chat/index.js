@@ -1,19 +1,19 @@
-import { apiGet, apiPost, apiPostAuth, apiGetAuth } from '../defaultApi';
+import { apiPostAuth, apiGetAuth, apiPostAuthForm } from '../defaultApi';
 
-export const GetUsersConversation = (userId) => {
-    return apiGet(`api/Conversations/getUsers?userId=${userId}`);
+export const GetConversations = (userId) => {
+    return apiGetAuth(`api/Conversations/getConversations?userId=${userId}`);
 };
 
 export const GetMessages = (conversationId) => {
-    return apiGet(`api/Conversations/getMessages?conversationId=${conversationId}`);
+    return apiGetAuth(`api/Conversations/getMessages?conversationId=${conversationId}`);
 };
 
-export const sendMessage = (data) => {
-    return apiPost('api/Conversations/SendMessage', data);
+export const sendMessage = (formData) => {
+    return apiPostAuthForm('api/Conversations/SendMessage', formData);
 };
 
 export const addConversation = (data) => {
-    return apiPost('api/Conversations/add', data);
+    return apiPostAuth('api/Conversations/add', data);
 };
 
 

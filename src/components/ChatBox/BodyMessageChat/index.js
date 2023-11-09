@@ -1,25 +1,41 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
-import { getUserId } from '~/utils';
-import { Avatar, Card, Typography, Image, Space } from 'antd';
+import { useAuthUser } from 'react-auth-kit';
 import { MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
+import { Avatar, Card, Typography, Image, Space } from 'antd';
 
+///
 const { Text } = Typography;
 require('moment/locale/vi');
 const moment = require('moment');
 const cx = classNames.bind(styles);
+///
 
-const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef, conversationSelected }) => {
-    var userId = +getUserId();
-    if (userId === undefined || userId === null) return;
+const BodyMessageChat = ({ messages, conversationSelected }) => {
+    /// auth
+    const auth = useAuthUser();
+    const user = auth();
+    ///
 
+    /// refs
+    const messagesEndRef = useRef(null);
+    const bodyMessageRef = useRef(null);
+    ///
 
     /// styles
     const styleBodyMessage = { overflowY: 'auto', maxHeight: '50vh' }
     const styleTitleMessage = { paddingLeft: 10 }
     const styleBodyCardMessage = { padding: 10 }
     const styleMessageImage = { borderRadius: 5 }
+    ///
+
+    ///useEffects
+
+    useEffect(() => {
+        scrollToBottom()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [messages])
     ///
 
     /// functions
@@ -31,16 +47,25 @@ const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef, conversatio
         if (!userFind) return;
         return userFind.fullname;
     }
+
+    const scrollToBottom = () => {
+        if (bodyMessageRef.current && messagesEndRef.current) {
+            const bodyMessageElement = bodyMessageRef.current;
+            const messagesEndElement = messagesEndRef.current;
+
+            bodyMessageElement.scrollTop = messagesEndElement.offsetTop;
+        }
+    };
     ///
 
     return (
         <div style={styleBodyMessage} ref={bodyMessageRef}>
             {
-                messages.map((item) => (
+                messages.map((item, index) => (
                     <>
                         {
-                            item.userId !== userId ?
-                                (<div style={{ marginBottom: 25 }}>
+                            item.userId !== user?.id ?
+                                (<div style={{ marginBottom: 25 }} key={index}>
                                     <Space align="center">
                                         <Avatar src={item.avatar} />
                                         <Space.Compact direction="vertical">
@@ -57,7 +82,7 @@ const BodyMessageChat = ({ messages, messagesEndRef, bodyMessageRef, conversatio
                                     </Space>
                                 </div>)
                                 :
-                                (<div style={{ marginBottom: 25, position: 'relative' }}>
+                                (<div style={{ marginBottom: 25, position: 'relative' }} key={index}>
                                     <div className={cx('style-message-sender-1')}>
                                         <Card className={cx('card-message-sender')} bodyStyle={styleBodyCardMessage}>
                                             <Space align="center">

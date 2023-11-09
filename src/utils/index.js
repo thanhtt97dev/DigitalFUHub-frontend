@@ -207,6 +207,7 @@ export async function writeDataToExcel(data) {
 }
 
 export function formatPrice(price) {
+    if (price === undefined) return 0
     return price.toLocaleString('vi-VN', {
         style: 'currency',
         currency: 'VND',

@@ -1,27 +1,26 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import fptImage from '~/assets/images/fpt-logo.jpg';
+import React, { useState, useEffect, useContext } from 'react';
 import classNames from 'classnames/bind';
-import styles from './Chatbox.module.scss'
+import styles from './Chatbox.module.scss';
+import fptImage from '~/assets/images/fpt-logo.jpg';
 import LayoutUserChat from '~/components/ChatBox/LayoutUserChat';
 import LayoutMessageChat from '~/components/ChatBox/LayoutMessageChat';
 import { useAuthUser } from 'react-auth-kit';
 import { useLocation } from 'react-router-dom';
 import { ChatContext } from "~/context/SignalR/ChatContext";
-import { getUserId, getVietnamCurrentTime } from '~/utils';
 import { UserOnlineStatusContext } from "~/context/SignalR/UserOnlineStatusContext";
-import { FileImageOutlined } from '@ant-design/icons';
-import { GetUsersConversation, GetMessages, sendMessage, updateUserConversation } from '~/api/chat';
-import { Button, Form } from 'antd';
-import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ } from '~/constants';
+import { GetConversations, GetMessages, updateUserConversation } from '~/api/chat';
+import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, RESPONSE_CODE_SUCCESS } from '~/constants';
 
-require('moment/locale/vi');
-const moment = require('moment');
+///
 const cx = classNames.bind(styles);
+///
 
 const ChatBox = () => {
+
     /// router
     const location = useLocation();
     let conversationIdPath = location.state?.data || null;
+    ///
 
     /// auth
     const auth = useAuthUser();
@@ -29,55 +28,24 @@ const ChatBox = () => {
     ///
 
     /// states
-    const [form] = Form.useForm();
     const [messages, setMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState('');
     const [conversations, setConversations] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
-    const [lastTimeOnline, setLastTimeOnline] = useState('');
-    const [isUploadFile, setIsUploadFile] = useState(false);
-    const messagesEndRef = useRef(null);
-    const bodyMessageRef = useRef(null);
     ///
 
-
-
-    const handleOpenUploadFile = () => {
-        setIsUploadFile(!isUploadFile)
-    }
-
-    const normFile = (e) => {
-        if (Array.isArray(e)) {
-            return e;
-        }
-        return e?.fileList;
-    };
-
-
-    const uploadButton = (
-        <Button type="primary" shape="circle" icon={<FileImageOutlined />} size={30} />
-    );
-
-    /// scroll
-    const scrollToBottom = () => {
-        if (bodyMessageRef.current && messagesEndRef.current) {
-            const bodyMessageElement = bodyMessageRef.current;
-            const messagesEndElement = messagesEndRef.current;
-
-            bodyMessageElement.scrollTop = messagesEndElement.offsetTop;
-        }
-    };
+    ///contexts
+    const userOnlineStatusContext = useContext(UserOnlineStatusContext);
+    const message = useContext(ChatContext);
     ///
-
-    useEffect(scrollToBottom, [messages]);
 
     /// Handles
 
     const sortConversationByMessageCreationDate = (conversations) => {
+        if (conversations.length === 0) return [];
         const currentDate = new Date();
         const conversationSort = conversations.sort((conversationA, conversationB) => {
-            const dateA = new Date(conversationA.latestMessage.dateCreate);
-            const dateB = new Date(conversationB.latestMessage.dateCreate);
+            const dateA = new Date(conversationA.latestMessage?.dateCreate);
+            const dateB = new Date(conversationB.latestMessage?.dateCreate);
 
             const differenceA = Math.abs(currentDate - dateA);
             const differenceB = Math.abs(currentDate - dateB);
@@ -88,10 +56,11 @@ const ChatBox = () => {
     }
 
     const sortConversationByCreationDate = (conversations) => {
+        if (conversations.length === 0) return [];
         const currentDate = new Date();
         const conversationSort = conversations.sort((conversationA, conversationB) => {
-            const dateA = new Date(conversationA.dateCreate);
-            const dateB = new Date(conversationB.dateCreate);
+            const dateA = new Date(conversationA?.dateCreate);
+            const dateB = new Date(conversationB?.dateCreate);
 
             const differenceA = Math.abs(currentDate - dateA);
             const differenceB = Math.abs(currentDate - dateB);
@@ -102,38 +71,6 @@ const ChatBox = () => {
         return conversationSort;
     }
 
-    const onFinish = (values) => {
-        if (user === null || user === undefined) return;
-        const { fileUpload } = values;
-        if ((newMessage === undefined || newMessage.length === 0) && fileUpload === undefined) return;
-        const currentTime = getVietnamCurrentTime();
-
-        var bodyFormData = new FormData();
-        bodyFormData.append('conversationId', conversationSelected.conversationId);
-        bodyFormData.append('UserId', user.id);
-        bodyFormData.append('content', newMessage);
-        for (var i = 0; i < fileUpload?.length || 0; i++) {
-            bodyFormData.append('Images', fileUpload[i].originFileObj);
-        }
-        for (var j = 0; j < conversationSelected.users.length || 0; j++) {
-            bodyFormData.append('RecipientIds', conversationSelected.users[j].userId);
-        }
-        bodyFormData.append('dateCreate', currentTime);
-
-        sendMessage(bodyFormData)
-            .then((res) => {
-                if (res.status === 200) {
-                    form.resetFields();
-                    setIsUploadFile(false);
-                    setNewMessage('');
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            });
-
-    };
-
     const updateIsReadConversation = (ConversationId, IsRead, UserId) => {
         const dataUpdate = {
             ConversationId: ConversationId,
@@ -142,90 +79,41 @@ const ChatBox = () => {
         }
         // update isRead user conversation
         updateUserConversation(dataUpdate)
-            .then((res) => {
-                if (res.status === 200) {
-                }
-            })
             .catch((error) => {
                 console.log(error)
             })
     }
-
-
-    const handleClickUser = (conversation) => {
-
-        //update is Read db
-        var userId = getUserId();
-        if (userId === undefined || userId === null) return;
-
-        if (conversation.isRead === USER_CONVERSATION_TYPE_UN_READ) {
-            // update icon header
-            updateIsReadConversation(conversation.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
-        }
-
-        //update new isRead state
-        const newConversation = conversations.map((item) => {
-            if (item.conversationId === conversation.conversationId) {
-
-                return { ...item, isRead: USER_CONVERSATION_TYPE_IS_READ }
-            }
-            return item;
-        })
-        setConversations(newConversation)
-
-
-        setConversationSelected(conversation);
-    }
-
-    const handleChangeNewMessage = (e) => {
-        const { value } = e.target
-        setNewMessage(value)
-    }
-    ///
-
-
-    /// interval
-    const intervalTime = () => {
-
-        if (conversationSelected === null || conversationSelected === undefined) return;
-        const interval = setInterval(() => {
-            if (conversationSelected.isGroup === false) {
-                setLastTimeOnline(moment(conversationSelected.lastTimeOnline).fromNow());
-            }
-        }, 60000);
-        return () => clearInterval(interval);
-    }
-
-    intervalTime();
     ///
 
     /// useEffects
+
+    //get messages
     useEffect(() => {
         if (conversationSelected === null || conversationSelected === undefined) return;
-        // if (reloadMessageFlag) return;
-
-        // setReloadMessageFlag(true);
 
         GetMessages(conversationSelected.conversationId)
             .then((response) => {
-                const messages = response.data
+                if (response.status === 200) {
+                    const data = response.data;
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        const messages = data.result;
 
-                // set avt default for empty avt
-                const newMessages = messages.map((message) => {
-                    if (message.avatar.length === 0) {
-                        return { ...message, avatar: fptImage }
+                        // set avt default for empty avt
+                        const newMessages = messages.map((message) => {
+                            if (message.avatar.length === 0) {
+                                return { ...message, avatar: fptImage }
+                            }
+                            return message;
+                        })
+
+                        setMessages(newMessages);
                     }
-                    return message;
-                })
-
-                setMessages(newMessages)
+                }
             })
             .catch((error) => {
                 console.log(error);
             })
-        // .finally(() => {
-        //     setReloadMessageFlag(false);
-        // })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [conversationSelected])
@@ -235,33 +123,39 @@ const ChatBox = () => {
         if (user === null || user === undefined) return;
 
         const loadConversations = () => {
-            GetUsersConversation(user.id)
+            GetConversations(user.id)
                 .then((response) => {
-                    const conversations = response.data
+                    if (response.status === 200) {
+                        const data = response.data;
+                        const status = data.status;
+                        if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                            const conversations = data.result;
+                            // Set avt default for empty avt
+                            const newConversation = conversations.map((conversation) => {
+                                const newUsers = conversation.users.map((user) => {
+                                    if (user.avatar.length === 0) {
+                                        return { ...user, avatar: fptImage }
+                                    }
+                                    return user;
+                                })
 
-                    // set avt default for empty avt
-                    const newConversation = conversations.map((conversation) => {
-                        const newUsers = conversation.users.map((user) => {
-                            if (user.avatar.length === 0) {
-                                return { ...user, avatar: fptImage }
+                                conversation.users = newUsers
+                                return conversation;
+                            })
+
+                            // Sort conversation by message creation date 
+                            const conversationSorted = sortConversationByMessageCreationDate(newConversation);
+
+                            // Update conversations
+                            setConversations(conversationSorted);
+
+                            if (conversationIdPath) {
+                                const conversationFilter = newConversation.find(c => c.conversationId === conversationIdPath);
+                                setConversationSelected(conversationFilter)
                             }
-                            return user;
-                        })
-
-                        conversation.users = newUsers
-                        return conversation;
-                    })
-
-                    // sort conversation by message creation date 
-                    const conversationSorted = sortConversationByMessageCreationDate(newConversation);
-
-                    // update conversations
-                    setConversations(conversationSorted);
-
-                    if (conversationIdPath) {
-                        const conversationFilter = newConversation.find(c => c.conversationId === conversationIdPath);
-                        setConversationSelected(conversationFilter)
+                        }
                     }
+
                 })
                 .catch((errors) => {
                     console.log(errors)
@@ -274,16 +168,18 @@ const ChatBox = () => {
     }, []);
 
 
-    // message from signR
-    const message = useContext(ChatContext);
-
+    // get message from signR
     useEffect(() => {
 
         const setMessage = () => {
             if (message) {
                 if ('messageId' in message) {
                     const currentDate = new Date();
-                    const userId = +getUserId()
+
+                    if (user === null || user === undefined) return;
+
+                    const userId = user.id;
+
                     //set default avatar
                     if (message.avatar === null) {
                         message.avatar = fptImage;
@@ -299,17 +195,19 @@ const ChatBox = () => {
                         if (item.conversationId === message.conversationId) {
                             if (message.userId !== userId) {
                                 if (conversationSelected?.conversationId === message.conversationId) {
+
+                                    // update isRead conversation 
                                     // update db
                                     updateIsReadConversation(conversationSelected.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
 
                                     // update UI
-                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId, messageType: message.messageType }, isRead: USER_CONVERSATION_TYPE_IS_READ }
                                 } else {
-                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_UN_READ }
+                                    return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId, messageType: message.messageType }, isRead: USER_CONVERSATION_TYPE_UN_READ }
                                 }
 
                             } else {
-                                return { ...item, latestMessage: { content: message.content, dateCreate: currentDate }, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                                return { ...item, latestMessage: { content: message.content, dateCreate: currentDate, userId: message.userId, messageType: message.messageType }, isRead: USER_CONVERSATION_TYPE_IS_READ }
                             }
                         }
                         return item;
@@ -350,21 +248,12 @@ const ChatBox = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [message])
 
-    const setDefaultLastTime = () => {
-        setLastTimeOnline('')
-    }
-
-
     // user online status
-    const userOnlineStatusContext = useContext(UserOnlineStatusContext);
-
     useEffect(() => {
         const setOnlineStatus = () => {
             if (userOnlineStatusContext) {
-                setDefaultLastTime();
                 // parse to json
                 const userOnlineStatusJson = JSON.parse(userOnlineStatusContext)
-
                 if (conversations.length === 0) return;
                 // update users status conversations
                 const updateUserStatusConversations = () => {
@@ -408,29 +297,24 @@ const ChatBox = () => {
 
 
 
-
+    /// data props
     const propsMessageChat = {
         conversationSelected: conversationSelected,
-        messages: messages,
-        messagesEndRef: messagesEndRef,
-        form: form,
-        onFinish: onFinish,
-        uploadButton: uploadButton,
-        newMessage: newMessage,
-        handleChangeNewMessage: handleChangeNewMessage,
-        normFile: normFile,
-        isUploadFile: isUploadFile,
-        handleOpenUploadFile: handleOpenUploadFile,
-        lastTimeOnline: lastTimeOnline,
-        bodyMessageRef: bodyMessageRef
+        messages: messages
     }
+
+    const propsUserChat = {
+        conversations: conversations,
+        setConversations: setConversations,
+        conversationSelected: conversationSelected,
+        setConversationSelected: setConversationSelected,
+        updateIsReadConversation: updateIsReadConversation
+    }
+    ///
 
     return (
         <div className={cx('container')}>
-            <LayoutUserChat
-                userChats={conversations}
-                handleClickUser={handleClickUser}
-                conversationSelected={conversationSelected} />
+            <LayoutUserChat propsUserChat={propsUserChat} />
             <LayoutMessageChat propsMessageChat={propsMessageChat} />
         </div>
 

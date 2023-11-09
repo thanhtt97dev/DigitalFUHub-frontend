@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
 import ModalAlert from '~/components/Modals/ModalAlert';
@@ -7,9 +7,10 @@ import { formatPrice } from '~/utils';
 import { addOrder } from '~/api/order';
 import { deleteCart } from '~/api/cart';
 import { formatNumberToK } from '~/utils';
-import { EuroCircleOutlined } from '@ant-design/icons';
+import { EuroCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import { getCustomerBalance } from '~/api/user';
 import { NotificationContext } from "~/context/UI/NotificationContext";
-import { Button, Col, Typography, Checkbox, Divider, Card } from 'antd';
+import { Button, Col, Typography, Checkbox, Divider, Card, Space } from 'antd';
 import {
     RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_COUPON_NOT_EXISTED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY,
     RESPONSE_MESSAGE_ORDER_COUPON_NOT_EXISTED, RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY, RESPONSE_CODE_CART_SUCCESS,
@@ -30,24 +31,35 @@ const Prices = ({ dataPropPriceComponent }) => {
         totalPrice,
         userCoin,
         setIsUseCoin,
-        balance,
         isUseCoin,
         reloadCarts,
         cartDetailIdSelecteds,
+        setCartDetailIdSelecteds,
         getCouponCodeSelecteds,
     } = dataPropPriceComponent;
     //
 
-    // states
+    /// states
     const [isOpenModalAlert, setIsOpenModalAlert] = useState(false);
-    const [isOpenModalConfirmationBuy, setIsOpenModalConfirmationBuy] = useState(false);
     const [contentModalAlert, setContentModalAlert] = useState('');
-    const [isLoadingButton, setIsLoadingButton] = useState(false);
-    //
+    const [isOpenModalConfirmationBuy, setIsOpenModalConfirmationBuy] = useState(false);
+    const [isOpenModalConfirmationDelete, setIsOpenModalConfirmationDelete] = useState(false);
+    const [balance, setBalance] = useState(0);
+    const [isLoadingButtonBuy, setIsLoadingButtonBuy] = useState(false);
+    const [isLoadingButtonDelete, setIsLoadingButtonDelete] = useState(false);
+    ///
 
-    // contexts
+    /// contexts
     const notification = useContext(NotificationContext);
-    //
+    ///
+
+    /// styles
+    const styleCardItem = {
+        backgroundColor: '#fff',
+        borderRadius: '10px',
+        boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.2)',
+    }
+    ///
 
 
     // modal Alert
@@ -68,15 +80,52 @@ const Prices = ({ dataPropPriceComponent }) => {
     const closeModalConfirmationBuy = () => {
         setIsOpenModalConfirmationBuy(false);
     };
+
+    const showModalConfirmationDelete = () => {
+        setIsOpenModalConfirmationDelete(true);
+    };
+
+    const closeModalConfirmationDelete = () => {
+        setIsOpenModalConfirmationDelete(false);
+    };
     //
 
+    /// useEffects
+    useEffect(() => {
+        getCustomerBalance(userId)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        if (balance !== data.result) {
+                            setBalance(data.result)
+                        }
+                    }
+                }
+            }).catch((err) => {
+                console.log(err.message)
+            })
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+    ///
+
     //handles
-    const loadingButton = () => {
-        setIsLoadingButton(true);
+
+    const loadingButtonBuy = () => {
+        setIsLoadingButtonBuy(true);
     }
 
-    const unLoadingButton = () => {
-        setIsLoadingButton(false);
+    const unLoadingButtonBuy = () => {
+        setIsLoadingButtonBuy(false);
+    }
+
+    const loadingButtonDelete = () => {
+        setIsLoadingButtonDelete(true);
+    }
+
+    const unLoadingButtonDelete = () => {
+        setIsLoadingButtonDelete(false);
     }
     const handleBuy = () => {
         if (balance < totalPrice.discountPrice) {
@@ -87,6 +136,10 @@ const Prices = ({ dataPropPriceComponent }) => {
         showModalConfirmationBuy();
     }
 
+    const handleDeleteCartDetailSelecteds = () => {
+        showModalConfirmationDelete();
+    }
+
 
     const handleUseCoin = (e) => {
         setIsUseCoin(e.target.checked);
@@ -95,7 +148,7 @@ const Prices = ({ dataPropPriceComponent }) => {
     const handleOkConfirmationBuy = () => {
 
         // is loading button
-        loadingButton();
+        loadingButtonBuy();
         // create shop product request add order DTO
         //data add order
         const shopProductRequest = [];
@@ -143,7 +196,8 @@ const Prices = ({ dataPropPriceComponent }) => {
                                 if (res.status === 200) {
                                     const data = res.data;
                                     if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
-                                        unLoadingButton();
+                                        setCartDetailIdSelecteds([]);
+                                        unLoadingButtonBuy();
                                     }
                                 }
                             })
@@ -176,12 +230,54 @@ const Prices = ({ dataPropPriceComponent }) => {
                             setContentModalAlert("Có lỗi xảy ra! Vui lòng thử lại sau!");
                         }
                         openModalAlert();
-                        unLoadingButton();
+                        unLoadingButtonBuy();
                         closeModalConfirmationBuy();
                     }
                 }
             }).catch((error) => {
                 console.log(error)
+            })
+    }
+
+
+    const handleOkConfirmationDelete = () => {
+        // Is loading button delete
+        loadingButtonDelete();
+
+        //data remove cart
+        const dataRemoveCart = [];
+
+        // get data remove carts
+        for (let i = 0; i < carts.length; i++) {
+            const cartDetails = carts[i].products;
+            const cartDetailsFil = cartDetails.filter(x => cartDetailIdSelecteds.includes(x.cartDetailId));
+            if (cartDetailsFil) {
+                // remove cart dto
+                const deleteCart = {
+                    cartId: carts[i].cartId,
+                    cartDetailIds: cartDetailsFil.map(x => (x.cartDetailId)),
+                }
+                dataRemoveCart.push(deleteCart)
+            }
+        }
+
+        // delete cart selecteds
+        deleteCart(dataRemoveCart)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
+                        unLoadingButtonDelete();
+                    }
+                }
+            })
+            .catch((errors) => {
+                console.log(errors)
+            }).finally(() => {
+                setTimeout(() => {
+                    closeModalConfirmationDelete();
+                    reloadCarts();
+                }, 500)
             })
     }
     ///
@@ -222,10 +318,31 @@ const Prices = ({ dataPropPriceComponent }) => {
                         <Text>Tổng giá trị phải thanh toán:</Text>&nbsp;&nbsp;
                         <Text strong>{formatPrice(totalPrice.discountPrice)}</Text>
                     </div>
-
-                    <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block onClick={handleBuy}>
+                    <Button type="primary" disabled={totalPrice.originPrice > 0 ? false : true} block onClick={handleBuy} style={{ marginBottom: 10 }}>
                         Mua hàng
                     </Button>
+                    <Button icon={<DeleteOutlined />} danger disabled={totalPrice.originPrice > 0 ? false : true} block onClick={handleDeleteCartDetailSelecteds} style={{ marginBottom: 30 }}>
+                        Xóa ({cartDetailIdSelecteds.length > 0 ? cartDetailIdSelecteds.length : 0})
+                    </Button>
+                    <Card style={styleCardItem}>
+                        <Space align='center' size={15}>
+                            <Text style={{ fontSize: '15px', fontWeight: 'bold' }}>
+                                Số dư còn lại
+                            </Text>
+                            <p style={{
+                                whiteSpace: 'nowrap',
+                                fontSize: '20px',
+                                color: '#007bff',
+                                maxWidth: '130px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}
+                                title={formatPrice(balance)}
+                            >
+                                {formatPrice(balance)}
+                            </p>
+                        </Space>
+                    </Card>
                 </Card>
             </Col>
 
@@ -237,7 +354,16 @@ const Prices = ({ dataPropPriceComponent }) => {
                 contentModal={`Bạn có muốn thanh toán đơn hàng này với giá ${formatPrice(totalPrice.discountPrice)} không?`}
                 contentButtonCancel='Quay lại'
                 contentButtonOk='Thanh toán'
-                isLoading={isLoadingButton} />
+                isLoading={isLoadingButtonBuy} />
+
+            <ModalConfirmation title='Xóa sản phẩm khỏi giỏ hàng'
+                isOpen={isOpenModalConfirmationDelete}
+                onOk={handleOkConfirmationDelete}
+                onCancel={closeModalConfirmationDelete}
+                contentModal={`Bạn có muốn bỏ ${cartDetailIdSelecteds.length} sản phẩm không?`}
+                contentButtonCancel='Trở lại'
+                contentButtonOk='Có'
+                isLoading={isLoadingButtonDelete} />
         </>
 
     )

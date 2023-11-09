@@ -630,7 +630,7 @@ function OrderDetail() {
                                                 label: 'Số xu sử dụng',
                                                 labelStyle: { 'text-align': 'right' },
                                                 span: '3',
-                                                children: <Text>-{formatPrice(order?.totalCoinDiscount)} xu</Text>
+                                                children: <Text>-{order?.totalCoinDiscount} xu</Text>
                                             })
                                             infoPayment.push({
                                                 key: '4',
