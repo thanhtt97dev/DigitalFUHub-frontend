@@ -3,6 +3,7 @@ import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 import React, { useState, useEffect } from "react";
 import CarouselCustom from '~/components/Carousels/CarouselCustom';
 import { addProductToCart } from '~/api/cart';
+import { useAuthUser } from 'react-auth-kit';
 import { isProductWishList, addWishList, removeWishList } from '~/api/wishList';
 import { formatPrice } from '~/utils';
 import { useNavigate } from 'react-router-dom';
@@ -11,11 +12,13 @@ import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS
 import { CreditCardOutlined, ShoppingCartOutlined, HeartFilled } from '@ant-design/icons';
 import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Radio, Card, Typography, Space, Rate } from 'antd';
 
+///
 const cx = classNames.bind(styles);
 const { Title, Text } = Typography;
 require('moment/locale/vi');
+///
 
-const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, openNotification, userId, scrollToStartFeedback }) => {
+const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, openNotification, scrollToStartFeedback }) => {
 
     /// states
     const [quantity, setQuantity] = useState(1);
@@ -25,6 +28,11 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     const [isLoadingButtonBuyNow, setIsLoadingButtonBuyNow] = useState(false);
     const [isLoadingButtonAddToCart, setIsLoadingButtonAddToCart] = useState(false);
     const [isWishList, setIsWishList] = useState(false);
+    ///
+
+    /// variables
+    const auth = useAuthUser();
+    const user = auth();
     ///
 
     /// variables
@@ -85,7 +93,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         // loading button
         isBuyNow ? loadingButtonBuyNow() : loadingButtonAddToCart();
 
-        if (userId === undefined) {
+        if (user === undefined || user === null) {
             // un loading button
             isBuyNow ? unLoadingButtonBuyNow() : unLoadingButtonAddToCart();
             navigate('/login');
@@ -100,7 +108,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         }
 
         const dataAddToCart = {
-            userId: userId,
+            userId: user.id,
             shopId: product.shop.shopId,
             productVariantId: productVariantsSelected.productVariantId,
             quantity: quantity
@@ -140,14 +148,14 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         // loading button wish list is TRUE
         loadingButtonWishList();
 
-        if (userId === undefined) {
+        if (user === undefined || user === null) {
             navigate('/login');
             return;
         }
 
         // data request dto
         const dataRequest = {
-            userId: userId,
+            userId: user.id,
             productId: product.productId
         }
 
@@ -247,12 +255,10 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         setQuantity(1)
     }, [handleSelectProductVariant]);
 
-    console.log('userId = ' + userId);
-
     // wish list
     useEffect(() => {
-        if (product && userId) {
-            isProductWishList(product.productId, userId)
+        if (product && (user !== undefined && user !== null)) {
+            isProductWishList(product.productId, user.id)
                 .then((res) => {
                     if (res.status === 200) {
                         const data = res.data;
@@ -271,7 +277,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [product, userId]);
+    }, [product, user]);
     ///
 
     /// styles
@@ -389,14 +395,14 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                             </div>
                             <Divider />
                             <Space align='center'>
-                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={disableProduct() || product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<CreditCardOutlined />} size={'large'} loading={isLoadingButtonBuyNow}>
+                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={disableProduct() || product.quantity <= 0 || user?.id === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<CreditCardOutlined />} size={'large'} loading={isLoadingButtonBuyNow}>
                                     Mua ngay
                                 </Button>
-                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={disableProduct() || product.quantity <= 0 || userId === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<ShoppingCartOutlined />} size={'large'} loading={isLoadingButtonAddToCart}>
+                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={disableProduct() || product.quantity <= 0 || user?.id === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<ShoppingCartOutlined />} size={'large'} loading={isLoadingButtonAddToCart}>
                                     Thêm vào giỏ
                                 </Button>
                                 {
-                                    userId !== product.shop.shopId ? (
+                                    user?.id !== product.shop.shopId ? (
                                         <Button style={buttonStyle} onClick={handleClickWishList} size={'large'} className={cx('flex-item-center')} loading={isLoadingButtonWishList}>
                                             <HeartFilled style={iconStyle} />
                                         </Button>

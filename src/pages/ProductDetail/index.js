@@ -28,9 +28,6 @@ const ProductDetail = () => {
     ///
 
     /// variables
-    const auth = useAuthUser();
-    const user = auth();
-    const userId = user?.id;
     const initialProductId = id;
     ///
 
@@ -114,13 +111,11 @@ const ProductDetail = () => {
                 productVariantsSelected={productVariantsSelected}
                 product={product}
                 openNotification={openNotification}
-                scrollToStartFeedback={scrollToStartFeedback}
-                userId={userId} />
-            <ShopInfomations product={product} userId={userId} />
+                scrollToStartFeedback={scrollToStartFeedback} />
+            <ShopInfomations product={product} />
             <ProductDescription product={product} />
             <div ref={feedbackStartRef} />
-            <ProductFeedback feedback={feedback}
-                product={product} />
+            <ProductFeedback feedback={feedback} product={product} />
         </>
     )
 }
