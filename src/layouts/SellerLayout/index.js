@@ -3,21 +3,22 @@ import {
     MenuUnfoldOutlined,
     MenuFoldOutlined,
     AreaChartOutlined,
-    StockOutlined,
-    SettingOutlined,
+    // StockOutlined,
+    // SettingOutlined,
     CreditCardOutlined,
     ShopOutlined,
-    BellOutlined,
-    MailOutlined,
+    // BellOutlined,
+    // MailOutlined,
     DollarOutlined,
     ShoppingOutlined,
     UserOutlined,
     MessageOutlined,
     ClockCircleOutlined,
-    CommentOutlined
+    CommentOutlined,
+    ShoppingCartOutlined
 
 } from '@ant-design/icons';
-import { Layout, Menu, Space, theme, Avatar, Button, Row, Col, Dropdown, Badge, Card } from 'antd';
+import { Layout, Menu, Space, Avatar, Button, Row, Col, Dropdown, Badge } from 'antd';
 import styles from './SellerLayout.module.scss'
 import classNames from 'classnames/bind';
 import { Link, Outlet } from 'react-router-dom';
@@ -55,9 +56,21 @@ const menuItems = [
         icon: <AreaChartOutlined className={cx('menu-icon')} />,
     },
     {
+        label: 'Quản lý cửa hàng',
+        key: 'seller/shop',
+        icon: <ShopOutlined className={cx('menu-icon')} />,
+        children: [
+            {
+                key: '/seller/shop/edit',
+                label: <Link to={"/seller/shop/edit"}>Chỉnh sửa cửa hàng</Link>,
+            }
+        ],
+
+    },
+    {
         label: 'Quản lý đơn hàng',
         key: 'seller/order',
-        icon: <ShoppingOutlined className={cx('menu-icon')} />,
+        icon: <ShoppingCartOutlined className={cx('menu-icon')} />,
         children: [
             {
                 key: '/seller/order/list',
@@ -68,7 +81,7 @@ const menuItems = [
     {
         label: 'Quản lý sản phẩm',
         key: 'seller/product',
-        icon: <ShopOutlined className={cx('menu-icon')} />,
+        icon: <ShoppingOutlined className={cx('menu-icon')} />,
         children: [
             {
                 key: '/seller/product/list',
@@ -95,7 +108,7 @@ const menuItems = [
         label: <Link to='/seller/feedback/list'>Đánh giá cửa hàng</Link>,
         key: 'feedback',
         icon: <CommentOutlined className={cx('menu-icon')} />,
-    },
+    }
 ];
 const SellerLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -120,7 +133,7 @@ const SellerLayout = () => {
                 </div>
                 <Menu
                     className={cx("menu")}
-                    defaultOpenKeys={['seller/product', 'seller/order']}
+                    defaultOpenKeys={['seller/product', 'seller/order', 'seller/shop']}
                     defaultSelectedKeys={['dashboard']}
                     mode="inline" items={menuItems} />
             </Sider>

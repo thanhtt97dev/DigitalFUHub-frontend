@@ -36,6 +36,7 @@ import OrderDetailSeller from '~/pages/Seller/ManageOrder/OrderDetail';
 import AddCoupon from '~/pages/Seller/ManageCoupon/AddCoupon';
 import EditCoupon from '~/pages/Seller/ManageCoupon/EditCoupon';
 import CouponDetail from '~/pages/Seller/ManageCoupon/Detail';
+import EditShop from '~/pages/Seller/ManageShop/Edit/EditShop';
 
 const routesConfig = [
     {
@@ -243,6 +244,13 @@ const routesConfig = [
         layout: <NormalLayout />,
         component: <SettingsLayout><OrderDetail /></SettingsLayout>,
         role: [SELLER_ROLE, CUSTOMER_ROLE]
+    },
+    {
+        title: 'Seller edit shop',
+        path: '/seller/shop/edit',
+        layout: <SellerLayout />,
+        component: <EditShop />,
+        role: [SELLER_ROLE],
     },
     {
         title: 'Confirm Email',
