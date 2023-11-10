@@ -96,19 +96,20 @@ const WishList = () => {
     ///
 
     /// styles
-    const styleImage = { width: '100%', height: '35vh', borderRadius: 7 }
+    const styleImage = { width: '32vh', height: '32vh', borderRadius: 7 }
     const styleCardItem = {
         width: '35vh',
-        height: '61vh',
+        height: '60vh',
         backgroundColor: '#fff',
         borderRadius: '10px',
         boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.2)',
     }
     const styleContainerImage = { width: '100%', textAlign: 'center' }
+    const styleContainer = { width: '100%', minHeight: '100vh' }
     ///
 
     return (
-        <Card title="Danh sách các sản phẩm yêu thích">
+        <Card title="Danh sách các sản phẩm yêu thích" style={styleContainer}>
             {
                 <Space size={[10, 16]} wrap>
                     {products.map((product, index) => (

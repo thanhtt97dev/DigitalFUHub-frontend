@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 import React, { useState, useEffect } from "react";
-import CarouselCustom from '~/components/Carousels/CarouselCustom';
+import CarouselCustom from './Carousel';
 import { addProductToCart } from '~/api/cart';
 import { useAuthUser } from 'react-auth-kit';
 import { isProductWishList, addWishList, removeWishList } from '~/api/wishList';
@@ -223,7 +223,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         return (
             <CarouselCustom
                 data={productMedias}
-                style={carouselStyle}
             />
         )
     }
@@ -281,7 +280,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     ///
 
     /// styles
-    const carouselStyle = { width: 600, height: 400 };
     const buttonStyle = {
         background: 'white',
         cursor: 'pointer',
@@ -327,16 +325,16 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
 
     return (
-        <Card className={disableProduct() ? cx('margin-bottom', 'disable-item') : cx('margin-bottom')}>
+        <Card className={disableProduct() ? cx('margin-bottom', 'opacity-disabled') : cx('margin-bottom')}>
             <Row>
                 {product ? (<>
-                    <Col span={11} style={{ padding: 15 }}>
+                    <Col span={10} style={{ padding: 15 }}>
                         <ProductMedias productMedias={product.productMedias} />
                         {
                             disableProduct() ? <div className={cx('circle')}> Sản phẩm này đã bị BAN</div> : <></>
                         }
                     </Col>
-                    <Col span={13} style={{ padding: 15 }}>
+                    <Col offset={1} span={13} style={{ padding: 15 }}>
                         <div className={disableProduct() ? cx('pointer-events-item') : ''}>
                             <Title level={3}>{product.productName}</Title>
                             <Space align='center' style={spaceRatingStarStyle} onClick={scrollToStartFeedback}>
