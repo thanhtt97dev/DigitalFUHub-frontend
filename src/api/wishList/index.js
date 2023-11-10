@@ -16,3 +16,7 @@ export const removeWishList = (data) => {
 export const getWishListByUserId = (userId) => {
     return apiGetAuth(`api/WishLists/GetByUserId/${userId}`);
 };
+
+export const removeWishListSelecteds = (data) => {
+    return apiPostAuth(`api/WishLists/RemoveSelecteds`, data);
+};

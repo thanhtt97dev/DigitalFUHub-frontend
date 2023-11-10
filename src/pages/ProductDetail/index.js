@@ -4,7 +4,6 @@ import ShopInfomations from '~/components/ProductDetails/ShopInfomation';
 import ProductDescription from '~/components/ProductDetails/ProductDescription';
 import ProductFeedback from '~/components/ProductDetails/ProductFeedback';
 import { getProductById } from '~/api/product';
-import { useAuthUser } from 'react-auth-kit';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { useNavigate, useParams } from 'react-router-dom';
 import { notification } from 'antd';
@@ -104,7 +103,6 @@ const ProductDetail = () => {
 
     return (
         <>
-            {contextHolder}
             <ProductVariantDetail
                 productVariants={productVariants}
                 handleSelectProductVariant={handleSelectProductVariant}

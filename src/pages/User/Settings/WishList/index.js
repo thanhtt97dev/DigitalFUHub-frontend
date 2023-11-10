@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { Card, Typography, Col, Row, Space, Image, Button } from 'antd';
+import React, { useEffect, useState, useContext } from "react";
+import { Card, Typography, Space, Image, Button, Checkbox } from 'antd';
 import { useAuthUser } from 'react-auth-kit';
-import { getWishListByUserId, removeWishList } from '~/api/wishList';
+import { getWishListByUserId, removeWishList, removeWishListSelecteds } from '~/api/wishList';
 import { ShoppingCartOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import ModalConfirmation from "~/components/Modals/ModalConfirmation";
+import { Link, useNavigate } from 'react-router-dom';
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import { formatPrice, discountPrice } from '~/utils';
 import classNames from 'classnames/bind';
 import styles from '~/pages/User/Settings/WishList/WishList.module.scss';
 
+///
 const { Title, Text } = Typography;
 const cx = classNames.bind(styles);
+///
 
 
 const RangeOriginPriceProductVariant = ({ productVariants }) => {
@@ -33,18 +37,29 @@ const WishList = () => {
     /// states
     const [products, setProducts] = useState([]);
     const [reloadProductsFlag, setReloadProductsFlag] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
+    const [isOpenModalConfirmationDelete, setIsOpenModalConfirmationDelete] = useState(false);
+    const [isLoadingButtonDelete, setIsLoadingButtonDelete] = useState(false);
+    const [productIdSlecteds, setProductIdSlecteds] = useState([]);
+    ///
+
+    /// contexts
+    const notification = useContext(NotificationContext)
     ///
 
     /// variables
     const auth = useAuthUser();
     const user = auth();
-    const userId = user?.id;
+    ///
+
+    /// router
+    const navigate = useNavigate();
     ///
 
     /// useEffects
     useEffect(() => {
-        if (userId === undefined) return;
-        getWishListByUserId(userId)
+        if (user === undefined || user === null) return;
+        getWishListByUserId(user.id)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
@@ -66,9 +81,9 @@ const WishList = () => {
 
     /// handles
     const handleRemoveWishList = (productId) => {
-        if (userId === undefined) return;
+        if (user === undefined || user === null) return;
         const dataRequestRemove = {
-            userId: userId,
+            userId: user.id,
             productId: productId
         }
 
@@ -86,6 +101,64 @@ const WishList = () => {
                 console.log(err)
             })
     }
+
+    const handleChangeCheckbox = (values) => {
+        setProductIdSlecteds(values);
+    }
+
+    const handleClickEdit = () => {
+        setIsEdit(true);
+    }
+
+    const handleClickComplete = () => {
+        if (productIdSlecteds) setProductIdSlecteds([]);
+        setIsEdit(false);
+    }
+
+    const handleAddProductToCart = (productId) => {
+        navigate(`/product/${productId}`);
+    }
+
+    const handleOkConfirmationDeleteSelecteds = () => {
+        if (user === undefined || user === null) return;
+
+        // data request delete
+        const request = {
+            userId: user.id,
+            productIds: productIdSlecteds
+        }
+
+        // remove
+        removeWishListSelecteds(request)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        notification("success", "Xóa sản phẩm yêu thích thành công");
+
+                        // reload
+                        reloadProducts();
+
+                        // reset product id selecteds
+                        reloadButtonAndState();
+                    }
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            }).finally(() => {
+                handleCloseConfirmationDeleteSelecteds();
+            })
+    }
+
+    const handleCloseConfirmationDeleteSelecteds = () => {
+        setIsOpenModalConfirmationDelete(false);
+    }
+
+    const handleOpenConfirmationDeleteSelecteds = () => {
+        setIsOpenModalConfirmationDelete(true);
+    }
     ///
 
 
@@ -93,13 +166,18 @@ const WishList = () => {
     const reloadProducts = () => {
         setReloadProductsFlag(!reloadProductsFlag);
     }
+
+    const reloadButtonAndState = () => {
+        setIsEdit(false);
+        setProductIdSlecteds([]);
+    }
     ///
 
     /// styles
     const styleImage = { width: '32vh', height: '32vh', borderRadius: 7 }
     const styleCardItem = {
-        width: '35vh',
-        height: '60vh',
+        minWidth: '35vh',
+        minHeight: '60vh',
         backgroundColor: '#fff',
         borderRadius: '10px',
         boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.2)',
@@ -109,53 +187,54 @@ const WishList = () => {
     ///
 
     return (
-        <Card title="Danh sách các sản phẩm yêu thích" style={styleContainer}>
-            {
-                <Space size={[10, 16]} wrap>
-                    {products.map((product, index) => (
-                        <Card key={index} style={styleCardItem} bodyStyle={{ padding: 10, }}>
-                            <div style={styleContainerImage} className={cx('margin-bottom')}>
-                                <Image style={styleImage} src={product.thumbnail} />
-                            </div>
-                            <Row className={cx('margin-bottom')}>
-                                <Col>
-                                    <Space>
-                                        <Space.Compact direction="vertical" className={cx('flex-item-center')}>
-                                            <Link to={'/product/' + product.productId} ><Title level={4}>{product.productName}</Title></Link>
-                                            <Space className={cx('margin-bottom')}>
-                                                <Space.Compact direction="vertical">
-                                                    <Space align="center" className={cx('flex-item-center')}>
-                                                        {product.productVariants.length > 1 ? (<RangeOriginPriceProductVariant productVariants={product.productVariants} />)
-                                                            : (product.productVariants.length === 1 ? <Text delete strong type="secondary">{formatPrice(product.productVariants[0].price)}</Text> : <></>)}
-                                                        <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
-                                                    </Space>
-                                                    <div>
-                                                        {product.productVariants.length > 1 ? (<RangeDiscountPriceProductVariant productVariants={product.productVariants} discount={product.discount} />)
-                                                            : (product.productVariants.length === 1 ? <Text strong>{formatPrice(discountPrice(product.productVariants[0].price, product.discount))}</Text> : <></>)}
-                                                    </div>
+        <Card title="Danh sách các sản phẩm yêu thích" style={styleContainer}
+            extra={<>
+                {products.length > 0 && (isEdit ? <Button type="link" onClick={handleClickComplete}><Text type="success">Hoàn tất</Text></Button>
+                    : <Button type="link" danger onClick={handleClickEdit}>Chỉnh sửa</Button>)}
 
-                                                </Space.Compact>
-                                            </Space>
-                                            <Space align="center">
-                                                <Link to={'/product/' + product.productId} >
-                                                    <Button type="link" icon={<ShoppingCartOutlined />}>
-                                                        Thêm vào giỏ
-                                                    </Button>
-                                                </Link>
-                                                <Button type="link" icon={<DeleteOutlined />} onClick={() => { handleRemoveWishList(product.productId) }}>
-                                                    Xóa
-                                                </Button>
-                                            </Space>
+                {productIdSlecteds.length > 0 ? <><Button danger icon={<DeleteOutlined />} onClick={handleOpenConfirmationDeleteSelecteds}>Xóa ({productIdSlecteds.length})</Button></>
+                    : <></>}
 
+            </>}>
+            <Checkbox.Group onChange={handleChangeCheckbox} value={productIdSlecteds} >
+                {
+                    <Space size={[10, 16]} wrap>
+                        {products.map((product, index) => (
+                            <Card key={index} style={styleCardItem} bodyStyle={{ padding: 10, }}>
+                                <div style={styleContainerImage} className={cx('margin-bottom')}>
+                                    <Image style={styleImage} src={product.thumbnail} />
+                                </div>
+                                <Link to={'/product/' + product.productId} className={cx('flex-item-center')}><Title level={4}>{product.productName}</Title></Link>
+                                <Space align="center" className={cx('flex-item-center', 'margin-bottom')}>
+                                    {product.productVariants.length > 1 ? (<RangeOriginPriceProductVariant productVariants={product.productVariants} />)
+                                        : (product.productVariants.length === 1 ? <Text delete strong type="secondary">{formatPrice(product.productVariants[0].price)}</Text> : <></>)}
+                                    <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
+                                </Space>
+                                <div className={cx('flex-item-center', 'margin-bottom')}>
+                                    {product.productVariants.length > 1 ? (<RangeDiscountPriceProductVariant productVariants={product.productVariants} discount={product.discount} />)
+                                        : (product.productVariants.length === 1 ? <Text strong>{formatPrice(discountPrice(product.productVariants[0].price, product.discount))}</Text> : <></>)}
+                                </div>
 
-                                        </Space.Compact>
+                                {isEdit ? (<div className={cx('flex-item-center')}><Checkbox value={product.productId} /></div>) : (
+                                    <Space align="center" size={30} className={cx('flex-item-center', 'margin-bottom')}>
+                                        <Button type="primary" shape="circle" icon={<ShoppingCartOutlined />} onClick={() => handleAddProductToCart(product.productId)} />
+                                        <Button type="primary" danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleRemoveWishList(product.productId)} />
                                     </Space>
-                                </Col>
-                            </Row>
-                        </Card>
-                    ))}
-                </Space>
-            }
+                                )}
+
+                            </Card>
+                        ))}
+                    </Space>
+                }
+            </Checkbox.Group>
+
+            <ModalConfirmation title='Xóa sản phẩm yêu thích'
+                isOpen={isOpenModalConfirmationDelete}
+                onOk={handleOkConfirmationDeleteSelecteds}
+                onCancel={handleCloseConfirmationDeleteSelecteds}
+                contentModal={`Bạn có muốn xóa ${productIdSlecteds.length} sản phẩm không?`}
+                contentButtonCancel='Không'
+                contentButtonOk='Đồng ý' />
         </Card>
     )
 }

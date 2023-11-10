@@ -1,8 +1,9 @@
 import classNames from 'classnames/bind';
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import CarouselCustom from './Carousel';
 import { addProductToCart } from '~/api/cart';
+import { NotificationContext } from '~/context/UI/NotificationContext';
 import { useAuthUser } from 'react-auth-kit';
 import { isProductWishList, addWishList, removeWishList } from '~/api/wishList';
 import { formatPrice } from '~/utils';
@@ -40,6 +41,10 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     let maxPrice = 0
     let minPriceDis = 0
     let maxPriceDis = 0
+    ///
+
+    /// contexts
+    const notification = useContext(NotificationContext)
     ///
 
     /// router
@@ -103,7 +108,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         if (!productVariantsSelected) {
             // un loading button
             isBuyNow ? unLoadingButtonBuyNow() : unLoadingButtonAddToCart();
-            openNotification("error", "Vui lòng chọn loại sản phẩm");
+            notification("error", "Vui lòng chọn loại sản phẩm");
             return;
         }
 
@@ -126,7 +131,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
                     } else if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS && data.status.ok === true) {
                         if (!isBuyNow) {
-                            openNotification("success", "Sản phẩm đã được thêm vào trong giỏ hàng của bạn")
+                            notification("success", "Sản phẩm đã được thêm vào trong giỏ hàng của bạn");
                         } else {
                             navigate('/cart')
                         }
@@ -134,8 +139,8 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                 }
             })
             .catch((errors) => {
-                console.log(errors)
-                openNotification("error", "Có lỗi xảy ra trong quá trình thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!")
+                console.log(errors);
+                notification("error", "Có lỗi xảy ra trong quá trình thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!");
             }).finally(() => {
                 setTimeout(() => {
                     // un loading button
@@ -177,7 +182,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                     setTimeout(() => {
                         // loading button wish list is FALSE
                         unLoadingButtonWishList();
-                        openNotification("success", "Xóa thành công khỏi mục sản phẩm yêu thích");
+                        notification("success", "Xóa thành công khỏi mục sản phẩm yêu thích");
                     }, 500)
                 });
         } else {
@@ -198,7 +203,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                     setTimeout(() => {
                         // loading button wish list is FALSE
                         unLoadingButtonWishList();
-                        openNotification("success", "Thêm thành công vào mục sản phẩm yêu thích");
+                        notification("success", "Thêm thành công vào mục sản phẩm yêu thích");
                     }, 500)
                 });;
         }
@@ -338,7 +343,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                         <div className={disableProduct() ? cx('pointer-events-item') : ''}>
                             <Title level={3}>{product.productName}</Title>
                             <Space align='center' style={spaceRatingStarStyle} onClick={scrollToStartFeedback}>
-                                <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct().toFixed(1)}</Text>
+                                <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct() ? calculatorRatingStarProduct().toFixed(1) : 0}</Text>
                                 <Rate disabled defaultValue={calculatorRatingStarProduct()} style={ratingStarStyle} />
                             </Space>
                             <Space align='center' style={spaceFeedbackStyle} onClick={scrollToStartFeedback}>
