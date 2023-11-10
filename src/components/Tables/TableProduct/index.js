@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Image, Row, Col, Tooltip } from 'antd';
+import { Table, Image, Row, Col, Tooltip, Space } from 'antd';
 import classNames from 'classnames/bind';
 
 import styles from './TableProduct.module.scss';
@@ -93,7 +93,10 @@ const columns = [
         dataIndex: 'productId',
         render: (productId) => {
             return (
-                <Link to={`/seller/product/${productId}`}>Chi tiết</Link>
+                <Space direction="vertical">
+                    <Link to={`/seller/product/${productId}`}>Chỉnh sửa</Link>
+                    <Link to={`/product/${productId}`}>Xem trước</Link>
+                </Space>
             )
         },
         width: '10%',
