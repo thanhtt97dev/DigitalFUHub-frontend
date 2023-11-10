@@ -1,130 +1,339 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Table, Card, Space } from 'antd';
-import { useAuthUser } from 'react-auth-kit'
+import React, { useEffect, useState, useContext } from "react";
+import { Card, Form, Row, Col, Space, Select, Input, Button } from 'antd';
 
-import { getAllProductsSeller } from "~/api/product";
+import { NotificationContext } from "~/context/UI/NotificationContext";
+
+import TableProduct from "~/components/Tables/TableProduct";
 import Spinning from "~/components/Spinning";
-import { getUserId } from "~/utils";
+
+import { getProductsOfSeller } from "~/api/product";
+import { getAllCategory } from "~/api/category"
+import {
+    RESPONSE_CODE_SUCCESS,
+    RESPONSE_CODE_NOT_ACCEPT,
+    PRODUCT_ACTIVE,
+    PRODUCT_HIDE,
+    PRODUCT_BAN
+} from "~/constants";
+import { getUserId } from "~/utils"
 
 
+const tabList = [
+    {
+        label: "Tất cả",
+        key: "tab1",
+    },
+    {
+        label: "Đang hoạt động",
+        key: "tab2",
+    },
+    {
+        label: "Đã ẩn",
+        key: "tab3",
+    },
+    {
+        label: "Vi phạm",
+        key: "tab4",
+    },
+]
 
-const columns = [
+const initFormValues = [
     {
-        title: 'Mã',
-        dataIndex: 'productId',
-        width: '5%',
+        name: 'productId',
+        value: "",
     },
     {
-        title: 'Tên sản phẩm',
-        dataIndex: 'productId',
-        width: '20%',
-        render: (productId, record) => {
-            return (
-                <Link to={`/seller/product/${productId}`} style={{ display: "flex" }}>
-                    <img src={record.thumbnail} alt="product" style={{ with: "40px", height: "60px", marginRight: "10px" }} />
-                    <span>{record.productName}</span>
-                </Link>
-            )
-        }
+        name: 'shopName',
+        value: "",
     },
     {
-        title: 'Phân loại hàng',
-        dataIndex: 'productVariants',
-        render: ((productVariants) => {
-            return (
-                <>
-                    {productVariants.map((variant, index) => (
-                        <p key={index}>{variant.name}</p>
-                    ))
-                    }
-                </>
-            )
-        }),
-        width: '20%',
+        name: 'productName',
+        value: "",
     },
     {
-        title: 'Giá',
-        dataIndex: 'productVariants',
-        render: ((productVariants) => {
-            return (
-                <>
-                    {productVariants.map((variant, index) => (
-                        <p key={index}>{variant.price}</p>
-                    ))
-                    }
-                </>
-            )
-        }),
-        width: '15%',
+        name: 'productCategory',
+        value: 0,
     },
     {
-        title: 'Kho hàng',
-        dataIndex: 'productVariants',
-        render: ((productVariants) => {
-            return (
-                <>
-                    {productVariants.map((variant, index) => (
-                        <p key={index}>{variant.quantity}</p>
-                    ))
-                    }
-                </>
-            )
-        }),
-        width: '15%',
+        name: 'soldMin',
+        value: "",
     },
     {
-        title: '',
-        dataIndex: 'productId',
-        render: ((productId) => {
-            return (
-                <Space direction="vertical">
-                    <Link to={`/seller/product/${productId}`}>Cập nhật</Link>
-                    <a href={`/product/${productId}`} target="blank">Xem trước</a>
-                </Space>
-            )
-        }),
-        width: '15%',
+        name: 'soldMax',
+        value: "",
     },
+
 ];
 
 function Products() {
 
-    const auth = useAuthUser()
-    const user = auth();
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const notification = useContext(NotificationContext);
+    const [form] = Form.useForm();
+    const userId = getUserId()
 
-    const [dataTable, setDataTable] = useState([]);
+    const [searchParams, setSearchParams] = useState({
+        userId: userId,
+        productName: "",
+        productCategory: 0,
+        soldMin: 0,
+        soldMax: 0,
+        productStatusId: 0,
+        page: 1
+    })
+    const [dataTable, setDataTable] = useState([])
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 10,
+        },
+    });
+
+    const [categories, setCategories] = useState([])
 
     useEffect(() => {
-        getAllProductsSeller(getUserId())
+        getAllCategory()
             .then((res) => {
-                setDataTable(res.data);
-                setTimeout(() => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setCategories(res.data.result)
+                }
+            })
+            .catch((err) => {
+
+            })
+    }, [])
+
+    useEffect(() => {
+        setLoading(true)
+        getProductsOfSeller(searchParams)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setDataTable(res.data.result.products)
+                    setTableParams({
+                        ...tableParams,
+                        pagination: {
+                            ...tableParams.pagination,
+                            total: res.data.result.totalProduct,
+                        },
+                    });
+                    setTimeout(() => {
+                        setLoading(false)
+                    }, 500)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
+                    notification('error', "Tham số tìm kiếm không hợp lệ!");
                     setLoading(false)
-                }, 500)
+                }
+
             })
             .catch((err) => {
 
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [searchParams])
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        setSearchParams({
+            ...searchParams,
+            page: pagination.current
+        })
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
+
+        // `dataSource` is useless since `pageSize` changed
+        if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+            setDataTable([]);
+        }
+    };
+
+    const [activeTabKey, setActiveTabKey] = useState('tab1');
+    const onTabChange = (key) => {
+        switch (key) {
+            case 'tab1':
+                setSearchParams({
+                    ...searchParams,
+                    page: 1,
+                    productStatusId: 0
+                })
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        current: 1,
+                        pageSize: 10,
+                    },
+                });
+                break;
+            case 'tab2':
+                setSearchParams({
+                    ...searchParams,
+                    page: 1,
+                    productStatusId: PRODUCT_ACTIVE
+                })
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        current: 1,
+                        pageSize: 10,
+                    },
+                });
+                break;
+            case 'tab3':
+                setSearchParams({
+                    ...searchParams,
+                    page: 1,
+                    productStatusId: PRODUCT_HIDE
+                })
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        current: 1,
+                        pageSize: 10,
+                    },
+                });
+                break;
+            case 'tab4':
+                setSearchParams({
+                    ...searchParams,
+                    page: 1,
+                    productStatusId: PRODUCT_BAN
+                })
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        current: 1,
+                        pageSize: 10,
+                    },
+                });
+                break;
+            default: return;
+        }
+        setActiveTabKey(key);
+    };
+    const contentList = {
+        tab1: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
+        tab2: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
+        tab3: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
+        tab4: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
+    };
 
 
-    return <>
+    const onFinish = (values) => {
+        var productId = values.productId === "" ? 0 : values.productId
+        var productName = values.productName;
+        var productCategory = values.productCategory
+        var soldMin = values.soldMin === "" ? 0 : values.soldMin
+        var soldMax = values.soldMax === "" ? 0 : values.soldMax
+        setSearchParams({
+            ...searchParams,
+            userId,
+            productId,
+            productName,
+            productCategory,
+            soldMin,
+            soldMax
+        })
+    };
+    const onReset = () => {
+        form.resetFields();
+        form.setFieldsValue({ productCategory: 0 });
+    };
+    return (
         <Spinning spinning={loading}>
             <Card
                 style={{
                     width: '100%',
-                    minHeight: "690px"
+                    minHeight: '200px',
+                    marginBottom: "20px"
                 }}
-                hoverable
-                title="Tất cả sản phẩm"
             >
-                <Table columns={columns} pagination={{ pageSize: 10 }} dataSource={dataTable} />
+
+                <Form
+                    form={form}
+                    onFinish={onFinish}
+                    fields={initFormValues}
+                >
+                    <Row>
+                        <Col span={12}>
+                            <Row >
+                                <Col span={6} offset={2}><label>Mã sản phẩm: </label></Col>
+                                <Col span={12}>
+                                    <Form.Item name="productId" >
+                                        <Input />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Row >
+                                <Col span={6} offset={2}><label>Tên sản phẩm: </label></Col>
+                                <Col span={12}>
+                                    <Form.Item name="productName" >
+                                        <Input />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </Col>
+                        <Col span={12}>
+                            <Row >
+                                <Col span={6} offset={2}><label>Thể loại: </label></Col>
+                                <Col span={12}>
+                                    <Form.Item name="productCategory" >
+                                        <Select >
+                                            <Select.Option value={0}>Tất cả</Select.Option>
+                                            {categories.map((category, index) => {
+                                                return (
+                                                    <>
+                                                        <Select.Option key={index} value={category.categoryId}>{category.categoryName}</Select.Option>
+                                                    </>
+                                                )
+                                            })}
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Row >
+                                <Col span={6} offset={2}><label>Doanh số</label></Col>
+                                <Col span={5}>
+                                    <Form.Item name="soldMin" >
+                                        <Input placeholder="Tối thiểu" />
+                                    </Form.Item>
+                                </Col>
+                                <Col offset={1}>-</Col>
+                                <Col offset={1} span={5}>
+                                    <Form.Item name="soldMax" >
+                                        <Input placeholder="Tối đa" />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={6} offset={2}>
+                                    <Space>
+                                        <Button type="primary" htmlType="submit">
+                                            Tìm kiếm
+                                        </Button>
+                                        <Button htmlType="button" onClick={onReset}>
+                                            Xóa
+                                        </Button>
+                                    </Space>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+
+                </Form>
+            </Card>
+            <Card
+                style={{
+                    width: '100%',
+                    minHeight: '100vh'
+                }}
+                tabList={tabList}
+                activeTabKey={activeTabKey}
+                onTabChange={onTabChange}
+            >
+
+                {contentList[activeTabKey]}
             </Card>
         </Spinning>
-    </>
+    );
 }
 
 export default Products;
