@@ -291,7 +291,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     };
     const iconStyle = {
         fontSize: '25px',
-        color: isWishList ? '#dc3545' : 'gray'
+        color: isWishList ? '#dc3545' : 'lightgray'
     };
 
     const numberRatingStarStyle = {

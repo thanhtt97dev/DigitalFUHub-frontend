@@ -38,7 +38,7 @@ const itemsFixed = [
     },
     {
         key: 'wishlist',
-        label: <Link to={"/settings/wishlist"}><HeartFilled /> Sản phẩm yêu thích</Link>,
+        label: <Link to={"/settings/wishlist"}><HeartFilled style={{ color: '#dc3545' }} /> Sản phẩm yêu thích</Link>,
         roles: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {
