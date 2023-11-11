@@ -58,7 +58,9 @@ const Message = () => {
     }, [message])
 
     useEffect(() => {
-        handleReciveNewMessage()
+        if (location.pathname !== "/chatBox") {
+            handleReciveNewMessage()
+        }
     })
 
     const handleReciveNewMessage = () => {

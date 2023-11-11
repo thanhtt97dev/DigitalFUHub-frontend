@@ -1,4 +1,4 @@
-import { apiGet, apiGetAuth, apiPost, apiPostAuth, apiPut } from '../defaultApi';
+import { apiGet, apiGetAuth, apiPost, apiPostAuth, apiPut, apiPutAuthForm } from '../defaultApi';
 
 export const login = (data, google = false) => {
     const url = google ? 'api/users/SignInGoogle' : 'api/users/signIn'
@@ -48,8 +48,8 @@ export const checkExistUsername = async (username) => {
     return await apiGetAuth(`api/users/IsExistUsername/${username}`);
 };
 
-export const editUserInfo = (id, data) => {
-    return apiPut(`api/users/EditUserInfo/${id}`, data);
+export const editUserInfo = (data) => {
+    return apiPutAuthForm(`api/users/EditUserInfo`, data);
 };
 
 export const generate2FaKey = (id) => {

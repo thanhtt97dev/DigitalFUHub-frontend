@@ -4,20 +4,21 @@ import Prices from '~/components/Cart/Prices';
 import Spinning from "~/components/Spinning";
 import classNames from 'classnames/bind';
 import styles from './Cart.module.scss';
-import { useAuthUser } from 'react-auth-kit';
-import { getCoinUser } from '~/api/user';
-import { getCartsByUserId } from '~/api/cart';
 import { Row } from 'antd';
 import { discountPrice } from '~/utils';
+import { getCoinUser } from '~/api/user';
+import { useAuthUser } from 'react-auth-kit';
+import { getCartsByUserId } from '~/api/cart';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 
+///
+const cx = classNames.bind(styles);
+///
 
 const Cart = () => {
+    /// variables
     const auth = useAuthUser();
     const user = auth();
-    const userId = user.id;
-    const cx = classNames.bind(styles);
-
     const initialTotalPrice = {
         originPrice: 0,
         discountPrice: 0,
@@ -25,7 +26,9 @@ const Cart = () => {
         totalPriceCouponDiscount: 0,
         totalPriceCoinDiscount: 0
     }
+    ///
 
+    /// states
     const [carts, setCarts] = useState([])
     const [reloadCartsFlag, setReloadCartsFlag] = useState(false)
     const [cartDetailIdSelecteds, setCartDetailIdSelecteds] = useState([]);
@@ -33,14 +36,13 @@ const Cart = () => {
     const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
     const [userCoin, setUserCoin] = useState(0);
     const [isUseCoin, setIsUseCoin] = useState(false);
-
     const [coupons, setCoupons] = useState([]);
     const [couponCodeSelecteds, setCouponCodeSelecteds] = useState([]); // object type {shopId, couponCode}
-    const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(false)
+    const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(false);
+    ///
 
 
     /// handles
-
     const loadingCartInfo = () => {
         setIsLoadingCartInfo(true);
     }
@@ -58,18 +60,24 @@ const Cart = () => {
         }
         return couponCode;
     }
-
     ///
 
 
     /// useEffects
-
     useEffect(() => {
-        getCartsByUserId(userId)
+        if (user === null || user === undefined) return;
+        loadingCartInfo();
+
+        getCartsByUserId(user.id)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
-                    setCarts(data);
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        const result = data.result;
+                        setCarts(result);
+                        unLoadingCartInfo();
+                    }
                 }
             })
             .catch((errors) => {
@@ -80,7 +88,8 @@ const Cart = () => {
     }, [reloadCartsFlag])
 
     useEffect(() => {
-        getCoinUser(userId)
+        if (user === null || user === undefined) return;
+        getCoinUser(user.id)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
@@ -165,9 +174,6 @@ const Cart = () => {
                     }
                 }
             }
-
-
-
             setTotalPrice(newTotalPrice);
         }
 
@@ -213,9 +219,8 @@ const Cart = () => {
     ///
 
 
-    /// props
+    /// data props
     const dataPropProductComponent = {
-        userId: userId,
         carts: carts,
         cartDetailIdSelecteds: cartDetailIdSelecteds,
         setCartDetailIdSelecteds: setCartDetailIdSelecteds,
@@ -230,7 +235,6 @@ const Cart = () => {
     }
 
     const dataPropPriceComponent = {
-        userId: userId,
         carts: carts,
         totalPrice: totalPrice,
         userCoin: userCoin,

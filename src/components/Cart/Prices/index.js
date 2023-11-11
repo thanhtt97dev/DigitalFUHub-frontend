@@ -7,8 +7,9 @@ import { formatPrice } from '~/utils';
 import { addOrder } from '~/api/order';
 import { deleteCart } from '~/api/cart';
 import { formatNumberToK } from '~/utils';
-import { EuroCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useAuthUser } from 'react-auth-kit';
 import { getCustomerBalance } from '~/api/user';
+import { EuroCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { Button, Col, Typography, Checkbox, Divider, Card, Space } from 'antd';
 import {
@@ -24,9 +25,8 @@ const { Title, Text } = Typography;
 const cx = classNames.bind(styles);
 
 const Prices = ({ dataPropPriceComponent }) => {
-    // distructuring props
+    /// distructuring props
     const {
-        userId,
         carts,
         totalPrice,
         userCoin,
@@ -37,7 +37,12 @@ const Prices = ({ dataPropPriceComponent }) => {
         setCartDetailIdSelecteds,
         getCouponCodeSelecteds,
     } = dataPropPriceComponent;
-    //
+    ///
+
+    /// variables
+    const auth = useAuthUser();
+    const user = auth();
+    ///
 
     /// states
     const [isOpenModalAlert, setIsOpenModalAlert] = useState(false);
@@ -92,7 +97,9 @@ const Prices = ({ dataPropPriceComponent }) => {
 
     /// useEffects
     useEffect(() => {
-        getCustomerBalance(userId)
+        if (user === null || user === undefined) return;
+
+        getCustomerBalance(user.id)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
@@ -146,6 +153,7 @@ const Prices = ({ dataPropPriceComponent }) => {
     }
 
     const handleOkConfirmationBuy = () => {
+        if (user === null || user === undefined) return;
 
         // is loading button
         loadingButtonBuy();
@@ -179,7 +187,7 @@ const Prices = ({ dataPropPriceComponent }) => {
 
 
         const finalDataOrder = {
-            userId: userId,
+            userId: user.id,
             shopProducts: shopProductRequest,
             isUseCoin: isUseCoin
         }

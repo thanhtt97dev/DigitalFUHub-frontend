@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import { Button, Divider, notification, Modal, Input, Space, Card, Typography, Col, Row, Form } from "antd";
-
-import { getUserById, checkExistUsername, editUserInfo } from "~/api/user";
-import { getUserId } from '~/utils';
-import { ExclamationCircleFilled, GooglePlusOutlined, FacebookOutlined } from "@ant-design/icons";
-
-import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user'
+import React, { useEffect, useState, useContext } from "react";
 import ModalSend2FaQrCode from "~/components/Modals/ModalSend2FaQrCode";
+import { getUserId } from '~/utils';
+import { useNavigate } from 'react-router-dom';
+import { RESPONSE_CODE_SUCCESS } from '~/constants';
+import { NotificationContext } from "~/context/UI/NotificationContext";
+import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user';
+import { getUserById, checkExistUsername, editUserInfo } from "~/api/user";
+import { ExclamationCircleFilled, GooglePlusOutlined, FacebookOutlined } from "@ant-design/icons";
+import { Button, Divider, Modal, Input, Space, Card, Typography, Col, Row, Form } from "antd";
 
 import classNames from 'classnames/bind';
 import styles from './Security.module.scss';
@@ -29,7 +29,6 @@ function Security() {
         }
     ];
     const navigate = useNavigate();
-    const [api, contextHolder] = notification.useNotification();
     const [loading, setLoading] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const userId = getUserId();
@@ -50,17 +49,14 @@ function Security() {
 
     const [form] = Form.useForm();
 
+    /// contexts
+    const notification = useContext(NotificationContext)
+    ///
+
+
     const handleTabChange = (key) => {
         setTabKey(key);
     };
-
-    const openNotification = (type, message) => {
-        api[type]({
-            message: `Thông báo`,
-            description: `${message}`
-        });
-    };
-
 
     useEffect(() => {
         if (userId === null) {
@@ -83,7 +79,7 @@ function Security() {
                 }
             })
             .catch(() => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId])
@@ -97,7 +93,7 @@ function Security() {
                 setOpenModalActivate2FA(true);
             })
             .catch(() => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
                 setTimeout(() => {
@@ -115,7 +111,7 @@ function Security() {
         activate2Fa(userId, data)
             .then((res) => {
                 setOpenModalActivate2FA(false);
-                openNotification("success", "Kích hoạt bảo mật hai lớp thành công!")
+                notification("success", "Kích hoạt bảo mật hai lớp thành công!")
                 resetVariable();
                 setUser2FaStatus(true)
             })
@@ -124,7 +120,7 @@ function Security() {
                     setmesage2FA("Mã code không hợp lệ!")
                     return;
                 }
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
                 setTimeout(() => {
@@ -148,7 +144,7 @@ function Security() {
         deactivate2Fa(userId, data)
             .then((res) => {
                 setOpenModalDeactive2FA(false)
-                openNotification("success", "Tắt bảo mật hai lớp thành công!")
+                notification("success", "Tắt bảo mật hai lớp thành công!")
                 setUser2FaStatus(false)
                 resetVariable();
             })
@@ -157,7 +153,7 @@ function Security() {
                     setmesage2FA("Mã code không hợp lệ!")
                     return;
                 }
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
                 setTimeout(() => {
@@ -268,21 +264,27 @@ function Security() {
         const username = values.username;
         const newPassword = values.newPassword;
         var bodyFormData = new FormData();
+        bodyFormData.append('userId', userId)
         bodyFormData.append('username', username)
-        bodyFormData.append('password', newPassword)
+        bodyFormData.append('password', encryptPassword(newPassword))
 
         checkExistUsername(username)
             .then((res) => {
                 if (res.data === 'Y') {
-                    openNotification("error", "Tên tài khoản đã được sử dụng, vui lòng chọn tên khác!")
+                    notification("error", "Tên tài khoản đã được sử dụng, vui lòng chọn tên khác!")
                 } else {
-                    editUserInfo(userId, { username: username, password: encryptPassword(newPassword) })
-                        .then((response) => {
-                            if (response.status === 204)
-                                openNotification("success", "Kích hoạt tài khoản và mật khẩu thành công!")
-                            const tabListFilter = tabList.filter(item => item.key !== 'tab3')
-                            setTabList(tabListFilter);
-                            setTabKey('tab2')
+                    editUserInfo(bodyFormData)
+                        .then((res) => {
+                            if (res.status === 200) {
+                                const data = res.data;
+                                const status = data.status;
+                                if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                                    notification("success", "Kích hoạt tài khoản và mật khẩu thành công!")
+                                    const tabListFilter = tabList.filter(item => item.key !== 'tab3')
+                                    setTabList(tabListFilter);
+                                    setTabKey('tab2');
+                                }
+                            }
                         })
                 }
             });
@@ -413,7 +415,6 @@ function Security() {
 
     return (
         <>
-            {contextHolder}
             <Card
                 style={{
                     width: '100%',
