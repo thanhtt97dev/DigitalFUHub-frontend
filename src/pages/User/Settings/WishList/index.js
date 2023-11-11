@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Card, Typography, Space, Image, Button, Checkbox } from 'antd';
-import { useAuthUser } from 'react-auth-kit';
-import { getWishListByUserId, removeWishList, removeWishListSelecteds } from '~/api/wishList';
-import { ShoppingCartOutlined, DeleteOutlined } from '@ant-design/icons';
+import classNames from 'classnames/bind';
 import ModalConfirmation from "~/components/Modals/ModalConfirmation";
+import styles from '~/pages/User/Settings/WishList/WishList.module.scss';
+import { useAuthUser } from 'react-auth-kit';
+import { RESPONSE_CODE_SUCCESS, PRODUCT_BAN } from '~/constants';
+import { formatPrice, discountPrice } from '~/utils';
 import { Link, useNavigate } from 'react-router-dom';
 import { NotificationContext } from "~/context/UI/NotificationContext";
-import { RESPONSE_CODE_SUCCESS } from '~/constants';
-import { formatPrice, discountPrice } from '~/utils';
-import classNames from 'classnames/bind';
-import styles from '~/pages/User/Settings/WishList/WishList.module.scss';
+import { Card, Typography, Space, Image, Button, Checkbox } from 'antd';
+import { ShoppingCartOutlined, DeleteOutlined } from '@ant-design/icons';
+import { getWishListByUserId, removeWishList, removeWishListSelecteds } from '~/api/wishList';
 
 ///
 const { Title, Text } = Typography;
@@ -184,6 +184,9 @@ const WishList = () => {
     }
     const styleContainerImage = { width: '100%', textAlign: 'center' }
     const styleContainer = { width: '100%', minHeight: '100vh' }
+    const disableCardStyle = { padding: 10, opacity: 0.4, pointerEvents: 'none' };
+    const unDisableCardStyle = { opacity: 1, pointerEvents: 'auto' };
+    const paddingCartBodyStyle = { padding: 10 }
     ///
 
     return (
@@ -200,9 +203,12 @@ const WishList = () => {
                 {
                     <Space size={[10, 16]} wrap>
                         {products.map((product, index) => (
-                            <Card key={index} style={styleCardItem} bodyStyle={{ padding: 10, }}>
+                            <Card key={index} style={styleCardItem} bodyStyle={product.productStatusId === PRODUCT_BAN ? disableCardStyle : paddingCartBodyStyle}>
                                 <div style={styleContainerImage} className={cx('margin-bottom')}>
                                     <Image style={styleImage} src={product.thumbnail} />
+                                    {
+                                        product.productStatusId === PRODUCT_BAN ? <div className={cx('circle')}> Sản phẩm này đã bị BAN</div> : <></>
+                                    }
                                 </div>
                                 <Link to={'/product/' + product.productId} className={cx('flex-item-center')}><Title level={4}>{product.productName}</Title></Link>
                                 <Space align="center" className={cx('flex-item-center', 'margin-bottom')}>
@@ -215,8 +221,8 @@ const WishList = () => {
                                         : (product.productVariants.length === 1 ? <Text strong>{formatPrice(discountPrice(product.productVariants[0].price, product.discount))}</Text> : <></>)}
                                 </div>
 
-                                {isEdit ? (<div className={cx('flex-item-center')}><Checkbox value={product.productId} /></div>) : (
-                                    <Space align="center" size={30} className={cx('flex-item-center', 'margin-bottom')}>
+                                {isEdit ? (<div className={cx('flex-item-center')} style={unDisableCardStyle}><Checkbox value={product.productId} /></div>) : (
+                                    <Space style={unDisableCardStyle} align="center" size={30} className={cx('flex-item-center', 'margin-bottom')}>
                                         <Button type="primary" shape="circle" icon={<ShoppingCartOutlined />} onClick={() => handleAddProductToCart(product.productId)} />
                                         <Button type="primary" danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleRemoveWishList(product.productId)} />
                                     </Space>
