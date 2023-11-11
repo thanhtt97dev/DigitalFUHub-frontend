@@ -240,7 +240,7 @@ function HistoryWithdraw() {
                     </Form>
                     <ModalRequestWithdraw userId={user.id} callBack={() => handleSearchDataTable()} style={{ marginBottom: "5px" }} />
 
-                    <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} />
+                    <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} rowKey={(record) => record.withdrawTransactionId} />
                 </Card>
             </Spinning>
         </>
