@@ -48,7 +48,7 @@ const columns = [
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M7.71842712,13.881728 L2.23834957,8.40165043 C0.773883476,6.93718434 0.773883476,4.56281566 2.23834957,3.09834957 C3.65231683,1.68438231 5.9145167,1.63562482 7.38698276,2.9520771 L8.072,3.628 L8.60244214,3.09834957 C10.0669082,1.63388348 12.4412769,1.63388348 13.905743,3.09834957 C15.3702091,4.56281566 15.3702091,6.93718434 13.905743,8.40165043 L8.42553789,13.881732 C8.23027112,14.0769864 7.9136917,14.0769846 7.71842712,13.881728 Z M13.1986362,7.69454365 C14.272578,6.62060185 14.272578,4.87939815 13.1986362,3.80545635 C12.1246944,2.73151455 10.3834907,2.73151455 9.30902064,3.80598425 L8.42760306,4.68608625 C8.23313326,4.8802658 7.91840125,4.88109992 7.72290493,4.68795389 L6.72047402,3.69757431 L6.72047402,3.69757431 C5.637171,2.72905166 3.97820217,2.77271053 2.94545635,3.80545635 C1.87151455,4.87939815 1.87151455,6.62060185 2.94545635,7.69454365 L8.07198849,12.8210758 L13.1986362,7.69454365 Z"></path></svg>
                                         </i>
                                     </Tooltip>
-                                    <span className={cx('text-gray')}>{record.likedCount}</span>
+                                    <span className={cx('text-gray')}>{record.likeCount}</span>
                                 </Row>
                             </Col>
                         </Row>
@@ -57,7 +57,6 @@ const columns = [
             )
         },
         width: '30%',
-        fixed: 'left',
     },
     {
         title: 'Phân loại hàng',
@@ -84,13 +83,26 @@ const columns = [
         width: '20%',
     },
     {
+        title: 'Kho hàng',
+        dataIndex: 'productVariants',
+        render: (productVariants, record) => {
+            return (
+                productVariants.map(element => {
+                    return <Row>{element.stock}</Row>
+                })
+            )
+        },
+        width: '15%',
+    },
+    {
         title: 'Doanh số',
         dataIndex: 'soldCount',
-        width: '10%',
+        width: '15%',
     },
     {
         title: '',
         dataIndex: 'productId',
+        fixed: 'right',
         render: (productId) => {
             return (
                 <Space direction="vertical">
@@ -114,6 +126,9 @@ function TableProduct({ data, tableParams, handleTableChange }) {
                 dataSource={data}
                 pagination={tableParams.pagination}
                 onChange={handleTableChange}
+                scroll={{
+                    x: 1100,
+                }}
             />
         </>
     );
