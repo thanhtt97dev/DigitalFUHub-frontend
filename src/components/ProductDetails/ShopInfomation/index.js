@@ -4,10 +4,11 @@ import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 import fptImage from '~/assets/images/fpt-logo.jpg';
 import { addConversation } from '~/api/chat';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuthUser } from 'react-auth-kit';
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { formatNumberToK, getVietnamCurrentTime } from '~/utils';
-import { MessageOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
+import { MessageOutlined, ShopOutlined } from '@ant-design/icons';
 import { Col, Row, Button, Skeleton, Avatar, Card, Space, Typography } from 'antd';
 
 
@@ -16,7 +17,7 @@ require('moment/locale/vi');
 const moment = require('moment');
 const cx = classNames.bind(styles);
 
-const ShopInfomations = ({ product, userId }) => {
+const ShopInfomations = ({ product }) => {
 
     /// navigates
     const navigate = useNavigate();
@@ -32,16 +33,20 @@ const ShopInfomations = ({ product, userId }) => {
     }
     ///
 
+    /// variables
+    const auth = useAuthUser();
+    const user = auth();
+    ///
+
     /// handles
     const handleSendMessage = () => {
-        if (userId === undefined) {
-            navigate('/login')
-            return;
+        if (user === undefined || user === null) {
+            return navigate('/login');
         } else {
 
             const dataAddConversation = {
                 dateCreate: getVietnamCurrentTime(),
-                UserId: userId,
+                UserId: user.id,
                 RecipientIds: [product.shop.shopId]
             }
             addConversation(dataAddConversation)
@@ -91,7 +96,7 @@ const ShopInfomations = ({ product, userId }) => {
                                         })()}
                                         <Space direction='horizontal'>
                                             <Button icon={<ShopOutlined />} type="primary" danger ghost>Xem Shop</Button>
-                                            <Button disabled={userId !== product.shop.shopId ? false : true} className={cx('margin-element')} icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage} style={{ marginLeft: 10 }}>
+                                            <Button disabled={user?.id !== product.shop.shopId ? false : true} className={cx('margin-element')} icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage} style={{ marginLeft: 10 }}>
                                                 Chat ngay
                                             </Button>
 

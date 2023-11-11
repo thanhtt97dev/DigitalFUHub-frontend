@@ -6,7 +6,6 @@ import ProductFeedback from '~/components/ProductDetails/ProductFeedback';
 import { getProductById } from '~/api/product';
 import { getFeedbackByProductId } from '~/api/feedback';
 import { useNavigate, useParams } from 'react-router-dom';
-import { notification } from 'antd';
 import { RESPONSE_CODE_PRODUCT_ACTIVE, RESPONSE_CODE_PRODUCT_BAN, RESPONSE_CODE_PRODUCT_REMOVE, RESPONSE_CODE_PRODUCT_HIDE, RESPONSE_CODE_DATA_NOT_FOUND } from '~/constants';
 
 const ProductDetail = () => {
@@ -17,7 +16,6 @@ const ProductDetail = () => {
     const [productVariants, setProductVariants] = useState([])
     const [productVariantsSelected, setProductVariantsSelected] = useState(null)
     const [feedback, setFeedback] = useState([])
-    const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate()
     ///
 
@@ -32,12 +30,6 @@ const ProductDetail = () => {
 
 
     /// handles
-    const openNotification = (type, message) => {
-        api[type]({
-            message: `Thông báo`,
-            description: `${message}`
-        });
-    };
 
     const handleSelectProductVariant = (item) => {
         if (productVariantsSelected === item) {
@@ -108,7 +100,6 @@ const ProductDetail = () => {
                 handleSelectProductVariant={handleSelectProductVariant}
                 productVariantsSelected={productVariantsSelected}
                 product={product}
-                openNotification={openNotification}
                 scrollToStartFeedback={scrollToStartFeedback} />
             <ShopInfomations product={product} />
             <ProductDescription product={product} />
