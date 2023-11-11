@@ -217,7 +217,7 @@ function HistoryDeposit() {
                         </Form.Item>
                     </Form>
                     <ModalRequestDeposit userId={user.id} style={{ marginBottom: "5px" }} text={"+ Nạp tiền"} />
-                    <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} />
+                    <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} rowKey={(record) => record.depositTransactionId} />
                 </Card>
             </Spinning>
         </>
