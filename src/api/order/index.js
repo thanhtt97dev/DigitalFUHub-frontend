@@ -1,4 +1,4 @@
-import { apiPostAuth, apiGetAuth } from '../defaultApi';
+import { apiPostAuth, apiGetAuth, apiPostFile } from '../defaultApi';
 
 export const addOrder = (data) => {
     return apiPostAuth(`api/Orders/Customer/AddOrder`, data);
@@ -28,3 +28,7 @@ export const updateRefundOrder = (data) => {
 export const updateDisputeOrder = (data) => {
     return apiPostAuth(`api/Orders/Seller/Dispute`, data);
 };
+
+export const exportOrdersToExcel = (data) => {
+    return apiPostAuth(`api/Orders/Seller/Report`, data);
+}

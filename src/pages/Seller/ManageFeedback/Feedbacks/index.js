@@ -6,6 +6,7 @@ import { ParseDateTime, getUserId } from "~/utils";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { getListFeedbackSeller } from "~/api/feedback";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { SearchOutlined } from "@ant-design/icons";
 
 const { Title, Text, Paragraph } = Typography
 function Feedbacks() {
@@ -87,13 +88,13 @@ function Feedbacks() {
                     fields={initFormValues}
                 >
                     <Row>
-                        <Col span={3} offset={1}><label>Mã đơn:  </label></Col>
+                        <Col span={3} offset={1}><label>Mã đơn  </label></Col>
                         <Col span={6}>
                             <Form.Item name="orderId" >
                                 <Input placeholder="Mã đơn hàng" />
                             </Form.Item>
                         </Col>
-                        <Col span={3} offset={1}><label>Người dùng:  </label></Col>
+                        <Col span={3} offset={1}><label>Người dùng  </label></Col>
                         <Col span={6} style={{ marginLeft: '-1.6em' }}>
                             <Form.Item name="username" >
                                 <Input placeholder="Tên đăng nhập" />
@@ -102,7 +103,7 @@ function Feedbacks() {
 
                     </Row>
                     <Row>
-                        <Col span={3} offset={1}><label>Thời gian đánh giá: </label></Col>
+                        <Col span={3} offset={1}><label>Thời gian đánh giá </label></Col>
                         <Col span={6}>
                             <Form.Item name="fromDate" >
                                 <DatePicker locale={locale}
@@ -111,7 +112,7 @@ function Feedbacks() {
                                     placement={"bottomLeft"} />
                             </Form.Item>
                         </Col>
-                        <Col span={3} offset={1}><label>Điểm đánh giá: </label></Col>
+                        <Col span={3} offset={1}><label>Điểm đánh giá </label></Col>
                         <Col span={6} style={{ marginLeft: '-1.6em' }}>
                             <Form.Item name="rate" >
                                 <Select >
@@ -126,7 +127,7 @@ function Feedbacks() {
                         </Col>
                         <Col offset={1}>
                             <Space>
-                                <Button type="primary" htmlType="submit">
+                                <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
                                     Tìm kiếm
                                 </Button>
                             </Space>

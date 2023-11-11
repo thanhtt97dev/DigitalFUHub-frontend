@@ -16,7 +16,7 @@ import {
     RESPONSE_CODE_SUCCESS,
 } from "~/constants";
 import Column from "antd/es/table/Column";
-import { PlusOutlined, ShopOutlined, ShoppingOutlined } from "@ant-design/icons";
+import { PlusOutlined, SearchOutlined, ShopOutlined, ShoppingOutlined } from "@ant-design/icons";
 import { removeCouponSeller, getCouponsSeller, updateStatusCouponSeller, updateCouponFinish } from "~/api/coupon";
 import styles from "./Coupon.module.scss"
 import classNames from "classnames/bind";
@@ -254,7 +254,7 @@ function Coupons() {
                             <Col span={3} offset={1}><label>Mã giảm giá</label></Col>
                             <Col span={6}>
                                 <Form.Item name="couponCode" >
-                                    <Input />
+                                    <Input placeholder="Mã giảm giá" />
                                 </Form.Item>
                             </Col>
                             <Col span={2} offset={1}><label>Trạng thái</label></Col>
@@ -293,7 +293,7 @@ function Coupons() {
                             </Col>
                             <Col offset={1}>
                                 <Space>
-                                    <Button type="primary" htmlType="submit" >
+                                    <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
                                         Tìm kiếm
                                     </Button>
                                 </Space>

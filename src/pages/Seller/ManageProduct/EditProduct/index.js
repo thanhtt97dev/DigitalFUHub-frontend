@@ -73,7 +73,7 @@ function EditProduct() {
     const [productThumbnailSrc, setProductThumbnailSrc] = useState([]);
     const [productImagesSrc, setProductImagesSrc] = useState([]);
     const [productCategory, setProductCategory] = useState(1);
-    const [productDiscount, setProductDiscount] = useState(0);
+    // const [productDiscount, setProductDiscount] = useState(0);
     const [productVariants, setProductVariants] = useState([])
     const [isActiveProduct, setIsActiveProduct] = useState()
     const [stateInit, setStateInit] = useState(true)
@@ -86,16 +86,16 @@ function EditProduct() {
         getProductSellerById(getUserId(), productId)
             .then(async (res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    const { productName, description, categoryId, discount, thumbnail, productMedias, tags, productVariants, productStatusId } = res.data.result;
+                    const { productName, description, categoryId, thumbnail, productMedias, tags, productVariants, productStatusId } = res.data.result;
                     setProductName(productName);
                     setProductDescription(description);
                     setProductCategory(parseInt(categoryId));
-                    setProductDiscount(parseInt(discount));
+                    // setProductDiscount(parseInt(discount));
                     setProductThumbnailSrc([{ src: thumbnail, file: null }]);
                     setProductImagesSrc(productMedias.map(v => ({ src: v.url, file: null })));
                     setTags(tags.map((value) => value.tagName));
                     setIsActiveProduct(productStatusId === PRODUCT_ACTIVE ? true : false)
-                    setProductVariants(productVariants.map((value) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, data: value.assetInformations, file: undefined })));
+                    setProductVariants(productVariants.map((value) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, discount: value.discount, data: value.assetInformations, file: undefined })));
                 }
             })
             .catch((err) => {
@@ -254,6 +254,7 @@ function EditProduct() {
             if (variant.data === undefined && variant.file !== undefined) {
                 formData.append('productVariantNamesAddNew', values.productVariants[index].nameVariant);
                 formData.append('productVariantPricesAddNew', values.productVariants[index].price);
+                formData.append('productVariantDiscountsAddNew', values.productVariants[index].discount);
                 formData.append('assetInformationFilesAddNew', variant.file.originFileObj);
             }
             // update variant
@@ -261,6 +262,7 @@ function EditProduct() {
                 formData.append('productVariantIdsUpdate', variant.id);
                 formData.append('productVariantNamesUpdate', values.productVariants[index].nameVariant);
                 formData.append('productVariantPricesUpdate', values.productVariants[index].price);
+                formData.append('productVariantDiscountsUpdate', values.productVariants[index].discount);
                 formData.append('assetInformationFilesUpdate', variant.file ? variant.file.originFileObj : null);
             }
         })
@@ -320,10 +322,10 @@ function EditProduct() {
                                 name: ["nameProduct"],
                                 value: productName,
                             },
-                            {
-                                name: ["discount"],
-                                value: productDiscount,
-                            },
+                            // {
+                            //     name: ["discount"],
+                            //     value: productDiscount,
+                            // },
                             {
                                 name: ["category"],
                                 value: productCategory,
@@ -495,7 +497,7 @@ function EditProduct() {
 
                         </Form.Item>
 
-                        <Form.Item name='discount' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Giảm giá <Tooltip title="Giảm giá của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
+                        {/* <Form.Item name='discount' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Giảm giá <Tooltip title="Giảm giá của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
                                     required: true,
@@ -503,7 +505,7 @@ function EditProduct() {
                                 }]}
                         >
                             <InputNumber style={{ width: '100%' }} placeholder='giảm giá' addonAfter="%" min={0} max={100} />
-                        </Form.Item>
+                        </Form.Item> */}
                         <Form.Item name='category' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Danh mục <Tooltip title="Danh mục của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
@@ -578,8 +580,15 @@ function EditProduct() {
                                                     rules={[
                                                         (getFieldValue) => ({
                                                             validator(_, value) {
-                                                                if (value) {
-                                                                    return Promise.resolve();
+                                                                if (value !== null || value !== undefined) {
+                                                                    if (value < 1000) {
+                                                                        return Promise.reject(new Error('Giá loại sản phẩm tối thiểu là 1.000đ.'));
+                                                                    } else if (value > 100000000) {
+                                                                        return Promise.reject(new Error('Giá loại sản phẩm tối đa là 100.000.000đ.'));
+                                                                    }
+                                                                    else {
+                                                                        return Promise.resolve();
+                                                                    }
                                                                 }
                                                                 return Promise.reject(new Error('Giá loại sản phẩm không để trống.'));
                                                             },
@@ -587,7 +596,31 @@ function EditProduct() {
                                                     ]}
                                                     initialValue={productVariants[name]?.price}
                                                 >
-                                                    <InputNumber style={{ width: '100%' }} min={0} addonAfter="VNĐ" placeholder="Giá loại sản phẩm" />
+                                                    <InputNumber style={{ width: '100%' }} min={0} addonAfter="đ" placeholder="Giá loại sản phẩm" />
+                                                </Form.Item>
+                                                <Form.Item
+                                                    {...restField}
+                                                    name={[name, 'discount']}
+                                                    initialValue={productVariants[name]?.discount}
+                                                    rules={[
+                                                        (getFieldValue) => ({
+                                                            validator(_, value) {
+                                                                if (value !== null || value !== undefined) {
+                                                                    if (value < 0) {
+                                                                        return Promise.reject(new Error('Phần trăm giảm giá tối thiểu là 0%.'));
+                                                                    } else if (value > 50) {
+                                                                        return Promise.reject(new Error('Phần trăm giảm giá tối đa là 50%.'));
+                                                                    }
+                                                                    else {
+                                                                        return Promise.resolve();
+                                                                    }
+                                                                }
+                                                                return Promise.reject(new Error('Phần trăm giảm giá sản phẩm không để trống.'));
+                                                            },
+                                                        }),
+                                                    ]}
+                                                >
+                                                    <InputNumber style={{ width: '100%' }} min={0} addonAfter="%" placeholder="Phần trăm giảm giá" />
                                                 </Form.Item>
                                                 <Form.Item
                                                     {...restField}

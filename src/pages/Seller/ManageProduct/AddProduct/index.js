@@ -214,6 +214,7 @@ function AddProduct() {
         values.productVariants.forEach((value, index) => {
             formData.append(`productVariantNames`, value.typeProd);
             formData.append(`productVariantPrices`, value.priceProd);
+            formData.append(`productVariantDiscounts`, value.discount);
             formData.append(`assetInformationFiles`, excelFileList[index].originFileObj);
 
         });
@@ -225,7 +226,7 @@ function AddProduct() {
         formData.append('userId', getUserId());
         formData.append('description', descriptionValue);
         formData.append('category', values.category);
-        formData.append('discount', values.discount);
+        // formData.append('discount', values.discount);
         formData.append('thumbnailFile', values.thumbnailProduct.file.originFileObj);
         addProductSeller(formData)
             .then((res) => {
@@ -386,7 +387,7 @@ function AddProduct() {
                                 </div> : null}
                             </Upload>
                         </Form.Item>
-                        <Form.Item name='discount' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Giảm giá <Tooltip title="Phần trăm giảm giá sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
+                        {/* <Form.Item name='discount' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Giảm giá <Tooltip title="Phần trăm giảm giá sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
                                     required: true,
@@ -394,7 +395,7 @@ function AddProduct() {
                                 }]}
                         >
                             <InputNumber style={{ width: '100%' }} placeholder='Giảm giá' addonAfter="%" min={0} max={100} />
-                        </Form.Item>
+                        </Form.Item> */}
                         <Form.Item name='category' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Danh mục <Tooltip title="Danh mục của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
@@ -455,7 +456,7 @@ function AddProduct() {
                                                                 if (data.trim()) {
                                                                     return Promise.resolve();
                                                                 }
-                                                                return Promise.reject(new Error('Loại sản phẩm không để trống.'));
+                                                                return Promise.reject(new Error('Tên loại sản phẩm không để trống.'));
                                                             },
                                                         }),
                                                     ]}
@@ -468,15 +469,47 @@ function AddProduct() {
                                                     rules={[
                                                         (getFieldValue) => ({
                                                             validator(_, value) {
-                                                                if (value) {
-                                                                    return Promise.resolve();
+                                                                if (value !== null || value !== undefined) {
+                                                                    if (value < 1000) {
+                                                                        return Promise.reject(new Error('Giá loại sản phẩm tối thiểu là 1000đ.'));
+                                                                    } else if (value > 100000000) {
+                                                                        return Promise.reject(new Error('Giá loại sản phẩm tối đa là 100.000.000đ.'));
+                                                                    }
+                                                                    else {
+                                                                        return Promise.resolve();
+                                                                    }
+                                                                } else {
+                                                                    return Promise.reject(new Error('Giá loại sản phẩm không để trống.'));
                                                                 }
-                                                                return Promise.reject(new Error('Giá loại sản phẩm không để trống.'));
                                                             },
                                                         }),
                                                     ]}
                                                 >
-                                                    <InputNumber style={{ width: '100%' }} min={0} addonAfter="VNĐ" placeholder="Giá loại sản phẩm" />
+                                                    <InputNumber style={{ width: '100%' }} min={0} addonAfter="đ" placeholder="Giá loại sản phẩm" />
+                                                </Form.Item>
+                                                <Form.Item
+                                                    {...restField}
+                                                    name={[name, 'discount']}
+                                                    rules={[
+                                                        (getFieldValue) => ({
+                                                            validator(_, value) {
+                                                                if (value !== null || value !== undefined) {
+                                                                    if (value < 0) {
+                                                                        return Promise.reject(new Error('Phần trăm giảm giá tối thiểu là 0%.'));
+                                                                    } else if (value > 50) {
+                                                                        return Promise.reject(new Error('Phần trăm giảm giá tối đa là 50%.'));
+                                                                    }
+                                                                    else {
+                                                                        return Promise.resolve();
+                                                                    }
+                                                                } else {
+                                                                    return Promise.reject(new Error('Phần trăm giảm giá sản phẩm không để trống.'));
+                                                                }
+                                                            },
+                                                        }),
+                                                    ]}
+                                                >
+                                                    <InputNumber style={{ width: '100%' }} min={0} addonAfter="%" placeholder="Phần trăm giảm giá" />
                                                 </Form.Item>
                                                 <Form.Item
                                                     {...restField}

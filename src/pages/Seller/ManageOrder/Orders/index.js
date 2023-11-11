@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, Select, Row, Col } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { Link } from "react-router-dom";
-
-import { getOrdersSeller } from '~/api/order'
+import classNames from "classnames/bind";
+import styles from './Order.module.scss'
+import { exportOrdersToExcel, getOrdersSeller } from '~/api/order'
 import Spinning from "~/components/Spinning";
 import { formatPrice, getUserId, ParseDateTime } from '~/utils/index'
 import { NotificationContext } from "~/context/UI/NotificationContext";
@@ -19,9 +20,23 @@ import {
     ORDER_SELLER_REFUNDED
 } from "~/constants";
 import Column from "antd/es/table/Column";
+import { FileExcelOutlined, SearchOutlined } from "@ant-design/icons";
 
+const cx = classNames.bind(styles);
 const { RangePicker } = DatePicker;
+function base64ToBlob(base64String, contentType) {
+    contentType = contentType || '';
+    const byteCharacters = atob(base64String);
+    const byteNumbers = new Array(byteCharacters.length);
 
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: contentType });
+    return blob;
+}
 function Orders() {
     const notification = useContext(NotificationContext)
     const [loading, setLoading] = useState(true)
@@ -100,6 +115,33 @@ function Orders() {
             })
         }
     };
+    const handleExportExcel = () => {
+        const data = {
+            userId: getUserId(),
+            orderId: searchData.orderId,
+            username: searchData.username,
+            fromDate: searchData.fromDate,
+            toDate: searchData.toDate,
+            status: searchData.status
+        }
+        exportOrdersToExcel(data)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    const blob = base64ToBlob(res.data.result.fileContents, res.data.result.contentType);
+                    let link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = res.data.result.fileDownloadName;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                    link.remove();
+                } else {
+                    notification("error", "Vui lòng kiểm tra lại")
+                }
+            })
+            .catch((err) => {
+                notification("error", "Đã có lỗi xảy ra")
+            })
+    }
     return (
         <>
             <Spinning spinning={loading}>
@@ -116,22 +158,22 @@ function Orders() {
                         fields={initFormValues}
                     >
                         <Row>
-                            <Col span={3} offset={1}><label>Mã đơn: </label></Col>
+                            <Col span={3} offset={1}><label>Mã đơn hàng </label></Col>
                             <Col span={6}>
                                 <Form.Item name="orderId" >
-                                    <Input />
+                                    <Input placeholder="Mã đơn hàng" />
                                 </Form.Item>
                             </Col>
-                            <Col span={2} offset={1}><label>Người mua: </label></Col>
+                            <Col span={2} offset={1}><label>Người mua </label></Col>
                             <Col span={6}>
                                 <Form.Item name="username" >
-                                    <Input />
+                                    <Input placeholder="Tên đăng nhập" />
                                 </Form.Item>
                             </Col>
                         </Row>
 
                         <Row>
-                            <Col span={3} offset={1}><label>Thời gian đơn hàng: </label></Col>
+                            <Col span={3} offset={1}><label>Thời gian đơn hàng </label></Col>
                             <Col span={6}>
                                 <Form.Item name="date" >
                                     <RangePicker locale={locale}
@@ -139,7 +181,7 @@ function Orders() {
                                         placement={"bottomLeft"} />
                                 </Form.Item>
                             </Col>
-                            <Col span={2} offset={1}><label>Trạng thái: </label></Col>
+                            <Col span={2} offset={1}><label>Trạng thái </label></Col>
                             <Col span={6}>
                                 <Form.Item name="status" >
                                     <Select >
@@ -156,13 +198,20 @@ function Orders() {
                             </Col>
                             <Col offset={1}>
                                 <Space>
-                                    <Button type="primary" htmlType="submit">
+                                    <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
                                         Tìm kiếm
                                     </Button>
                                 </Space>
                             </Col>
                         </Row>
                     </Form>
+                    {totalItems > 0 && <Row justify="end" style={{ marginBottom: '1em' }}>
+                        <Col>
+                            <Button className={cx('btn-export-excel')} onClick={handleExportExcel} colorBgContainer icon={<FileExcelOutlined />} >
+                                Xuất báo cáo
+                            </Button>
+                        </Col>
+                    </Row>}
                     <Table
                         pagination={{
                             current: page,
