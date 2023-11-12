@@ -160,6 +160,7 @@ const ReportProduct = ({ isOpenReasons, setIsOpenReasons, productId }) => {
                             onFinish={onFinishDescription}
                         >
                             <Form.Item name='description' rules={[
+                                { required: true, message: 'Vui lòng nhập mô tả tố cáo.' },
                                 { validator: validateDescription }
                             ]}>
                                 <TextArea rows={4} placeholder="Mô tả tố cáo (Vui lòng nhập từ 10-50 ký tự)" />
