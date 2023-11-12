@@ -194,3 +194,20 @@
     line-height: 1;
     white-space: nowrap;
 }
+
+.item-reason {
+    color: black;
+    transition: color 0.3s;
+}
+
+.item-reason:hover {
+    color: #ee4d2d;
+    cursor: pointer;
+}
+
+.text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+}
