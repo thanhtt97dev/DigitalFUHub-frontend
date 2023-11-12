@@ -6,7 +6,7 @@ import { addProductToCart } from '~/api/cart';
 import { NotificationContext } from '~/context/UI/NotificationContext';
 import { useAuthUser } from 'react-auth-kit';
 import { isProductWishList, addWishList, removeWishList } from '~/api/wishList';
-import { formatPrice } from '~/utils';
+import { discountPrice, formatPrice } from '~/utils';
 import { useNavigate } from 'react-router-dom';
 import ModalAlert from '~/components/Modals/ModalAlert';
 import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS, PRODUCT_BAN, RESPONSE_CODE_SUCCESS } from '~/constants';
@@ -19,7 +19,33 @@ const { Title, Text } = Typography;
 require('moment/locale/vi');
 ///
 
-const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, openNotification, scrollToStartFeedback }) => {
+/// styles
+const buttonStyle = {
+    background: 'white',
+    cursor: 'pointer',
+};
+
+const numberRatingStarStyle = {
+    color: '#ee4d2d',
+    fontSize: 19,
+    borderBottom: '1px solid #ee4d2d'
+}
+
+const ratingStarStyle = {
+    color: '#ee4d2d',
+    fontSize: 19,
+    borderBottom: '1px solid white'
+}
+const numberFeedbackProductStyle = { fontSize: 19, borderBottom: '1px solid black' }
+const feedbackProductStyle = { fontSize: 16 }
+const spaceRatingStarStyle = { paddingRight: 25, borderRight: '1px solid rgb(232, 232, 232)', cursor: 'pointer' }
+const spaceFeedbackStyle = { paddingLeft: 25, cursor: 'pointer', marginBottom: 30 }
+const styleSpacePrice = { backgroundColor: '#fafafa', width: '100%', height: '13vh', padding: 15, marginBottom: 20 }
+const styleOriginPrice = { fontSize: '1rem', }
+const styleDiscountPrice = { color: '#ee4d2d', fontSize: '1.875rem', fontWeight: 500 }
+///
+
+const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, scrollToStartFeedback }) => {
 
     /// states
     const [quantity, setQuantity] = useState(1);
@@ -29,6 +55,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     const [isLoadingButtonBuyNow, setIsLoadingButtonBuyNow] = useState(false);
     const [isLoadingButtonAddToCart, setIsLoadingButtonAddToCart] = useState(false);
     const [isWishList, setIsWishList] = useState(false);
+    const [productVariantDefault, setProductVariantDefault] = useState({});
     ///
 
     /// variables
@@ -36,12 +63,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     const user = auth();
     ///
 
-    /// variables
-    let minPrice = 0
-    let maxPrice = 0
-    let minPriceDis = 0
-    let maxPriceDis = 0
-    ///
 
     /// contexts
     const notification = useContext(NotificationContext)
@@ -239,11 +260,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         return formattedPrice;
     }
 
-    const discountPrice = (price, discount) => {
-        const result = price * discount / 100
-        return (price - result)
-    }
-
     const rangePrice = (productVariants) => {
         const prices = productVariants?.map(variant => variant.price);
         return [Math.min(...prices), Math.max(...prices)]
@@ -258,6 +274,17 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     useEffect(() => {
         setQuantity(1)
     }, [handleSelectProductVariant]);
+
+    // get product variant hav price minimum
+    useEffect(() => {
+        if (productVariants.length === 0) return;
+        const productVariantPriceMinimum = productVariants.reduce((min, product) => {
+            return discountPrice(product.price, product.discount) < discountPrice(min.price, min.discount) ? product : min;
+        }, productVariants[0]);
+
+        setProductVariantDefault(productVariantPriceMinimum);
+
+    }, [productVariants]);
 
     // wish list
     useEffect(() => {
@@ -285,49 +312,11 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     ///
 
     /// styles
-    const buttonStyle = {
-        background: 'white',
-        cursor: 'pointer',
-    };
     const iconStyle = {
         fontSize: '25px',
         color: isWishList ? '#dc3545' : 'lightgray'
     };
-
-    const numberRatingStarStyle = {
-        color: '#ee4d2d',
-        fontSize: 19,
-        borderBottom: '1px solid #ee4d2d'
-    }
-
-    const ratingStarStyle = {
-        color: '#ee4d2d',
-        fontSize: 19,
-        borderBottom: '1px solid white'
-    }
-
-    const numberFeedbackProductStyle = {
-        fontSize: 19,
-        borderBottom: '1px solid black'
-    }
-
-    const feedbackProductStyle = {
-        fontSize: 16,
-    }
-
-    const spaceRatingStarStyle = { paddingRight: 25, borderRight: '1px solid rgb(232, 232, 232)', cursor: 'pointer' }
-    const spaceFeedbackStyle = { paddingLeft: 25, cursor: 'pointer' }
     ///
-
-    if (product) {
-        minPrice = rangePrice(product.productVariants)[0];
-        maxPrice = rangePrice(product.productVariants)[1];
-        minPriceDis = discountPrice(minPrice, product.discount);
-        maxPriceDis = discountPrice(maxPrice, product.discount);
-    }
-
-
-
 
     return (
         <Card className={disableProduct() ? cx('margin-bottom', 'opacity-disabled') : cx('margin-bottom')}>
@@ -350,37 +339,11 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                 <Text style={numberFeedbackProductStyle}>{product.numberFeedback}</Text>
                                 <Text style={feedbackProductStyle} type="secondary">Đánh giá</Text>
                             </Space>
-                            <Divider />
-                            <div className={cx('space-div-flex')}>
-                                {productVariantsSelected ? (
-                                    <Title level={4}><PriceFormat price={discountPrice(productVariantsSelected.price, product.discount)} /></Title>
-                                ) : (
-                                    <>
-                                        {
-                                            product.productVariants.length > 1 ? (<Title level={4}>{<PriceFormat price={minPriceDis} />} - {<PriceFormat price={maxPriceDis} />}</Title>)
-                                                : (product.productVariants.length === 1 ? <Title level={4}>{<PriceFormat price={discountPrice(product.productVariants[0].price, product.discount)} />}</Title> : <></>)
-                                        }
-                                    </>
-                                )}
-                            </div>
-                            <div
-                                className={cx('space-div-flex')}>
-                                {productVariantsSelected ? (
-                                    <Text delete strong type="secondary">{<PriceFormat price={productVariantsSelected.price} />}</Text>
-                                ) : (
-                                    <>
-                                        {
-                                            product.productVariants.length > 1 ? (<Text delete strong type="secondary">
-                                                {<PriceFormat price={minPrice} />} - {<PriceFormat price={maxPrice} />}
-                                            </Text>)
-                                                : (product.productVariants.length === 1 ? <Text delete strong type="secondary">{<PriceFormat price={product.productVariants[0].price} />}</Text> : <></>)
-                                        }
-                                    </>
-                                )}
-                                <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
-                            </div>
-
-                            <Divider />
+                            <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price} />}</Text>
+                                <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price, productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount)} /></p>
+                                <div className={cx('discount-style')}>{productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount}% giảm</div>
+                            </Space>
                             <div style={{ marginBottom: 20 }}>
                                 <Title level={4}>Loại sản phẩm</Title>
                                 <Radio.Group>

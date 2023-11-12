@@ -276,16 +276,16 @@ const Prices = ({ dataPropPriceComponent }) => {
                     const data = res.data;
                     if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
                         unLoadingButtonDelete();
+                        closeModalConfirmationDelete();
+                        reloadCarts();
+
+                        // del all cart item selecteds
+                        setCartDetailIdSelecteds([]);
                     }
                 }
             })
             .catch((errors) => {
                 console.log(errors)
-            }).finally(() => {
-                setTimeout(() => {
-                    closeModalConfirmationDelete();
-                    reloadCarts();
-                }, 500)
             })
     }
     ///
