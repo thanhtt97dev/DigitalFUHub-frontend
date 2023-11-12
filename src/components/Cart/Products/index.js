@@ -385,7 +385,7 @@ const Products = ({ dataPropProductComponent }) => {
                                             <Col span={5} className={cx('flex-item-center')}>
                                                 <Space align="center" size={15}>
                                                     <Text type="secondary" delete>{formatPrice(product.productVariantPrice)}</Text>
-                                                    <Text>{formatPrice(discountPrice(product.productVariantPrice, product.productDiscount))}</Text>
+                                                    <Text>{formatPrice(discountPrice(product.productVariantPrice, product.productVariantDiscount))}</Text>
                                                 </Space>
                                             </Col>
                                             <Col span={4} className={cx('flex-item-center')}>
@@ -395,7 +395,7 @@ const Products = ({ dataPropProductComponent }) => {
                                                     <Button disabled={product.quantity === product.productVariantQuantity ? true : false} onClick={() => handleAddOne(product.quantity, product.cartDetailId, product.productVariantId)}>+</Button>
                                                 </div>
                                             </Col>
-                                            <Col span={4} className={cx('flex-item-center')}><Text>{formatPrice(discountPrice(product.productVariantPrice, product.productDiscount) * product.quantity)}</Text></Col>
+                                            <Col span={4} className={cx('flex-item-center')}><Text>{formatPrice(discountPrice(product.productVariantPrice, product.productVariantDiscount) * product.quantity)}</Text></Col>
                                             <Col span={3} className={cx('flex-item-center')}><Button style={{ pointerEvents: 'all' }} className={cx('button-delete')} icon={<DeleteOutlined />} danger onClick={() => funcDeleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
                                         </Row>
                                     ))
