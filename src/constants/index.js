@@ -196,3 +196,13 @@ export const COUPON_STATUS_ALL = 0;
 export const COUPON_STATUS_COMING_SOON = 1;
 export const COUPON_STATUS_ONGOING = 2;
 export const COUPON_STATUS_FINISHED = 3;
+
+//Feedback search type
+export const FEEDBACK_TYPE_ALL = 0;
+export const FEEDBACK_TYPE_1_STAR = 1;
+export const FEEDBACK_TYPE_2_STAR = 2;
+export const FEEDBACK_TYPE_3_STAR = 3;
+export const FEEDBACK_TYPE_4_STAR = 4;
+export const FEEDBACK_TYPE_5_STAR = 5;
+export const FEEDBACK_TYPE_HAVE_COMMENT = 6;
+export const FEEDBACK_TYPE_HAVE_MEDIA = 7;

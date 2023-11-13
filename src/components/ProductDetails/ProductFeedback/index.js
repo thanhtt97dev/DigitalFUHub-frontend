@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Col, Row, Image, Skeleton, Avatar, List, Rate, Card, Typography, Space } from 'antd';
+
+import { search } from '~/api/feedback'
+import {
+    RESPONSE_CODE_SUCCESS,
+    FEEDBACK_TYPE_ALL,
+    FEEDBACK_TYPE_1_STAR,
+    FEEDBACK_TYPE_2_STAR,
+    FEEDBACK_TYPE_3_STAR,
+    FEEDBACK_TYPE_4_STAR,
+    FEEDBACK_TYPE_5_STAR,
+    FEEDBACK_TYPE_HAVE_COMMENT,
+    FEEDBACK_TYPE_HAVE_MEDIA
+} from '~/constants'
+import { ParseDateTime } from "~/utils";
+
 import classNames from 'classnames/bind';
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
-import { Col, Row, Image, Skeleton, Avatar, List, Rate, Card, Typography } from 'antd';
 
 const { Title } = Typography;
 require('moment/locale/vi');
@@ -19,7 +35,29 @@ const FormatFeedbackMedias = ({ feedbackMedias }) => (
     ))
 )
 
-const ProductFeedback = ({ feedback, product }) => {
+const ProductFeedback = ({ product }) => {
+
+    const [searchParams, setSearchParams] = useState({
+        productId: 0,
+        type: FEEDBACK_TYPE_ALL,
+        page: 1
+    })
+    const [data, setData] = useState([])
+    const [generalInfo, setGeneralInfo] = useState(null);
+
+    useEffect(() => {
+        search(searchParams)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    var data = res.data.result;
+                    setData(data);
+
+                }
+            }).catch((err) => {
+
+            })
+    }, [searchParams, product])
+
 
     return (
         <Card className={cx('margin-bottom')}>
@@ -30,36 +68,53 @@ const ProductFeedback = ({ feedback, product }) => {
             </Row>
             <div>
                 {
-                    product && feedback ? (
+                    product && data ? (
                         <List
                             itemLayout="vertical"
                             size="large"
                             pagination={{
                                 pageSize: 5,
                             }}
-                            dataSource={feedback}
+                            dataSource={data}
                             renderItem={(item) => (
                                 <List.Item
-                                    key={item.user.email}
+                                    key={item.feedbackId}
                                 >
                                     <Row>
                                         <List.Item.Meta
-                                            avatar={<Avatar size="large" src={item.user.avatar} />}
+                                            avatar={<Avatar size="large" src={item.userAvatar} />}
                                             title={
                                                 <>
-                                                    <Row><span style={{ fontSize: 14 }}>{item.user.email}</span></Row>
-                                                    <Row><Rate disabled defaultValue={item.rate} style={{ fontSize: 12, width: '15vh' }} /></Row>
+                                                    <Row>
+                                                        <span style={{ fontSize: 14 }}>
+                                                            <Link
+                                                                to={`/shop/${item.userId}`}
+                                                                style={{ color: "#000000de", fontSize: ".75rem" }}
+                                                            >
+                                                                {"daw"}
+                                                            </Link>
+                                                        </span>
+                                                    </Row>
+                                                    <Row>
+                                                        <Rate disabled defaultValue={item.rate} style={{ fontSize: ".8rem", }} />
+                                                    </Row>
+                                                    <Row>
+                                                        <Space style={{ fontSize: ".75rem", color: "#0000008a" }}>
+                                                            <span>{moment(item.dateUpdate).format('yyyy-MM-DD - HH:mm')}</span>
+                                                            <span>|</span>
+                                                            <span>Phân loại hàng: {item.productVariantName}</span>
+                                                        </Space>
+                                                    </Row>
                                                 </>
 
                                             }
-                                            description={moment(item.updateAt).format('HH:mm - DD/MM')}
                                         />
 
                                     </Row>
-                                    <Row style={{ marginLeft: '9vh', marginBottom: '2vh' }}>
+                                    <Row style={{ marginLeft: '55px', marginBottom: '2vh' }}>
                                         {item.content}
                                     </Row>
-                                    <Row style={{ marginLeft: '8vh' }}>
+                                    <Row style={{ marginLeft: '55px' }}>
                                         <FormatFeedbackMedias feedbackMedias={item.feedbackMedias} />
                                     </Row>
 
