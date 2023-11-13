@@ -18,6 +18,7 @@ import { ParseDateTime } from "~/utils";
 
 import classNames from 'classnames/bind';
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
+import ProductFeedbackMedia from "../ProductFeedbackMedia";
 
 const { Title } = Typography;
 require('moment/locale/vi');
@@ -27,10 +28,7 @@ const cx = classNames.bind(styles);
 const FormatFeedbackMedias = ({ feedbackMedias }) => (
     feedbackMedias?.map((item, index) => (
         <div style={{ padding: 5 }} key={index}>
-            <Image
-                width={70}
-                src={item.url}
-            />
+            <Image width={70} src={item.url} />
         </div>
     ))
 )
@@ -83,31 +81,28 @@ const ProductFeedback = ({ product }) => {
                                     <Row>
                                         <List.Item.Meta
                                             avatar={<Avatar size="large" src={item.userAvatar} />}
-                                            title={
-                                                <>
-                                                    <Row>
-                                                        <span style={{ fontSize: 14 }}>
-                                                            <Link
-                                                                to={`/shop/${item.userId}`}
-                                                                style={{ color: "#000000de", fontSize: ".75rem" }}
-                                                            >
-                                                                {"daw"}
-                                                            </Link>
-                                                        </span>
-                                                    </Row>
-                                                    <Row>
-                                                        <Rate disabled defaultValue={item.rate} style={{ fontSize: ".8rem", }} />
-                                                    </Row>
-                                                    <Row>
-                                                        <Space style={{ fontSize: ".75rem", color: "#0000008a" }}>
-                                                            <span>{moment(item.dateUpdate).format('yyyy-MM-DD - HH:mm')}</span>
-                                                            <span>|</span>
-                                                            <span>Phân loại hàng: {item.productVariantName}</span>
-                                                        </Space>
-                                                    </Row>
-                                                </>
-
-                                            }
+                                            description={<>
+                                                <Row>
+                                                    <span style={{ fontSize: 14 }}>
+                                                        <Link
+                                                            to={`/shop/${item.userId}`}
+                                                            style={{ color: "#000000de", fontSize: ".75rem" }}
+                                                        >
+                                                            {"daw"}
+                                                        </Link>
+                                                    </span>
+                                                </Row>
+                                                <Row>
+                                                    <Rate disabled defaultValue={item.rate} style={{ fontSize: ".8rem", }} />
+                                                </Row>
+                                                <Row>
+                                                    <Space style={{ fontSize: ".75rem", color: "#0000008a" }}>
+                                                        <span>{moment(item.dateUpdate).format('yyyy-MM-DD - HH:mm')}</span>
+                                                        <span>|</span>
+                                                        <span>Phân loại hàng: {item.productVariantName}</span>
+                                                    </Space>
+                                                </Row>
+                                            </>}
                                         />
 
                                     </Row>
@@ -115,7 +110,7 @@ const ProductFeedback = ({ product }) => {
                                         {item.content}
                                     </Row>
                                     <Row style={{ marginLeft: '55px' }}>
-                                        <FormatFeedbackMedias feedbackMedias={item.feedbackMedias} />
+                                        <ProductFeedbackMedia feedbackMedias={item.feedbackMedias} />
                                     </Row>
 
                                 </List.Item>
