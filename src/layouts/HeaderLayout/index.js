@@ -8,7 +8,7 @@ import Notificaion from '~/components/Notification';
 import {
     MessageOutlined, ShoppingCartOutlined, BellFilled,
     CreditCardOutlined, ShopOutlined, ShoppingOutlined, UserOutlined,
-    HeartFilled
+    HeartOutlined
 } from '@ant-design/icons';
 
 import logoFPT from '~/assets/images/fpt-logo.jpg';
@@ -38,7 +38,7 @@ const itemsFixed = [
     },
     {
         key: 'wishlist',
-        label: <Link to={"/settings/wishlist"}><HeartFilled style={{ color: '#dc3545' }} /> Sản phẩm yêu thích</Link>,
+        label: <Link to={"/settings/wishlist"}><HeartOutlined /> Sản phẩm yêu thích</Link>,
         roles: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {

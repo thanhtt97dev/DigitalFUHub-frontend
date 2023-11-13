@@ -10,7 +10,7 @@ import {
     ShopOutlined,
     ShoppingOutlined,
     CreditCardOutlined,
-    HeartFilled
+    HeartOutlined
 } from '@ant-design/icons';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import { useAuthUser } from 'react-auth-kit';
@@ -46,7 +46,7 @@ const items = [
         role: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {
-        icon: HeartFilled,
+        icon: HeartOutlined,
         label: 'Sản phẩm yêu thích',
         link: '/settings/wishlist',
         role: [CUSTOMER_ROLE]
