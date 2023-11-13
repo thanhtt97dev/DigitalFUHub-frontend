@@ -124,6 +124,7 @@ function Orders() {
             toDate: searchData.toDate,
             status: searchData.status
         }
+        setLoading(true);
         exportOrdersToExcel(data)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -140,6 +141,11 @@ function Orders() {
             })
             .catch((err) => {
                 notification("error", "Đã có lỗi xảy ra")
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setLoading(false);
+                }, 500)
             })
     }
     return (
@@ -205,13 +211,13 @@ function Orders() {
                             </Col>
                         </Row>
                     </Form>
-                    {totalItems > 0 && <Row justify="end" style={{ marginBottom: '1em' }}>
+                    <Row justify="end" style={{ marginBottom: '1em' }}>
                         <Col>
-                            <Button className={cx('btn-export-excel')} onClick={handleExportExcel} colorBgContainer icon={<FileExcelOutlined />} >
+                            <Button disabled={totalItems <= 0} className={cx('btn-export-excel')} onClick={handleExportExcel} colorBgContainer icon={<FileExcelOutlined />} >
                                 Xuất báo cáo
                             </Button>
                         </Col>
-                    </Row>}
+                    </Row>
                     <Table
                         pagination={{
                             current: page,
@@ -233,7 +239,7 @@ function Orders() {
                             )}
                         />
                         <Column
-                            width="20%"
+                            width="10%"
                             title="Người mua"
                             key="username"
                             render={(_, record) => (
@@ -281,7 +287,8 @@ function Orders() {
                         />
                         <Column
                             width="9%"
-                            key="orderId"
+                            key="actions"
+                            title="Thao tác"
                             render={(_, record) => (
                                 <Link to={`/seller/order/${record.orderId}`} >
                                     Chi tiết
@@ -290,7 +297,6 @@ function Orders() {
                         />
                     </Table>
                 </Card>
-
             </Spinning>
         </>
     )

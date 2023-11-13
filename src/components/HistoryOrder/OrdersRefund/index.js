@@ -64,7 +64,7 @@ function OrdersRefund({ status, loading, setLoading }) {
                                 note={v.note}
                                 orderDate={v.orderDate}
                                 shopId={v.shopId}
-                                shopName={v.shop.shopName}
+                                shopName={v.shopName}
                                 conversationId={v.conversationId}
                                 statusId={v.statusId}
                                 totalAmount={v.totalAmount}

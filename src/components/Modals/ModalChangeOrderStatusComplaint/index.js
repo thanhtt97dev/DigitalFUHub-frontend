@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Divider, Modal, Button, Form, Row, Col, Input } from "antd";
+import { Modal, Button, Form, Row, Col, Input } from "antd";
 import { useAuthUser } from "react-auth-kit";
 
 import { ExclamationCircleFilled } from "@ant-design/icons";
@@ -58,7 +58,7 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
                 } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
                     notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
                 } else {
-                    notification("error", "Đã có lỗi xảy ra.")
+                    notification("error", "Vui lòng kiểm tra lại.")
                 }
             })
             .catch(err => {
@@ -104,7 +104,7 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
             </Button>
 
             <Modal
-                title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Chỉnh sửa trạng thái đơn hàng</>}
+                title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Bạn có chắc chắn muốn khiếu nại đơn hàng không?</>}
                 open={openModal}
                 onOk={handleSubmit}
                 onCancel={() => setOpenModal(false)}
@@ -114,10 +114,10 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
                 width={"35%"}
             >
                 <>
-                    <Divider />
+                    {/* <Divider />
                     <b style={{ marginLeft: "20px" }}>
                         Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng là khiếu nại không?
-                    </b>
+                    </b> */}
                     <Form
                         name="basic"
                         form={form}

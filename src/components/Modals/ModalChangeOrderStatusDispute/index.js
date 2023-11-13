@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Divider, Modal, Button, Form, Row, Col, Input } from "antd";
+import { Modal, Button, Form, Row, Col, Input } from "antd";
 import { useAuthUser } from "react-auth-kit";
 
 import { ExclamationCircleFilled } from "@ant-design/icons";
@@ -101,7 +101,7 @@ function ModalChangeOrderStatusDispute({ orderId, customerId, shopId, style, cal
             </Button>
 
             <Modal
-                title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Chỉnh sửa trạng thái đơn hàng</>}
+                title={<><ExclamationCircleFilled style={{ color: "#faad14" }} />Bạn có chắc chắn muốn tranh chấp đơn hàng không?</>}
                 open={openModal}
                 onOk={handleSubmit}
                 onCancel={() => setOpenModal(false)}
@@ -111,10 +111,10 @@ function ModalChangeOrderStatusDispute({ orderId, customerId, shopId, style, cal
                 width={"35%"}
             >
                 <>
-                    <Divider />
+                    {/* <Divider />
                     <b style={{ marginLeft: "20px" }}>
                         Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng là khiếu nại không?
-                    </b>
+                    </b> */}
                     <Form
                         name="basic"
                         form={form}

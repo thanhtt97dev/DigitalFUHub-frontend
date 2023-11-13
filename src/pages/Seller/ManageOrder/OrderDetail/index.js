@@ -1,27 +1,26 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { customerUpdateStatusOrder, getOrderDetailCustomer, getOrderDetailSeller, updateDisputeOrder, updateRefundOrder } from "~/api/order";
+import { getOrderDetailSeller, updateRefundOrder } from "~/api/order";
 import { ParseDateTime, formatPrice, getUserId } from "~/utils";
 import {
-    ShopOutlined,
     CheckCircleOutlined,
     SyncOutlined,
     LeftOutlined,
-    PlusOutlined,
     MessageOutlined,
-    UserOutlined,
-    ExclamationCircleOutlined
+    ExclamationCircleFilled
 } from "@ant-design/icons";
 import logoFPT from '~/assets/images/fpt-logo.jpg'
-import { Button, Card, Col, Divider, Image, Rate, Row, Space, Typography, Tag, Tooltip, Form, Upload, Modal, Avatar, Spin, Descriptions } from "antd";
+import { Button, Card, Col, Divider, Image, Row, Space, Typography, Tag, Tooltip, Form, Modal, Avatar, Spin, Descriptions } from "antd";
 import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { useAuthUser } from 'react-auth-kit'
 import { getConversation } from '~/api/chat'
 import TextArea from "antd/es/input/TextArea";
 import ModalChangeOrderStatusDispute from "~/components/Modals/ModalChangeOrderStatusDispute";
+import HistoryOrderStatus from "~/components/OrderDetail/HistoryOrderStatus";
 
-const { Text, Title, Paragraph } = Typography;
+const { Text, Title } = Typography;
 
 function OrderDetailSeller() {
     const auth = useAuthUser()
@@ -32,15 +31,12 @@ function OrderDetailSeller() {
     const { orderId } = useParams()
     const [order, setOrder] = useState({})
 
-    useEffect(() => {
+    const getOrderDetail = useCallback(() => {
         setLoading(true);
         getOrderDetailSeller(getUserId(), orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrder(res.data.result);
-                    setTimeout(() => {
-                        setLoading(false);
-                    }, 500);
                 } else {
                     notification("error", "Vui lòng kiểm tra lại.")
                     return navigate("/seller/order/list");
@@ -50,31 +46,38 @@ function OrderDetailSeller() {
                 notification("error", "Đã có lỗi xảy ra.")
                 return navigate("/seller/order/list");
             })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+            .finally(() => {
+                setTimeout(() => {
+                    setLoading(false);
+                }, 500);
+            })
+    }, []);
+    useEffect(() => {
+        getOrderDetail();
     }, [])
-    const handleOrderDispute = () => {
-        // call api
-        const dataBody = {
-            userId: getUserId(),
-            shopId: order.shopId,
-            orderId: order.orderId,
-            statusId: 5
-        }
-        customerUpdateStatusOrder(dataBody)
-            .then(res => {
-                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setOrder(prev => {
-                        prev.statusId = dataBody.statusId
-                        return { ...prev }
-                    })
-                } else {
-                    notification("error", "Đã có lỗi xảy ra.")
-                }
-            })
-            .catch(err => {
-                notification("error", "Đã có lỗi xảy ra.")
-            })
-    }
+    // const handleOrderDispute = () => {
+    //     // call api
+    //     const dataBody = {
+    //         userId: getUserId(),
+    //         shopId: order.shopId,
+    //         orderId: order.orderId,
+    //         statusId: 5
+    //     }
+    //     customerUpdateStatusOrder(dataBody)
+    //         .then(res => {
+    //             if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+    //                 setOrder(prev => {
+    //                     prev.statusId = dataBody.statusId
+    //                     return { ...prev }
+    //                 })
+    //             } else {
+    //                 notification("error", "Đã có lỗi xảy ra.")
+    //             }
+    //         })
+    //         .catch(err => {
+    //             notification("error", "Đã có lỗi xảy ra.")
+    //         })
+    // }
 
     const getTextStatusOrder = () => {
         if (order?.statusId === ORDER_WAIT_CONFIRMATION) {
@@ -192,33 +195,27 @@ function OrderDetailSeller() {
         updateRefundOrder(data)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setOrder(prev => {
-                        prev.statusId = ORDER_SELLER_REFUNDED;
-                        return { ...prev }
-                    })
+                    getOrderDetail();
                     notification("success", "Hoàn tiền đơn hàng thành công.");
                 } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
                     notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
                 } else {
                     notification("error", "Đã có lỗi xảy ra.")
                 }
-                setIsModalOpen(false);
             })
             .catch((err) => {
-                setIsModalOpen(false);
                 notification("error", "Đã có lỗi xảy ra.");
+            })
+            .finally(() => {
+                setIsModalOpen(false);
             })
     }
     const handleDisputeOrder = () => {
-        setOrder(prev => {
-            prev.statusId = ORDER_DISPUTE;
-            return { ...prev }
-        })
-
+        getOrderDetail();
     };
     return (<>
         <Modal
-            title="Hoàn trả tiền người mua"
+            title={<><ExclamationCircleFilled style={{ color: "#faad14" }} />Bạn có chắc chắn muốn hoàn trả tiền người mua</>}
             footer={null}
             open={isModalOpen}
             onOk={handleCancelModal}
@@ -227,7 +224,7 @@ function OrderDetailSeller() {
                 onFinish={handleSubmitRefundOrder}
             >
                 <Row>
-                    <Col span={4} offset={1}><Text>Nội dung:</Text></Col>
+                    <Col span={4} offset={1}><Text> <span style={{ color: '#ff4d4f', marginInlineEnd: '4px' }}>*</span>Lý do:</Text></Col>
                     <Col span={19}>
                         <Form.Item name="note"
                             rules={[
@@ -235,7 +232,7 @@ function OrderDetailSeller() {
                                     validator(_, value) {
                                         const data = !value ? "" : value.trim();
                                         if (!data) {
-                                            return Promise.reject(new Error('Nội dung phản hồi không để trống.'));
+                                            return Promise.reject(new Error('Lý do không được để trống.'));
                                         } else {
                                             return Promise.resolve();
                                         }
@@ -243,7 +240,7 @@ function OrderDetailSeller() {
                                 }),
                             ]}
                         >
-                            <TextArea />
+                            <TextArea placeholder="Nhập lý do hoàn trả tiền đơn hàng" />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -279,151 +276,154 @@ function OrderDetailSeller() {
         >
             <Spin spinning={loading}>
                 {!loading &&
-                    <Card
-                        style={{ margin: '0 3em' }}
-                        title={<Row gutter={[8, 0]} align="bottom">
-                            <Col>
-                                {/* <Title level={5}><UserOutlined style={{ fontSize: '18px' }} /></Title> */}
-                                <Avatar src={order.customerAvatar || logoFPT} />
-                            </Col>
-                            <Col>
-                                <Title level={5}>{order.customerUsername}</Title>
-                            </Col>
-                            <Col>
-                                <Title level={5}>
-                                    <Button
-                                        type="default"
-                                        size="small"
-                                        icon={<MessageOutlined />}
-                                        onClick={handleOpenChat}
-                                    >
-                                        Nhắn tin
-                                    </Button>
-                                </Title>
-                            </Col>
-                        </Row>}
-                        bordered={true}
-                    >
-                        <Row gutter={[0, 32]}>
-                            {order?.orderDetails?.map((v, i) => {
-                                return (
-                                    <Col span={24} key={i}>
-                                        <Row gutter={[8, 8]}>
-                                            <Col flex={0}>
-                                                <Link to={`/product/${v.productId}`} target="_blank" rel="noopener noreferrer" >
-                                                    <Image
-                                                        width={120}
-                                                        src={v.thumbnail}
-                                                        preview={false}
-                                                    />
-                                                </Link>
-                                            </Col>
-                                            <Col flex={5}>
-                                                <Row>
-                                                    <Col span={24}>
-                                                        <Row>
-                                                            <Col span={17}>
-                                                                <Title level={5} style={{ marginBottom: 0 }}>
-                                                                    {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
-                                                                </Title>
-                                                            </Col>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col span={24}><Text>{`Phân loại: ${v.productVariantName}`}</Text></Col>
-                                                    <Col span={24}>
-                                                        <Row>
-                                                            <Col span={1}>
-                                                                <Text>{`x${v.quantity}`}</Text>
-                                                            </Col>
-                                                            <Col span={23}>
-                                                                <Row justify="end">
-                                                                    {v.discount === 0 ?
-                                                                        <Text>{formatPrice(v.price)}</Text>
-                                                                        :
-                                                                        <Space size={[8, 0]}>
-                                                                            <Text delete>{formatPrice(v.price)}</Text>
-                                                                            <Text>{formatPrice(v.price - (v.price * v.discount / 100))}</Text>
-                                                                        </Space>
-                                                                    }
-                                                                </Row>
-                                                            </Col>
-                                                        </Row>
-                                                    </Col>
-                                                </Row>
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                )
-                            })}
-                        </Row>
-                        <Divider />
-                        <Row gutter={[0, 16]}>
-                            <Col span={24}>
-                                <Row justify="end">
-                                    {(() => {
-                                        let infoPayment = [];
+                    <>
+                        <HistoryOrderStatus historyOrderStatus={order?.historyOrderStatus} current={order?.statusId} />
+                        <Card
+                            style={{ margin: '3em 2em 3em 0em' }}
+                            title={<Row gutter={[8, 0]} align="bottom">
+                                <Col>
+                                    {/* <Title level={5}><UserOutlined style={{ fontSize: '18px' }} /></Title> */}
+                                    <Avatar src={order.customerAvatar || logoFPT} />
+                                </Col>
+                                <Col>
+                                    <Title level={5}>{order.customerUsername}</Title>
+                                </Col>
+                                <Col>
+                                    <Title level={5}>
+                                        <Button
+                                            type="default"
+                                            size="small"
+                                            icon={<MessageOutlined />}
+                                            onClick={handleOpenChat}
+                                        >
+                                            Nhắn tin
+                                        </Button>
+                                    </Title>
+                                </Col>
+                            </Row>}
+                            bordered={true}
+                        >
+                            <Row gutter={[0, 32]}>
+                                {order?.orderDetails?.map((v, i) => {
+                                    return (
+                                        <Col span={24} key={i}>
+                                            <Row gutter={[8, 8]}>
+                                                <Col flex={0}>
+                                                    <Link to={`/product/${v.productId}`} target="_blank" rel="noopener noreferrer" >
+                                                        <Image
+                                                            width={120}
+                                                            src={v.thumbnail}
+                                                            preview={false}
+                                                        />
+                                                    </Link>
+                                                </Col>
+                                                <Col flex={5}>
+                                                    <Row>
+                                                        <Col span={24}>
+                                                            <Row>
+                                                                <Col span={17}>
+                                                                    <Title level={5} style={{ marginBottom: 0 }}>
+                                                                        {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
+                                                                    </Title>
+                                                                </Col>
+                                                            </Row>
+                                                        </Col>
+                                                        <Col span={24}><Text>{`Phân loại: ${v.productVariantName}`}</Text></Col>
+                                                        <Col span={24}>
+                                                            <Row>
+                                                                <Col span={1}>
+                                                                    <Text>{`x${v.quantity}`}</Text>
+                                                                </Col>
+                                                                <Col span={23}>
+                                                                    <Row justify="end">
+                                                                        {v.discount === 0 ?
+                                                                            <Text>{formatPrice(v.price)}</Text>
+                                                                            :
+                                                                            <Space size={[8, 0]}>
+                                                                                <Text delete>{formatPrice(v.price)}</Text>
+                                                                                <Text>{formatPrice(v.price - (v.price * v.discount / 100))}</Text>
+                                                                            </Space>
+                                                                        }
+                                                                    </Row>
+                                                                </Col>
+                                                            </Row>
+                                                        </Col>
+                                                    </Row>
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                    )
+                                })}
+                            </Row>
+                            <Divider />
+                            <Row gutter={[0, 16]}>
+                                <Col span={24}>
+                                    <Row justify="end">
+                                        {(() => {
+                                            let infoPayment = [];
 
-                                        infoPayment.push({
-                                            key: '1',
-                                            label: 'Tổng tiền sản phẩm',
-                                            labelStyle: { 'text-align': 'right' },
-                                            span: '3',
-                                            children: <Text>{formatPrice(order?.totalAmount)}</Text>
-                                        })
+                                            infoPayment.push({
+                                                key: '1',
+                                                label: 'Tổng tiền sản phẩm',
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{formatPrice(order?.totalAmount)}</Text>
+                                            })
 
 
-                                        infoPayment.push({
-                                            key: '2',
-                                            label: 'Mã giảm giá',
-                                            labelStyle: { 'text-align': 'right' },
-                                            span: '3',
-                                            children: <Text>{order?.totalCouponDiscount !== 0 ?
-                                                `-${formatPrice(order?.totalCouponDiscount)}`
-                                                :
-                                                'Không áp dụng'
-                                            }</Text>
-                                        })
+                                            infoPayment.push({
+                                                key: '2',
+                                                label: `Mã giảm giá${order?.couponCode ? `\n(${order?.couponCode})` : ''}`,
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{order?.totalCouponDiscount !== 0 ?
+                                                    `-${formatPrice(order?.totalCouponDiscount)}`
+                                                    :
+                                                    'Không áp dụng'
+                                                }</Text>
+                                            })
 
-                                        infoPayment.push({
-                                            key: '4',
-                                            label: <Text style={{ fontWeight: 'bold' }}>Tổng đơn hàng</Text>,
-                                            labelStyle: { 'text-align': 'right' },
-                                            span: '3',
-                                            children: <Text>{`${formatPrice(order.totalAmount - order?.totalCouponDiscount)}`}</Text>
-                                        })
-                                        infoPayment.push({
-                                            key: '4',
-                                            label: <Text style={{ fontWeight: 'bold' }}>Phí dịch vụ</Text>,
-                                            labelStyle: { 'text-align': 'right' },
-                                            span: '3',
-                                            children: <Text>{`-${formatPrice(order.bussinessFee)}`}</Text>
-                                        })
-                                        infoPayment.push({
-                                            key: '4',
-                                            label: <Text style={{ fontWeight: 'bold' }}>Số tiền người bán nhận</Text>,
-                                            labelStyle: { 'text-align': 'right' },
-                                            span: '3',
-                                            children: <Text>{`${formatPrice(order.amountSellerReceive)}`}</Text>
-                                        })
-                                        return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
-                                    })()}
-                                </Row>
+                                            infoPayment.push({
+                                                key: '4',
+                                                label: <Text style={{ fontWeight: 'bold' }}>Tổng đơn hàng</Text>,
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{`${formatPrice(order.totalAmount - order?.totalCouponDiscount)}`}</Text>
+                                            })
+                                            infoPayment.push({
+                                                key: '4',
+                                                label: <Text style={{ fontWeight: 'bold' }}>Phí dịch vụ</Text>,
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{`-${formatPrice(order.bussinessFee)}`}</Text>
+                                            })
+                                            infoPayment.push({
+                                                key: '4',
+                                                label: <Text style={{ fontWeight: 'bold' }}>Số tiền người bán nhận</Text>,
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{`${formatPrice(order.amountSellerReceive)}`}</Text>
+                                            })
+                                            return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
+                                        })()}
+                                    </Row>
 
-                            </Col>
-                            <Col span={24}>
-                                {getButtonsStatus()}
-                            </Col>
-                        </Row>
-
-                        {order.note &&
-                            <Row>
-                                <Col span={24}><Divider><Title level={5}>Lời nhắn</Title></Divider></Col>
-                                <Col span={23}>
-                                    <Text>{order.note}</Text>
+                                </Col>
+                                <Col span={24}>
+                                    {getButtonsStatus()}
                                 </Col>
                             </Row>
-                        }
-                    </Card>
+
+                            {/* {order.note &&
+                                <Row>
+                                    <Col span={24}><Divider><Title level={5}>Lời nhắn</Title></Divider></Col>
+                                    <Col span={23}>
+                                        <Text>{order.note}</Text>
+                                    </Col>
+                                </Row>
+                            } */}
+                        </Card>
+                    </>
                 }
             </Spin>
         </Card>

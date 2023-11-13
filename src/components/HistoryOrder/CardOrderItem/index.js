@@ -19,16 +19,17 @@ import { getConversation } from '~/api/chat'
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { formatPrice, getDistanceDayTwoDate, getUserId } from "~/utils";
 import ModalChangeOrderStatusComplaint from "~/components/Modals/ModalChangeOrderStatusComplaint";
+import ModalAddFeedbackOrder from "~/components/Modals/ModalAddFeedbackOrder";
 
 const { Text, Title } = Typography;
 
-const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-    });
+// const getBase64 = (file) =>
+//     new Promise((resolve, reject) => {
+//         const reader = new FileReader();
+//         reader.readAsDataURL(file);
+//         reader.onload = () => resolve(reader.result);
+//         reader.onerror = (error) => reject(error);
+//     });
 
 function CardOrderItem({
     orderId,
@@ -51,35 +52,35 @@ function CardOrderItem({
     const auth = useAuthUser()
     const user = auth();
     const navigate = useNavigate()
-    const [form] = Form.useForm();
-    const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState('');
-    const [previewTitle, setPreviewTitle] = useState('');
-    const [fileList, setFileList] = useState([]);
-    const handleCancel = () => setPreviewOpen(false);
-    const handlePreview = async (file) => {
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setPreviewImage(file.url || file.preview);
-        setPreviewOpen(true);
-        setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
-    };
-    const handleChange = (info) => {
-        let newFileList = [...info.fileList];
+    // const [form] = Form.useForm();
+    // const [previewOpen, setPreviewOpen] = useState(false);
+    // const [previewImage, setPreviewImage] = useState('');
+    // const [previewTitle, setPreviewTitle] = useState('');
+    // const [fileList, setFileList] = useState([]);
+    // const handleCancel = () => setPreviewOpen(false);
+    // const handlePreview = async (file) => {
+    //     if (!file.url && !file.preview) {
+    //         file.preview = await getBase64(file.originFileObj);
+    //     }
+    //     setPreviewImage(file.url || file.preview);
+    //     setPreviewOpen(true);
+    //     setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
+    // };
+    // const handleChange = (info) => {
+    //     let newFileList = [...info.fileList];
 
-        newFileList = newFileList.slice(-5);
+    //     newFileList = newFileList.slice(-5);
 
-        newFileList = newFileList.map((file) => {
-            if (file.response) {
-                file.url = file.response.url;
-            }
-            file.response = '';
-            file.status = 'done';
-            return file;
-        });
-        setFileList(newFileList);
-    }
+    //     newFileList = newFileList.map((file) => {
+    //         if (file.response) {
+    //             file.url = file.response.url;
+    //         }
+    //         file.response = '';
+    //         file.status = 'done';
+    //         return file;
+    //     });
+    //     setFileList(newFileList);
+    // }
 
     const getButtonsStatus = () => {
         if (statusId === ORDER_WAIT_CONFIRMATION) {
@@ -178,8 +179,8 @@ function CardOrderItem({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const orderDetailRef = useRef();
     const showModalFeedback = () => {
-        setFileList([])
-        form.resetFields();
+        // setFileList([])
+        // form.resetFields();
         setIsModalOpen(true);
     };
     const handleModalFeedbackOk = () => {
@@ -225,7 +226,7 @@ function CardOrderItem({
     }
 
     return <>
-        <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
+        {/* <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
             <img
                 alt="preview"
                 style={{
@@ -233,8 +234,14 @@ function CardOrderItem({
                 }}
                 src={previewImage}
             />
-        </Modal>
-        <Modal
+        </Modal> */}
+        <ModalAddFeedbackOrder
+            isModalOpen={isModalOpen}
+            handleModalFeedbackOk={handleModalFeedbackOk}
+            handleModalFeedbackCancel={handleModalFeedbackCancel}
+            handleSubmitFeedback={handleSubmitFeedback}
+        />
+        {/* <Modal
             title="Đánh giá sản phẩm"
             footer={null}
             open={isModalOpen}
@@ -320,7 +327,7 @@ function CardOrderItem({
                     <Col><Button type="primary" htmlType="submit">Xác nhận</Button></Col>
                 </Row>
             </Form>
-        </Modal >
+        </Modal > */}
         <Card
             title={<Row gutter={[8, 0]} align="bottom">
                 <Col>
