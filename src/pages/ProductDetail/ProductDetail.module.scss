@@ -181,3 +181,33 @@
     height: 50vh;
     border-radius: 5px;
 }
+
+.discount-style {
+    margin-left: 15px;
+    font-size: 0.75rem;
+    color: #fff;
+    text-transform: uppercase;
+    background: #ee4d2d;
+    border-radius: 2px;
+    padding: 2px 4px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.item-reason {
+    color: black;
+    transition: color 0.3s;
+}
+
+.item-reason:hover {
+    color: #ee4d2d;
+    cursor: pointer;
+}
+
+.text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+}

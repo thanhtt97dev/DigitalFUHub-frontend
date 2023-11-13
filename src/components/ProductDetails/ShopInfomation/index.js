@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { formatNumberToK, getVietnamCurrentTime } from '~/utils';
+import { formatNumber, getVietnamCurrentTime } from '~/utils';
 import { MessageOutlined, ShopOutlined } from '@ant-design/icons';
 import { Col, Row, Button, Skeleton, Avatar, Card, Space, Typography } from 'antd';
 
@@ -111,13 +111,13 @@ const ShopInfomations = ({ product }) => {
                     <Col span={6}>
                         <Card className={cx('flex-item-center', 'card-shop-info')} bodyStyle={{ textAlign: 'center' }}>
                             <Title level={5}>Đánh giá</Title>
-                            <Link><Text type="danger">{formatNumberToK(product.shop.feedbackNumber)}</Text></Link>
+                            <Link><Text type="danger">{formatNumber(product.shop.feedbackNumber)}</Text></Link>
                         </Card>
                     </Col>
                     <Col span={6}>
                         <Card className={cx('flex-item-center', 'card-shop-info')} bodyStyle={{ textAlign: 'center' }}>
                             <Title level={5}>Sản phẩm</Title>
-                            <Link><Text type="danger">{formatNumberToK(product.shop.productNumber)}</Text></Link>
+                            <Link><Text type="danger">{formatNumber(product.shop.productNumber)}</Text></Link>
                         </Card>
                     </Col>
                     <Col span={5}>

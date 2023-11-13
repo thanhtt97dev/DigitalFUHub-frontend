@@ -1,14 +1,15 @@
-import classNames from 'classnames/bind';
-import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 import React, { useState, useEffect, useContext } from "react";
 import CarouselCustom from './Carousel';
+import classNames from 'classnames/bind';
+import ModalAlert from '~/components/Modals/ModalAlert';
+import ReportProduct from "./ReportProduct";
+import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 import { addProductToCart } from '~/api/cart';
 import { NotificationContext } from '~/context/UI/NotificationContext';
 import { useAuthUser } from 'react-auth-kit';
 import { isProductWishList, addWishList, removeWishList } from '~/api/wishList';
-import { formatPrice } from '~/utils';
+import { discountPrice, formatPrice, formatNumber } from '~/utils';
 import { useNavigate } from 'react-router-dom';
-import ModalAlert from '~/components/Modals/ModalAlert';
 import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS, PRODUCT_BAN, RESPONSE_CODE_SUCCESS } from '~/constants';
 import { CreditCardOutlined, ShoppingCartOutlined, HeartFilled } from '@ant-design/icons';
 import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Radio, Card, Typography, Space, Rate } from 'antd';
@@ -19,7 +20,74 @@ const { Title, Text } = Typography;
 require('moment/locale/vi');
 ///
 
-const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, openNotification, scrollToStartFeedback }) => {
+/// styles
+const buttonStyle = {
+    background: 'white',
+    cursor: 'pointer',
+};
+
+const numberRatingStarStyle = {
+    color: '#ee4d2d',
+    fontSize: 19,
+    borderBottom: '1px solid #ee4d2d'
+}
+
+const ratingStarStyle = {
+    color: '#ee4d2d',
+    fontSize: 19,
+    borderBottom: '1px solid white'
+}
+const numberFeedbackProductStyle = {
+    fontSize: 19,
+    borderBottom: '1px solid black'
+}
+
+const soldCountProductStyle = {
+    fontSize: 19,
+    borderBottom: '1px solid black'
+}
+
+const feedbackProductStyle = {
+    fontSize: 16
+}
+
+const spaceRatingStarStyle = {
+    paddingRight: 25,
+    borderRight: '1px solid rgb(232, 232, 232)',
+    cursor: 'pointer'
+}
+
+const spaceFeedbackStyle = {
+    paddingLeft: 25,
+    paddingRight: 25,
+    borderRight: '1px solid rgb(232, 232, 232)',
+    cursor: 'pointer'
+}
+
+const spaceSoldCountStyle = {
+    paddingLeft: 25
+}
+
+const styleSpacePrice = {
+    backgroundColor: '#fafafa',
+    width: '100%',
+    height: '13vh',
+    padding: 15,
+    marginBottom: 20
+}
+
+const styleOriginPrice = {
+    fontSize: '1rem',
+}
+
+const styleDiscountPrice = {
+    color: '#ee4d2d',
+    fontSize: '1.875rem',
+    fontWeight: 500
+}
+///
+
+const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, scrollToStartFeedback }) => {
 
     /// states
     const [quantity, setQuantity] = useState(1);
@@ -29,6 +97,8 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     const [isLoadingButtonBuyNow, setIsLoadingButtonBuyNow] = useState(false);
     const [isLoadingButtonAddToCart, setIsLoadingButtonAddToCart] = useState(false);
     const [isWishList, setIsWishList] = useState(false);
+    const [isOpenReasons, setIsOpenReasons] = useState(false);
+    const [productVariantDefault, setProductVariantDefault] = useState({});
     ///
 
     /// variables
@@ -36,12 +106,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     const user = auth();
     ///
 
-    /// variables
-    let minPrice = 0
-    let maxPrice = 0
-    let minPriceDis = 0
-    let maxPriceDis = 0
-    ///
 
     /// contexts
     const notification = useContext(NotificationContext)
@@ -208,6 +272,13 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                 });;
         }
     }
+
+    const handleClickReportProduct = () => {
+        if (user === undefined || user === null) return navigate('/login');
+
+        // open modal reasons report product
+        setIsOpenReasons(true);
+    }
     ///
 
     /// child components
@@ -239,16 +310,6 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         return formattedPrice;
     }
 
-    const discountPrice = (price, discount) => {
-        const result = price * discount / 100
-        return (price - result)
-    }
-
-    const rangePrice = (productVariants) => {
-        const prices = productVariants?.map(variant => variant.price);
-        return [Math.min(...prices), Math.max(...prices)]
-    }
-
     const disableProduct = () => {
         return product?.productStatusId === PRODUCT_BAN ? true : false;
     }
@@ -258,6 +319,17 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     useEffect(() => {
         setQuantity(1)
     }, [handleSelectProductVariant]);
+
+    // get product variant hav price minimum
+    useEffect(() => {
+        if (productVariants.length === 0) return;
+        const productVariantPriceMinimum = productVariants.reduce((min, product) => {
+            return discountPrice(product.price, product.discount) < discountPrice(min.price, min.discount) ? product : min;
+        }, productVariants[0]);
+
+        setProductVariantDefault(productVariantPriceMinimum);
+
+    }, [productVariants]);
 
     // wish list
     useEffect(() => {
@@ -285,49 +357,11 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     ///
 
     /// styles
-    const buttonStyle = {
-        background: 'white',
-        cursor: 'pointer',
-    };
     const iconStyle = {
         fontSize: '25px',
         color: isWishList ? '#dc3545' : 'lightgray'
     };
-
-    const numberRatingStarStyle = {
-        color: '#ee4d2d',
-        fontSize: 19,
-        borderBottom: '1px solid #ee4d2d'
-    }
-
-    const ratingStarStyle = {
-        color: '#ee4d2d',
-        fontSize: 19,
-        borderBottom: '1px solid white'
-    }
-
-    const numberFeedbackProductStyle = {
-        fontSize: 19,
-        borderBottom: '1px solid black'
-    }
-
-    const feedbackProductStyle = {
-        fontSize: 16,
-    }
-
-    const spaceRatingStarStyle = { paddingRight: 25, borderRight: '1px solid rgb(232, 232, 232)', cursor: 'pointer' }
-    const spaceFeedbackStyle = { paddingLeft: 25, cursor: 'pointer' }
     ///
-
-    if (product) {
-        minPrice = rangePrice(product.productVariants)[0];
-        maxPrice = rangePrice(product.productVariants)[1];
-        minPriceDis = discountPrice(minPrice, product.discount);
-        maxPriceDis = discountPrice(maxPrice, product.discount);
-    }
-
-
-
 
     return (
         <Card className={disableProduct() ? cx('margin-bottom', 'opacity-disabled') : cx('margin-bottom')}>
@@ -342,45 +376,32 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                     <Col offset={1} span={13} style={{ padding: 15 }}>
                         <div className={disableProduct() ? cx('pointer-events-item') : ''}>
                             <Title level={3}>{product.productName}</Title>
-                            <Space align='center' style={spaceRatingStarStyle} onClick={scrollToStartFeedback}>
-                                <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct() ? calculatorRatingStarProduct().toFixed(1) : 0}</Text>
-                                <Rate disabled defaultValue={calculatorRatingStarProduct()} style={ratingStarStyle} />
+                            <Row style={{ marginBottom: 30 }}>
+                                <Space align='center' style={spaceRatingStarStyle} onClick={scrollToStartFeedback}>
+                                    {
+                                        calculatorRatingStarProduct() > 0 ? (<>
+                                            <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct() ? calculatorRatingStarProduct().toFixed(1) : 0}</Text>
+                                            <Rate disabled defaultValue={calculatorRatingStarProduct()} style={ratingStarStyle} />
+                                        </>) : (<Text style={feedbackProductStyle} type="secondary">Chưa Có Đánh Giá</Text>)
+                                    }
+                                </Space>
+                                <Space align='center' style={spaceFeedbackStyle} onClick={scrollToStartFeedback}>
+                                    <Text style={numberFeedbackProductStyle}>{formatNumber(product.numberFeedback)}</Text>
+                                    <Text style={feedbackProductStyle} type="secondary">Đánh Giá</Text>
+                                </Space>
+                                <Space align='center' style={spaceSoldCountStyle}>
+                                    <Text style={soldCountProductStyle}>{formatNumber(product.soldCount)}</Text>
+                                    <Text style={feedbackProductStyle} type="secondary">Đã Bán</Text>
+                                </Space>
+                                <Col offset={5}>
+                                    <Button type="text" onClick={handleClickReportProduct}><Text style={feedbackProductStyle} type="secondary">Tố cáo</Text></Button>
+                                </Col>
+                            </Row>
+                            <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price} />}</Text>
+                                <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price, productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount)} /></p>
+                                <div className={cx('discount-style')}>{productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount}% giảm</div>
                             </Space>
-                            <Space align='center' style={spaceFeedbackStyle} onClick={scrollToStartFeedback}>
-                                <Text style={numberFeedbackProductStyle}>{product.numberFeedback}</Text>
-                                <Text style={feedbackProductStyle} type="secondary">Đánh giá</Text>
-                            </Space>
-                            <Divider />
-                            <div className={cx('space-div-flex')}>
-                                {productVariantsSelected ? (
-                                    <Title level={4}><PriceFormat price={discountPrice(productVariantsSelected.price, product.discount)} /></Title>
-                                ) : (
-                                    <>
-                                        {
-                                            product.productVariants.length > 1 ? (<Title level={4}>{<PriceFormat price={minPriceDis} />} - {<PriceFormat price={maxPriceDis} />}</Title>)
-                                                : (product.productVariants.length === 1 ? <Title level={4}>{<PriceFormat price={discountPrice(product.productVariants[0].price, product.discount)} />}</Title> : <></>)
-                                        }
-                                    </>
-                                )}
-                            </div>
-                            <div
-                                className={cx('space-div-flex')}>
-                                {productVariantsSelected ? (
-                                    <Text delete strong type="secondary">{<PriceFormat price={productVariantsSelected.price} />}</Text>
-                                ) : (
-                                    <>
-                                        {
-                                            product.productVariants.length > 1 ? (<Text delete strong type="secondary">
-                                                {<PriceFormat price={minPrice} />} - {<PriceFormat price={maxPrice} />}
-                                            </Text>)
-                                                : (product.productVariants.length === 1 ? <Text delete strong type="secondary">{<PriceFormat price={product.productVariants[0].price} />}</Text> : <></>)
-                                        }
-                                    </>
-                                )}
-                                <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
-                            </div>
-
-                            <Divider />
                             <div style={{ marginBottom: 20 }}>
                                 <Title level={4}>Loại sản phẩm</Title>
                                 <Radio.Group>
@@ -415,7 +436,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                         </div>
 
                     </Col>
-
+                    <ReportProduct isOpenReasons={isOpenReasons} setIsOpenReasons={setIsOpenReasons} productId={product?.productId} />
                     <ModalAlert isOpen={isModalNotifyQuantityOpen} handleOk={handleOk} content={contentProductInvalidQuantity} />
                 </>) : (<Skeleton active />)}
             </Row>

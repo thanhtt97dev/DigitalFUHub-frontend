@@ -6,7 +6,7 @@ import ModalConfirmation from '~/components/Modals/ModalConfirmation';
 import { formatPrice } from '~/utils';
 import { addOrder } from '~/api/order';
 import { deleteCart } from '~/api/cart';
-import { formatNumberToK } from '~/utils';
+import { formatNumber } from '~/utils';
 import { useAuthUser } from 'react-auth-kit';
 import { getCustomerBalance } from '~/api/user';
 import { EuroCircleOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -276,16 +276,16 @@ const Prices = ({ dataPropPriceComponent }) => {
                     const data = res.data;
                     if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
                         unLoadingButtonDelete();
+                        closeModalConfirmationDelete();
+                        reloadCarts();
+
+                        // del all cart item selecteds
+                        setCartDetailIdSelecteds([]);
                     }
                 }
             })
             .catch((errors) => {
                 console.log(errors)
-            }).finally(() => {
-                setTimeout(() => {
-                    closeModalConfirmationDelete();
-                    reloadCarts();
-                }, 500)
             })
     }
     ///
@@ -319,7 +319,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                     <Divider />
                     <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
 
-                        <Text><EuroCircleOutlined />&nbsp;&nbsp;<Text type="warning">{formatNumberToK(userCoin)}</Text> - Sử dụng Coin:</Text>&nbsp;&nbsp;
+                        <Text><EuroCircleOutlined />&nbsp;&nbsp;<Text type="warning">{formatNumber(userCoin)}</Text> - Sử dụng Coin:</Text>&nbsp;&nbsp;
                         <Checkbox disabled={userCoin !== 0 && totalPrice.originPrice > 0 ? false : true} onChange={handleUseCoin}></Checkbox>
                     </div>
                     <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>

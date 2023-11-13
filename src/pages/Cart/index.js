@@ -133,7 +133,7 @@ const Cart = () => {
 
 
                     let totalDiscountPrice = cartDetailSelected.reduce((accumulator, currentValue) => {
-                        return accumulator + (discountPrice(currentValue.productVariantPrice, currentValue.productDiscount) * currentValue.quantity);
+                        return accumulator + (discountPrice(currentValue.productVariantPrice, currentValue.productVariantDiscount) * currentValue.quantity);
                     }, 0);
 
                     // total price discount product
