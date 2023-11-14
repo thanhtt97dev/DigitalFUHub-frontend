@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Col, Row, Avatar, List, Rate, Card, Typography, Space } from 'antd';
 
 import { search } from '~/api/feedback'
@@ -27,8 +27,10 @@ const cx = classNames.bind(styles);
 
 const ProductFeedback = ({ product }) => {
 
+    const { id } = useParams();
+
     const [searchParams, setSearchParams] = useState({
-        productId: 0,
+        productId: id,
         type: FEEDBACK_TYPE_ALL,
         page: 1
     })
