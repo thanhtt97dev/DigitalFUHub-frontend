@@ -91,7 +91,12 @@ const ProductDetail = () => {
             <ShopInfomations product={product} />
             <ProductDescription product={product} />
             <div ref={feedbackStartRef} />
-            <ProductFeedback product={product} />
+            {product !== null && product.numberFeedback > 0 ?
+                <ProductFeedback product={product} />
+                :
+                <></>
+            }
+
         </>
     )
 }
