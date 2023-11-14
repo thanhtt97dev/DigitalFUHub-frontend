@@ -3,6 +3,7 @@ import ProductVariantDetail from '~/components/ProductDetails/ProductVariantDeta
 import ShopInfomations from '~/components/ProductDetails/ShopInfomation';
 import ProductDescription from '~/components/ProductDetails/ProductDescription';
 import ProductFeedback from '~/components/ProductDetails/ProductFeedback';
+import Spinning from "~/components/Spinning";
 import { getProductById } from '~/api/product';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RESPONSE_CODE_PRODUCT_ACTIVE, RESPONSE_CODE_PRODUCT_BAN, RESPONSE_CODE_PRODUCT_REMOVE, RESPONSE_CODE_PRODUCT_HIDE, RESPONSE_CODE_DATA_NOT_FOUND } from '~/constants';
@@ -11,9 +12,10 @@ const ProductDetail = () => {
 
     /// states
     const { id } = useParams();
-    const [product, setProduct] = useState(null)
-    const [productVariants, setProductVariants] = useState([])
-    const [productVariantsSelected, setProductVariantsSelected] = useState(null)
+    const [product, setProduct] = useState(null);
+    const [productVariants, setProductVariants] = useState([]);
+    const [productVariantsSelected, setProductVariantsSelected] = useState(null);
+    const [isLoadingInfoProduct, setIsLoadingInfoProduct] = useState(true);
     const navigate = useNavigate()
     ///
 
@@ -66,12 +68,13 @@ const ProductDetail = () => {
                             setProduct(result)
                             setProductVariants([...result.productVariants])
                         }
-
+                        setIsLoadingInfoProduct(false);
                     }
                 })
                 .catch((errors) => {
                     console.log(errors)
                 })
+
         }
 
         getDetailProduct();
@@ -81,7 +84,7 @@ const ProductDetail = () => {
     ///
 
     return (
-        <>
+        <Spinning spinning={isLoadingInfoProduct}>
             <ProductVariantDetail
                 productVariants={productVariants}
                 handleSelectProductVariant={handleSelectProductVariant}
@@ -92,7 +95,7 @@ const ProductDetail = () => {
             <ProductDescription product={product} />
             <div ref={feedbackStartRef} />
             <ProductFeedback product={product} />
-        </>
+        </Spinning>
     )
 }
 
