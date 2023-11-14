@@ -208,7 +208,7 @@ const WishList = () => {
                                 <div style={styleContainerImage} className={cx('margin-bottom')}>
                                     <Image style={styleImage} src={product.thumbnail} />
                                     {
-                                        product.productStatusId === PRODUCT_BAN ? <div className={cx('circle')}> Sản phẩm này đã bị BAN</div> : <></>
+                                        product.productStatusId === PRODUCT_BAN ? <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div> : <></>
                                     }
                                 </div>
                                 <Link to={'/product/' + product.productId} className={cx('flex-item-center')}><Title level={4}>{product.productName}</Title></Link>

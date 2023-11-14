@@ -370,7 +370,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                     <Col span={10} style={{ padding: 15 }}>
                         <ProductMedias productMedias={product.productMedias} />
                         {
-                            disableProduct() ? <div className={cx('circle')}> Sản phẩm này đã bị BAN</div> : <></>
+                            disableProduct() ? <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div> : <></>
                         }
                     </Col>
                     <Col offset={1} span={13} style={{ padding: 15 }}>
