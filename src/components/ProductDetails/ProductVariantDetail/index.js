@@ -429,20 +429,7 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                         </Space>
                                     )
                                 )
-
-                                // productVariantsSelected?.discount !== 0 ? (
-                                //     <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
-                                //         <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price} />}</Text>
-                                //         <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price, productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount)} /></p>
-                                //         <div className={cx('discount-style')}>{productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount}% giảm</div>
-                                //     </Space>
-                                // ) : (
-                                //     <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
-                                //         <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price, productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount)} /></p>
-                                //     </Space>
-                                // )
                             }
-
                             <div style={{ marginBottom: 20 }}>
                                 <Title level={4}>Loại sản phẩm</Title>
                                 <Radio.Group>

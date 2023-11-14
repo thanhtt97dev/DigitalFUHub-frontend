@@ -162,6 +162,15 @@ const WishList = () => {
     const handleOpenConfirmationDeleteSelecteds = () => {
         setIsOpenModalConfirmationDelete(true);
     }
+
+    const handleCheckAll = (e) => {
+        if (e.target.checked) {
+            const allProductIds = products.map(x => x.productId)
+            setProductIdSlecteds(allProductIds);
+        } else {
+            setProductIdSlecteds([]);
+        }
+    }
     ///
 
 
@@ -174,11 +183,15 @@ const WishList = () => {
         setIsEdit(false);
         setProductIdSlecteds([]);
     }
-
     ///
 
+    // checkbox all item
+    const checkAll = productIdSlecteds.length === products.length;
+    const indeterminateCheckAll = productIdSlecteds.length > 0 && productIdSlecteds.length < products.length;
+    //
+
     return (
-        <Card title="Danh sách các sản phẩm yêu thích" style={styleContainer}
+        <Card title={<Space size={20} align="center">{isEdit ? <Checkbox onChange={handleCheckAll} indeterminate={indeterminateCheckAll} checked={checkAll}></Checkbox> : <></>}<p>Danh sách các sản phẩm yêu thích</p></Space>} style={styleContainer}
             extra={<>
                 {products.length > 0 && (isEdit ? <Button type="link" onClick={handleClickComplete}><Text type="success">Hoàn tất</Text></Button>
                     : <Button type="link" danger onClick={handleClickEdit}>Chỉnh sửa</Button>)}
@@ -199,11 +212,22 @@ const WishList = () => {
                                     }
                                 </div>
                                 <Link to={'/product/' + product.productId} className={cx('flex-item-center')}><Title level={4}>{product.productName}</Title></Link>
-                                <Space align="center" className={cx('flex-item-center', 'margin-bottom')}>
-                                    <Text delete strong type="secondary" style={styleOriginPrice}>{formatPrice(product.productVariant.price)}</Text>
-                                    <p level={4} style={styleDiscountPrice}>{formatPrice(discountPrice(product.productVariant.price, product.productVariant.discount))}</p>
-                                    <div className={cx('discount-style')}>{product.productVariant.discount}% giảm</div>
-                                </Space>
+
+                                {
+                                    product.productVariant?.discount !== 0 ? (
+                                        <Space align="center" className={cx('flex-item-center', 'margin-bottom')}>
+                                            <Text delete strong type="secondary" style={styleOriginPrice}>{formatPrice(product.productVariant.price)}</Text>
+                                            <p level={4} style={styleDiscountPrice}>{formatPrice(discountPrice(product.productVariant.price, product.productVariant.discount))}</p>
+                                            <div className={cx('discount-style')}>{product.productVariant.discount}% giảm</div>
+                                        </Space>
+                                    ) : (
+                                        <Space align="center" className={cx('flex-item-center', 'margin-bottom')}>
+                                            <p level={4} style={styleDiscountPrice}>{formatPrice(product.productVariant.price)}</p>
+                                        </Space>
+                                    )
+                                }
+
+
 
                                 {isEdit ? (<div className={cx('flex-item-center')} style={unDisableCardStyle}><Checkbox value={product.productId} /></div>) : (
                                     <Space style={unDisableCardStyle} align="center" size={30} className={cx('flex-item-center', 'margin-bottom')}>
