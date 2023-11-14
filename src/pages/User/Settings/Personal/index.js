@@ -3,7 +3,7 @@ import classNames from 'classnames/bind';
 import styles from './Personal.module.scss';
 import { useAuthUser } from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
-import { PlusOutlined } from '@ant-design/icons';
+import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import { getUserById, editUserInfo } from "~/api/user";
 import { NotificationContext } from "~/context/UI/NotificationContext";
@@ -11,28 +11,28 @@ import { Col, Row, Form, Input, Button, Upload, Card, Avatar } from 'antd';
 
 ///
 const cx = classNames.bind(styles);
-
-const normFile = (e) => {
-    if (Array.isArray(e)) {
-        return e;
-    }
-    return e?.fileList;
-};
+const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
 ///
 
 /// styles
 const styleCard = { width: '100%' }
 ///
 
-
 function Personal() {
 
     /// states
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState({});
-    const [isEditingAvatar, setIsEditingAvatar] = useState(false);
+    const [imgPreview, setImgPreview] = useState('');
     const [reloadUserInfoFlag, setReloadUserInfoFlag] = useState(false);
     const [isloadingButtonSave, setIsloadingButtonSave] = useState(false);
+    const [fileList, setFileList] = useState([]);
     const [form] = Form.useForm();
     ///
 
@@ -76,11 +76,6 @@ function Personal() {
     ///
 
     /// handles
-    const handleEditAvatar = () => {
-        if (isEditingAvatar) form.resetFields();
-        setIsEditingAvatar(!isEditingAvatar);
-    };
-
     const loadingButtonSave = () => {
         setIsloadingButtonSave(true);
     }
@@ -100,15 +95,14 @@ function Personal() {
 
         const { fileUpload, fullName } = values;
 
-        var bodyFormData = new FormData();
-
-        if (fullName) bodyFormData.append('Fullname', fullName);
-        bodyFormData.append('UserId', user.id);
-        for (var i = 0; i < fileUpload?.length || 0; i++) {
-            bodyFormData.append('avatar', fileUpload[i].originFileObj);
+        // data request dto
+        const dataRequest = {
+            userId: user.id,
+            fullName: fullName,
+            avatar: fileUpload ? fileUpload.fileList[0].originFileObj : null
         }
 
-        editUserInfo(bodyFormData)
+        editUserInfo(dataRequest)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
@@ -117,11 +111,8 @@ function Personal() {
                         reloadUserInfo();
                         notification("success", "Chỉnh sửa thông tin thành công");
 
-
-                        setIsEditingAvatar(false);
                         form.resetFields();
                         unLoadingButtonSave();
-
                     }
                 }
             })
@@ -129,6 +120,24 @@ function Personal() {
                 console.error(error);
             });
 
+    };
+
+    const handlePreview = async (file) => {
+        const imgBase64 = await getBase64(file.originFileObj);
+        setImgPreview(imgBase64);
+    };
+
+    const handleChange = (info) => {
+        let newFileList = [...info.fileList];
+        newFileList = newFileList.slice(-1);
+        newFileList = newFileList.map((file) => {
+            if (file.response) {
+                file.url = file.response.url;
+            }
+            return file;
+        });
+        setFileList(newFileList);
+        handlePreview(newFileList[0]);
     };
     ///
 
@@ -151,7 +160,7 @@ function Personal() {
                                     <Col span={17}>
                                         <Input value={userInfo.fullname} style={{ width: '100%' }} onChange={(e) => setUserInfo({ ...userInfo, fullname: e.target.value })} />
                                         <p style={{ color: 'gray', marginTop: 10 }}>
-                                            Tên của bạn xuất hiện trên trang cá nhân và bên cạnh các bình luận của bạn.
+                                            Tên của bạn xuất hiện trên trang cá nhân và bên cạnh các đánh giá của bạn.
                                         </p>
                                     </Col>
                                 </Row>
@@ -186,20 +195,21 @@ function Personal() {
 
                         <Col span={8}>
                             <div className={cx('container-image')}>
-                                {!isEditingAvatar ? (
-                                    <Avatar size={100} src={userInfo.avatar} />
-                                ) : (
-                                    <Form.Item name="fileUpload" valuePropName="fileList" getValueFromEvent={normFile}>
-                                        <Upload listType="picture-card" maxCount={1}>
-                                            <div>
-                                                <PlusOutlined />
-                                                <div>Upload</div>
-                                            </div>
-                                        </Upload>
-                                    </Form.Item>
-                                )}
-                                <Button type="primary" onClick={handleEditAvatar} style={{ marginTop: 10 }}>Chọn ảnh</Button>
-                                <p style={{ color: 'gray', marginTop: 10 }}>JPG, PNG hoặc GIF</p>
+                                {imgPreview ?
+                                    <Avatar size={100} src={imgPreview} />
+                                    :
+                                    userInfo ? <Avatar size={100} src={userInfo.avatar} /> : <Avatar size={100} icon={<UserOutlined />} />
+
+                                }
+
+                                <Form.Item name='fileUpload' required style={{ width: '100%', textAlign: 'center' }}>
+                                    <Upload showUploadList={false} maxCount={1} fileList={fileList} onChange={handleChange}
+                                        accept=".png, .jpeg, .jpg"
+                                    >
+                                        <Button icon={<UploadOutlined />}>Tải lên</Button>
+                                        <div style={{ textAlign: 'center' }}> (PNG, JPG hoặc JPEG)</div>
+                                    </Upload>
+                                </Form.Item>
                             </div>
                         </Col>
                     </Row >

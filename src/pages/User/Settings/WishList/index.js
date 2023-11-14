@@ -16,22 +16,24 @@ const { Title, Text } = Typography;
 const cx = classNames.bind(styles);
 ///
 
-
-const RangeOriginPriceProductVariant = ({ productVariants }) => {
-    const priceProductVariant = productVariants.map(x => x.price);
-    const minPrice = Math.min(...priceProductVariant);
-    const maxPrice = Math.max(...priceProductVariant);
-
-    return <Text delete strong type="secondary">{formatPrice(minPrice)} - {formatPrice(maxPrice)}</Text>
+/// styles
+const styleImage = { width: '250px', height: '250px', borderRadius: 7 }
+const styleCardItem = {
+    width: 270,
+    height: 400,
+    backgroundColor: '#fff',
+    borderRadius: '10px',
+    boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.2)',
 }
+const styleContainerImage = { width: '100%', textAlign: 'center' }
+const styleContainer = { width: '100%', minHeight: '100vh' }
+const disableCardStyle = { padding: 10, opacity: 0.4, pointerEvents: 'none' };
+const unDisableCardStyle = { opacity: 1, pointerEvents: 'auto' };
+const paddingCartBodyStyle = { padding: 10 }
+const styleOriginPrice = { fontSize: '0.9rem' }
+const styleDiscountPrice = { color: '#ee4d2d', fontSize: '1.3rem', fontWeight: 400 }
+///
 
-const RangeDiscountPriceProductVariant = ({ productVariants, discount }) => {
-    const priceProductVariant = productVariants.map(x => x.price);
-    const minPrice = discountPrice(Math.min(...priceProductVariant), discount);
-    const maxPrice = discountPrice(Math.max(...priceProductVariant), discount);
-
-    return <Text strong>{formatPrice(minPrice)} - {formatPrice(maxPrice)}</Text>
-}
 
 const WishList = () => {
     /// states
@@ -76,6 +78,7 @@ const WishList = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reloadProductsFlag]);
+
     ///
 
 
@@ -159,6 +162,15 @@ const WishList = () => {
     const handleOpenConfirmationDeleteSelecteds = () => {
         setIsOpenModalConfirmationDelete(true);
     }
+
+    const handleCheckAll = (e) => {
+        if (e.target.checked) {
+            const allProductIds = products.map(x => x.productId)
+            setProductIdSlecteds(allProductIds);
+        } else {
+            setProductIdSlecteds([]);
+        }
+    }
     ///
 
 
@@ -173,24 +185,13 @@ const WishList = () => {
     }
     ///
 
-    /// styles
-    const styleImage = { width: '32vh', height: '32vh', borderRadius: 7 }
-    const styleCardItem = {
-        minWidth: '35vh',
-        minHeight: '60vh',
-        backgroundColor: '#fff',
-        borderRadius: '10px',
-        boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.2)',
-    }
-    const styleContainerImage = { width: '100%', textAlign: 'center' }
-    const styleContainer = { width: '100%', minHeight: '100vh' }
-    const disableCardStyle = { padding: 10, opacity: 0.4, pointerEvents: 'none' };
-    const unDisableCardStyle = { opacity: 1, pointerEvents: 'auto' };
-    const paddingCartBodyStyle = { padding: 10 }
-    ///
+    // checkbox all item
+    const checkAll = productIdSlecteds.length === products.length;
+    const indeterminateCheckAll = productIdSlecteds.length > 0 && productIdSlecteds.length < products.length;
+    //
 
     return (
-        <Card title="Danh sách các sản phẩm yêu thích" style={styleContainer}
+        <Card title={<Space size={20} align="center">{isEdit ? <Checkbox onChange={handleCheckAll} indeterminate={indeterminateCheckAll} checked={checkAll}></Checkbox> : <></>}<p>Danh sách các sản phẩm yêu thích</p></Space>} style={styleContainer}
             extra={<>
                 {products.length > 0 && (isEdit ? <Button type="link" onClick={handleClickComplete}><Text type="success">Hoàn tất</Text></Button>
                     : <Button type="link" danger onClick={handleClickEdit}>Chỉnh sửa</Button>)}
@@ -207,19 +208,26 @@ const WishList = () => {
                                 <div style={styleContainerImage} className={cx('margin-bottom')}>
                                     <Image style={styleImage} src={product.thumbnail} />
                                     {
-                                        product.productStatusId === PRODUCT_BAN ? <div className={cx('circle')}> Sản phẩm này đã bị BAN</div> : <></>
+                                        product.productStatusId === PRODUCT_BAN ? <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div> : <></>
                                     }
                                 </div>
                                 <Link to={'/product/' + product.productId} className={cx('flex-item-center')}><Title level={4}>{product.productName}</Title></Link>
-                                <Space align="center" className={cx('flex-item-center', 'margin-bottom')}>
-                                    {product.productVariants.length > 1 ? (<RangeOriginPriceProductVariant productVariants={product.productVariants} />)
-                                        : (product.productVariants.length === 1 ? <Text delete strong type="secondary">{formatPrice(product.productVariants[0].price)}</Text> : <></>)}
-                                    <div className={cx('red-box')}><p className={cx('text-discount')}>-{product.discount}%</p></div>
-                                </Space>
-                                <div className={cx('flex-item-center', 'margin-bottom')}>
-                                    {product.productVariants.length > 1 ? (<RangeDiscountPriceProductVariant productVariants={product.productVariants} discount={product.discount} />)
-                                        : (product.productVariants.length === 1 ? <Text strong>{formatPrice(discountPrice(product.productVariants[0].price, product.discount))}</Text> : <></>)}
-                                </div>
+
+                                {
+                                    product.productVariant?.discount !== 0 ? (
+                                        <Space align="center" className={cx('flex-item-center', 'margin-bottom')}>
+                                            <Text delete strong type="secondary" style={styleOriginPrice}>{formatPrice(product.productVariant.price)}</Text>
+                                            <p level={4} style={styleDiscountPrice}>{formatPrice(discountPrice(product.productVariant.price, product.productVariant.discount))}</p>
+                                            <div className={cx('discount-style')}>{product.productVariant.discount}% giảm</div>
+                                        </Space>
+                                    ) : (
+                                        <Space align="center" className={cx('flex-item-center', 'margin-bottom')}>
+                                            <p level={4} style={styleDiscountPrice}>{formatPrice(product.productVariant.price)}</p>
+                                        </Space>
+                                    )
+                                }
+
+
 
                                 {isEdit ? (<div className={cx('flex-item-center')} style={unDisableCardStyle}><Checkbox value={product.productId} /></div>) : (
                                     <Space style={unDisableCardStyle} align="center" size={30} className={cx('flex-item-center', 'margin-bottom')}>
