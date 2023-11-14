@@ -160,7 +160,7 @@ function Personal() {
                                     <Col span={17}>
                                         <Input value={userInfo.fullname} style={{ width: '100%' }} onChange={(e) => setUserInfo({ ...userInfo, fullname: e.target.value })} />
                                         <p style={{ color: 'gray', marginTop: 10 }}>
-                                            Tên của bạn xuất hiện trên trang cá nhân và bên cạnh các bình luận của bạn.
+                                            Tên của bạn xuất hiện trên trang cá nhân và bên cạnh các đánh giá của bạn.
                                         </p>
                                     </Col>
                                 </Row>

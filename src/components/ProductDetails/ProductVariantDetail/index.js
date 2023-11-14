@@ -71,7 +71,7 @@ const spaceSoldCountStyle = {
 const styleSpacePrice = {
     backgroundColor: '#fafafa',
     width: '100%',
-    height: '13vh',
+    height: '70px',
     padding: 15,
     marginBottom: 20
 }
@@ -376,32 +376,73 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                     <Col offset={1} span={13} style={{ padding: 15 }}>
                         <div className={disableProduct() ? cx('pointer-events-item') : ''}>
                             <Title level={3}>{product.productName}</Title>
-                            <Row style={{ marginBottom: 30 }}>
-                                <Space align='center' style={spaceRatingStarStyle} onClick={scrollToStartFeedback}>
-                                    {
-                                        calculatorRatingStarProduct() > 0 ? (<>
-                                            <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct() ? calculatorRatingStarProduct().toFixed(1) : 0}</Text>
-                                            <Rate disabled defaultValue={calculatorRatingStarProduct()} style={ratingStarStyle} />
-                                        </>) : (<Text style={feedbackProductStyle} type="secondary">Chưa Có Đánh Giá</Text>)
-                                    }
-                                </Space>
-                                <Space align='center' style={spaceFeedbackStyle} onClick={scrollToStartFeedback}>
-                                    <Text style={numberFeedbackProductStyle}>{formatNumber(product.numberFeedback)}</Text>
-                                    <Text style={feedbackProductStyle} type="secondary">Đánh Giá</Text>
-                                </Space>
-                                <Space align='center' style={spaceSoldCountStyle}>
-                                    <Text style={soldCountProductStyle}>{formatNumber(product.soldCount)}</Text>
-                                    <Text style={feedbackProductStyle} type="secondary">Đã Bán</Text>
-                                </Space>
-                                <Col offset={5}>
+                            <Row style={{ marginBottom: 30, display: 'flex' }}>
+                                <Col>
+                                    <Space align='center' style={spaceRatingStarStyle} onClick={scrollToStartFeedback}>
+                                        {
+                                            calculatorRatingStarProduct() > 0 ? (<>
+                                                <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct() ? calculatorRatingStarProduct().toFixed(1) : 0}</Text>
+                                                <Rate disabled defaultValue={calculatorRatingStarProduct()} style={ratingStarStyle} />
+                                            </>) : (<Text style={feedbackProductStyle} type="secondary">Chưa Có Đánh Giá</Text>)
+                                        }
+                                    </Space>
+                                </Col>
+                                <Col>
+                                    <Space align='center' style={spaceFeedbackStyle} onClick={scrollToStartFeedback}>
+                                        <Text style={numberFeedbackProductStyle}>{formatNumber(product.numberFeedback)}</Text>
+                                        <Text style={feedbackProductStyle} type="secondary">Đánh Giá</Text>
+                                    </Space>
+                                </Col>
+                                <Col>
+                                    <Space align='center' style={spaceSoldCountStyle}>
+                                        <Text style={soldCountProductStyle}>{formatNumber(product.soldCount)}</Text>
+                                        <Text style={feedbackProductStyle} type="secondary">Đã Bán</Text>
+                                    </Space>
+                                </Col>
+                                <Col style={{ marginLeft: 'auto' }}>
                                     <Button type="text" onClick={handleClickReportProduct}><Text style={feedbackProductStyle} type="secondary">Tố cáo</Text></Button>
                                 </Col>
                             </Row>
-                            <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
-                                <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price} />}</Text>
-                                <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price, productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount)} /></p>
-                                <div className={cx('discount-style')}>{productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount}% giảm</div>
-                            </Space>
+                            {
+                                productVariantsSelected ? (
+                                    productVariantsSelected?.discount !== 0 ? (
+                                        <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                            <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantsSelected.price} />}</Text>
+                                            <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantsSelected.price, productVariantsSelected.discount)} /></p>
+                                            <div className={cx('discount-style')}>{productVariantsSelected.discount}% giảm</div>
+                                        </Space>
+                                    ) : (
+                                        <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                            <p level={4} style={styleDiscountPrice}><PriceFormat price={productVariantsSelected.price} /></p>
+                                        </Space>
+                                    )
+                                ) : (
+                                    productVariantDefault?.discount !== 0 ? (
+                                        <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                            <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantDefault.price} />}</Text>
+                                            <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantDefault.price, productVariantDefault.discount)} /></p>
+                                            <div className={cx('discount-style')}>{productVariantDefault.discount}% giảm</div>
+                                        </Space>
+                                    ) : (
+                                        <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                            <p level={4} style={styleDiscountPrice}><PriceFormat price={productVariantDefault.price} /></p>
+                                        </Space>
+                                    )
+                                )
+
+                                // productVariantsSelected?.discount !== 0 ? (
+                                //     <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                //         <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price} />}</Text>
+                                //         <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price, productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount)} /></p>
+                                //         <div className={cx('discount-style')}>{productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount}% giảm</div>
+                                //     </Space>
+                                // ) : (
+                                //     <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                //         <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantsSelected ? productVariantsSelected.price : productVariantDefault.price, productVariantsSelected ? productVariantsSelected.discount : productVariantDefault.discount)} /></p>
+                                //     </Space>
+                                // )
+                            }
+
                             <div style={{ marginBottom: 20 }}>
                                 <Title level={4}>Loại sản phẩm</Title>
                                 <Radio.Group>
