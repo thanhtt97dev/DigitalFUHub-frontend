@@ -6,6 +6,11 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 
 import { createDepositTransaction } from "~/api/bank";
 
+import {
+    RESPONSE_CODE_SUCCESS,
+    RESPONSE_CODE_BANK_CUSTOMER_REQUEST_DEPOSIT_EXCEEDED_REQUESTS_CREATED
+} from "~/constants";
+
 function ModalRequestDeposit({ userId, text, style }) {
 
     const [api, contextHolder] = notification.useNotification();
@@ -37,9 +42,16 @@ function ModalRequestDeposit({ userId, text, style }) {
         setConfirmLoading(true);
         createDepositTransaction(data)
             .then((res) => {
-                console.log(res)
-                setOpenModal(false)
-                return navigate("/deposit", { state: { amount: amount, code: res.data.code } })
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    var data = res.data.result;
+                    setOpenModal(false)
+                    return navigate("/deposit", { state: { amount: data.amount, code: data.code } })
+                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_DEPOSIT_EXCEEDED_REQUESTS_CREATED) {
+                    notification("error", "Xin lỗi bạn đã tạo đủ 100 yêu cầu trong ngày hôm nay! Hãy trở lại vào ngày mai nhá!")
+                } else {
+                    notification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
+                }
+
             })
             .catch(() => {
                 openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")

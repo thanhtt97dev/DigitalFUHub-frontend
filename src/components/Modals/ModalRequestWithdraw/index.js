@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Divider, Modal, Button, Input, Card, Space } from "antd";
 
 import { ExclamationCircleFilled } from "@ant-design/icons";
@@ -9,7 +9,7 @@ import { NotificationContext } from '~/context/UI/NotificationContext';
 import {
     RESPONSE_CODE_SUCCESS,
     RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_INSUFFICIENT_BALANCE,
-    RESPONSE_CODE_BANK_CUSTOMER_REQUEST_EXCEEDED_REQUESTS_CREATED
+    RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED
 } from '~/constants'
 import { formatPrice } from "~/utils";
 
@@ -66,7 +66,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                     setCustomerBalance(res.data.result)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_INSUFFICIENT_BALANCE) {
                     notification("error", "Số dư không đủ!")
-                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_EXCEEDED_REQUESTS_CREATED) {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED) {
                     notification("error", "Xin lỗi bạn đã tạo đủ 50 yêu cầu trong ngày hôm nay! Hãy trở lại vào ngày mai nhá!")
                 } else {
                     notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")

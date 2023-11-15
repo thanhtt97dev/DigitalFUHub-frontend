@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, notification, Select, Row, Col } from "antd";
+import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
 import { useAuthUser } from 'react-auth-kit'
+import { NotificationContext } from '~/context/UI/NotificationContext';
 
 import { getDepositTransaction } from '~/api/bank'
 import Spinning from "~/components/Spinning";
 import { formatPrice, ParseDateTime } from '~/utils/index'
 import dayjs from 'dayjs';
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import {
+    RESPONSE_CODE_SUCCESS,
+} from "~/constants";
 import ModalRequestDeposit from "~/components/Modals/ModalRequestDeposit";
 
 
@@ -89,16 +92,10 @@ const columns = [
 ];
 
 function HistoryDeposit() {
+    const notification = useContext(NotificationContext);
     const auth = useAuthUser()
     const user = auth();
     const [loading, setLoading] = useState(true)
-    const [api, contextHolder] = notification.useNotification();
-    const openNotification = (type, message) => {
-        api[type]({
-            message: `Thông báo`,
-            description: `${message}`
-        });
-    };
 
     const [form] = Form.useForm();
     const [dataTable, setDataTable] = useState([]);
@@ -115,11 +112,11 @@ function HistoryDeposit() {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setDataTable(res.data.result)
                 } else {
-                    openNotification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
+                    notification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
                 }
             })
             .catch((err) => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
                 setTimeout(() => { setLoading(false) }, 500)
@@ -146,7 +143,7 @@ function HistoryDeposit() {
     const onFinish = (values) => {
         setLoading(true);
         if (values.date === null) {
-            openNotification("error", "Thời gian tạo yêu cầu không được trống!")
+            notification("error", "Thời gian tạo yêu cầu không được trống!")
             setLoading(false);
             return;
         }
@@ -163,7 +160,6 @@ function HistoryDeposit() {
 
     return (
         <>
-            {contextHolder}
             <Spinning spinning={loading}>
                 <Card
                     style={{
