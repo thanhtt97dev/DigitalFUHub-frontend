@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState, useContext } from "react";
-import { Divider, Modal, Button, Input } from "antd";
+import { Divider, Modal, Button, Input, Card, Space } from "antd";
 
 import { ExclamationCircleFilled } from "@ant-design/icons";
 
@@ -8,9 +8,15 @@ import { getCustomerBalance } from '~/api/user'
 import { NotificationContext } from '~/context/UI/NotificationContext';
 import {
     RESPONSE_CODE_SUCCESS,
-    RESPONSE_CODE_DATA_NOT_FOUND,
     RESPONSE_CODE_NOT_ACCEPT
 } from '~/constants'
+import { formatPrice } from "~/utils";
+
+const styleCardItem = {
+    backgroundColor: '#fff',
+    borderRadius: '10px',
+    boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.2)',
+}
 
 function ModalRequestWithdraw({ userId, text, style, callBack }) {
 
@@ -29,7 +35,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
         }
         getCustomerBalance(userId)
             .then((res) => {
-                setCustomerBalance(res.data)
+                setCustomerBalance(res.data.result)
             })
             .catch((err) => {
                 notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
@@ -127,6 +133,13 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                 width={"35%"}
             >
                 <>
+                    <Card
+                        style={styleCardItem}
+                    >
+                        <Space>
+                            <h5>Số dư:</h5> <h3 style={{ color: "#007bff" }}>{formatPrice(customerBalance)}</h3>
+                        </Space>
+                    </Card>
                     <Divider />
                     <p>Hãy nhập số tiền bạn muồn rút:</p>
                     <div style={{ textAlign: "center", margin: "0 auto", marginBottom: "10px" }}>
