@@ -37,6 +37,7 @@ import AddCoupon from '~/pages/Seller/ManageCoupon/AddCoupon';
 import EditCoupon from '~/pages/Seller/ManageCoupon/EditCoupon';
 import CouponDetail from '~/pages/Seller/ManageCoupon/Detail';
 import EditShop from '~/pages/Seller/ManageShop/Edit/EditShop';
+import ShopDetail from '~/pages/ShopDetail';
 
 const routesConfig = [
     {
@@ -273,6 +274,12 @@ const routesConfig = [
         path: '/cart',
         layout: <NormalLayout />,
         component: <Cart />,
+    },
+    {
+        title: 'Shop',
+        path: '/shop/:userId',
+        layout: <NormalLayout />,
+        component: <ShopDetail />
     },
     {
         title: 'Privacy Policy',

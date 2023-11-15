@@ -1,4 +1,4 @@
-import { apiGetAuth, apiPostAuth, apiPostAuthForm } from '../defaultApi';
+import { apiGetAuth, apiPostAuth, apiPostAuthForm, apiGet } from '../defaultApi';
 
 export const getShopOfSeller = () => {
     return apiGetAuth(`api/Shops/Seller/Get`);
@@ -15,3 +15,9 @@ export const checkExistShopName = async (data) => {
 export const registerShop = (data) => {
     return apiPostAuthForm('api/Shops/Register', data);
 }
+
+export const getShopDetail = (userId) => {
+    return apiGet(`api/Shops/GetDetail/${userId}`);
+}
+
+
