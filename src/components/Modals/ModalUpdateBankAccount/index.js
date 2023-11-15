@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Divider, notification, Modal, Button, Input, Select, Form, Space } from "antd";
+import { Divider, Modal, Button, Input, Select, Form, Space } from "antd";
 import { ExclamationCircleFilled, RedoOutlined } from "@ant-design/icons";
+
+import { NotificationContext } from '~/context/UI/NotificationContext';
 
 import { BANKS_INFO, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { inquiryAccountName, updateBankAccount } from '~/api/bank'
@@ -31,7 +33,7 @@ BANKS_INFO.forEach((bank) => {
 
 function ModalUpdateBankAccount({ userId, callBack }) {
 
-    const [api, contextHolder] = notification.useNotification();
+    const notification = useContext(NotificationContext);
     const navigate = useNavigate();
     const [form] = Form.useForm();
 
@@ -52,19 +54,12 @@ function ModalUpdateBankAccount({ userId, callBack }) {
 
     useEffect(() => {
         if (userId === null) {
-            openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+            notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             return navigate("/settings")
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-    const openNotification = (type, message) => {
-        api[type]({
-            message: `Thông báo`,
-            description: `${message}`
-        });
-    };
 
     const filterOptions = (inputValue, option) => {
         return option.props.name.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1;
@@ -90,13 +85,13 @@ function ModalUpdateBankAccount({ userId, callBack }) {
                     setBankAccountName(res.data.result)
                     setDisableInput(true)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
-                    openNotification("error", "Tài khoản ngân hàng không tồn tại!")
+                    notification("error", "Tài khoản ngân hàng không tồn tại!")
                 } else {
-                    openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
+                    notification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
                 }
             })
             .catch((err) => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
                 setTimeout(() => {
@@ -108,7 +103,7 @@ function ModalUpdateBankAccount({ userId, callBack }) {
 
     const handleSubmit = () => {
         if (!disableInput) {
-            openNotification("error", "Bạn chư điền đủ thông tin! Hãy thử lại!")
+            notification("error", "Bạn chư điền đủ thông tin! Hãy thử lại!")
             return;
         }
 
@@ -117,16 +112,16 @@ function ModalUpdateBankAccount({ userId, callBack }) {
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOpenModal(false)
-                    openNotification("success", "Thay đổi tài khoản ngân hàng thành công!")
+                    notification("success", "Thay đổi tài khoản ngân hàng thành công!")
                     callBack();
                 } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
-                    openNotification("error", "Mỗi lần thay đổi bạn cần chờ 15 ngày mới có thể thay đổi tài khoản khác!")
+                    notification("error", "Mỗi lần thay đổi bạn cần chờ 3 ngày mới có thể thay đổi tài khoản khác!")
                 } else {
-                    openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
+                    notification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
                 }
             })
             .catch(() => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
                 setTimeout(() => {
@@ -150,8 +145,6 @@ function ModalUpdateBankAccount({ userId, callBack }) {
 
     return (
         <>
-            {contextHolder}
-
             <Button
                 type="primary"
                 style={{ background: "#28a745" }}

@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Typography, notification, Space, Card } from "antd";
+import React, { useEffect, useState, useContext } from "react";
+import { Typography, Space, Card } from "antd";
 
 import { getUserBankAccount } from '~/api/bank'
 
 import { getUserId } from "~/utils";
 import ModalAddBankAccount from "~/components/Modals/ModalAddBankAccount";
 import UserBankAccountInfo from "~/components/UserBankAccountInfo";
+
+import { NotificationContext } from '~/context/UI/NotificationContext';
 
 import classNames from 'classnames/bind';
 import styles from './BankAccount.module.scss';
@@ -17,19 +19,11 @@ const { Title } = Typography;
 
 function BankAccount() {
 
-    const [api, contextHolder] = notification.useNotification();
+    const notification = useContext(NotificationContext);
 
     const userId = getUserId();
     const [userBank, setUserBank] = useState(null);
     const [getUserBankInfoSuccess, SetGetUserBankInfoSuccess] = useState(false);
-
-
-    const openNotification = (type, message) => {
-        api[type]({
-            message: `Thông báo`,
-            description: `${message}`
-        });
-    };
 
     // get data
     useEffect(() => {
@@ -45,7 +39,7 @@ function BankAccount() {
                 }
             })
             .catch(() => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
                 setTimeout(() => {
@@ -56,8 +50,6 @@ function BankAccount() {
 
     return (
         <>
-            {contextHolder}
-
             <Spinning spinning={!getUserBankInfoSuccess}>
                 <Card
                     title="Tài khoản ngân hàng"
