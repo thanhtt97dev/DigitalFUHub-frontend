@@ -3,7 +3,7 @@ import AccessDenied from '~/pages/AccessDenied';
 import Home from '~/pages/Home';
 import NormalLayout from '~/layouts/NormalLayout';
 import Verification2FA from '~/pages/Verification2FA';
-import SettingsLayout from '~/pages/User/Settings/SettingsLayout';
+import SettingsLayout from '~/layouts/SettingsLayout';
 import Personal from '~/pages/User/Settings/Personal';
 import Security from '~/pages/User/Settings/Security';
 import WishList from '~/pages/User/Settings/WishList';
@@ -16,8 +16,6 @@ import SellerLayout from '~/layouts/SellerLayout';
 import PrivacyPolicy from '~/pages/Policy/PrivacyPolicy';
 import FAQ from '~/pages/Policy/FAQ';
 import WarrantPolicy from '~/pages/Policy/WarrantPolicy';
-
-import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ConfirmEmail from '~/pages/ConfirmEmail';
 import ResetPassword from '~/pages/ResetPassword';
 import AddProduct from '~/pages/Seller/ManageProduct/AddProduct';
@@ -38,6 +36,8 @@ import EditCoupon from '~/pages/Seller/ManageCoupon/EditCoupon';
 import CouponDetail from '~/pages/Seller/ManageCoupon/Detail';
 import EditShop from '~/pages/Seller/ManageShop/Edit/EditShop';
 import ShopDetail from '~/pages/ShopDetail';
+
+import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 
 const routesConfig = [
     {
