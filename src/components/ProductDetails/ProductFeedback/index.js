@@ -34,6 +34,7 @@ const ProductFeedback = ({ product }) => {
         type: FEEDBACK_TYPE_ALL,
         page: 1
     })
+    const [selectedFeedbackType, setSelectedFeedbackType] = useState(FEEDBACK_TYPE_ALL)
     const [pagination, setPagination] = useState({
         pageSize: 5,
     });
@@ -53,6 +54,7 @@ const ProductFeedback = ({ product }) => {
             }).catch((err) => {
 
             })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams, product])
 
     const handleListChange = (currentPage) => {
@@ -68,6 +70,7 @@ const ProductFeedback = ({ product }) => {
             page: 1,
             type: FEEDBACK_TYPE_ALL
         })
+        setSelectedFeedbackType(FEEDBACK_TYPE_ALL)
     }
 
     const handleSearchOneStar = () => {
@@ -76,6 +79,7 @@ const ProductFeedback = ({ product }) => {
             page: 1,
             type: FEEDBACK_TYPE_1_STAR
         })
+        setSelectedFeedbackType(FEEDBACK_TYPE_1_STAR)
     }
 
     const handleSearchTwoStar = () => {
@@ -84,13 +88,16 @@ const ProductFeedback = ({ product }) => {
             page: 1,
             type: FEEDBACK_TYPE_2_STAR
         })
+        setSelectedFeedbackType(FEEDBACK_TYPE_2_STAR)
     }
+
     const handleSearchThreeStar = () => {
         setSearchParams({
             ...searchParams,
             page: 1,
             type: FEEDBACK_TYPE_3_STAR
         })
+        setSelectedFeedbackType(FEEDBACK_TYPE_3_STAR)
     }
 
     const handleSearchFourStar = () => {
@@ -99,13 +106,16 @@ const ProductFeedback = ({ product }) => {
             page: 1,
             type: FEEDBACK_TYPE_4_STAR
         })
+        setSelectedFeedbackType(FEEDBACK_TYPE_4_STAR)
     }
+
     const handleSearchFiveStar = () => {
         setSearchParams({
             ...searchParams,
             page: 1,
             type: FEEDBACK_TYPE_5_STAR
         })
+        setSelectedFeedbackType(FEEDBACK_TYPE_5_STAR)
     }
 
     const handleSearchHaveComment = () => {
@@ -114,6 +124,7 @@ const ProductFeedback = ({ product }) => {
             page: 1,
             type: FEEDBACK_TYPE_HAVE_COMMENT
         })
+        setSelectedFeedbackType(FEEDBACK_TYPE_HAVE_COMMENT)
     }
 
     const handleSearchHaveMedia = () => {
@@ -122,6 +133,7 @@ const ProductFeedback = ({ product }) => {
             page: 1,
             type: FEEDBACK_TYPE_HAVE_MEDIA
         })
+        setSelectedFeedbackType(FEEDBACK_TYPE_HAVE_MEDIA)
     }
 
 
@@ -139,6 +151,7 @@ const ProductFeedback = ({ product }) => {
                     <Row>
                         <ProductFeedbackSearchForm
                             product={product}
+                            selectedType={selectedFeedbackType}
                             handleSearchAll={handleSearchAll}
                             handleSearchOneStar={handleSearchOneStar}
                             handleSearchTwoStar={handleSearchTwoStar}
@@ -173,17 +186,17 @@ const ProductFeedback = ({ product }) => {
                                                         <span style={{ fontSize: 14 }}>
                                                             <Link
                                                                 to={`/shop/${item.userId}`}
-                                                                style={{ color: "#000000de", fontSize: ".75rem" }}
+                                                                style={{ color: "#000000de", fontSize: "1rem" }}
                                                             >
-                                                                {"daw"}
+                                                                {item.fullName}
                                                             </Link>
                                                         </span>
                                                     </Row>
                                                     <Row>
-                                                        <Rate disabled defaultValue={item.rate} style={{ fontSize: ".8rem", }} />
+                                                        <Rate disabled defaultValue={item.rate} style={{ fontSize: "1rem", }} />
                                                     </Row>
                                                     <Row>
-                                                        <Space style={{ fontSize: ".75rem", color: "#0000008a" }}>
+                                                        <Space style={{ fontSize: "1rem", color: "#0000008a" }}>
                                                             <span>{moment(item.dateUpdate).format('yyyy-MM-DD - HH:mm')}</span>
                                                             <span>|</span>
                                                             <span>Phân loại hàng: {item.productVariantName}</span>
