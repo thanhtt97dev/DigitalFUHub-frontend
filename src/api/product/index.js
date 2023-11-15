@@ -28,3 +28,7 @@ export const getProductsOfSeller = (data) => {
     return apiPostAuth('api/Products/getProducts', data);
 };
 
+export const getProductByUserId = (userId, page) => {
+    return apiGet(`api/Products/GetAll?userId=${userId}&page=${page}`);
+};
+
