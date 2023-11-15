@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useContext } from "react";
+import React, { useLayoutEffect, useState, useContext, useEffect } from "react";
 import { Divider, Modal, Button, Input, Card, Space } from "antd";
 
 import { ExclamationCircleFilled } from "@ant-design/icons";
@@ -8,7 +8,8 @@ import { getCustomerBalance } from '~/api/user'
 import { NotificationContext } from '~/context/UI/NotificationContext';
 import {
     RESPONSE_CODE_SUCCESS,
-    RESPONSE_CODE_NOT_ACCEPT
+    RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_INSUFFICIENT_BALANCE,
+    RESPONSE_CODE_BANK_CUSTOMER_REQUEST_EXCEEDED_REQUESTS_CREATED
 } from '~/constants'
 import { formatPrice } from "~/utils";
 
@@ -25,11 +26,11 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [btnLoading, setBtnLoading] = useState(false)
 
-    const [amount, setAmount] = useState("10000");
+    const [amount, setAmount] = useState("500000");
     const [message, setMessage] = useState("");
     const [customerBalance, setCustomerBalance] = useState(0)
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (userId === null) {
             notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
         }
@@ -45,7 +46,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
 
     const handleSubmit = () => {
 
-        if (amount < 10000) {
+        if (amount < 500000) {
             return;
         }
         if (amount > customerBalance) {
@@ -62,8 +63,11 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                 setOpenModal(false)
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     notification("success", "Tạo yêu cầu rút tiền thành công!")
-                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
-                    notification("success", "Tạo yêu cầu rút tiền thành công!")
+                    setCustomerBalance(res.data.result)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_INSUFFICIENT_BALANCE) {
+                    notification("error", "Số dư không đủ!")
+                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_EXCEEDED_REQUESTS_CREATED) {
+                    notification("error", "Xin lỗi bạn đã tạo đủ 50 yêu cầu trong ngày hôm nay! Hãy trở lại vào ngày mai nhá!")
                 } else {
                     notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
                 }
@@ -81,10 +85,10 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
     const handleInputAmount = (e) => {
         let value = e.target.value;
         setAmount(e.target.value)
-        if (value < 10000) {
-            setMessage("Số tiền cần phải lớn hơn hoặc bằng 10,000 VND ")
-        } else if (value > 10000000) {
-            setMessage("Số tiền cần phải nhỏ hơn hoặc bằng 1,000,000 VND ")
+        if (value < 500000) {
+            setMessage("Số tiền cần phải lớn hơn hoặc bằng 500,000 VND ")
+        } else if (value > 30000000) {
+            setMessage("Số tiền cần phải nhỏ hơn hoặc bằng 3,000,000 VND ")
         } else {
             setMessage("")
         }
@@ -154,9 +158,9 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                     <div>
                         <b style={{ color: "red" }}>Chú ý:</b>
                         <div style={{ marginLeft: "30px" }}>
-                            <i>Số tiền tối đa bạn có thể rút trong 1 yêu cầu 1,000,000 VND </i>
+                            <i>Số tiền tối đa bạn có thể rút trong 1 yêu cầu 3,000,000 VND </i>
                             <br />
-                            <i>Số tiền tối thiểu bạn có thể rút trong 1 yêu cầu 10,000 VND </i>
+                            <i>Số tiền tối thiểu bạn có thể rút trong 1 yêu cầu 500,000 VND </i>
                         </div>
                     </div>
                 </>

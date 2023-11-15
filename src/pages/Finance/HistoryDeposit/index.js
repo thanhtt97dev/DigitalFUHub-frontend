@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, notification, Select } from "antd";
+import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, notification, Select, Row, Col } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
 import { useAuthUser } from 'react-auth-kit'
@@ -174,47 +174,53 @@ function HistoryDeposit() {
                     hoverable
                 >
                     <Form
-                        name="basic"
-                        labelCol={{
-                            span: 8,
-                        }}
-                        wrapperCol={{
-                            span: 0,
-                        }}
-                        style={{
-                            maxWidth: 500,
-                            marginLeft: "30px",
-                            position: 'relative',
-                        }}
                         form={form}
                         onFinish={onFinish}
                         fields={initFormValues}
                     >
-                        <Form.Item label="Mã giao dịch" labelAlign="left" name="depositTransactionId">
-                            <Input />
-                        </Form.Item>
-
-                        <Form.Item label="Thời gian tạo yêu cầu" labelAlign="left" name="date">
-                            <RangePicker locale={locale}
-                                format={"M/D/YYYY"}
-                                placement={"bottomLeft"} />
-                        </Form.Item>
-
-                        <Form.Item label="Trạng thái" labelAlign="left" name="status">
-                            <Select >
-                                <Select.Option value={0}>Tất cả</Select.Option>
-                                <Select.Option value={1}>Thành công</Select.Option>
-                                <Select.Option value={2}>Đang chờ chuyển khoản</Select.Option>
-                            </Select>
-                        </Form.Item>
-
-                        <Form.Item style={{ position: 'absolute', top: 110, left: 550 }}>
-                            <Space>
-                                <Button type="primary" htmlType="submit">
-                                    Tìm kiếm
-                                </Button>
-                            </Space>
-                        </Form.Item>
+                        <Row>
+                            <Col span={12}>
+                                <Row>
+                                    <Col span={6} offset={2}>Mã giao dịch:</Col>
+                                    <Col span={12}>
+                                        <Form.Item name="depositTransactionId" >
+                                            <Input />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={6} offset={2}>Thời gian tạo yêu cầu:</Col>
+                                    <Col span={12}>
+                                        <Form.Item name="date" >
+                                            <RangePicker locale={locale}
+                                                format={"M/D/YYYY"}
+                                                placement={"bottomLeft"} />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                            </Col>
+                            <Col span={12}>
+                                <Row>
+                                    <Col span={6} offset={2}>Trạng thái:</Col>
+                                    <Col span={12}>
+                                        <Form.Item name="status" >
+                                            <Select >
+                                                <Select.Option value={0}>Tất cả</Select.Option>
+                                                <Select.Option value={1}>Thành công</Select.Option>
+                                                <Select.Option value={2}>Đang chờ chuyển khoản</Select.Option>
+                                            </Select>
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={2} offset={16}>
+                                        <Button type="primary" htmlType="submit">
+                                            Tìm kiếm
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
                     </Form>
                     <ModalRequestDeposit userId={user.id} style={{ marginBottom: "5px" }} text={"+ Nạp tiền"} />
                     <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} rowKey={(record) => record.depositTransactionId} />
