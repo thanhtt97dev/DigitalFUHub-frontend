@@ -23,7 +23,7 @@ function BankAccount() {
 
     const userId = getUserId();
     const [userBank, setUserBank] = useState(null);
-    const [getUserBankInfoSuccess, SetGetUserBankInfoSuccess] = useState(false);
+    const [loading, setLoading] = useState(false)
 
     // get data
     useEffect(() => {
@@ -32,10 +32,14 @@ function BankAccount() {
     }, [])
 
     const getUserBankAccountInfo = () => {
+        setLoading(true)
         getUserBankAccount(userId)
             .then((res) => {
                 if (res.data.status.ok) {
                     setUserBank(res.data.result)
+                    setTimeout(() => {
+                        setLoading(false)
+                    }, 500)
                 }
             })
             .catch(() => {
@@ -43,17 +47,17 @@ function BankAccount() {
             })
             .finally(() => {
                 setTimeout(() => {
-                    SetGetUserBankInfoSuccess(true)
+                    setLoading(false)
                 }, 500)
             })
     }
 
     return (
         <>
-            <Spinning spinning={!getUserBankInfoSuccess}>
+            <Spinning spinning={loading}>
                 <Card
                     title="Tài khoản ngân hàng"
-                    extra={userBank !== null ? <> <ModalUpdateBankAccount userId={userId} callBack={getUserBankAccountInfo} /></> : <><ModalAddBankAccount userId={userId} /></>}
+                    extra={userBank !== null ? <> <ModalUpdateBankAccount userId={userId} callBack={getUserBankAccountInfo} /></> : <><ModalAddBankAccount userId={userId} callBack={getUserBankAccountInfo} /></>}
                     style={{
                         width: '100%',
                         height: "60vh"
@@ -61,7 +65,7 @@ function BankAccount() {
                     type="inner"
 
                 >
-                    {getUserBankInfoSuccess ?
+                    {loading === false ?
                         <>
                             {userBank !== null ?
                                 <>

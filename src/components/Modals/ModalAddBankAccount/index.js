@@ -30,7 +30,7 @@ BANKS_INFO.forEach((bank) => {
     bankOptions.push(bankOption)
 })
 
-function ModalAddBankAccount({ userId }) {
+function ModalAddBankAccount({ userId, callBack }) {
 
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
@@ -120,7 +120,6 @@ function ModalAddBankAccount({ userId }) {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOpenModal(false)
                     openNotification("success", "Thay đổi tài khoản ngân hàng thành công!")
-                    window.location.reload();
                 } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
                     openNotification("error", "Bạn đã đăng ký 1 tài khoản ngân hàng khác!")
                 } else {
