@@ -1,4 +1,4 @@
-import { apiGet, apiGetAuth, apiPostAuthForm, apiPostAuth } from '../defaultApi';
+import { apiGet, apiGetAuth, apiPostAuthForm, apiPostAuth, apiPost } from '../defaultApi';
 
 export const getProductById = (id) => {
     return apiGet(`api/Products/GetById/${id}`);
@@ -26,5 +26,9 @@ export const editProductSeller = (formData) => {
 
 export const getProductsOfSeller = (data) => {
     return apiPostAuth('api/Products/getProducts', data);
+};
+
+export const getProductByUserId = (searchParam) => {
+    return apiPost(`api/Products/GetAll`, searchParam);
 };
 

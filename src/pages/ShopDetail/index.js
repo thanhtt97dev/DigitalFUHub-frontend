@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import GeneralDescription from "~/components/ShopDetail/GeneralDescription";
 import DetailedDescription from "~/components/ShopDetail/DetailedDescription";
+import ProductList from "~/components/ShopDetail/ProductList";
 const ShopDetail = () => {
     /// states
     const { userId } = useParams();
@@ -31,9 +32,8 @@ const ShopDetail = () => {
 
     return (<>
         <GeneralDescription shop={shop} />
-
-
         <DetailedDescription shop={shop} />
+        <ProductList userId={userId} />
     </>)
 }
 

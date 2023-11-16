@@ -65,6 +65,10 @@ const ShopInfomations = ({ product }) => {
                 })
         }
     }
+
+    const handleViewShop = (shopId) => {
+        return navigate(`/shop/${shopId}`)
+    }
     ///
 
 
@@ -95,7 +99,7 @@ const ShopInfomations = ({ product }) => {
                                             }
                                         })()}
                                         <Space direction='horizontal'>
-                                            <Button icon={<ShopOutlined />} type="primary" danger ghost>Xem Shop</Button>
+                                            <Button icon={<ShopOutlined />} type="primary" danger ghost onClick={() => handleViewShop(product.shop.shopId)}>Xem Shop</Button>
                                             <Button disabled={user?.id !== product.shop.shopId ? false : true} className={cx('margin-element')} icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage} style={{ marginLeft: 10 }}>
                                                 Chat ngay
                                             </Button>
