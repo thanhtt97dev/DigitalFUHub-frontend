@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getProductByUserId } from "~/api/product";
 import { RESPONSE_CODE_SUCCESS, PRODUCT_BAN, PAGE_SIZE } from '~/constants';
 import classNames from 'classnames/bind';
+import Spinning from "~/components/Spinning";
 import styles from '~/pages/ShopDetail/ShopDetail.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatPrice, discountPrice, formatNumber } from '~/utils';
@@ -56,6 +57,7 @@ const ProductList = ({ userId }) => {
     }
 
     const handleChangePage = (page) => {
+
         // new param search
         const newParamSearch = {
             ...searchParam,
@@ -83,6 +85,8 @@ const ProductList = ({ userId }) => {
 
     /// useEffects
     useEffect(() => {
+        loadingProducts();
+
         getProductByUserId(searchParam)
             .then((res) => {
                 if (res.status === 200) {
@@ -108,57 +112,59 @@ const ProductList = ({ userId }) => {
 
 
     return (
-        <Space direction="vertical">
-            <Space align="center">
-                <p>Tìm kiếm</p>
-                <Search
-                    placeholder="Nhập tên sản phẩm"
-                    onSearch={onSearch}
-                    style={{
-                        width: 200,
-                    }}
-                />
-            </Space>
-            <Space size={[10, 16]} wrap>
-                {products.map((product, index) => (
-                    <div
-                        style={product.quantityProductRemaining === 0 || product.productStatusId === PRODUCT_BAN ? opacityDisabledStyle : {}}
-                        key={index}
-                        className={cx('item-product')}
-                        onClick={() => handleClickToProduct(product.productId)}
-                    >
-                        <div style={styleContainerImage}>
-                            {
-                                product.productStatusId === PRODUCT_BAN ?
-                                    <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div>
-                                    : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
-                            }
-                            <img style={styleImage} src={product.thumbnail} alt="product" />
-                        </div>
-                        <Space direction="vertical" style={{ padding: 8, height: 124, width: '100%' }}>
-                            <Link to={'/product/' + product.productId}><p style={{ fontSize: 12, color: '#000000', cursor: 'pointer' }}>{product.productName}</p></Link>
-                            {
-                                product.productVariant?.discount !== 0 ? (<>
-                                    <div className={cx('discount-style')}><p style={{ fontSize: 10 }}>{product.productVariant.discount}% giảm</p></div>
-                                    <Space align="center">
-                                        <Text delete strong type="secondary" style={styleOriginPrice}>{formatPrice(product.productVariant.price)}</Text>
-                                        <Text style={styleDiscountPrice}>{formatPrice(discountPrice(product.productVariant.price, product.productVariant.discount))}</Text>
-                                    </Space>
-                                </>
-                                ) : (<p level={4} style={styleDiscountPrice}>{formatPrice(product.productVariant.price)}</p>)
-                            }
-                            <Space align="center" style={{ marginTop: 5 }}>
-                                <Rate disabled defaultValue={product.totalRatingStar / product.numberFeedback} style={ratingStarStyle} />
-                                <p style={{ fontSize: 12 }}>Đã bán {formatNumber(product.soldCount)}</p>
+        <Spinning spinning={isLoadingProducts}>
+            <Space direction="vertical">
+                <Space align="center">
+                    <p>Tìm kiếm</p>
+                    <Search
+                        placeholder="Nhập tên sản phẩm"
+                        onSearch={onSearch}
+                        style={{
+                            width: 200,
+                        }}
+                    />
+                </Space>
+                <Space size={[10, 16]} wrap>
+                    {products.map((product, index) => (
+                        <div
+                            style={product.quantityProductRemaining === 0 || product.productStatusId === PRODUCT_BAN ? opacityDisabledStyle : {}}
+                            key={index}
+                            className={cx('item-product')}
+                            onClick={() => handleClickToProduct(product.productId)}
+                        >
+                            <div style={styleContainerImage}>
+                                {
+                                    product.productStatusId === PRODUCT_BAN ?
+                                        <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div>
+                                        : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
+                                }
+                                <img style={styleImage} src={product.thumbnail} alt="product" />
+                            </div>
+                            <Space direction="vertical" style={{ padding: 8, height: 124, width: '100%' }}>
+                                <Link to={'/product/' + product.productId}><p style={{ fontSize: 12, color: '#000000', cursor: 'pointer' }}>{product.productName}</p></Link>
+                                {
+                                    product.productVariant?.discount !== 0 ? (<>
+                                        <div className={cx('discount-style')}><p style={{ fontSize: 10 }}>{product.productVariant.discount}% giảm</p></div>
+                                        <Space align="center">
+                                            <Text delete strong type="secondary" style={styleOriginPrice}>{formatPrice(product.productVariant.price)}</Text>
+                                            <Text style={styleDiscountPrice}>{formatPrice(discountPrice(product.productVariant.price, product.productVariant.discount))}</Text>
+                                        </Space>
+                                    </>
+                                    ) : (<p level={4} style={styleDiscountPrice}>{formatPrice(product.productVariant.price)}</p>)
+                                }
+                                <Space align="center" style={{ marginTop: 5 }}>
+                                    <Rate disabled defaultValue={product.totalRatingStar / product.numberFeedback} style={ratingStarStyle} />
+                                    <p style={{ fontSize: 12 }}>Đã bán {formatNumber(product.soldCount)}</p>
+                                </Space>
+
                             </Space>
 
-                        </Space>
-
-                    </div>
-                ))}
+                        </div>
+                    ))}
+                </Space>
+                <Pagination current={searchParam.page} defaultCurrent={1} total={totalProducts} pageSize={PAGE_SIZE} onChange={handleChangePage} />;
             </Space>
-            <Pagination current={searchParam.page} defaultCurrent={1} total={totalProducts} pageSize={PAGE_SIZE} onChange={handleChangePage} />;
-        </Space>)
+        </Spinning>)
 }
 
 export default ProductList;
