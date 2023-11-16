@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { getShopDetail } from "~/api/shop";
-import { useParams, useNavigate } from 'react-router-dom';
+import React from "react";
 import classNames from 'classnames/bind';
-import Spinning from "~/components/Spinning";
-import { useAuthUser } from 'react-auth-kit';
 import styles from '~/pages/ShopDetail/ShopDetail.module.scss';
-import { RESPONSE_CODE_SUCCESS } from '~/constants';
+import { useAuthUser } from 'react-auth-kit';
+import { useNavigate } from 'react-router-dom';
 import { addConversation } from '~/api/chat';
-import { MessageOutlined, ShopOutlined } from '@ant-design/icons';
+import { MessageOutlined } from '@ant-design/icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Col, Row, Button, Space, Avatar } from 'antd';
 import { faShoppingBag, faStar, faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import { discountPrice, formatPrice, formatNumber, getVietnamCurrentTime } from '~/utils';
-import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Tabs, Card, Typography, Space, Rate, Avatar } from 'antd';
+import { formatNumber, getVietnamCurrentTime } from '~/utils';
 
 ///
 require('moment/locale/vi');
 const cx = classNames.bind(styles);
 const moment = require('moment');
+///
+
+/// styles
+const styleContainerComponent = { backgroundColor: 'white', padding: 20, borderRadius: 2, boxShadow: '#d3d3d3 0px 1px 2px 0px' };
+const styleColUserInfo = { borderRight: '1px solid rgb(232, 232, 232)' };
 ///
 
 const GeneralDescription = ({ shop, userId }) => { // userId : shop id from param
@@ -63,15 +65,14 @@ const GeneralDescription = ({ shop, userId }) => { // userId : shop id from para
     ///
 
     return (
-        <div style={{ backgroundColor: 'white', padding: 20, borderRadius: 2, boxShadow: '#d3d3d3 0px 1px 2px 0px' }}>
+        <div style={styleContainerComponent}>
             <Row className={cx('container-page-detail')}>
-                <Col span={8} style={{ borderRight: '1px solid rgb(232, 232, 232)' }}>
+                <Col span={8} style={styleColUserInfo}>
                     <Space align="center" size={15}>
                         <div className={cx('big-avatar')}>
                             <Avatar size={90} src={shop.avatar} />
                             {shop.user?.isOnline ? <span className={cx('big-avatar-status')}></span> : <></>}
                         </div>
-                        {/* <Avatar size={90} src={shop.avatar} /> */}
                         <Space direction="vertical" size={10}>
                             <Space direction="vertical" size={0}>
                                 <p className={cx('shop-name')}>{shop.shopName}</p>
