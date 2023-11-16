@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Card, Space, Button, Rate } from "antd";
 
 import {
@@ -11,6 +11,7 @@ import {
     FEEDBACK_TYPE_HAVE_COMMENT,
     FEEDBACK_TYPE_HAVE_MEDIA
 } from '~/constants'
+import { formatNumber } from "~/utils"
 
 
 function SearchItem({ text, callBack, selected }) {
@@ -56,16 +57,16 @@ function ProductFeedbackSearchForm({
                         </div>
                         <Space direction="vertical">
                             <Space>
-                                <SearchItem text={`Tất cả (${feedBackGeneralInfo.totalFeedback})`} callBack={handleSearchAll} selected={selectedType === FEEDBACK_TYPE_ALL} />
-                                <SearchItem text={`5 Sao (${feedBackGeneralInfo.totalFeedbackFiveStar})`} callBack={handleSearchFiveStar} selected={selectedType === FEEDBACK_TYPE_5_STAR} />
-                                <SearchItem text={`4 Sao (${feedBackGeneralInfo.totalFeedbackFourStar})`} callBack={handleSearchFourStar} selected={selectedType === FEEDBACK_TYPE_4_STAR} />
-                                <SearchItem text={`3 Sao (${feedBackGeneralInfo.totalFeedbackThreeStar})`} callBack={handleSearchThreeStar} selected={selectedType === FEEDBACK_TYPE_3_STAR} />
-                                <SearchItem text={`2 Sao (${feedBackGeneralInfo.totalFeedbackTwoStar})`} callBack={handleSearchTwoStar} selected={selectedType === FEEDBACK_TYPE_2_STAR} />
-                                <SearchItem text={`1 Sao (${feedBackGeneralInfo.totalFeedbackOneStar})`} callBack={handleSearchOneStar} selected={selectedType === FEEDBACK_TYPE_1_STAR} />
+                                <SearchItem text={`Tất cả (${formatNumber(feedBackGeneralInfo.totalFeedback)})`} callBack={handleSearchAll} selected={selectedType === FEEDBACK_TYPE_ALL} />
+                                <SearchItem text={`5 Sao (${formatNumber(feedBackGeneralInfo.totalFeedbackFiveStar)})`} callBack={handleSearchFiveStar} selected={selectedType === FEEDBACK_TYPE_5_STAR} />
+                                <SearchItem text={`4 Sao (${formatNumber(feedBackGeneralInfo.totalFeedbackFourStar)})`} callBack={handleSearchFourStar} selected={selectedType === FEEDBACK_TYPE_4_STAR} />
+                                <SearchItem text={`3 Sao (${formatNumber(feedBackGeneralInfo.totalFeedbackThreeStar)})`} callBack={handleSearchThreeStar} selected={selectedType === FEEDBACK_TYPE_3_STAR} />
+                                <SearchItem text={`2 Sao (${formatNumber(feedBackGeneralInfo.totalFeedbackTwoStar)})`} callBack={handleSearchTwoStar} selected={selectedType === FEEDBACK_TYPE_2_STAR} />
+                                <SearchItem text={`1 Sao (${formatNumber(feedBackGeneralInfo.totalFeedbackOneStar)})`} callBack={handleSearchOneStar} selected={selectedType === FEEDBACK_TYPE_1_STAR} />
                             </Space>
                             <Space>
-                                <SearchItem text={`Có bình luận (${feedBackGeneralInfo.totalFeedbackHaveComment})`} callBack={handleSearchHaveComment} selected={selectedType === FEEDBACK_TYPE_HAVE_COMMENT} />
-                                <SearchItem text={`Có hình ảnh (${feedBackGeneralInfo.totalFeedbackHaveMedia})`} callBack={handleSearchHaveMedia} selected={selectedType === FEEDBACK_TYPE_HAVE_MEDIA} />
+                                <SearchItem text={`Có bình luận (${formatNumber(feedBackGeneralInfo.totalFeedbackHaveComment)})`} callBack={handleSearchHaveComment} selected={selectedType === FEEDBACK_TYPE_HAVE_COMMENT} />
+                                <SearchItem text={`Có hình ảnh (${formatNumber(feedBackGeneralInfo.totalFeedbackHaveMedia)})`} callBack={handleSearchHaveMedia} selected={selectedType === FEEDBACK_TYPE_HAVE_MEDIA} />
                             </Space>
                         </Space>
                     </Space>
