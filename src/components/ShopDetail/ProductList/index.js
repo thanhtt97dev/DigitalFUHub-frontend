@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { getProductByUserId } from "~/api/product";
-import { RESPONSE_CODE_SUCCESS, PRODUCT_BAN } from '~/constants';
+import { RESPONSE_CODE_SUCCESS, PRODUCT_BAN, PAGE_SIZE } from '~/constants';
 import classNames from 'classnames/bind';
 import styles from '~/pages/ShopDetail/ShopDetail.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatPrice, discountPrice, formatNumber } from '~/utils';
-import { Col, Row, Button, Divider, Image, Skeleton, Input, Radio, Card, Typography, Space, Rate, Avatar } from 'antd';
+import { Col, Row, Button, Pagination, Select, Table, Input, Radio, Card, Typography, Space, Rate, Avatar } from 'antd';
 
 
 ///
 const { Title, Text } = Typography;
 const cx = classNames.bind(styles);
+const { Search } = Input;
 ///
 
 /// styles
@@ -31,7 +32,18 @@ const ProductList = ({ userId }) => {
     /// states
     const [products, setProducts] = useState([]);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [searchParam, setSearchParam] = useState({
+        userId: userId,
+        productName: '',
+        page: 1
+    });
     ///
+
+    /// router
+    const navigate = useNavigate();
+    ///
+
 
     /// handles
     const loadingProducts = () => {
@@ -41,21 +53,44 @@ const ProductList = ({ userId }) => {
     const unLoadingProducts = () => {
         setIsLoadingProducts(false);
     }
+
+    const handleChangePage = (page) => {
+        // new param search
+        const newParamSearch = {
+            ...searchParam,
+            page: page
+        }
+
+        setSearchParam(newParamSearch);
+    }
+
+    const onSearch = (value) => {
+        // new param search
+        const newParamSearch = {
+            ...searchParam,
+            productName: value,
+            page: 1
+        }
+
+        setSearchParam(newParamSearch);
+    }
+
+    const handleClickToProduct = (productId) => {
+        return navigate(`/product/${productId}`);;
+    }
     ///
 
     /// useEffects
     useEffect(() => {
-        // initial
-        const initalPage = 1;
-
-        getProductByUserId(userId, initalPage)
+        getProductByUserId(searchParam)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
                     const status = data.status;
                     if (status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        const result = data.result.products;
-                        setProducts(result);
+                        const result = data.result;
+                        setProducts(result.products);
+                        setTotalProducts(result.totalProduct);
 
                         // unloading products
                         unLoadingProducts();
@@ -66,7 +101,7 @@ const ProductList = ({ userId }) => {
                 console.log(err);
             })
 
-    }, [userId])
+    }, [userId, searchParam])
     ///
 
 
@@ -75,11 +110,17 @@ const ProductList = ({ userId }) => {
         <Space direction="vertical">
             <Space align="center">
                 <p>Tìm kiếm</p>
-                <Input placeholder="Basic usage" />
+                <Search
+                    placeholder="Nhập tên sản phẩm"
+                    onSearch={onSearch}
+                    style={{
+                        width: 200,
+                    }}
+                />
             </Space>
             <Space size={[10, 16]} wrap>
                 {products.map((product, index) => (
-                    <div key={index} className={cx('item-product')}>
+                    <div key={index} className={cx('item-product')} onClick={() => handleClickToProduct(product.productId)}>
                         <div style={styleContainerImage}>
                             <img style={styleImage} src={product.thumbnail} alt="product" />
                             {
@@ -108,6 +149,7 @@ const ProductList = ({ userId }) => {
                     </div>
                 ))}
             </Space>
+            <Pagination current={searchParam.page} defaultCurrent={1} total={totalProducts} pageSize={PAGE_SIZE} onChange={handleChangePage} />;
         </Space>)
 }
 
