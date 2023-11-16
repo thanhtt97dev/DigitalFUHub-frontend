@@ -20,7 +20,7 @@ const DetailedDescription = ({ shop }) => {
 
     return (
         <div className={cx('container-page-detail')}>
-            <Card className={cx('margin-bottom-10')} style={{ borderRadius: 2 }} bodyStyle={{ padding: 20 }} >
+            <Card className={cx('margin-bottom-10')} style={{ borderRadius: 2, boxShadow: '#d3d3d3 0px 1px 2px 0px' }} bodyStyle={{ padding: 20 }} >
                 <Row>
                     <Col span={5}>
                         <p className={cx('text-title')}>THÔNG TIN CỬA HÀNG</p>

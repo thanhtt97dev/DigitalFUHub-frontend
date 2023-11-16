@@ -60,22 +60,22 @@ const GeneralDescription = ({ shop, userId }) => { // userId : shop id from para
                 })
         }
     }
-
-    const onChange = (key) => {
-        console.log(key);
-    };
     ///
 
     return (
-        <div style={{ backgroundColor: 'white', padding: 20, borderRadius: 2 }}>
+        <div style={{ backgroundColor: 'white', padding: 20, borderRadius: 2, boxShadow: '#d3d3d3 0px 1px 2px 0px' }}>
             <Row className={cx('container-page-detail')}>
                 <Col span={8} style={{ borderRight: '1px solid rgb(232, 232, 232)' }}>
                     <Space align="center" size={15}>
-                        <Avatar size={90} src={shop.avatar} />
+                        <div className={cx('big-avatar')}>
+                            <Avatar size={90} src={shop.avatar} />
+                            {shop.user?.isOnline ? <span className={cx('big-avatar-status')}></span> : <></>}
+                        </div>
+                        {/* <Avatar size={90} src={shop.avatar} /> */}
                         <Space direction="vertical" size={10}>
                             <Space direction="vertical" size={0}>
                                 <p className={cx('shop-name')}>{shop.shopName}</p>
-                                <p className={cx('active-time')}>{shop.isOnline ? 'Đang hoạt động' : moment(shop.lastTimeOnline).fromNow()}</p>
+                                <p className={cx('active-time')}>{shop.user?.isOnline ? 'Đang hoạt động' : 'Hoạt động ' + moment(shop.user?.lastTimeOnline).fromNow()}</p>
                             </Space>
                             <Button disabled={user?.id === +userId ? true : false} className={cx('margin-element')} icon={<MessageOutlined />} size={'small'} onClick={handleSendMessage}>
                                 Chat ngay

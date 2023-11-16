@@ -116,3 +116,18 @@
     // color: hsla(0, 0%, 100%, 0.7);
     margin: 0.3125rem 0 0.375rem;
 }
+
+.big-avatar {
+    position: relative;
+    display: inline-block;
+}
+.big-avatar-status {
+    width: 20px;
+    height: 20px;
+    background: #31a24c;
+    border: 3px solid white;
+    position: absolute;
+    bottom: 3%;
+    right: 5%;
+    border-radius: 100%;
+}
