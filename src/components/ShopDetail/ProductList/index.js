@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { getProductByUserId } from "~/api/product";
-import { RESPONSE_CODE_SUCCESS, PRODUCT_BAN, PAGE_SIZE } from '~/constants';
+import { RESPONSE_CODE_SUCCESS, PRODUCT_BAN, PAGE_SIZE_PRODUCT } from '~/constants';
 import classNames from 'classnames/bind';
 import Spinning from "~/components/Spinning";
 import styles from '~/pages/ShopDetail/ShopDetail.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatPrice, discountPrice, formatNumber } from '~/utils';
-import { Col, Row, Button, Pagination, Select, Table, Input, Radio, Card, Typography, Space, Rate, Avatar } from 'antd';
+import { Col, Row, Button, Pagination, FloatButton, Table, Input, Radio, Card, Typography, Space, Rate, Avatar } from 'antd';
 
 
 ///
@@ -112,59 +112,66 @@ const ProductList = ({ userId }) => {
 
 
     return (
-        <Spinning spinning={isLoadingProducts}>
-            <Space direction="vertical">
-                <Space align="center">
-                    <p>Tìm kiếm</p>
-                    <Search
-                        placeholder="Nhập tên sản phẩm"
-                        onSearch={onSearch}
-                        style={{
-                            width: 200,
-                        }}
-                    />
-                </Space>
-                <Space size={[10, 16]} wrap>
-                    {products.map((product, index) => (
-                        <div
-                            style={product.quantityProductRemaining === 0 || product.productStatusId === PRODUCT_BAN ? opacityDisabledStyle : {}}
-                            key={index}
-                            className={cx('item-product')}
-                            onClick={() => handleClickToProduct(product.productId)}
-                        >
-                            <div style={styleContainerImage}>
-                                {
-                                    product.productStatusId === PRODUCT_BAN ?
-                                        <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div>
-                                        : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
-                                }
-                                <img style={styleImage} src={product.thumbnail} alt="product" />
-                            </div>
-                            <Space direction="vertical" style={{ padding: 8, height: 124, width: '100%' }}>
-                                <Link to={'/product/' + product.productId}><p style={{ fontSize: 12, color: '#000000', cursor: 'pointer' }}>{product.productName}</p></Link>
-                                {
-                                    product.productVariant?.discount !== 0 ? (<>
-                                        <div className={cx('discount-style')}><p style={{ fontSize: 10 }}>{product.productVariant.discount}% giảm</p></div>
-                                        <Space align="center">
-                                            <Text delete strong type="secondary" style={styleOriginPrice}>{formatPrice(product.productVariant.price)}</Text>
-                                            <Text style={styleDiscountPrice}>{formatPrice(discountPrice(product.productVariant.price, product.productVariant.discount))}</Text>
-                                        </Space>
-                                    </>
-                                    ) : (<p level={4} style={styleDiscountPrice}>{formatPrice(product.productVariant.price)}</p>)
-                                }
-                                <Space align="center" style={{ marginTop: 5 }}>
-                                    <Rate disabled defaultValue={product.totalRatingStar / product.numberFeedback} style={ratingStarStyle} />
-                                    <p style={{ fontSize: 12 }}>Đã bán {formatNumber(product.soldCount)}</p>
+        <div className={cx('container-page-detail')}>
+            <Spinning spinning={isLoadingProducts}>
+                <Space direction="vertical">
+                    <Card bodyStyle={{ padding: 20 }} style={{ marginBottom: 10, borderRadius: 2, background: 'rgba(0,0,0,.03)' }}>
+                        <Space size={20} align="center">
+                            <p>Tìm kiếm</p>
+                            <Search
+                                placeholder="Nhập tên sản phẩm"
+                                onSearch={onSearch}
+                                style={{
+                                    width: 300,
+                                }}
+                            />
+                        </Space>
+                    </Card>
+                    <Space size={[9, 16]} wrap>
+                        {products.map((product, index) => (
+                            <div
+                                style={product.quantityProductRemaining === 0 || product.productStatusId === PRODUCT_BAN ? opacityDisabledStyle : {}}
+                                key={index}
+                                className={cx('item-product')}
+                                onClick={() => handleClickToProduct(product.productId)}
+                            >
+                                <div style={styleContainerImage}>
+                                    {
+                                        product.productStatusId === PRODUCT_BAN ?
+                                            <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div>
+                                            : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
+                                    }
+                                    <img style={styleImage} src={product.thumbnail} alt="product" />
+                                </div>
+                                <Space direction="vertical" style={{ padding: 8, height: 124, width: '100%' }}>
+                                    <Link to={'/product/' + product.productId}><p style={{ fontSize: 12, color: '#000000', cursor: 'pointer' }}>{product.productName}</p></Link>
+                                    {
+                                        product.productVariant?.discount !== 0 ? (<>
+                                            <div className={cx('discount-style')}><p style={{ fontSize: 10 }}>{product.productVariant.discount}% giảm</p></div>
+                                            <Space align="center">
+                                                <Text delete strong type="secondary" style={styleOriginPrice}>{formatPrice(product.productVariant.price)}</Text>
+                                                <Text style={styleDiscountPrice}>{formatPrice(discountPrice(product.productVariant.price, product.productVariant.discount))}</Text>
+                                            </Space>
+                                        </>
+                                        ) : (<p level={4} style={styleDiscountPrice}>{formatPrice(product.productVariant.price)}</p>)
+                                    }
+                                    <Space align="center" style={{ marginTop: 5 }}>
+                                        <Rate disabled defaultValue={product.totalRatingStar / product.numberFeedback} style={ratingStarStyle} />
+                                        <p style={{ fontSize: 12 }}>Đã bán {formatNumber(product.soldCount)}</p>
+                                    </Space>
+
                                 </Space>
 
-                            </Space>
-
-                        </div>
-                    ))}
+                            </div>
+                        ))}
+                    </Space>
+                    <Row className={cx('flex-item-center', 'margin-top-40')}>
+                        <Pagination current={searchParam.page} defaultCurrent={1} total={totalProducts} pageSize={PAGE_SIZE_PRODUCT} onChange={handleChangePage} />
+                    </Row>
                 </Space>
-                <Pagination current={searchParam.page} defaultCurrent={1} total={totalProducts} pageSize={PAGE_SIZE} onChange={handleChangePage} />;
-            </Space>
-        </Spinning>)
+                <FloatButton.BackTop visibilityHeight={0} />
+            </Spinning>
+        </div>)
 }
 
 export default ProductList;

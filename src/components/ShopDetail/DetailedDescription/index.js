@@ -3,7 +3,7 @@ import { getShopDetail } from "~/api/shop";
 import { useParams } from 'react-router-dom';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import classNames from 'classnames/bind';
-import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
+import styles from '~/pages/ShopDetail/ShopDetail.module.scss';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingBag, faStar, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { discountPrice, formatPrice, formatNumber } from '~/utils';
@@ -12,30 +12,28 @@ import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Radio, Card, Ty
 
 ///
 const cx = classNames.bind(styles);
-const { Title, Text } = Typography;
-require('moment/locale/vi');
-const moment = require('moment');
 ///
 
 
 const DetailedDescription = ({ shop }) => {
 
 
-    return (<Card className={cx('margin-bottom')}>
-        <Row
-        >
-            <Col span={5}>
-                <Title level={4}>Chi tiết cửa hàng</Title>
-            </Col>
-            <Col span={23}
-                offset={1}
-                style={{ display: 'flex', alignItems: 'center' }}
-            >
-                <div dangerouslySetInnerHTML={{ __html: shop.description }} />
-            </Col>
-
-        </Row>
-    </Card>)
+    return (
+        <div className={cx('container-page-detail')}>
+            <Card className={cx('margin-bottom-10')} style={{ borderRadius: 2 }} bodyStyle={{ padding: 20 }} >
+                <Row>
+                    <Col span={5}>
+                        <p className={cx('text-title')}>THÔNG TIN CỬA HÀNG</p>
+                    </Col>
+                    <Col span={23}
+                        offset={1}
+                        style={{ display: 'flex', alignItems: 'center' }}
+                    >
+                        <div dangerouslySetInnerHTML={{ __html: shop.description }} />
+                    </Col>
+                </Row>
+            </Card>
+        </div>)
 }
 
 export default DetailedDescription;

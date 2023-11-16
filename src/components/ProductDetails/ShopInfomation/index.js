@@ -55,7 +55,6 @@ const ShopInfomations = ({ product }) => {
 
                         // data state
                         const data = {
-                            from: 'product-detail',
                             data: res.data
                         }
                         navigate('/chatBox', { state: data })
