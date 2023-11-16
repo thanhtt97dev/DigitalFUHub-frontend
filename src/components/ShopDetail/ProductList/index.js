@@ -21,11 +21,12 @@ const ratingStarStyle = {
     fontSize: '.625rem',
     borderBottom: '1px solid white'
 }
-const styleContainerImage = { width: '100%', textAlign: 'center' }
+const styleContainerImage = { width: '100%', height: 192, display: 'flex', alignItems: 'center', justifyContent: 'center' }
 const disableCardStyle = { padding: 10, opacity: 0.4, pointerEvents: 'none' };
 const paddingCartBodyStyle = { padding: 10 }
 const styleOriginPrice = { fontSize: 14 }
 const styleDiscountPrice = { color: '#ee4d2d', fontSize: '1rem', marginTop: 25 }
+const opacityDisabledStyle = { opacity: 0.5 }
 ///
 const ProductList = ({ userId }) => {
 
@@ -120,12 +121,19 @@ const ProductList = ({ userId }) => {
             </Space>
             <Space size={[10, 16]} wrap>
                 {products.map((product, index) => (
-                    <div key={index} className={cx('item-product')} onClick={() => handleClickToProduct(product.productId)}>
+                    <div
+                        style={product.quantityProductRemaining === 0 || product.productStatusId === PRODUCT_BAN ? opacityDisabledStyle : {}}
+                        key={index}
+                        className={cx('item-product')}
+                        onClick={() => handleClickToProduct(product.productId)}
+                    >
                         <div style={styleContainerImage}>
-                            <img style={styleImage} src={product.thumbnail} alt="product" />
                             {
-                                product.productStatusId === PRODUCT_BAN ? <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div> : <></>
+                                product.productStatusId === PRODUCT_BAN ?
+                                    <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div>
+                                    : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
                             }
+                            <img style={styleImage} src={product.thumbnail} alt="product" />
                         </div>
                         <Space direction="vertical" style={{ padding: 8, height: 124, width: '100%' }}>
                             <Link to={'/product/' + product.productId}><p style={{ fontSize: 12, color: '#000000', cursor: 'pointer' }}>{product.productName}</p></Link>
