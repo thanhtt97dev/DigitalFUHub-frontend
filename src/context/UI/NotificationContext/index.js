@@ -7,7 +7,7 @@ function Notification({ children }) {
     const [api, contextHolder] = notification.useNotification({
         // top: 100
     });
-    const openNotificationWithIcon = (type = 'success', description = '', message = <b>Thông báo</b>, duration = 50, placement = 'bottomRight') => {
+    const openNotificationWithIcon = (type = 'success', description = '', message = <b>Thông báo</b>, duration = 5, placement = 'bottomRight') => {
         api[type]({
             message: message,
             description: description,
