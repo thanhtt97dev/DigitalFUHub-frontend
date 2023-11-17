@@ -9,7 +9,10 @@ import { NotificationContext } from '~/context/UI/NotificationContext';
 import {
     RESPONSE_CODE_SUCCESS,
     RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_INSUFFICIENT_BALANCE,
-    RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED
+    RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED,
+    RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_AMOUNT_A_DAY,
+    MIN_PRICE_CAN_WITHDRAW,
+    MAX_PRICE_CAN_WITHDRAW
 } from '~/constants'
 import { formatPrice } from "~/utils";
 
@@ -46,7 +49,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
 
     const handleSubmit = () => {
 
-        if (amount < 500000) {
+        if (amount < MIN_PRICE_CAN_WITHDRAW) {
             return;
         }
         if (amount > customerBalance) {
@@ -68,6 +71,13 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                     notification("error", "Số dư không đủ!")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED) {
                     notification("error", "Xin lỗi bạn đã tạo đủ 50 yêu cầu trong ngày hôm nay! Hãy trở lại vào ngày mai nhá!")
+                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_AMOUNT_A_DAY) {
+                    var amountRemaningCanRequest = MAX_PRICE_CAN_WITHDRAW - res.data.result;
+                    notification("error",
+                        <Space direction="vertical">
+                            <span>Xin lỗi ! Hôm nay bạn đã yêu cầu rút {formatPrice(res.data.result)}!</span>
+                            <span>Bạn vui lòng tạo yêu cầu với giá trị nhỏ nhơn {formatPrice(amountRemaningCanRequest)}!</span>
+                        </Space>)
                 } else {
                     notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
                 }
@@ -85,9 +95,9 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
     const handleInputAmount = (e) => {
         let value = e.target.value;
         setAmount(e.target.value)
-        if (value < 500000) {
+        if (value < MIN_PRICE_CAN_WITHDRAW) {
             setMessage("Số tiền cần phải lớn hơn hoặc bằng 500,000 VND ")
-        } else if (value > 30000000) {
+        } else if (value > MAX_PRICE_CAN_WITHDRAW) {
             setMessage("Số tiền cần phải nhỏ hơn hoặc bằng 3,000,000 VND ")
         } else {
             setMessage("")
@@ -158,9 +168,11 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                     <div>
                         <b style={{ color: "red" }}>Chú ý:</b>
                         <div style={{ marginLeft: "30px" }}>
-                            <i>Số tiền tối đa bạn có thể rút trong 1 yêu cầu 3,000,000 VND </i>
+                            <i>Số tiền bạn có thể rút trong 1 yêu cầu lớn hơn 500,000 VND</i>
                             <br />
-                            <i>Số tiền tối thiểu bạn có thể rút trong 1 yêu cầu 500,000 VND </i>
+                            <i>Số tiền bạn có thể rút trong 1 ngày nhỏ hơn 3,000,000 VND</i>
+                            <br />
+                            <i>Số dư của bạn sau khi rút lớn hơn 500,000 VND</i>
                         </div>
                     </div>
                 </>
