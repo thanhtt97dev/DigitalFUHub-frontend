@@ -72,11 +72,9 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                 } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED) {
                     notification("error", "Xin lỗi bạn đã tạo đủ 50 yêu cầu trong ngày hôm nay! Hãy trở lại vào ngày mai nhá!")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_AMOUNT_A_DAY) {
-                    var amountRemaningCanRequest = MAX_PRICE_CAN_WITHDRAW - res.data.result;
                     notification("error",
                         <Space direction="vertical">
                             <span>Xin lỗi ! Hôm nay bạn đã yêu cầu rút {formatPrice(res.data.result)}!</span>
-                            <span>Bạn vui lòng tạo yêu cầu với giá trị nhỏ nhơn {formatPrice(amountRemaningCanRequest)}!</span>
                         </Space>)
                 } else {
                     notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
