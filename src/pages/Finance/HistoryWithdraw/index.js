@@ -25,12 +25,12 @@ const columns = [
     {
         title: 'Mã giao dịch',
         dataIndex: 'withdrawTransactionId',
-        width: '5%',
+        width: '10%',
     },
     {
         title: 'Số tiền',
         dataIndex: 'amount',
-        width: '15%',
+        width: '10%',
         render: (amount) => {
             return (
                 <p>{formatPrice(amount)}</p>
@@ -40,7 +40,7 @@ const columns = [
     {
         title: 'Thời gian tạo yêu cầu',
         dataIndex: 'requestDate',
-        width: '16%',
+        width: '15%',
         render: (requestDate) => {
             return (
                 <p>{ParseDateTime(requestDate)}</p>
@@ -50,17 +50,17 @@ const columns = [
     {
         title: 'Đơn vị thụ hưởng',
         dataIndex: 'creditAccountName',
-        width: '20%',
+        width: '17%',
     },
     {
         title: 'Số tài khoản',
         dataIndex: 'creditAccount',
-        width: '15%',
+        width: '12%',
     },
     {
         title: 'Ngân hàng đối tác',
         dataIndex: 'bankName',
-        width: '15%',
+        width: '17%',
     },
     {
         title: 'Trạng thái',
@@ -181,14 +181,7 @@ function HistoryWithdraw() {
     return (
         <>
             <Spinning spinning={loading}>
-                <Card
-                    style={{
-                        width: '100%',
-                        marginBottom: 15,
-                        minHeight: "600px"
-                    }}
-                    hoverable
-                >
+                <Card>
                     <Form
                         form={form}
                         onFinish={onFinish}
@@ -243,7 +236,8 @@ function HistoryWithdraw() {
 
                     </Form>
                     <ModalRequestWithdraw userId={user.id} callBack={() => handleSearchDataTable()} style={{ marginBottom: "5px" }} />
-
+                </Card>
+                <Card style={{ marginTop: "20px" }}>
                     <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} rowKey={(record) => record.withdrawTransactionId} />
                 </Card>
             </Spinning>

@@ -66,13 +66,13 @@ const columns = [
     {
         title: 'Trạng thái',
         dataIndex: 'isPay',
-        width: '15%',
+        width: '12%',
         render: (paidDate, record) => {
             return (
                 record.isPay ?
                     <Tag color="#52c41a">Thành công</Tag>
                     :
-                    <Tag color="#ec0b0b">Đang chờ chuyển khoản</Tag>
+                    <Tag color="#ec0b0b">Chưa chuyển khoản</Tag>
             )
         }
     },
@@ -161,14 +161,7 @@ function HistoryDeposit() {
     return (
         <>
             <Spinning spinning={loading}>
-                <Card
-                    style={{
-                        width: '100%',
-                        marginBottom: 15,
-                        minHeight: "600px"
-                    }}
-                    hoverable
-                >
+                <Card>
                     <Form
                         form={form}
                         onFinish={onFinish}
@@ -203,7 +196,7 @@ function HistoryDeposit() {
                                             <Select >
                                                 <Select.Option value={0}>Tất cả</Select.Option>
                                                 <Select.Option value={1}>Thành công</Select.Option>
-                                                <Select.Option value={2}>Đang chờ chuyển khoản</Select.Option>
+                                                <Select.Option value={2}>Chưa chuyển khoản</Select.Option>
                                             </Select>
                                         </Form.Item>
                                     </Col>
@@ -219,6 +212,8 @@ function HistoryDeposit() {
                         </Row>
                     </Form>
                     <ModalRequestDeposit userId={user.id} style={{ marginBottom: "5px" }} text={"+ Nạp tiền"} />
+                </Card>
+                <Card style={{ marginTop: "20px" }}>
                     <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} rowKey={(record) => record.depositTransactionId} />
                 </Card>
             </Spinning>
