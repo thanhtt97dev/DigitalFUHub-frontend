@@ -215,4 +215,5 @@ export const RESPONSE_CODE_BANK_CUSTOMER_REQUEST_DEPOSIT_EXCEEDED_REQUESTS_CREAT
 
 // Paginations
 export const PAGE_SIZE = 10;
+export const PAGE_SIZE_FEEDBACK = 5;
 export const PAGE_SIZE_PRODUCT = 30;

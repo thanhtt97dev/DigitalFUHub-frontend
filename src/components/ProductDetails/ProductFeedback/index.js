@@ -5,6 +5,7 @@ import { Col, Row, Avatar, List, Rate, Card, Typography, Space } from 'antd';
 import { search } from '~/api/feedback'
 import {
     RESPONSE_CODE_SUCCESS,
+    PAGE_SIZE_FEEDBACK,
     FEEDBACK_TYPE_ALL,
     FEEDBACK_TYPE_1_STAR,
     FEEDBACK_TYPE_2_STAR,
@@ -36,7 +37,7 @@ const ProductFeedback = ({ product }) => {
     })
     const [selectedFeedbackType, setSelectedFeedbackType] = useState(FEEDBACK_TYPE_ALL)
     const [pagination, setPagination] = useState({
-        pageSize: 5,
+        pageSize: PAGE_SIZE_FEEDBACK,
     });
     const [data, setData] = useState(null)
 
