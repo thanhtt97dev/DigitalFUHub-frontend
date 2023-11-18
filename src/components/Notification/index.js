@@ -188,7 +188,7 @@ function Notification() {
                                                                                 <FontAwesomeIcon icon={faCircle} style={{ color: "#0866ff", position: "absolute", top: "55px", left: "320px" }} />
                                                                             </p>
                                                                         }
-                                                                        description={<p>{item.content}</p>}
+                                                                        description={<b>{item.content}</b>}
                                                                         type="info"
                                                                     />
                                                                 </div>
