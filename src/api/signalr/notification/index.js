@@ -15,3 +15,7 @@ export const editReadAllNotifications = (id) => {
 export const fetchMoreNotifications = (data) => {
     return apiPostAuth(`api/Notifications/fetchMoreNotifications`, data);
 };
+
+export const getNumberNotificationUnRead = (userId) => {
+    return apiGetAuth(`api/Notifications/getNumberNotificationUnRead?userId=${userId}`);
+};
