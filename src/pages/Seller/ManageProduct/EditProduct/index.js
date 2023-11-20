@@ -11,7 +11,7 @@ import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 import { editProductSeller, getProductSellerById } from "~/api/product";
-import { PRODUCT_ACTIVE, PRODUCT_HIDE, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PRODUCT_ACTIVE, PRODUCT_HIDE, RESPONSE_CODE_SUCCESS } from "~/constants";
 const columns = [
     {
         title: 'Số thứ tự',
@@ -581,9 +581,9 @@ function EditProduct() {
                                                         (getFieldValue) => ({
                                                             validator(_, value) {
                                                                 if (value !== null || value !== undefined) {
-                                                                    if (value < 1000) {
+                                                                    if (value < MIN_PRICE_PRODUCT_VARIANT) {
                                                                         return Promise.reject(new Error('Giá loại sản phẩm tối thiểu là 1.000đ.'));
-                                                                    } else if (value > 100000000) {
+                                                                    } else if (value > MAX_PRICE_PRODUCT_VARIANT) {
                                                                         return Promise.reject(new Error('Giá loại sản phẩm tối đa là 100.000.000đ.'));
                                                                     }
                                                                     else {
@@ -606,12 +606,11 @@ function EditProduct() {
                                                         (getFieldValue) => ({
                                                             validator(_, value) {
                                                                 if (value !== null || value !== undefined) {
-                                                                    if (value < 0) {
+                                                                    if (value < MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT) {
                                                                         return Promise.reject(new Error('Phần trăm giảm giá tối thiểu là 0%.'));
-                                                                    } else if (value > 50) {
+                                                                    } else if (value > MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT) {
                                                                         return Promise.reject(new Error('Phần trăm giảm giá tối đa là 50%.'));
-                                                                    }
-                                                                    else {
+                                                                    } else {
                                                                         return Promise.resolve();
                                                                     }
                                                                 }
