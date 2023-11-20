@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import Spinning from "~/components/Spinning";
 import { useSignOut } from "react-auth-kit";
-import { cleanHTML, getUserId, removeDataAuthInCookies } from '~/utils';
+import { getUserId, removeDataAuthInCookies } from '~/utils';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { checkExistShopName } from "~/api/shop";
@@ -56,7 +56,7 @@ function RegisterSeller() {
         var formData = new FormData();
         formData.append("userId", getUserId());
         formData.append("shopName", values.shopName);
-        formData.append("shopDescription", cleanHTML(shopDescription));
+        formData.append("shopDescription", shopDescription);
         formData.append("avatarFile", values.avatarFile.fileList[0].originFileObj);
         registerShop(formData)
             .then(res => {

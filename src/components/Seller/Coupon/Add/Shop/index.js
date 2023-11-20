@@ -2,7 +2,7 @@ import { QuestionCircleOutlined, ShopOutlined } from "@ant-design/icons";
 import { Button, Col, DatePicker, Form, Input, InputNumber, Row, Space, Switch, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { checkCouponCodeExist } from "~/api/coupon";
-import { COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, MAX_PERCENT_PRICE_DISCOUNT_COUPON, MAX_PRICE_DISCOUNT_COUPON, MAX_PRICE_OF_MIN_ORDER_TOTAL_VALUE, MIN_DURATION_COUPON_TAKE_PLACE, MIN_PRICE_DISCOUNT_COUPON, MIN_PRICE_OF_MIN_ORDER_TOTAL_VALUE, REGEX_COUPON_CODE, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, MAX_PERCENTAGE_PRICE_DISCOUNT_COUPON, MAX_PRICE_DISCOUNT_COUPON, MAX_PRICE_OF_MIN_ORDER_TOTAL_VALUE, MIN_DURATION_COUPON_TAKE_PLACE, MIN_PRICE_DISCOUNT_COUPON, MIN_PRICE_OF_MIN_ORDER_TOTAL_VALUE, REGEX_COUPON_CODE, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { regexPattern } from "~/utils";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import debounce from "debounce-promise";
@@ -251,7 +251,7 @@ function AddCouponForShop({ onAddCoupon = () => { } }) {
                                     if (!minTotalOrderValue) {
                                         return Promise.resolve();
                                     } else {
-                                        if (value > (parseInt(minTotalOrderValue * MAX_PERCENT_PRICE_DISCOUNT_COUPON))) {
+                                        if (value > (parseInt(minTotalOrderValue * MAX_PERCENTAGE_PRICE_DISCOUNT_COUPON))) {
                                             return Promise.reject(new Error('Số tiền giảm giá không được lớn hơn 70% Giá trị đơn hàng tối thiểu'));
                                         } else {
                                             return Promise.resolve();

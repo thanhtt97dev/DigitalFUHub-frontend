@@ -6,7 +6,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Spinning from '~/components/Spinning';
 import { NotificationContext } from '~/context/UI/NotificationContext';
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
-import { cleanHTML, getUserId, readDataFileExcelImportProduct } from '~/utils';
+import { getUserId, readDataFileExcelImportProduct } from '~/utils';
 import { getAllCategory } from '~/api/category';
 import { useNavigate } from 'react-router-dom';
 import { addProductSeller } from '~/api/product';
@@ -225,7 +225,7 @@ function AddProduct() {
 
         formData.append('productName', values.nameProduct);
         formData.append('userId', getUserId());
-        formData.append('description', cleanHTML(descriptionValue));
+        formData.append('description', descriptionValue);
         formData.append('category', values.category);
         // formData.append('discount', values.discount);
         formData.append('thumbnailFile', values.thumbnailProduct.file.originFileObj);
@@ -497,7 +497,7 @@ function AddProduct() {
                                                                 if (value !== null || value !== undefined) {
                                                                     if (value < MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT) {
                                                                         return Promise.reject(new Error('Phần trăm giảm giá tối thiểu là 0%.'));
-                                                                    } else if (value > parseInt(MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT * 100)) {
+                                                                    } else if (value > MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT) {
                                                                         return Promise.reject(new Error('Phần trăm giảm giá tối đa là 50%.'));
                                                                     }
                                                                     else {

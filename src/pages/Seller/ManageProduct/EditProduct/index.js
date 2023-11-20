@@ -6,7 +6,7 @@ import { NotificationContext } from '~/context/UI/NotificationContext';
 
 import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Spin, Switch } from 'antd';
 import { PlusOutlined, UploadOutlined, CloseOutlined, QuestionCircleOutlined, LeftOutlined } from '@ant-design/icons';
-import { cleanHTML, getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
+import { getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
 import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
@@ -233,7 +233,7 @@ function EditProduct() {
         formData.append('productId', productId);
         formData.append('userId', getUserId());
         formData.append('productName', values.nameProduct);
-        formData.append('productDescription', cleanHTML(productDescription));
+        formData.append('productDescription', productDescription);
         formData.append('discount', values.discount);
         formData.append('categoryId', values.category);
         formData.append('isActiveProduct', values.isActiveProduct);
@@ -608,7 +608,7 @@ function EditProduct() {
                                                                 if (value !== null || value !== undefined) {
                                                                     if (value < MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT) {
                                                                         return Promise.reject(new Error('Phần trăm giảm giá tối thiểu là 0%.'));
-                                                                    } else if (value > parseInt(MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT * 100)) {
+                                                                    } else if (value > MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT) {
                                                                         return Promise.reject(new Error('Phần trăm giảm giá tối đa là 50%.'));
                                                                     } else {
                                                                         return Promise.resolve();

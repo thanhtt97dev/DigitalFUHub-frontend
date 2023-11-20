@@ -2,7 +2,6 @@ import Cookies from 'js-cookie';
 import { format, register } from 'timeago.js';
 import jwtDecode from 'jwt-decode'
 import CryptoJS from 'crypto-js';
-import DOMPurify from "dompurify";
 import { Workbook } from 'exceljs'
 
 //API
@@ -169,12 +168,6 @@ export function readDataFileExcelImportProduct(file) {
             })
         }
     })
-}
-
-export function cleanHTML(dirtyHTML) {
-    return DOMPurify.sanitize(dirtyHTML, {
-        USE_PROFILES: { html: true },
-    });
 }
 
 export async function writeDataToExcel(data) {

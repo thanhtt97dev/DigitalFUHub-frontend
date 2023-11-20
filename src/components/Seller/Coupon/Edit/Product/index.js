@@ -5,7 +5,7 @@ import { Button, Col, DatePicker, Form, Image, Input, InputNumber, Row, Space, S
 import dayjs from "dayjs";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { regexPattern } from "~/utils";
-import { MAX_PERCENT_PRICE_DISCOUNT_COUPON, MAX_PRICE_DISCOUNT_COUPON, MAX_PRICE_OF_MIN_ORDER_TOTAL_VALUE, MIN_DURATION_COUPON_TAKE_PLACE, MIN_PRICE_DISCOUNT_COUPON, MIN_PRICE_OF_MIN_ORDER_TOTAL_VALUE, REGEX_COUPON_CODE, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { MAX_PERCENTAGE_PRICE_DISCOUNT_COUPON, MAX_PRICE_DISCOUNT_COUPON, MAX_PRICE_OF_MIN_ORDER_TOTAL_VALUE, MIN_DURATION_COUPON_TAKE_PLACE, MIN_PRICE_DISCOUNT_COUPON, MIN_PRICE_OF_MIN_ORDER_TOTAL_VALUE, REGEX_COUPON_CODE, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { checkCouponCodeExist } from "~/api/coupon";
 import PopupSelectProduct from "../../Add/Product/PopupSelectProduct";
 import Column from "antd/es/table/Column";
@@ -312,7 +312,7 @@ function AddCouponForProduct({ coupon, onEditCoupon = () => { } }) {
                                         if (!minTotalOrderValue) {
                                             return Promise.resolve();
                                         } else {
-                                            if (value > (parseInt(minTotalOrderValue * MAX_PERCENT_PRICE_DISCOUNT_COUPON))) {
+                                            if (value > (parseInt(minTotalOrderValue * MAX_PERCENTAGE_PRICE_DISCOUNT_COUPON))) {
                                                 return Promise.reject(new Error('Số tiền giảm giá không được lớn hơn 70% Giá trị đơn hàng tối thiểu'));
                                             } else {
                                                 return Promise.resolve();
