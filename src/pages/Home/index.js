@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import classNames from 'classnames/bind';
 import styles from './Home.module.scss';
-import { Row } from 'antd';
+import classNames from 'classnames/bind';
+import Spinning from "~/components/Spinning";
 import Products from '~/components/Home/Products';
 import Categories from '~/components/Home/Categories';
-import { getProductForHomePageCustomer } from "~/api/product";
+import { FloatButton } from 'antd';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
+import { getProductForHomePageCustomer } from "~/api/product";
 
 ///
 const cx = classNames.bind(styles);
@@ -14,6 +15,7 @@ const cx = classNames.bind(styles);
 const Home = () => {
 
     /// states
+    const [isLoadingProducts, setIsLoadingProducts] = useState(false);
     const [products, setProducts] = useState([]);
     const [totalProducts, setTotalProducts] = useState(0);
     const [searchParam, setSearchParam] = useState({
@@ -27,6 +29,8 @@ const Home = () => {
 
     /// useEffects
     useEffect(() => {
+        setIsLoadingProducts(true);
+
         getProductForHomePageCustomer(searchParam)
             .then((res) => {
                 if (res.status === 200) {
@@ -37,6 +41,7 @@ const Home = () => {
                         setProducts(result.products);
                         setTotalProducts(result.totalProduct);
 
+                        setIsLoadingProducts(false);
                     }
                 }
             })
@@ -48,16 +53,17 @@ const Home = () => {
     ///
 
     return (
-        <div className={cx('container')}>
-            <Row>
+        <Spinning spinning={isLoadingProducts}>
+            <div className={cx('container')}>
                 <Categories searchParam={searchParam}
                     setSearchParam={setSearchParam} />
                 <Products products={products}
                     setSearchParam={setSearchParam}
                     totalProducts={totalProducts}
                     searchParam={searchParam} />
-            </Row>
-        </div>
+            </div>
+            <FloatButton.BackTop visibilityHeight={0} />
+        </Spinning>
     );
 }
 
