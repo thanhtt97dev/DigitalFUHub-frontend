@@ -223,4 +223,5 @@ export const PAGE_SIZE = 10;
 export const PAGE_SIZE_FEEDBACK = 5;
 export const PAGE_SIZE_PRODUCT = 30;
 export const PAGE_SIZE_NOTIFICATION = 5;
+export const PAGE_SIZE_PRODUCT_HOME_PAGE = 48;
 

@@ -3,11 +3,9 @@ import { apiGet, apiGetAuth, apiPostAuthForm, apiPostAuth, apiPost } from '../de
 export const getProductById = (id) => {
     return apiGet(`api/Products/GetById/${id}`);
 };
-
-export const getAllProducts = () => {
-    return apiGet(`api/Products/GetAllProduct`);
+export const getProductForHomePageCustomer = (data) => {
+    return apiPost(`api/Products/GetProductHomePageCustomer`, data);
 };
-
 export const getAllProductsSeller = (userId) => {
     return apiGetAuth(`api/Products/Seller/${userId}/All`);
 };
