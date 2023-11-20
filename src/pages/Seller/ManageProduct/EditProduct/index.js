@@ -608,7 +608,7 @@ function EditProduct() {
                                                                 if (value !== null || value !== undefined) {
                                                                     if (value < MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT) {
                                                                         return Promise.reject(new Error('Phần trăm giảm giá tối thiểu là 0%.'));
-                                                                    } else if (value > MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT) {
+                                                                    } else if (value > parseInt(MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT * 100)) {
                                                                         return Promise.reject(new Error('Phần trăm giảm giá tối đa là 50%.'));
                                                                     } else {
                                                                         return Promise.resolve();
