@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Button } from 'antd';
-import { getAllCategory } from "~/api/category";
-import { AlignLeftOutlined } from '@ant-design/icons';
 import classNames from 'classnames/bind';
 import styles from '~/pages/Home/Home.module.scss';
+import { Space } from 'antd';
+import { getAllCategory } from "~/api/category";
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 
+///
 const cx = classNames.bind(styles);
+///
 
 /// styles
-const styleCategorySelected = {
-    alignItems: 'flex-start',
-    color: '#ee4d2d',
-    fontSize: '14px',
-    fontWeight: 700,
-    gridArea: 'auto',
-    lineHeight: '16px',
-};
+const styleTitleCategories = { padding: 20, width: '100%', boxShadow: '#d3d3d3 0px 0px 1px 0px' };
+const styleCategorySelected = { color: '#ee4d2d', fontSize: '14px', fontWeight: 700, lineHeight: '16px' };
+const styleContainerComponentCategories = { backgroundColor: '#ffffff', marginBottom: 20, width: '100%', boxShadow: '#d3d3d3 0px 0px 1px 0px', borderRadius: 2 };
 ///
 
 const Categories = ({ searchParam, setSearchParam }) => {
@@ -54,19 +50,23 @@ const Categories = ({ searchParam, setSearchParam }) => {
     }, [])
     ///
 
-    return (
-        <div className={cx("grid1")}>
-            <li><div><AlignLeftOutlined /> Danh mục sản phẩm</div></li>
-            <li><Button type="text" block style={searchParam.categoryId === 0 ? styleCategorySelected : {}} onClick={() => handleSelectCategory(0)}>Tất cả</Button></li>
+    return (<div style={styleContainerComponentCategories}>
+        <div style={styleTitleCategories}>
+            <p className={cx('text-title')}>DANH MỤC</p>
+        </div>
+        <Space size={[0, 0]} wrap>
+            <div className={cx('item-category')} style={searchParam.categoryId === 0 ? styleCategorySelected : {}} onClick={() => handleSelectCategory(0)}>
+                <p>Tất cả</p>
+            </div>
             {
                 categories.map((category, index) => (
-                    <li key={index}>
-                        <Button type="text" block onClick={() => handleSelectCategory(category.categoryId)}>
-                            <p style={searchParam.categoryId === category.categoryId ? styleCategorySelected : {}}>{category.categoryName}</p>
-                        </Button>
-                    </li>))
+                    <div key={index} className={cx('item-category')} onClick={() => handleSelectCategory(category.categoryId)} style={searchParam.categoryId === category.categoryId ? styleCategorySelected : {}}>
+                        <p style={searchParam.categoryId === category.categoryId ? styleCategorySelected : {}}>{category.categoryName}</p>
+                    </div>
+                ))
             }
-        </div>
+        </Space>
+    </div>
     )
 }
 
