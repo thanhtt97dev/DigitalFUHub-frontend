@@ -6,7 +6,7 @@ import { NotificationContext } from '~/context/UI/NotificationContext';
 
 import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Spin, Switch } from 'antd';
 import { PlusOutlined, UploadOutlined, CloseOutlined, QuestionCircleOutlined, LeftOutlined } from '@ant-design/icons';
-import { getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
+import { cleanHTML, getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
 import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
@@ -233,7 +233,7 @@ function EditProduct() {
         formData.append('productId', productId);
         formData.append('userId', getUserId());
         formData.append('productName', values.nameProduct);
-        formData.append('productDescription', productDescription);
+        formData.append('productDescription', cleanHTML(productDescription));
         formData.append('discount', values.discount);
         formData.append('categoryId', values.category);
         formData.append('isActiveProduct', values.isActiveProduct);

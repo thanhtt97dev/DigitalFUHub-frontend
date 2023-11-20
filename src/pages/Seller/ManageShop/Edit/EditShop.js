@@ -4,7 +4,7 @@ import { editShop, getShopOfSeller } from "~/api/shop";
 // import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import Spinning from "~/components/Spinning";
-import { getUserId } from '~/utils';
+import { cleanHTML, getUserId } from '~/utils';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
@@ -62,7 +62,7 @@ function EditShop() {
         setLoading(true);
         const data = {
             userId: getUserId(),
-            shopDescription: shopDescription,
+            shopDescription: cleanHTML(shopDescription),
             avatarFile: values.avatarFile ? values.avatarFile.fileList[0].originFileObj : null
         }
         editShop(data)

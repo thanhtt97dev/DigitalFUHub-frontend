@@ -6,7 +6,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Spinning from '~/components/Spinning';
 import { NotificationContext } from '~/context/UI/NotificationContext';
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
-import { getUserId, readDataFileExcelImportProduct } from '~/utils';
+import { cleanHTML, getUserId, readDataFileExcelImportProduct } from '~/utils';
 import { getAllCategory } from '~/api/category';
 import { useNavigate } from 'react-router-dom';
 import { addProductSeller } from '~/api/product';
@@ -225,7 +225,7 @@ function AddProduct() {
 
         formData.append('productName', values.nameProduct);
         formData.append('userId', getUserId());
-        formData.append('description', descriptionValue);
+        formData.append('description', cleanHTML(descriptionValue));
         formData.append('category', values.category);
         // formData.append('discount', values.discount);
         formData.append('thumbnailFile', values.thumbnailProduct.file.originFileObj);
