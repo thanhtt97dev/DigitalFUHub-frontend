@@ -207,7 +207,7 @@ export const FEEDBACK_TYPE_5_STAR = 5;
 export const FEEDBACK_TYPE_HAVE_COMMENT = 6;
 export const FEEDBACK_TYPE_HAVE_MEDIA = 7;
 
-//custoemr request withdraw, deposit status
+//customer request withdraw, deposit status
 export const RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_INSUFFICIENT_BALANCE = "WITHDRAW_REQUEST_01";
 export const RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED = "WITHDRAW_REQUEST_02";
 export const RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_AMOUNT_A_DAY = "WITHDRAW_REQUEST_03";
@@ -217,6 +217,20 @@ export const MAX_PRICE_CAN_WITHDRAW = 3000000;
 //export const MIN_PRICE_CAN_WITHDRAW = 500000;
 export const MIN_PRICE_CAN_WITHDRAW = 10000;
 
+export const REGEX_USERNAME_SIGN_UP = "^(?=[a-z])[a-z\\d]{6,12}$";
+export const REGEX_PASSWORD_SIGN_UP = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,16}$";
+
+export const MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT = 0;
+export const MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT = 0.5;
+export const MIN_PRICE_PRODUCT_VARIANT = 1000;
+export const MAX_PRICE_PRODUCT_VARIANT = 100000000;
+
+export const REGEX_COUPON_CODE = "^[a-zA-Z0-9]{4,10}$";
+export const MIN_PRICE_OF_MIN_ORDER_TOTAL_VALUE = 0;
+export const MAX_PRICE_OF_MIN_ORDER_TOTAL_VALUE = 100000000;
+export const MIN_PRICE_DISCOUNT_COUPON = 1000;
+export const MAX_PERCENT_PRICE_DISCOUNT_COUPON = 0.7;
+export const MIN_DURATION_COUPON_TAKE_PLACE = 60 * 60 * 1000;
 
 // Paginations
 export const PAGE_SIZE = 10;

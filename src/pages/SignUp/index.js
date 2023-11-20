@@ -10,7 +10,7 @@ import {
 import { Link } from 'react-router-dom';
 import { checkExistEmail, signUp, checkExistUsername } from '~/api/user';
 import { encryptPassword, regexPattern } from '~/utils';
-import { RESPONSE_CODE_SUCCESS } from '~/constants';
+import { REGEX_PASSWORD_SIGN_UP, REGEX_USERNAME_SIGN_UP, RESPONSE_CODE_SUCCESS } from '~/constants';
 import { NotificationContext } from '~/context/UI/NotificationContext';
 import debounce from "debounce-promise";
 
@@ -100,7 +100,7 @@ function SignUp() {
                                 validator(_, value) {
                                     const data = value === undefined ? '' : value.trim();
                                     if (data) {
-                                        const result = regexPattern(value, "^(?=[a-z])[a-z\\d]{6,12}$")
+                                        const result = regexPattern(value, REGEX_USERNAME_SIGN_UP)
                                         if (result) {
                                             return new Promise((resolve, reject) => {
                                                 debounceCheckExistUsername(value)
@@ -117,7 +117,7 @@ function SignUp() {
                                                     })
                                             })
                                         } else {
-                                            return Promise.reject(new Error('Tên tài khoản phải bắt đầu với kí tự chữ thường và có độ dài 6 - 12 kí tự'));
+                                            return Promise.reject(new Error('Tên tài khoản phải bắt đầu với kí tự chữ thường và có độ dài 6 - 12 ký tự'));
                                         }
                                     } else {
                                         return Promise.reject(new Error('Tên tài khoản không để trống'));
@@ -172,7 +172,7 @@ function SignUp() {
                                 validator(_, value) {
                                     const data = value === undefined ? '' : value.trim();
                                     if (data) {
-                                        const result = regexPattern(value, "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,16}$")
+                                        const result = regexPattern(value, REGEX_PASSWORD_SIGN_UP)
                                         if (result) {
                                             return Promise.resolve();
                                         } else {
