@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
-import { Layout, Space, Button, Dropdown, Avatar, Input } from 'antd';
+import { Layout, Space, Button, Dropdown, Avatar, Input, Typography } from 'antd';
 import Logout from '~/components/Logout';
 import Message from '~/components/Message';
 import Notificaion from '~/components/Notification';
 import {
-    MessageOutlined, ShoppingCartOutlined, BellFilled,
+    ShoppingCartOutlined, BellFilled,
     CreditCardOutlined, ShopOutlined, ShoppingOutlined, UserOutlined,
     HeartOutlined
 } from '@ant-design/icons';
@@ -15,15 +15,20 @@ import logoFPT from '~/assets/images/fpt-logo.jpg';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import ModalRequestDeposit from '../../components/Modals/ModalRequestDeposit';
 // import AccountBalance from '../../components/AccountBalance';
+import debounce from "debounce-promise";
 
 import classNames from 'classnames/bind';
 import styles from './HeaderLayout.module.scss';
-
+const debounceHintSearch = debounce((value) => {
+    alert('list hint search');
+    return Promise.resolve({ res: value });
+}, 500);
 const cx = classNames.bind(styles);
 
 const { Header } = Layout;
 
 const { Search } = Input;
+const { Text } = Typography
 
 const itemsFixed = [
     {
@@ -70,8 +75,48 @@ function HeaderLayout() {
 
     const [items, setItems] = useState([]);
     const [userAvatart, setUserAvatart] = useState(null);
+    const [showPopoverHintSearch, setShowPopoverHintSearch] = useState(false);
+    const [valueSearch, setValueSearch] = useState('')
+    const [hintSearchItems, setHintSearchItems] = useState([]);
+    const handleSearch = (value, _e, info) => {
+        // if (value === undefined || value.trim() === '') {
+        //     setShowPopoverHintSearch(false);
+        // } else {
+        //     setShowPopoverHintSearch(true);
+        // }
+        setValueSearch(value.trim());
+    };
+    const handleSearchBoxChange = (e) => {
+        if (!showPopoverHintSearch && e.target.value.trim()) {
+            setShowPopoverHintSearch(true);
+        } else if (!e.target.value.trim()) {
+            setShowPopoverHintSearch(false);
+        }
+        setValueSearch(e.target.value.trim())
+        if (e.target.value.trim()) {
+            debounceHintSearch(e.target.value.trim());
+        }
+    };
+    const handleSearchBoxFocus = () => {
+        setShowPopoverHintSearch(true);
+    }
 
-    const onSearch = (value, _e, info) => console.log(info?.source, value);
+    const handleLinkHintClick = (e) => {
+        setValueSearch(e.target.textContent)
+        setShowPopoverHintSearch(false);
+    }
+    const wrapperRef = useRef(null);
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+                setShowPopoverHintSearch(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [wrapperRef])
 
     useEffect(() => {
 
@@ -129,16 +174,52 @@ function HeaderLayout() {
                         </Link>
                     )}
                 </Space>
-
-                <Space className={cx("item2")}>
-                    <Search
-                        className={cx("search")}
-                        placeholder="Tìm kiếm sản phẩm"
-                        allowClear
-                        onPressEnter={(e) => onSearch(e.target.value)}
-                        onSearch={(e) => onSearch(e.target.value)}
-                    />
-                </Space>
+                <div ref={wrapperRef}>
+                    <Space className={cx("item2")}>
+                        <Search
+                            className={cx("search")}
+                            placeholder="Tìm kiếm sản phẩm"
+                            allowClear
+                            onFocus={handleSearchBoxFocus}
+                            onChange={handleSearchBoxChange}
+                            value={valueSearch}
+                            enterButton={true}
+                            onSearch={handleSearch}
+                        />
+                        {showPopoverHintSearch &&
+                            <Space id='container-hint-search' className={cx('container-hint-search')} direction='vertical' size={[0, 0]} style={{
+                                boxShadow: '0 1px 4px 0 rgba(0,0,0,.26)',
+                                borderRadius: '2px',
+                                width: '30vw',
+                                height: 'auto',
+                                position: 'absolute',
+                                top: '6em',
+                                left: '34.8%',
+                                zIndex: 100,
+                                backgroundColor: '#fff'
+                            }}>
+                                {/* <Link to={`/search?keyword=product1`} >
+                                    <Text className={cx('hint-search')} >{`Tìm Shop "${valueSearch.trim()}"`}</Text>
+                                </Link> */}
+                                <Link to={`/search?keyword=product1`} >
+                                    <Text className={cx('hint-search')} onClick={handleLinkHintClick}>Content 2</Text>
+                                </Link>
+                                <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
+                                    <Text className={cx('hint-search')}>Content 3</Text>
+                                </Link>
+                                <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
+                                    <Text className={cx('hint-search')}>Content 4</Text>
+                                </Link>
+                                <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
+                                    <Text className={cx('hint-search')}>Content 5</Text>
+                                </Link>
+                                <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
+                                    <Text className={cx('hint-search')}>Content 6</Text>
+                                </Link>
+                            </Space>
+                        }
+                    </Space>
+                </div>
 
                 <Space className={cx("item3")}>
                     {user === null ? (

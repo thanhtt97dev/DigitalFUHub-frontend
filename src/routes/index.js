@@ -38,6 +38,7 @@ import EditShop from '~/pages/Seller/ManageShop/Edit/EditShop';
 import ShopDetail from '~/pages/ShopDetail';
 
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
+import Search from '~/pages/Search';
 
 const routesConfig = [
     {
@@ -68,6 +69,12 @@ const routesConfig = [
         path: '/',
         layout: <NormalLayout />,
         component: <Home />,
+    },
+    {
+        title: 'Search product',
+        path: '/search',
+        layout: <NormalLayout />,
+        component: <Search />,
     },
     {
         title: 'verification2FA',
