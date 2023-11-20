@@ -236,3 +236,6 @@ export const MIN_DURATION_COUPON_TAKE_PLACE = 60 * 60 * 1000;
 export const PAGE_SIZE = 10;
 export const PAGE_SIZE_FEEDBACK = 5;
 export const PAGE_SIZE_PRODUCT = 30;
+export const PAGE_SIZE_NOTIFICATION = 5;
+export const PAGE_SIZE_PRODUCT_HOME_PAGE = 48;
+

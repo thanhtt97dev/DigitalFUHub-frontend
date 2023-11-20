@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import classNames from 'classnames/bind';
-import Spinning from "~/components/Spinning";
 import styles from './ShopDetail.module.scss';
 import ProductList from "~/components/ShopDetail/ProductList";
 import GeneralDescription from "~/components/ShopDetail/GeneralDescription";
