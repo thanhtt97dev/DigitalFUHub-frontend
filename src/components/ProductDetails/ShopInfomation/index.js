@@ -11,26 +11,21 @@ import { formatNumber, getVietnamCurrentTime } from '~/utils';
 import { MessageOutlined, ShopOutlined } from '@ant-design/icons';
 import { Col, Row, Button, Skeleton, Avatar, Card, Space, Typography } from 'antd';
 
-
-const { Title, Text } = Typography;
+///
 require('moment/locale/vi');
 const moment = require('moment');
 const cx = classNames.bind(styles);
+///
+
+/// styles
+const styleFirstCard = { borderRadius: '6px 0 0 6px' };
+const styleColUserInfo = { borderRight: '1px solid rgb(232, 232, 232)' };
+///
 
 const ShopInfomations = ({ product }) => {
 
     /// navigates
     const navigate = useNavigate();
-    ///
-
-    /// styles
-    const styleFirstCard = {
-        borderRadius: '6px 0 0 6px'
-    }
-
-    const styleLastCard = {
-        borderRadius: '0 6px 6px 0'
-    }
     ///
 
     /// variables
@@ -66,7 +61,7 @@ const ShopInfomations = ({ product }) => {
     }
 
     const handleViewShop = (shopId) => {
-        return navigate(`/shop/${shopId}`)
+        return navigate(`/shop/${shopId}`);
     }
     ///
 
@@ -74,68 +69,50 @@ const ShopInfomations = ({ product }) => {
 
     return (<>
         {
-            product ? (
-
-                <Row className={cx('margin-bottom')}>
-                    <Col span={7}>
-                        <Card style={styleFirstCard}>
-                            <Row>
-                                <Col className={cx('flex-item-center')}>
-                                    <Avatar size={64} src={product.shop.avatar ? product.shop.avatar : fptImage} />
-                                </Col>
-                                <Col className={cx('padding-left-element')}>
-                                    <Space direction='vertical'>
-                                        <Link><Title level={4}>{product.shop.shopName}</Title></Link>
-                                        {(() => {
-                                            if (product.shop.isOnline) {
-                                                return (
-                                                    <div><FontAwesomeIcon icon={faCircle} style={{ color: "#00a400" }} /> Online</div>
-                                                )
-                                            } else {
-                                                return (
-                                                    <p>Online {moment(product.shop.lastTimeOnline).fromNow()}</p>
-                                                )
-                                            }
-                                        })()}
-                                        <Space direction='horizontal'>
-                                            <Button icon={<ShopOutlined />} type="primary" danger ghost onClick={() => handleViewShop(product.shop.shopId)}>Xem Shop</Button>
-                                            <Button disabled={user?.id !== product.shop.shopId ? false : true} className={cx('margin-element')} icon={<MessageOutlined />} size={'large'} onClick={handleSendMessage} style={{ marginLeft: 10 }}>
-                                                Chat ngay
-                                            </Button>
-
-                                        </Space>
+            product ?
+                <Card style={styleFirstCard} className={cx('margin-bottom')}>
+                    <Row>
+                        <Col span={8} style={styleColUserInfo}>
+                            <Space align="center" size={15}>
+                                <div className={cx('big-avatar')}>
+                                    <Avatar size={90} src={product.shop.avatar} />
+                                    {product.shop.isOnline ? <span className={cx('big-avatar-status')}></span> : <></>}
+                                </div>
+                                <Space direction="vertical" size={10}>
+                                    <Space direction="vertical" size={0}>
+                                        <p className={cx('shop-name')}>{product.shop.shopName}</p>
+                                        <p className={cx('active-time')}>{product.shop.isOnline ? 'Đang hoạt động' : 'Hoạt động ' + moment(product.shop.lastTimeOnline).fromNow()}</p>
                                     </Space>
+                                    <Space align="center">
+                                        <Button icon={<ShopOutlined />} type="primary" danger ghost onClick={() => handleViewShop(product.shop.shopId)}>Xem Shop</Button>
+                                        <Button disabled={user?.id !== product.shop.shopId ? false : true} type="primary" className={cx('margin-element')} icon={<MessageOutlined />} onClick={handleSendMessage} style={{ marginLeft: 10 }}>
+                                            Chat ngay
+                                        </Button>
+                                    </Space>
+                                </Space>
+                            </Space>
+                        </Col>
+                        <Col span={16} className={cx('flex-item-center')}>
+                            <Space size={100} align="center">
+                                <Space align="center">
+                                    <p className={cx('text-description')}>Sản phẩm:</p>
+                                    <p className={cx('text-color-description')}>{product.shop.productNumber}</p>
+                                </Space>
+                                <Space align="center">
+                                    <p className={cx('text-description')}>Đánh giá:</p>
+                                    <p className={cx('text-color-description')}>{formatNumber(product.shop.feedbackNumber)}</p>
+                                </Space>
+                                <Space align="center">
+                                    <p className={cx('text-description')}>Tham gia:</p>
+                                    <p className={cx('text-color-description')}>{moment(product.shop.dateCreate).fromNow()}</p>
+                                </Space>
+                            </Space>
+                        </Col>
 
-                                </Col>
-                            </Row>
-
-                        </Card>
-                    </Col>
-                    <Col span={6}>
-                        <Card className={cx('flex-item-center', 'card-shop-info')} bodyStyle={{ textAlign: 'center' }}>
-                            <Title level={5}>Đánh giá</Title>
-                            <Link><Text type="danger">{formatNumber(product.shop.feedbackNumber)}</Text></Link>
-                        </Card>
-                    </Col>
-                    <Col span={6}>
-                        <Card className={cx('flex-item-center', 'card-shop-info')} bodyStyle={{ textAlign: 'center' }}>
-                            <Title level={5}>Sản phẩm</Title>
-                            <Link><Text type="danger">{formatNumber(product.shop.productNumber)}</Text></Link>
-                        </Card>
-                    </Col>
-                    <Col span={5}>
-                        <Card className={cx('flex-item-center', 'card-shop-info')} style={styleLastCard} bodyStyle={{ textAlign: 'center' }}>
-                            <Title level={5}>Tham gia</Title>
-                            <Text type="danger">{moment(product.shop.dateCreate).fromNow()}</Text>
-                        </Card>
-                    </Col>
-                </Row>
-
-            ) : (
-                <Skeleton active />
-            )
+                    </Row>
+                </Card>
+                : <Skeleton active />
         }
-
     </>)
 
 }

@@ -1,9 +1,16 @@
 import React, { useRef } from 'react';
-import { Carousel, Image } from 'antd';
+import { Carousel } from 'antd';
 import classNames from 'classnames/bind';
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 
+///
 const cx = classNames.bind(styles);
+///
+
+/// styles
+const imageStyle = { width: '100%', height: 450, borderRadius: 2 };
+const carouselStyle = { width: '100%', height: 450 };
+///
 
 function CarouselCustom({ data }) {
 
@@ -11,12 +18,8 @@ function CarouselCustom({ data }) {
     const slider = useRef(null);
     ///
 
-    /// styles
-    const imageStyle = { height: '100%', width: '100%', borderRadius: 5 };
-    const carouselStyle = { width: '100%', height: '100%' };
-    ///
     return (
-        <div className={cx("container")} >
+        <div style={{ width: 450, height: 450, position: 'relative' }}>
             <button
                 className={cx("btn-navigation-prev")}
                 onClick={() => slider.current.prev()}
@@ -32,9 +35,10 @@ function CarouselCustom({ data }) {
                 {
                     data.map((item, index) => (
                         <div key={index} >
-                            <Image
+                            <img
                                 style={imageStyle}
                                 src={item}
+                                alt='product'
                             />
                         </div>
 
