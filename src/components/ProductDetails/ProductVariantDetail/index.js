@@ -12,7 +12,7 @@ import { discountPrice, formatPrice, formatNumber } from '~/utils';
 import { useNavigate } from 'react-router-dom';
 import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS, PRODUCT_BAN, RESPONSE_CODE_SUCCESS } from '~/constants';
 import { CreditCardOutlined, ShoppingCartOutlined, HeartFilled } from '@ant-design/icons';
-import { Col, Row, Button, Divider, Spin, Skeleton, InputNumber, Radio, Card, Typography, Space, Rate } from 'antd';
+import { Col, Row, Button, Divider, Spin, InputNumber, Radio, Card, Typography, Space, Rate } from 'antd';
 
 ///
 const cx = classNames.bind(styles);
@@ -85,6 +85,8 @@ const styleDiscountPrice = {
     fontSize: '1.875rem',
     fontWeight: 500
 }
+
+const styleTitleProduct = { color: '#000000', display: 'inline', fontSize: '20px', fontWeight: 500, gridArea: 'auto', lineHeight: '24px' };
 ///
 
 const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, productVariantsSelected, product, scrollToStartFeedback }) => {
@@ -310,14 +312,14 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         return formattedPrice;
     }
 
-    const disableProduct = () => {
+    const isProductBan = () => {
         return product?.productStatusId === PRODUCT_BAN ? true : false;
     }
     ///
 
     /// useEffect
     useEffect(() => {
-        setQuantity(1)
+        setQuantity(1);
     }, [handleSelectProductVariant]);
 
     // get product variant hav price minimum
@@ -364,111 +366,115 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
     ///
 
     return (
-        <Card className={disableProduct() ? cx('margin-bottom', 'opacity-disabled') : cx('margin-bottom')}>
-            <Row>
-                {product ? (<>
-                    <Col span={10} style={{ padding: 15 }}>
-                        <ProductMedias productMedias={product.productMedias} />
-                        {
-                            disableProduct() ? <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div> : <></>
-                        }
-                    </Col>
-                    <Col offset={1} span={13} style={{ padding: 15 }}>
-                        <div className={disableProduct() ? cx('pointer-events-item') : ''}>
-                            <Title level={3}>{product.productName}</Title>
-                            <Row style={{ marginBottom: 30, display: 'flex' }}>
-                                <Col>
-                                    <Space align='center' style={spaceRatingStarStyle} onClick={scrollToStartFeedback}>
-                                        {
-                                            calculatorRatingStarProduct() > 0 ? (<>
-                                                <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct() ? calculatorRatingStarProduct().toFixed(1) : 0}</Text>
-                                                <Rate disabled defaultValue={calculatorRatingStarProduct()} style={ratingStarStyle} />
-                                            </>) : (<Text style={feedbackProductStyle} type="secondary">Chưa Có Đánh Giá</Text>)
-                                        }
-                                    </Space>
-                                </Col>
-                                <Col>
-                                    <Space align='center' style={spaceFeedbackStyle} onClick={scrollToStartFeedback}>
-                                        <Text style={numberFeedbackProductStyle}>{formatNumber(product.numberFeedback)}</Text>
-                                        <Text style={feedbackProductStyle} type="secondary">Đánh Giá</Text>
-                                    </Space>
-                                </Col>
-                                <Col>
-                                    <Space align='center' style={spaceSoldCountStyle}>
-                                        <Text style={soldCountProductStyle}>{formatNumber(product.soldCount)}</Text>
-                                        <Text style={feedbackProductStyle} type="secondary">Đã Bán</Text>
-                                    </Space>
-                                </Col>
-                                <Col style={{ marginLeft: 'auto' }}>
-                                    <Button type="text" onClick={handleClickReportProduct}><Text style={feedbackProductStyle} type="secondary">Tố cáo</Text></Button>
-                                </Col>
-                            </Row>
-                            {
-                                productVariantsSelected ? (
-                                    productVariantsSelected?.discount !== 0 ? (
-                                        <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
-                                            <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantsSelected.price} />}</Text>
-                                            <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantsSelected.price, productVariantsSelected.discount)} /></p>
-                                            <div className={cx('discount-style')}>{productVariantsSelected.discount}% giảm</div>
-                                        </Space>
-                                    ) : (
-                                        <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
-                                            <p level={4} style={styleDiscountPrice}><PriceFormat price={productVariantsSelected.price} /></p>
-                                        </Space>
-                                    )
-                                ) : (
-                                    productVariantDefault?.discount !== 0 ? (
-                                        <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
-                                            <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantDefault.price} />}</Text>
-                                            <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantDefault.price, productVariantDefault.discount)} /></p>
-                                            <div className={cx('discount-style')}>{productVariantDefault.discount}% giảm</div>
-                                        </Space>
-                                    ) : (
-                                        <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
-                                            <p level={4} style={styleDiscountPrice}><PriceFormat price={productVariantDefault.price} /></p>
-                                        </Space>
-                                    )
-                                )
-                            }
-                            <div style={{ marginBottom: 20 }}>
-                                <Title level={4}>Loại sản phẩm</Title>
-                                <Radio.Group>
-                                    <GridItems productVariants={productVariants} handleSelectProductVariant={handleSelectProductVariant} />
-                                </Radio.Group>
-                            </div>
-                            <div className={cx('space-div-flex')}>
-                                <Text strong>Số lượng: </Text>
-                                &nbsp;&nbsp;
-                                <InputNumber min={1} max={productVariantsSelected?.quantity || product.quantity} defaultValue={1} onChange={handleChangeQuantity} value={quantity} />
-                                &nbsp;&nbsp;
-                                {productVariantsSelected ? (<Text type="secondary" strong>{productVariantsSelected.quantity} sản phẩm có sẵn</Text>)
-                                    : (<Text type="secondary" strong>{product.quantity} sản phẩm có sẵn</Text>)}
-
-                            </div>
-                            <Divider />
-                            <Space align='center'>
-                                <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={disableProduct() || product.quantity <= 0 || user?.id === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<CreditCardOutlined />} size={'large'} loading={isLoadingButtonBuyNow}>
-                                    Mua ngay
-                                </Button>
-                                <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={disableProduct() || product.quantity <= 0 || user?.id === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<ShoppingCartOutlined />} size={'large'} loading={isLoadingButtonAddToCart}>
-                                    Thêm vào giỏ
-                                </Button>
+        <>
+            {
+                product ?
+                    <Card className={product?.quantity <= 0 || isProductBan() ? cx('margin-bottom', 'opacity-disabled') : cx('margin-bottom')}>
+                        <Row>
+                            <Col span={10} className={cx('flex-item-center')}>
+                                <ProductMedias productMedias={product.productMedias} />
                                 {
-                                    user?.id !== product.shop.shopId ? (
-                                        <Button style={buttonStyle} onClick={handleClickWishList} size={'large'} className={cx('flex-item-center')} loading={isLoadingButtonWishList}>
-                                            <HeartFilled style={iconStyle} />
-                                        </Button>
-                                    ) : (<></>)
+                                    isProductBan() ?
+                                        <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div>
+                                        : product?.quantity <= 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
                                 }
-                            </Space>
-                        </div>
+                            </Col>
+                            <Col offset={1} span={13}>
+                                <div style={{ wordWrap: 'break-word', marginBottom: 15 }}>
+                                    <p style={styleTitleProduct}>{product.productName}</p>
+                                </div>
+                                <Row style={{ marginBottom: 30, display: 'flex' }}>
+                                    <Col>
+                                        <Space align='center' style={spaceRatingStarStyle} onClick={scrollToStartFeedback}>
+                                            {
+                                                calculatorRatingStarProduct() > 0 ? (<>
+                                                    <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct() ? calculatorRatingStarProduct().toFixed(1) : 0}</Text>
+                                                    <Rate disabled defaultValue={calculatorRatingStarProduct()} style={ratingStarStyle} />
+                                                </>) : (<Text style={feedbackProductStyle} type="secondary">Chưa Có Đánh Giá</Text>)
+                                            }
+                                        </Space>
+                                    </Col>
+                                    <Col>
+                                        <Space align='center' style={spaceFeedbackStyle} onClick={scrollToStartFeedback}>
+                                            <Text style={numberFeedbackProductStyle}>{formatNumber(product.numberFeedback)}</Text>
+                                            <Text style={feedbackProductStyle} type="secondary">Đánh Giá</Text>
+                                        </Space>
+                                    </Col>
+                                    <Col>
+                                        <Space align='center' style={spaceSoldCountStyle}>
+                                            <Text style={soldCountProductStyle}>{formatNumber(product.soldCount)}</Text>
+                                            <Text style={feedbackProductStyle} type="secondary">Đã Bán</Text>
+                                        </Space>
+                                    </Col>
+                                    <Col style={{ marginLeft: 'auto' }}>
+                                        <Button type="text" onClick={handleClickReportProduct}><Text style={feedbackProductStyle} type="secondary">Tố cáo</Text></Button>
+                                    </Col>
+                                </Row>
+                                {
+                                    productVariantsSelected ? (
+                                        productVariantsSelected?.discount !== 0 ? (
+                                            <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                                <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantsSelected.price} />}</Text>
+                                                <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantsSelected.price, productVariantsSelected.discount)} /></p>
+                                                <div className={cx('discount-style')}>{productVariantsSelected.discount}% giảm</div>
+                                            </Space>
+                                        ) : (
+                                            <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                                <p level={4} style={styleDiscountPrice}><PriceFormat price={productVariantsSelected.price} /></p>
+                                            </Space>
+                                        )
+                                    ) : (
+                                        productVariantDefault?.discount !== 0 ? (
+                                            <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                                <Text delete strong type="secondary" style={styleOriginPrice}>{<PriceFormat price={productVariantDefault.price} />}</Text>
+                                                <p level={4} style={styleDiscountPrice}><PriceFormat price={discountPrice(productVariantDefault.price, productVariantDefault.discount)} /></p>
+                                                <div className={cx('discount-style')}>{productVariantDefault.discount}% giảm</div>
+                                            </Space>
+                                        ) : (
+                                            <Space align='center' className={cx('space-div-flex')} size={20} style={styleSpacePrice}>
+                                                <p level={4} style={styleDiscountPrice}><PriceFormat price={productVariantDefault.price} /></p>
+                                            </Space>
+                                        )
+                                    )
+                                }
+                                <div style={{ marginBottom: 20 }}>
+                                    <Title level={4}>Loại sản phẩm</Title>
+                                    <Radio.Group>
+                                        <GridItems productVariants={productVariants} handleSelectProductVariant={handleSelectProductVariant} />
+                                    </Radio.Group>
+                                </div>
+                                <div className={cx('space-div-flex')}>
+                                    <Text strong>Số lượng: </Text>
+                                    &nbsp;&nbsp;
+                                    <InputNumber min={1} max={productVariantsSelected?.quantity || product.quantity} defaultValue={1} onChange={handleChangeQuantity} value={quantity} />
+                                    &nbsp;&nbsp;
+                                    {productVariantsSelected ? (<Text type="secondary" strong>{productVariantsSelected.quantity} sản phẩm có sẵn</Text>)
+                                        : (<Text type="secondary" strong>{product.quantity} sản phẩm có sẵn</Text>)}
 
-                    </Col>
-                    <ReportProduct isOpenReasons={isOpenReasons} setIsOpenReasons={setIsOpenReasons} productId={product?.productId} />
-                    <ModalAlert isOpen={isModalNotifyQuantityOpen} handleOk={handleOk} content={contentProductInvalidQuantity} />
-                </>) : (<Skeleton active />)}
-            </Row>
-        </Card >
+                                </div>
+                                <Divider />
+                                <Space align='center'>
+                                    <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={isProductBan() || product.quantity <= 0 || user?.id === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<CreditCardOutlined />} size={'large'} loading={isLoadingButtonBuyNow}>
+                                        Mua ngay
+                                    </Button>
+                                    <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={isProductBan() || product.quantity <= 0 || user?.id === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<ShoppingCartOutlined />} size={'large'} loading={isLoadingButtonAddToCart}>
+                                        Thêm vào giỏ
+                                    </Button>
+                                    {
+                                        user?.id !== product.shop.shopId ? (
+                                            <Button disabled={isProductBan() ? true : false} style={buttonStyle} onClick={handleClickWishList} size={'large'} className={cx('flex-item-center')} loading={isLoadingButtonWishList}>
+                                                <HeartFilled style={iconStyle} />
+                                            </Button>
+                                        ) : (<></>)
+                                    }
+                                </Space>
+                            </Col>
+                            <ReportProduct isOpenReasons={isOpenReasons} setIsOpenReasons={setIsOpenReasons} productId={product?.productId} />
+                            <ModalAlert isOpen={isModalNotifyQuantityOpen} handleOk={handleOk} content={contentProductInvalidQuantity} />
+                        </Row>
+                    </Card >
+                    : <></>}
+        </>
     )
 }
 

@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import ProductVariantDetail from '~/components/ProductDetails/ProductVariantDetail';
-import ShopInfomations from '~/components/ProductDetails/ShopInfomation';
-import ProductDescription from '~/components/ProductDetails/ProductDescription';
-import ProductFeedback from '~/components/ProductDetails/ProductFeedback';
+import classNames from 'classnames/bind';
 import Spinning from "~/components/Spinning";
+import styles from './ProductDetail.module.scss';
+import ShopInfomations from '~/components/ProductDetails/ShopInfomation';
+import ProductFeedback from '~/components/ProductDetails/ProductFeedback';
+import ProductDescription from '~/components/ProductDetails/ProductDescription';
+import ProductVariantDetail from '~/components/ProductDetails/ProductVariantDetail';
 import { getProductById } from '~/api/product';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RESPONSE_CODE_PRODUCT_ACTIVE, RESPONSE_CODE_PRODUCT_BAN, RESPONSE_CODE_PRODUCT_REMOVE, RESPONSE_CODE_PRODUCT_HIDE, RESPONSE_CODE_DATA_NOT_FOUND } from '~/constants';
+
+///
+const cx = classNames.bind(styles);
+///
 
 const ProductDetail = () => {
 
@@ -85,20 +91,22 @@ const ProductDetail = () => {
 
     return (
         <Spinning spinning={isLoadingInfoProduct}>
-            <ProductVariantDetail
-                productVariants={productVariants}
-                handleSelectProductVariant={handleSelectProductVariant}
-                productVariantsSelected={productVariantsSelected}
-                product={product}
-                scrollToStartFeedback={scrollToStartFeedback} />
-            <ShopInfomations product={product} />
-            <ProductDescription product={product} />
-            <div ref={feedbackStartRef} />
-            {product !== null && product.numberFeedback > 0 ?
-                <ProductFeedback product={product} />
-                :
-                <></>
-            }
+            <div className={cx('container')}>
+                <ProductVariantDetail
+                    productVariants={productVariants}
+                    handleSelectProductVariant={handleSelectProductVariant}
+                    productVariantsSelected={productVariantsSelected}
+                    product={product}
+                    scrollToStartFeedback={scrollToStartFeedback} />
+                <ShopInfomations product={product} />
+                <ProductDescription product={product} />
+                <div ref={feedbackStartRef} />
+                {product !== null && product.numberFeedback > 0 ?
+                    <ProductFeedback product={product} />
+                    :
+                    <></>
+                }
+            </div>
         </Spinning>
     )
 }
