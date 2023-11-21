@@ -8,6 +8,13 @@
 .ck.ck-powered-by {
     display: none;
 }
+
+/* .search-radio-button-checked.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    background-color: #e6f4ff !important;
+    border-color: #e6f4ff !important;
+    color: #000 !important;
+} */
+
 /*.disabled-row,
 .disabled-row td {
     background-color: #ebebeb; 

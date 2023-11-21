@@ -240,3 +240,8 @@ export const PAGE_SIZE_PRODUCT = 30;
 export const PAGE_SIZE_NOTIFICATION = 5;
 export const PAGE_SIZE_PRODUCT_HOME_PAGE = 48;
 
+export const ALL_CATEGORY = 0;
+export const SORTED_BY_DATETIME = 1;
+export const SORTED_BY_SALE = 2;
+export const SORTED_BY_PRICE_ASC = 3;
+export const SORTED_BY_PRICE_DESC = 4;

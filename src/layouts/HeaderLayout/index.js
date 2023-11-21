@@ -12,16 +12,17 @@ import {
 } from '@ant-design/icons';
 
 import logoFPT from '~/assets/images/fpt-logo.jpg';
-import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
+import { CUSTOMER_ROLE, RESPONSE_CODE_SUCCESS, SELLER_ROLE } from '~/constants';
 import ModalRequestDeposit from '../../components/Modals/ModalRequestDeposit';
 // import AccountBalance from '../../components/AccountBalance';
 import debounce from "debounce-promise";
 
 import classNames from 'classnames/bind';
 import styles from './HeaderLayout.module.scss';
-const debounceHintSearch = debounce((value) => {
-    alert('list hint search');
-    return Promise.resolve({ res: value });
+import { getSearchHint } from '~/api/search';
+const debounceSearchHint = debounce((value) => {
+    const res = getSearchHint(value)
+    return Promise.resolve({ res: res });
 }, 500);
 const cx = classNames.bind(styles);
 
@@ -77,7 +78,7 @@ function HeaderLayout() {
     const [userAvatart, setUserAvatart] = useState(null);
     const [showPopoverHintSearch, setShowPopoverHintSearch] = useState(false);
     const [valueSearch, setValueSearch] = useState('')
-    const [hintSearchItems, setHintSearchItems] = useState([]);
+    const [searchHintItems, setSearchHintItems] = useState([]);
     const handleSearch = (value, _e, info) => {
         // if (value === undefined || value.trim() === '') {
         //     setShowPopoverHintSearch(false);
@@ -94,7 +95,17 @@ function HeaderLayout() {
         }
         setValueSearch(e.target.value.trim())
         if (e.target.value.trim()) {
-            debounceHintSearch(e.target.value.trim());
+            debounceSearchHint(e.target.value.trim())
+                .then((res) => {
+                    if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        setSearchHintItems(res.data.result);
+                    } else {
+                        setSearchHintItems([]);
+                    }
+                })
+                .catch((err) => {
+                    setSearchHintItems([]);
+                })
         }
     };
     const handleSearchBoxFocus = () => {
@@ -187,7 +198,7 @@ function HeaderLayout() {
                             onSearch={handleSearch}
                         />
                         {showPopoverHintSearch &&
-                            <Space id='container-hint-search' className={cx('container-hint-search')} direction='vertical' size={[0, 0]} style={{
+                            <Space id='container-search-hint' className={cx('container-search-hint')} direction='vertical' size={[0, 0]} style={{
                                 boxShadow: '0 1px 4px 0 rgba(0,0,0,.26)',
                                 borderRadius: '2px',
                                 width: '30vw',
@@ -199,22 +210,27 @@ function HeaderLayout() {
                                 backgroundColor: '#fff'
                             }}>
                                 {/* <Link to={`/search?keyword=product1`} >
-                                    <Text className={cx('hint-search')} >{`Tìm Shop "${valueSearch.trim()}"`}</Text>
+                                    <Text className={cx('search-hint')} >{`Tìm Shop "${valueSearch.trim()}"`}</Text>
                                 </Link> */}
+                                {searchHintItems?.map((value, index) =>
+                                    <Link key={index} to={`/search?keyword=${value}`} >
+                                        <Text className={cx('search-hint')} onClick={handleLinkHintClick}>{value}</Text>
+                                    </Link>)
+                                }
                                 <Link to={`/search?keyword=product1`} >
-                                    <Text className={cx('hint-search')} onClick={handleLinkHintClick}>Content 2</Text>
+                                    <Text className={cx('search-hint')} onClick={handleLinkHintClick}>Content 2</Text>
                                 </Link>
                                 <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
-                                    <Text className={cx('hint-search')}>Content 3</Text>
+                                    <Text className={cx('search-hint')}>Content 3</Text>
                                 </Link>
                                 <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
-                                    <Text className={cx('hint-search')}>Content 4</Text>
+                                    <Text className={cx('search-hint')}>Content 4</Text>
                                 </Link>
                                 <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
-                                    <Text className={cx('hint-search')}>Content 5</Text>
+                                    <Text className={cx('search-hint')}>Content 5</Text>
                                 </Link>
                                 <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
-                                    <Text className={cx('hint-search')}>Content 6</Text>
+                                    <Text className={cx('search-hint')}>Content 6</Text>
                                 </Link>
                             </Space>
                         }

@@ -1,0 +1,59 @@
+.container {
+    min-height: 100vh;
+    margin: 0 3em;
+    background-color: #f4f7fe !important;
+    .sider {
+        background-color: #f4f7fe !important;
+    }
+    .wrapper-content {
+        margin-inline-start: 3em;
+        .content {
+            background-color: #f4f7fe !important;
+        }
+    }
+}
+.filter-header {
+    margin-bottom: 0.625rem;
+    font-weight: 500;
+}
+.rate {
+    font-size: 12px;
+    cursor: pointer !important;
+}
+
+.radio-button {
+    border: none;
+    border-radius: 20px;
+    background-color: #f4f7fe;
+    &:hover {
+        background-color: #e6f4ff;
+        cursor: pointer;
+    }
+}
+// .radio-button:where(.ant-radio-button-wrapper-checked) {
+//     background-color: #e6f4ff !important;
+//     border-color: #e6f4ff !important;
+//     color: #fff !important;
+// }
+.radio-button::before {
+    content: '';
+    height: 0 !important;
+    width: 0 !important;
+    // background-color: #ffffff !important;
+}
+.radio-button:first-child {
+    border-inline-start: none;
+    border-start-start-radius: 20px;
+    border-end-start-radius: 20px;
+}
+.radio-button:last-child {
+    border-start-end-radius: 20px;
+    border-end-end-radius: 20px;
+}
+
+.text-black {
+    color: #000000;
+}
+.bg-white {
+    background-color: #fff;
+}
