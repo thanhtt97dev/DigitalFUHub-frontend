@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
 import { Layout, Space, Button, Dropdown, Avatar, Input, Typography } from 'antd';
 import Logout from '~/components/Logout';
@@ -70,14 +70,14 @@ const itemsFixed = [
 ];
 
 function HeaderLayout() {
-
+    const navigate = useNavigate();
     const auth = useAuthUser();
     const user = auth();
-
+    const [searchParams] = useSearchParams();
     const [items, setItems] = useState([]);
     const [userAvatart, setUserAvatart] = useState(null);
     const [showPopoverHintSearch, setShowPopoverHintSearch] = useState(false);
-    const [valueSearch, setValueSearch] = useState('')
+    const [searchValue, setSearchValue] = useState(searchParams.get('keyword') ? searchParams.get('keyword') : '');
     const [searchHintItems, setSearchHintItems] = useState([]);
     const handleSearch = (value, _e, info) => {
         // if (value === undefined || value.trim() === '') {
@@ -85,7 +85,11 @@ function HeaderLayout() {
         // } else {
         //     setShowPopoverHintSearch(true);
         // }
-        setValueSearch(value.trim());
+        if (value && value.trim() !== '') {
+            setSearchValue(value.trim());
+            setShowPopoverHintSearch(false);
+            return navigate(`/search?keyword=${value.trim()}`)
+        }
     };
     const handleSearchBoxChange = (e) => {
         if (!showPopoverHintSearch && e.target.value.trim()) {
@@ -93,19 +97,21 @@ function HeaderLayout() {
         } else if (!e.target.value.trim()) {
             setShowPopoverHintSearch(false);
         }
-        setValueSearch(e.target.value.trim())
+        setSearchValue(e.target.value.trim())
         if (e.target.value.trim()) {
             debounceSearchHint(e.target.value.trim())
-                .then((res) => {
-                    if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                        setSearchHintItems(res.data.result);
-                    } else {
+                .then(({ res }) => {
+                    res.then((res) => {
+                        if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                            setSearchHintItems(res.data.result);
+                        } else {
+                            setSearchHintItems([]);
+                        }
+                    }).catch((err) => {
                         setSearchHintItems([]);
-                    }
+                    })
                 })
-                .catch((err) => {
-                    setSearchHintItems([]);
-                })
+
         }
     };
     const handleSearchBoxFocus = () => {
@@ -113,7 +119,7 @@ function HeaderLayout() {
     }
 
     const handleLinkHintClick = (e) => {
-        setValueSearch(e.target.textContent)
+        setSearchValue(e.target.textContent)
         setShowPopoverHintSearch(false);
     }
     const wrapperRef = useRef(null);
@@ -193,7 +199,7 @@ function HeaderLayout() {
                             allowClear
                             onFocus={handleSearchBoxFocus}
                             onChange={handleSearchBoxChange}
-                            value={valueSearch}
+                            value={searchValue}
                             enterButton={true}
                             onSearch={handleSearch}
                         />
@@ -210,26 +216,26 @@ function HeaderLayout() {
                                 backgroundColor: '#fff'
                             }}>
                                 {/* <Link to={`/search?keyword=product1`} >
-                                    <Text className={cx('search-hint')} >{`Tìm Shop "${valueSearch.trim()}"`}</Text>
+                                    <Text className={cx('search-hint')} >{`Tìm Shop "${searchValue.trim()}"`}</Text>
                                 </Link> */}
                                 {searchHintItems?.map((value, index) =>
                                     <Link key={index} to={`/search?keyword=${value}`} >
                                         <Text className={cx('search-hint')} onClick={handleLinkHintClick}>{value}</Text>
                                     </Link>)
                                 }
-                                <Link to={`/search?keyword=product1`} >
+                                <Link to={`/search?keyword=Content 2`} >
                                     <Text className={cx('search-hint')} onClick={handleLinkHintClick}>Content 2</Text>
                                 </Link>
-                                <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
+                                <Link to={`/search?keyword=Content 3`} onClick={handleLinkHintClick}>
                                     <Text className={cx('search-hint')}>Content 3</Text>
                                 </Link>
-                                <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
+                                <Link to={`/search?keyword=Content 4`} onClick={handleLinkHintClick}>
                                     <Text className={cx('search-hint')}>Content 4</Text>
                                 </Link>
-                                <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
+                                <Link to={`/search?keyword=Content 5`} onClick={handleLinkHintClick}>
                                     <Text className={cx('search-hint')}>Content 5</Text>
                                 </Link>
-                                <Link to={`/search?keyword=product1`} onClick={handleLinkHintClick}>
+                                <Link to={`/search?keyword=Content 6`} onClick={handleLinkHintClick}>
                                     <Text className={cx('search-hint')}>Content 6</Text>
                                 </Link>
                             </Space>

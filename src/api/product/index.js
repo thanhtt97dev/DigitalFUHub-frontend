@@ -26,7 +26,9 @@ export const getProductsOfSeller = (data) => {
     return apiPostAuth('api/Products/getProducts', data);
 };
 
-export const getProductByUserId = (searchParam) => {
-    return apiPost(`api/Products/GetAll`, searchParam);
+export const getProductByUserId = (data) => {
+    return apiPost(`api/Products/GetAll`, data);
 };
-
+export const getListProductSearch = (data) => {
+    return apiPost(`api/Products/Search`, data);
+};
