@@ -103,8 +103,10 @@ function HistoryWithdraw() {
     const [dataTable, setDataTable] = useState([]);
     const [searchData, setSearchData] = useState({
         withdrawTransactionId: '',
-        fromDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
-        toDate: dayjs().format('M/D/YYYY'),
+        // fromDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
+        // toDate: dayjs().format('M/D/YYYY'),
+        fromDate: '',
+        toDate: '',
         status: 0
     });
 
@@ -132,10 +134,10 @@ function HistoryWithdraw() {
             name: 'withdrawTransactionId',
             value: searchData.withdrawTransactionId,
         },
-        {
-            name: 'date',
-            value: [dayjs(searchData.fromDate, 'M/D/YYYY'), dayjs(searchData.toDate, 'M/D/YYYY')]
-        },
+        // {
+        //     name: 'date',
+        //     value: [dayjs(searchData.fromDate, 'M/D/YYYY'), dayjs(searchData.toDate, 'M/D/YYYY')]
+        // },
         {
             name: 'status',
             value: searchData.status
@@ -152,8 +154,10 @@ function HistoryWithdraw() {
 
         setSearchData({
             withdrawTransactionId: values.withdrawTransactionId,
-            fromDate: values.date[0].$d.toLocaleDateString(),
-            toDate: values.date[1].$d.toLocaleDateString(),
+            fromDate: (values.date === undefined) ? '' : values.date[0].$d.toLocaleDateString(),
+            toDate: (values.date === undefined) ? '' : values.date[1].$d.toLocaleDateString(),
+            //fromDate: values.date[0].$d.toLocaleDateString(),
+            //toDate: values.date[1].$d.toLocaleDateString(),
             status: values.status
         });
     };
