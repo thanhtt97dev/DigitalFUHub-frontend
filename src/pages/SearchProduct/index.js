@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Divider, Layout, Space, Spin } from 'antd';
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Avatar, Card, Col, Divider, Layout, Row, Space, Spin } from 'antd';
 import classNames from "classnames/bind";
 import { ALL_CATEGORY, FEEDBACK_TYPE_ALL, RESPONSE_CODE_SUCCESS, SORTED_BY_SALE } from "~/constants";
-import { BulbOutlined, FilterOutlined } from "@ant-design/icons";
+import { BulbOutlined, ClockCircleOutlined, FilterOutlined, ShoppingOutlined, StarOutlined, UserOutlined } from "@ant-design/icons";
 import { getAllCategory } from "~/api/category";
 import { getListProductSearch } from "~/api/product";
 import styles from "./Search.module.scss"
@@ -22,7 +22,42 @@ function ConvertSearchParamObjectToString(searchParam = {}) {
     return result.slice(0, result.length - 1)
 }
 
-function Search() {
+function MostPopularShop({ keyword }) {
+    return (
+        <Space direction="vertical" style={{ marginBottom: '1em', width: '100%' }}>
+            <div style={{ marginBottom: '1em' }}>
+                <span style={{ fontSize: 16 }}>Cửa hàng liên quan đến
+                    '<span style={{ color: '#1677ff' }}>{keyword}</span>'
+                </span>
+            </div>
+            <Link to={`/shop/${1}`}>
+                <Card hoverable>
+                    <Row>
+                        <Col span={8} style={{ paddingInlineEnd: '0.8em', borderRight: '1px solid rgb(232, 232, 232)' }}>
+                            <Space>
+                                <Avatar size={60} icon={<UserOutlined />} />
+                                <div>
+                                    <div style={{ fontSize: '18px' }}>TÊN SHOP</div>
+                                    <div style={{ fontSize: '14px' }}>username</div>
+                                </div>
+                            </Space>
+                        </Col>
+                        <Col span={16}>
+                            <Row justify="end" style={{ height: '100%' }}>
+                                <Space size={[84, 8]} align="center">
+                                    <div>Sản phẩm: 3 <ShoppingOutlined /></div>
+                                    <div>Đánh giá: 3 <StarOutlined /></div>
+                                    <div>Tham gia: 11 ngày trước <ClockCircleOutlined /></div>
+                                </Space>
+                            </Row>
+                        </Col>
+                    </Row>
+                </Card>
+            </Link>
+        </Space>
+    )
+}
+function SearchProduct() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams(); //setSearchParams
     const [categories, setCategories] = useState([]);
@@ -93,7 +128,6 @@ function Search() {
     }
     return (
         <Spin spinning={loading}>
-
             <Layout className={cx('container')} >
                 <Sider className={cx('sider')}>
                     <Space style={{ marginBottom: '1.8em' }}>
@@ -118,6 +152,7 @@ function Search() {
                 </Sider>
                 <Layout className={cx('wrapper-content')}>
                     <Content className={cx('content')}>
+                        <MostPopularShop keyword={getSearchParams.keyword} />
                         <div style={{ marginBottom: '1em' }}>
                             <BulbOutlined style={{ fontSize: 18 }} />
                             <span style={{ marginInlineStart: '0.8em', fontSize: 16 }}>Kết quả tìm kiếm cho từ khoá
@@ -136,4 +171,4 @@ function Search() {
     );
 }
 
-export default Search;
+export default SearchProduct;

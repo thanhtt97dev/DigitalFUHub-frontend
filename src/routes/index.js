@@ -36,9 +36,9 @@ import EditCoupon from '~/pages/Seller/ManageCoupon/EditCoupon';
 import CouponDetail from '~/pages/Seller/ManageCoupon/Detail';
 import EditShop from '~/pages/Seller/ManageShop/Edit/EditShop';
 import ShopDetail from '~/pages/ShopDetail';
+import SearchProduct from '~/pages/SearchProduct';
 
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
-import Search from '~/pages/Search';
 
 const routesConfig = [
     {
@@ -74,7 +74,7 @@ const routesConfig = [
         title: 'Search product',
         path: '/search',
         layout: <NormalLayout />,
-        component: <Search />,
+        component: <SearchProduct />,
     },
     {
         title: 'verification2FA',
