@@ -26,7 +26,11 @@ function MostPopularShop({ keyword }) {
     return (
         <Space direction="vertical" style={{ marginBottom: '1em', width: '100%' }}>
             <div style={{ marginBottom: '1em' }}>
-                <span style={{ fontSize: 16 }}>Cửa hàng liên quan đến
+                <span
+                    style={{
+                        fontSize: 16
+                    }}>
+                    Cửa hàng liên quan đến
                     '<span style={{ color: '#1677ff' }}>{keyword}</span>'
                 </span>
             </div>
@@ -37,8 +41,8 @@ function MostPopularShop({ keyword }) {
                             <Space>
                                 <Avatar size={60} icon={<UserOutlined />} />
                                 <div>
-                                    <div style={{ fontSize: '18px' }}>TÊN SHOP</div>
-                                    <div style={{ fontSize: '14px' }}>username</div>
+                                    <div className={cx('three-dot-overflow-one-line-wrapper')} style={{ fontSize: '18px' }}>TÊN SHOP</div>
+                                    <div className={cx('three-dot-overflow-one-line-wrapper')} style={{ fontSize: '14px' }}>username</div>
                                 </div>
                             </Space>
                         </Col>

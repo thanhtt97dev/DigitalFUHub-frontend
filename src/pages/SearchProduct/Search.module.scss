@@ -12,6 +12,13 @@
         }
     }
 }
+.three-dot-overflow-one-line-wrapper {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+}
 // .filter-header {
 //     margin-bottom: 0.625rem;
 //     font-weight: 500;

@@ -43,7 +43,7 @@ function Products({ totalItems = 0, products = [], page = 1, onSelectPage = () =
                                 <img style={styleImage} src={product.thumbnail} alt="product" />
                             </div>
                             <Space direction="vertical" style={styleSpaceContainerProductItem}>
-                                <p style={styleProductName}>{product.productName}</p>
+                                <p className={cx('three-dot-overflow-two-line-wrapper')} style={styleProductName}>{product.productName}</p>
                                 {
                                     product.productVariant?.discount !== 0 ? (<>
                                         <div className={cx('discount-style')}><p style={{ fontSize: 10 }}>{product.productVariant.discount}% giảm</p></div>
