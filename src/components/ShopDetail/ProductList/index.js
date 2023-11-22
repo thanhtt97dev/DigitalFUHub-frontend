@@ -111,7 +111,7 @@ const ProductList = ({ userId }) => {
     return (
         <div className={cx('container-page-detail')}>
             <Spinning spinning={isLoadingProducts}>
-                <Space direction="vertical">
+                <Space direction="vertical" style={{ width: '100%' }}>
                     <Card bodyStyle={styleBodyCardInputSearch} style={styleCardInputSearch}>
                         <Space size={20} align="center">
                             <p>Tìm kiếm</p>
