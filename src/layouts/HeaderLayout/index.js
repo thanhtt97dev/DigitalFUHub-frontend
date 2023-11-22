@@ -185,11 +185,11 @@ function HeaderLayout() {
                     {/* <Link to={'/home'}>
                         <img width={60} src={logo} />
                     </Link> */}
-                    {isGridVisible && (
-                        <Link to={'/home'} className={cx("link")}>
-                            <h3>DigitalFUHub</h3>
-                        </Link>
-                    )}
+                    {/* {isGridVisible && ( */}
+                    <Link to={'/home'} className={cx("link")}>
+                        <h3>DigitalFUHub</h3>
+                    </Link>
+                    {/* )} */}
                 </Space>
                 <div ref={wrapperRef}>
                     <Space className={cx("item2")}>
@@ -223,7 +223,7 @@ function HeaderLayout() {
                                         <Text className={cx('search-hint')} onClick={handleLinkHintClick}>{value}</Text>
                                     </Link>)
                                 }
-                                <Link to={`/search?keyword=Content 2`} >
+                                {/* <Link to={`/search?keyword=Content 2`} >
                                     <Text className={cx('search-hint')} onClick={handleLinkHintClick}>Content 2</Text>
                                 </Link>
                                 <Link to={`/search?keyword=Content 3`} onClick={handleLinkHintClick}>
@@ -237,7 +237,7 @@ function HeaderLayout() {
                                 </Link>
                                 <Link to={`/search?keyword=Content 6`} onClick={handleLinkHintClick}>
                                     <Text className={cx('search-hint')}>Content 6</Text>
-                                </Link>
+                                </Link> */}
                             </Space>
                         }
                     </Space>
