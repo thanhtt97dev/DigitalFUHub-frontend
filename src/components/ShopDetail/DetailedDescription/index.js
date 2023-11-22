@@ -9,7 +9,7 @@ const cx = classNames.bind(styles);
 ///
 
 /// styles
-const styleCardDetailDes = { borderRadius: 2, boxShadow: '#d3d3d3 0px 1px 2px 0px' };
+const styleCardDetailDes = { borderRadius: 2, boxShadow: '#d3d3d3 0px 1px 2px 0px', width: '100%' };
 const styleBodyCardDetailDes = { padding: 20 };
 const styleContentDes = { display: 'flex', alignItems: 'center' };
 ///
