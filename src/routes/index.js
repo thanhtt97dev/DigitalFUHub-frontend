@@ -39,6 +39,7 @@ import ShopDetail from '~/pages/ShopDetail';
 import SearchProduct from '~/pages/SearchProduct';
 
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
+import SearchShop from '../pages/SearchShop';
 
 const routesConfig = [
     {
@@ -75,6 +76,12 @@ const routesConfig = [
         path: '/search',
         layout: <NormalLayout />,
         component: <SearchProduct />,
+    },
+    {
+        title: 'Search shop',
+        path: '/searchShop',
+        layout: <NormalLayout />,
+        component: <SearchShop />,
     },
     {
         title: 'verification2FA',
