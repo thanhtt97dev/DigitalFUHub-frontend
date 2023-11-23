@@ -260,17 +260,9 @@ function HistoryDeposit() {
                     <ModalRequestDeposit userId={user.id} style={{ marginBottom: "5px" }} text={"+ Nạp tiền"} />
                 </Card>
                 <Card style={{ marginTop: "20px" }}>
-                    {(() => {
-                        if (totalRecord > PAGE_SIZE) {
-                            return (
-                                <Row align="end">
-                                    <b>{totalRecord} Bản ghi</b>
-                                </Row>
-                            )
-                        } else {
-                            return <></>
-                        }
-                    })()}
+                    <Row align="end">
+                        <b>{totalRecord} Bản ghi</b>
+                    </Row>
                     <Table
                         columns={columns}
                         pagination={tableParams.pagination}
