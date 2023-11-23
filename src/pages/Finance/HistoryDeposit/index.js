@@ -181,6 +181,7 @@ function HistoryDeposit() {
     const onReset = () => {
         form.resetFields();
         form.setFieldsValue({
+            depositTransactionId: '',
             status: 0,
         });
     };
@@ -219,7 +220,7 @@ function HistoryDeposit() {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col span={6} offset={2}>Thời gian tạo yêu cầu:</Col>
+                                    <Col span={6} offset={2}>Thời gian tạo:</Col>
                                     <Col span={12}>
                                         <Form.Item name="date" >
                                             <RangePicker locale={locale}
