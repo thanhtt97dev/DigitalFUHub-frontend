@@ -89,7 +89,7 @@ function Notification() {
         setNotifications((prev) => [notifi, ...prev]
         )
         setTotalNotificationUnRead(totalNotificationUnRead + 1)
-        openNotificationWithIcon("info", notifi.content, "", () => handleOpenNotification(notifi))
+        openNotificationWithIcon("info", notifi.content, notifi.title, () => handleOpenNotification(notifi))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [notificationContext])
 
