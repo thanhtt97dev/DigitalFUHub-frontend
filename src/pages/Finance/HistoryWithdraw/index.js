@@ -189,6 +189,9 @@ function HistoryWithdraw() {
 
     const onReset = () => {
         form.resetFields();
+        form.setFieldsValue({
+            status: 0,
+        });
     };
 
     const handleSearchDataTable = () => {
@@ -220,13 +223,7 @@ function HistoryWithdraw() {
             filters,
             ...sorter,
         });
-
-        // `dataSource` is useless since `pageSize` changed
-        if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-            setDataTable([]);
-        }
     };
-
 
 
     return (

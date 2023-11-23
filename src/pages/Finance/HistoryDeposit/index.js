@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col } from "antd";
+import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col, Space } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
 import { useAuthUser } from 'react-auth-kit'
@@ -12,6 +12,7 @@ import { formatPrice, ParseDateTime } from '~/utils/index'
 import dayjs from 'dayjs';
 import {
     RESPONSE_CODE_SUCCESS,
+    PAGE_SIZE
 } from "~/constants";
 import ModalRequestDeposit from "~/components/Modals/ModalRequestDeposit";
 
@@ -99,18 +100,36 @@ function HistoryDeposit() {
 
     const [form] = Form.useForm();
     const [dataTable, setDataTable] = useState([]);
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: PAGE_SIZE,
+        },
+    });
     const [searchData, setSearchData] = useState({
         depositTransactionId: '',
-        fromDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
-        toDate: dayjs().format('M/D/YYYY'),
-        status: 0
+        fromDate: '',
+        toDate: '',
+        // fromDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
+        // toDate: dayjs().format('M/D/YYYY'),
+        status: 0,
+        page: 1
     });
+    const [totalRecord, setTotalRecord] = useState(0)
 
     useEffect(() => {
         getDepositTransaction(user.id, searchData)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setDataTable(res.data.result)
+                    setDataTable(res.data.result.depositTransactions)
+                    setTableParams({
+                        ...tableParams,
+                        pagination: {
+                            ...tableParams.pagination,
+                            total: res.data.result.total,
+                        },
+                    });
+                    setTotalRecord(res.data.result.total)
                 } else {
                     notification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
                 }
@@ -130,10 +149,10 @@ function HistoryDeposit() {
             name: 'depositTransactionId',
             value: searchData.depositTransactionId,
         },
-        {
-            name: 'date',
-            value: [dayjs(searchData.fromDate, 'M/D/YYYY'), dayjs(searchData.toDate, 'M/D/YYYY')]
-        },
+        // {
+        //     name: 'date',
+        //     value: [dayjs(searchData.fromDate, 'M/D/YYYY'), dayjs(searchData.toDate, 'M/D/YYYY')]
+        // },
         {
             name: 'status',
             value: searchData.status
@@ -150,9 +169,31 @@ function HistoryDeposit() {
 
         setSearchData({
             depositTransactionId: values.depositTransactionId,
-            fromDate: values.date[0].$d.toLocaleDateString(),
-            toDate: values.date[1].$d.toLocaleDateString(),
-            status: values.status
+            fromDate: (values.date === undefined) ? '' : values.date[0].$d.toLocaleDateString(),
+            toDate: (values.date === undefined) ? '' : values.date[1].$d.toLocaleDateString(),
+            //fromDate: values.date[0].$d.toLocaleDateString(),
+            //toDate: values.date[1].$d.toLocaleDateString(),
+            status: values.status,
+            page: 1
+        });
+    };
+
+    const onReset = () => {
+        form.resetFields();
+        form.setFieldsValue({
+            status: 0,
+        });
+    };
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        setSearchData({
+            ...searchData,
+            page: pagination.current
+        })
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
         });
     };
 
@@ -202,10 +243,15 @@ function HistoryDeposit() {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col span={2} offset={16}>
-                                        <Button type="primary" htmlType="submit">
-                                            Tìm kiếm
-                                        </Button>
+                                    <Col span={2} offset={13}>
+                                        <Space>
+                                            <Button htmlType="button" onClick={onReset}>
+                                                Xóa
+                                            </Button>
+                                            <Button type="primary" htmlType="submit">
+                                                Tìm kiếm
+                                            </Button>
+                                        </Space>
                                     </Col>
                                 </Row>
                             </Col>
@@ -214,7 +260,24 @@ function HistoryDeposit() {
                     <ModalRequestDeposit userId={user.id} style={{ marginBottom: "5px" }} text={"+ Nạp tiền"} />
                 </Card>
                 <Card style={{ marginTop: "20px" }}>
-                    <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} rowKey={(record) => record.depositTransactionId} />
+                    {(() => {
+                        if (totalRecord > PAGE_SIZE) {
+                            return (
+                                <Row align="end">
+                                    <b>{totalRecord} Bản ghi</b>
+                                </Row>
+                            )
+                        } else {
+                            return <></>
+                        }
+                    })()}
+                    <Table
+                        columns={columns}
+                        pagination={tableParams.pagination}
+                        dataSource={dataTable}
+                        rowKey={(record) => record.depositTransactionId}
+                        onChange={handleTableChange}
+                    />
                 </Card>
             </Spinning>
         </>
