@@ -21,6 +21,14 @@ const { Text } = Typography;
 const cx = classNames.bind(styles);
 ///
 
+/// styles
+const styleCardHeader = { marginBottom: 10 }
+const styleCardBodyHeader = { padding: 20 }
+const styleCardCartItem = { marginBottom: 10 }
+const styleCardHeadCartItem = { paddingLeft: 20 }
+const styleCardBodyCartItem = { padding: 20 }
+///
+
 const Products = ({ dataPropProductComponent }) => {
     /// distructuring props
     const {
@@ -47,10 +55,9 @@ const Products = ({ dataPropProductComponent }) => {
     const [isOpenModalAlert, setIsOpenModalAlert] = useState(false);
     const [contentModalAlert, setContentModalAlert] = useState('');
     const [isOpenModalCoupons, setIsOpenModalCoupons] = useState(false);
-    const [totalCartDetails, setTotalCartDetails] = useState(0);
+    const [totalCartDetailValid, setTotalCartDetailValid] = useState(0);
     const [shopIdSelected, setShopIdSelected] = useState(0);
     const [cartIdSelecteds, setCartIdSelecteds] = useState([]);
-
     ///
 
 
@@ -173,57 +180,39 @@ const Products = ({ dataPropProductComponent }) => {
 
         if (e.target.checked) {
             const listCartDetailIds = [];
-            const listCartIds = [];
-            for (let i = 0; i < carts.length; i++) {
-                listCartIds.push(carts[i].cartId);
-                const products = carts[i].products;
-                if (products) {
-                    // Add cart detail id product quantityProductRemaining > 0
-                    for (let j = 0; j < products.length; j++) {
-                        if (products[j].quantityProductRemaining > 0) {
-                            listCartDetailIds.push(products[j].cartDetailId);
-                        }
-                    }
+            // const listCartIds = [];
+            for (let i = 0; i < cartDetails.length; i++) {
+                // listCartIds.push(carts[i].cartId);
+                // Add cart detail id 
+                if (cartDetails[i].quantityProductRemaining > 0 && cartDetails[i].productActivate) {
+                    listCartDetailIds.push(cartDetails[i].cartDetailId);
                 }
             }
 
-            setCartIdSelecteds(listCartIds);
+            // setCartIdSelecteds(listCartIds);
             setCartDetailIdSelecteds([].concat(...listCartDetailIds));
         } else {
-            setCartIdSelecteds([]);
+            // setCartIdSelecteds([]);
             setCartDetailIdSelecteds([]);
         }
     }
 
-    const handleOnChangeCheckboxCartItem = (cartId) => {
-        // check and add cart id selectes
-        const cartIdSelectedFind = cartIdSelecteds.find(x => x === cartId);
-        if (!cartIdSelectedFind) {
-            setCartIdSelecteds((prev) => [...prev, cartId]);
-        } else {
-            const newCartIdSelecteds = cartIdSelecteds.filter(x => x !== cartId);
-            setCartIdSelecteds(newCartIdSelecteds);
-        }
+    const handleOnChangeCheckboxCartItem = (cartId, e) => {
 
-        // check and add cart detail id selectes
+        let cartDetailIds = [];
         const cartFind = carts.find(x => x.cartId === cartId);
         if (!cartFind) return;
-        const products = cartFind.products;
-        if (!products) return;
-        // Add cart detail id product quantityProductRemaining > 0
-        let cartDetailIds = [];
-        for (let j = 0; j < products.length; j++) {
-            if (products[j].quantityProductRemaining > 0) {
-                cartDetailIds.push(products[j].cartDetailId);
+        const cartDetails = cartFind.products;
+        for (let i = 0; i < cartDetails.length; i++) {
+            if (cartDetails[i].quantityProductRemaining > 0 && cartDetails[i].productActivate) {
+                cartDetailIds.push(cartDetails[i].cartDetailId);
             }
         }
-
-        if (!cartDetailIds) return;
-        const cartDetailIdSelectedFil = cartDetailIdSelecteds.filter(x => cartDetailIds.includes(x));
-        if (!cartDetailIdSelectedFil || cartDetailIdSelectedFil.length === 0) {
-            setCartDetailIdSelecteds((prev) => [...prev, ...cartDetailIds]);
+        if (e.target.checked) {
+            const newCartDetailIdSelecteds = cartDetailIdSelecteds.filter(x => !cartDetailIds.includes(x));
+            setCartDetailIdSelecteds([...newCartDetailIdSelecteds, ...cartDetailIds]);
         } else {
-            const newCartDetailIdSelecteds = cartDetailIdSelecteds.filter(x => !cartDetailIdSelectedFil.some(y => x === y));
+            const newCartDetailIdSelecteds = cartDetailIdSelecteds.filter(x => !cartDetailIds.includes(x));
             setCartDetailIdSelecteds(newCartDetailIdSelecteds);
         }
     }
@@ -235,21 +224,6 @@ const Products = ({ dataPropProductComponent }) => {
         }
         setCartDetailIdSelecteds([...values]);
     }
-
-    const isProductOutOfStock = (cartItem) => {
-        if (cartItem) {
-            return cartItem.quantityProductRemaining > 0 ? false : true;
-        }
-    }
-
-    ///
-
-    /// styles
-    const styleCardHeader = { marginBottom: 10 }
-    const styleCardBodyHeader = { padding: 20 }
-    const styleCardCartItem = { marginBottom: 10 }
-    const styleCardHeadCartItem = { paddingLeft: 20 }
-    const styleCardBodyCartItem = { padding: 20 }
     ///
 
     /// components custom
@@ -279,37 +253,29 @@ const Products = ({ dataPropProductComponent }) => {
     /// useEffect 
     // calculator number cart details
     useEffect(() => {
-        const CalculatorTotalCartDetails = () => {
-            const totalCartDetails = carts.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.products.length;
-            }, 0);
+        const totalCartDetailValid = cartDetails.filter(x => x.productActivate && x.quantityProductRemaining > 0).length;
 
-            return totalCartDetails;
-        }
+        setTotalCartDetailValid(totalCartDetailValid);
 
-        setTotalCartDetails(CalculatorTotalCartDetails())
-    }, [carts])
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cartDetails])
 
     useEffect(() => {
-        const indeterminateCheckboxAllCartItem = () => {
-            const newCartIdSelecteds = [];
-            for (let i = 0; i < carts.length; i++) {
-                const products = carts[i].products;
-                const cartDetailIdSelectedFil = cartDetailIdSelecteds.filter(x => products.some(y => y.cartDetailId === x));
-                if (products.length === cartDetailIdSelectedFil.length) {
-                    newCartIdSelecteds.push(carts[i].cartId)
-                }
+        const listCartIds = [];
+        for (let i = 0; i < carts.length; i++) {
+            const cartDetailValid = carts[i].products.filter(x => x.quantityProductRemaining > 0 && x.productActivate);
+
+            const isAllElementsExist = cartDetailValid.every(x => cartDetailIdSelecteds.includes(x.cartDetailId));
+
+            if (isAllElementsExist) {
+                listCartIds.push(carts[i].cartId);
             }
-            // set new Cart id selecteds
-            setCartIdSelecteds(newCartIdSelecteds);
         }
 
-        indeterminateCheckboxAllCartItem()
+        setCartIdSelecteds(listCartIds);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cartDetailIdSelecteds])
-
     ///
 
     /// props
@@ -330,8 +296,7 @@ const Products = ({ dataPropProductComponent }) => {
 
 
     // checkbox all cart
-    const checkAllCart = totalCartDetails > 0 && cartDetailIdSelecteds.length === totalCartDetails;
-    const indeterminateCheckAllCart = cartDetailIdSelecteds.length > 0 && cartDetailIdSelecteds.length < totalCartDetails;
+    const checkAllCart = totalCartDetailValid > 0 && cartDetailIdSelecteds.length === totalCartDetailValid;
     //
 
 
@@ -340,7 +305,7 @@ const Products = ({ dataPropProductComponent }) => {
             <Col span={18} style={{ padding: 5 }}>
                 <Card bodyStyle={styleCardBodyHeader} style={styleCardHeader}>
                     <Row>
-                        <Col span={1}><Checkbox onChange={handleCheckAll} indeterminate={indeterminateCheckAllCart} checked={checkAllCart}></Checkbox></Col>
+                        <Col span={1}><Checkbox onChange={handleCheckAll} checked={checkAllCart}></Checkbox></Col>
                         <Col span={7} className={cx('flex-item-center')}>Sản phẩm</Col>
                         <Col span={5} className={cx('flex-item-center')}>Đơn giá</Col>
                         <Col span={4} className={cx('flex-item-center')}>Số Lượng</Col>
@@ -355,14 +320,20 @@ const Products = ({ dataPropProductComponent }) => {
                                 hoverable
                                 title={
                                     <Checkbox.Group value={cartIdSelecteds}>
-                                        <Space align="center" size={10}><Checkbox value={cart.cartId} onChange={() => { handleOnChangeCheckboxCartItem(cart.cartId) }}></Checkbox><ShopOutlined className={cx('margin-left-40')} /> {cart.shopName}</Space>
+                                        <Space align="center" size={10}>
+                                            <Checkbox value={cart.cartId} onChange={(e) => { handleOnChangeCheckboxCartItem(cart.cartId, e) }}>
+                                            </Checkbox>
+                                            <ShopOutlined className={cx('margin-left-40')} /> {cart.shopName}
+                                        </Space>
                                     </Checkbox.Group>}
                                 key={index} bodyStyle={styleCardBodyCartItem} headStyle={styleCardHeadCartItem} style={styleCardCartItem}>
                                 {
                                     cart.products.map((product, index) => (
-                                        <Row className={isProductOutOfStock(product) ? cx('disable-item', 'margin-bottom-item') : cx('margin-bottom-item')} key={index}>
+                                        <Row className={product.productActivate === false || product.quantityProductRemaining === 0 ? cx('disable-item', 'margin-bottom-item') : cx('margin-bottom-item')} key={index}>
                                             <Col span={1}>
-                                                <Checkbox value={product.cartDetailId}></Checkbox>
+                                                {
+                                                    product.productActivate && product.quantityProductRemaining > 0 ? <Checkbox value={product.cartDetailId}></Checkbox> : <></>
+                                                }
                                             </Col>
 
                                             <Col span={7} className={cx('flex-item-center')}>
@@ -374,7 +345,9 @@ const Products = ({ dataPropProductComponent }) => {
                                                             src={product.productThumbnail}
                                                         />
                                                         {
-                                                            isProductOutOfStock(product) ? <div className={cx('circle')}> Hết hàng</div> : <></>
+                                                            product.productActivate === false ?
+                                                                <div className={cx('circle')}>Sản phẩm này đã bị ẩn</div>
+                                                                : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
                                                         }
                                                     </div>
 

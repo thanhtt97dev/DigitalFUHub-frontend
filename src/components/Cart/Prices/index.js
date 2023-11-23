@@ -50,19 +50,17 @@ const Prices = ({ dataPropPriceComponent }) => {
     const [isOpenModalConfirmationBuy, setIsOpenModalConfirmationBuy] = useState(false);
     const [isOpenModalConfirmationDelete, setIsOpenModalConfirmationDelete] = useState(false);
     const [balance, setBalance] = useState(0);
+    const [reloadBalanceFlag, setReloadBalanceFlag] = useState(false);
     const [isLoadingButtonBuy, setIsLoadingButtonBuy] = useState(false);
     const [isLoadingButtonDelete, setIsLoadingButtonDelete] = useState(false);
     ///
 
-    /// contexts
-    const notification = useContext(NotificationContext);
-    ///
 
     /// styles
     const styleCardItem = {
         backgroundColor: '#fff',
         borderRadius: '10px',
-        boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.2)',
+        boxShadow: '#d3d3d3 0px 1px 2px 0px',
     }
     ///
 
@@ -114,7 +112,7 @@ const Prices = ({ dataPropPriceComponent }) => {
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [reloadBalanceFlag])
     ///
 
     //handles
@@ -206,6 +204,9 @@ const Prices = ({ dataPropPriceComponent }) => {
                                     if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
                                         setCartDetailIdSelecteds([]);
                                         unLoadingButtonBuy();
+
+                                        // reload balance
+                                        setReloadBalanceFlag(!reloadBalanceFlag);
                                     }
                                 }
                             })
