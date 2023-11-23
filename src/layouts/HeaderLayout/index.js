@@ -79,6 +79,9 @@ function HeaderLayout() {
     const [showPopoverHintSearch, setShowPopoverHintSearch] = useState(false);
     const [searchValue, setSearchValue] = useState(searchParams.get('keyword') ? searchParams.get('keyword') : '');
     const [searchHintItems, setSearchHintItems] = useState([]);
+    useEffect(() => {
+        setSearchValue(searchParams.get('keyword') ? searchParams.get('keyword') : '')
+    }, [searchParams])
     const handleSearch = (value, _e, info) => {
         // if (value === undefined || value.trim() === '') {
         //     setShowPopoverHintSearch(false);
@@ -97,7 +100,7 @@ function HeaderLayout() {
         } else if (!e.target.value.trim()) {
             setShowPopoverHintSearch(false);
         }
-        setSearchValue(e.target.value.trim())
+        setSearchValue(e.target.value)
         if (e.target.value.trim()) {
             debounceSearchHint(e.target.value.trim())
                 .then(({ res }) => {
@@ -119,7 +122,7 @@ function HeaderLayout() {
     }
 
     const handleLinkHintClick = (e) => {
-        setSearchValue(e.target.textContent)
+        // setSearchValue(e.target.textContent)
         setShowPopoverHintSearch(false);
     }
     const wrapperRef = useRef(null);
@@ -157,25 +160,25 @@ function HeaderLayout() {
         }
     }, [user])
 
-    const [isGridVisible, setIsGridVisible] = useState(true);
+    // const [isGridVisible, setIsGridVisible] = useState(true);
 
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 1100) {
-                setIsGridVisible(false);
-            } else {
-                setIsGridVisible(true);
-            }
-        };
+    // useEffect(() => {
+    //     const handleResize = () => {
+    //         if (window.innerWidth < 1100) {
+    //             setIsGridVisible(false);
+    //         } else {
+    //             setIsGridVisible(true);
+    //         }
+    //     };
 
-        handleResize();
+    //     handleResize();
 
-        window.addEventListener('resize', handleResize);
+    //     window.addEventListener('resize', handleResize);
 
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
+    //     return () => {
+    //         window.removeEventListener('resize', handleResize);
+    //     };
+    // }, []);
 
     return (
         <>
@@ -195,7 +198,7 @@ function HeaderLayout() {
                     <Space className={cx("item2")}>
                         <Search
                             className={cx("search")}
-                            placeholder="Tìm kiếm sản phẩm"
+                            placeholder="Tìm kiếm sản phẩm, cửa hàng"
                             allowClear
                             onFocus={handleSearchBoxFocus}
                             onChange={handleSearchBoxChange}
@@ -203,7 +206,7 @@ function HeaderLayout() {
                             enterButton={true}
                             onSearch={handleSearch}
                         />
-                        {showPopoverHintSearch &&
+                        {showPopoverHintSearch && searchValue &&
                             <Space id='container-search-hint' className={cx('container-search-hint')} direction='vertical' size={[0, 0]} style={{
                                 boxShadow: '0 1px 4px 0 rgba(0,0,0,.26)',
                                 borderRadius: '2px',
@@ -215,29 +218,14 @@ function HeaderLayout() {
                                 zIndex: 100,
                                 backgroundColor: '#fff'
                             }}>
-                                {/* <Link to={`/search?keyword=product1`} >
-                                    <Text className={cx('search-hint')} >{`Tìm Shop "${searchValue.trim()}"`}</Text>
-                                </Link> */}
+                                <Link to={`/searchShop?keyword=${searchValue.trim()}`} >
+                                    <Text className={cx('search-hint')} onClick={handleLinkHintClick}><ShopOutlined /> {`Tìm cửa hàng "${searchValue.trim()}"`}</Text>
+                                </Link>
                                 {searchHintItems?.map((value, index) =>
                                     <Link key={index} to={`/search?keyword=${value}`} >
                                         <Text className={cx('search-hint')} onClick={handleLinkHintClick}>{value}</Text>
                                     </Link>)
                                 }
-                                {/* <Link to={`/search?keyword=Content 2`} >
-                                    <Text className={cx('search-hint')} onClick={handleLinkHintClick}>Content 2</Text>
-                                </Link>
-                                <Link to={`/search?keyword=Content 3`} onClick={handleLinkHintClick}>
-                                    <Text className={cx('search-hint')}>Content 3</Text>
-                                </Link>
-                                <Link to={`/search?keyword=Content 4`} onClick={handleLinkHintClick}>
-                                    <Text className={cx('search-hint')}>Content 4</Text>
-                                </Link>
-                                <Link to={`/search?keyword=Content 5`} onClick={handleLinkHintClick}>
-                                    <Text className={cx('search-hint')}>Content 5</Text>
-                                </Link>
-                                <Link to={`/search?keyword=Content 6`} onClick={handleLinkHintClick}>
-                                    <Text className={cx('search-hint')}>Content 6</Text>
-                                </Link> */}
                             </Space>
                         }
                     </Space>

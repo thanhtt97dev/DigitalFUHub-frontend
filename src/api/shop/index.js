@@ -1,4 +1,4 @@
-import { apiGetAuth, apiPostAuth, apiPostAuthForm, apiGet } from '../defaultApi';
+import { apiGetAuth, apiPostAuthForm, apiGet } from '../defaultApi';
 
 export const getShopOfSeller = () => {
     return apiGetAuth(`api/Shops/Seller/Get`);
@@ -20,4 +20,9 @@ export const getShopDetail = (userId) => {
     return apiGet(`api/Shops/GetDetail/${userId}`);
 }
 
-
+export const getMostPopularShop = (keyword) => {
+    return apiGet(`api/Shops/MostPopular?keyword=${keyword}`);
+}
+export const getListShopSearch = (keyword, page) => {
+    return apiGet(`api/Shops/Search?keyword=${keyword}&page=${page}`);
+}
