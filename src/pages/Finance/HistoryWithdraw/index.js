@@ -14,86 +14,94 @@ import {
     WITHDRAW_TRANSACTION_IN_PROCESSING,
     WITHDRAW_TRANSACTION_PAID,
     WITHDRAW_TRANSACTION_REJECT,
+    WITHDRAW_TRANSACTION_CANCEL,
     PAGE_SIZE
 } from "~/constants";
 import DrawerWithdrawTransactionBill from "~/components/Drawers/DrawerWithdrawTransactionBill";
+import ModalCancleWithdrawTransaction from "~/components/Modals/ModalCancleWithdrawTransaction";
 
 const { RangePicker } = DatePicker;
 
 
-const columns = [
-    {
-        title: 'Mã giao dịch',
-        dataIndex: 'withdrawTransactionId',
-        width: '10%',
-    },
-    {
-        title: 'Số tiền',
-        dataIndex: 'amount',
-        width: '10%',
-        render: (amount) => {
-            return (
-                <p>{formatPrice(amount)}</p>
-            )
-        }
-    },
-    {
-        title: 'Thời gian tạo yêu cầu',
-        dataIndex: 'requestDate',
-        width: '15%',
-        render: (requestDate) => {
-            return (
-                <p>{ParseDateTime(requestDate)}</p>
-            )
-        }
-    },
-    {
-        title: 'Đơn vị thụ hưởng',
-        dataIndex: 'creditAccountName',
-        width: '17%',
-    },
-    {
-        title: 'Số tài khoản',
-        dataIndex: 'creditAccount',
-        width: '12%',
-    },
-    {
-        title: 'Ngân hàng đối tác',
-        dataIndex: 'bankName',
-        width: '17%',
-    },
-    {
-        title: 'Trạng thái',
-        dataIndex: 'withdrawTransactionStatusId',
-        width: '7%',
-        render: (withdrawTransactionStatusId, record) => {
-            if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_IN_PROCESSING) {
-                return <Tag color="#ecc30b">Đang xử lý yêu cầu</Tag>
-            } else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_PAID) {
-                return <Tag color="#52c41a">Thành công</Tag>
-            } else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_REJECT) {
-                return <Tag color="red">Từ chối</Tag>
-            }
-        }
-    },
-    {
-        title: '',
-        dataIndex: 'withdrawTransactionStatusId',
-        width: '5%',
-        render: (withdrawTransactionStatusId, record) => {
-            if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_PAID ||
-                withdrawTransactionStatusId === WITHDRAW_TRANSACTION_REJECT) {
-                return <DrawerWithdrawTransactionBill userId={record.userId} withdrawTransactionId={record.withdrawTransactionId} />
-            } else {
-                return ""
-            }
 
-        }
-    },
-
-];
 
 function HistoryWithdraw() {
+    const columns = [
+        {
+            title: 'Mã giao dịch',
+            dataIndex: 'withdrawTransactionId',
+            width: '10%',
+        },
+        {
+            title: 'Số tiền',
+            dataIndex: 'amount',
+            width: '10%',
+            render: (amount) => {
+                return (
+                    <p>{formatPrice(amount)}</p>
+                )
+            }
+        },
+        {
+            title: 'Thời gian tạo yêu cầu',
+            dataIndex: 'requestDate',
+            width: '15%',
+            render: (requestDate) => {
+                return (
+                    <p>{ParseDateTime(requestDate)}</p>
+                )
+            }
+        },
+        {
+            title: 'Đơn vị thụ hưởng',
+            dataIndex: 'creditAccountName',
+            width: '17%',
+        },
+        {
+            title: 'Số tài khoản',
+            dataIndex: 'creditAccount',
+            width: '12%',
+        },
+        {
+            title: 'Ngân hàng đối tác',
+            dataIndex: 'bankName',
+            width: '17%',
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'withdrawTransactionStatusId',
+            width: '7%',
+            render: (withdrawTransactionStatusId, record) => {
+                if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_IN_PROCESSING) {
+                    return <Tag color="#ecc30b">Đang xử lý</Tag>
+                } else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_PAID) {
+                    return <Tag color="#52c41a">Thành công</Tag>
+                } else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_REJECT) {
+                    return <Tag color="red">Từ chối</Tag>
+                } else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_CANCEL) {
+                    return <Tag color="gray">Đã hủy</Tag>
+                }
+            }
+        },
+        {
+            title: '',
+            dataIndex: 'withdrawTransactionStatusId',
+            width: '5%',
+            render: (withdrawTransactionStatusId, record) => {
+                if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_PAID ||
+                    withdrawTransactionStatusId === WITHDRAW_TRANSACTION_REJECT) {
+                    return <DrawerWithdrawTransactionBill userId={record.userId} withdrawTransactionId={record.withdrawTransactionId} />
+                } else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_IN_PROCESSING) {
+                    return <ModalCancleWithdrawTransaction withdrawTransactionId={record.withdrawTransactionId} callBack={handleSearchDataTable} />
+                } else {
+                    return ""
+                }
+
+            }
+        },
+
+    ];
+
     const notification = useContext(NotificationContext);
     const auth = useAuthUser()
     const user = auth();
@@ -116,6 +124,7 @@ function HistoryWithdraw() {
         status: 0,
         page: 1
     });
+    const [totalRecord, setTotalRecord] = useState(0)
 
     useEffect(() => {
         getWithdrawTransaction(user.id, searchData)
@@ -129,6 +138,7 @@ function HistoryWithdraw() {
                             total: res.data.result.total,
                         },
                     });
+                    setTotalRecord(res.data.result.total)
                 } else {
                     notification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
                 }
@@ -187,6 +197,7 @@ function HistoryWithdraw() {
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setDataTable(res.data.result.withdrawTransactions)
+                    setTotalRecord(res.data.result.total)
                 } else {
                     notification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
                 }
@@ -256,9 +267,10 @@ function HistoryWithdraw() {
                                         <Form.Item name="status" >
                                             <Select >
                                                 <Select.Option value={0}>Tất cả</Select.Option>
-                                                <Select.Option value={1}>Đang xử lý yêu cầu</Select.Option>
+                                                <Select.Option value={1}>Đang xử lý</Select.Option>
                                                 <Select.Option value={2}>Thành công</Select.Option>
                                                 <Select.Option value={3}>Từ chối</Select.Option>
+                                                <Select.Option value={WITHDRAW_TRANSACTION_CANCEL}>Đã hủy</Select.Option>
                                             </Select>
                                         </Form.Item>
                                     </Col>
@@ -284,10 +296,10 @@ function HistoryWithdraw() {
                 </Card>
                 <Card style={{ marginTop: "20px" }}>
                     {(() => {
-                        if (tableParams.pagination.total > PAGE_SIZE) {
+                        if (totalRecord > PAGE_SIZE) {
                             return (
                                 <Row align="end">
-                                    <b>{tableParams.pagination.total} Bản ghi</b>
+                                    <b>{totalRecord} Bản ghi</b>
                                 </Row>
                             )
                         } else {

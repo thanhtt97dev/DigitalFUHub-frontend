@@ -1,4 +1,4 @@
-import { apiGetAuth, apiPostAuth } from '../defaultApi';
+import { apiGetAuth, apiPostAuth, apiPut } from '../defaultApi';
 
 
 export const getUserBankAccount = (id) => {
@@ -39,6 +39,10 @@ export const getWithdrawTransaction = (id, data) => {
 
 export const getWithdrawTransactionBill = (data) => {
     return apiPostAuth(`api/banks/WithdrawTransactionBill`, data);
+};
+
+export const cancelWithdrawTransaction = (id) => {
+    return apiPut(`api/banks/CancelWithdraw/${id}`);
 };
 
 
