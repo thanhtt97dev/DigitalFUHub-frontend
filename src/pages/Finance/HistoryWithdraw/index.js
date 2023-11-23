@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col } from "antd";
+import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col, Space } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
-import dayjs from 'dayjs';
 import { useAuthUser } from 'react-auth-kit'
 
 import { NotificationContext } from '~/context/UI/NotificationContext';
@@ -15,6 +14,7 @@ import {
     WITHDRAW_TRANSACTION_IN_PROCESSING,
     WITHDRAW_TRANSACTION_PAID,
     WITHDRAW_TRANSACTION_REJECT,
+    PAGE_SIZE
 } from "~/constants";
 import DrawerWithdrawTransactionBill from "~/components/Drawers/DrawerWithdrawTransactionBill";
 
@@ -101,20 +101,34 @@ function HistoryWithdraw() {
 
     const [form] = Form.useForm();
     const [dataTable, setDataTable] = useState([]);
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: PAGE_SIZE,
+        },
+    });
     const [searchData, setSearchData] = useState({
         withdrawTransactionId: '',
         // fromDate: dayjs().subtract(3, 'day').format('M/D/YYYY'),
         // toDate: dayjs().format('M/D/YYYY'),
         fromDate: '',
         toDate: '',
-        status: 0
+        status: 0,
+        page: 1
     });
 
     useEffect(() => {
         getWithdrawTransaction(user.id, searchData)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setDataTable(res.data.result)
+                    setDataTable(res.data.result.withdrawTransactions)
+                    setTableParams({
+                        ...tableParams,
+                        pagination: {
+                            ...tableParams.pagination,
+                            total: res.data.result.total,
+                        },
+                    });
                 } else {
                     notification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
                 }
@@ -158,8 +172,13 @@ function HistoryWithdraw() {
             toDate: (values.date === undefined) ? '' : values.date[1].$d.toLocaleDateString(),
             //fromDate: values.date[0].$d.toLocaleDateString(),
             //toDate: values.date[1].$d.toLocaleDateString(),
-            status: values.status
+            status: values.status,
+            page: 1
         });
+    };
+
+    const onReset = () => {
+        form.resetFields();
     };
 
     const handleSearchDataTable = () => {
@@ -167,7 +186,7 @@ function HistoryWithdraw() {
         getWithdrawTransaction(user.id, searchData)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setDataTable(res.data.result)
+                    setDataTable(res.data.result.withdrawTransactions)
                 } else {
                     notification("error", "Đang có chút sự cố! Hãy vui lòng thử lại!")
                 }
@@ -179,6 +198,23 @@ function HistoryWithdraw() {
                 setTimeout(() => { setLoading(false) }, 500)
             })
     }
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        setSearchData({
+            ...searchData,
+            page: pagination.current
+        })
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
+
+        // `dataSource` is useless since `pageSize` changed
+        if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+            setDataTable([]);
+        }
+    };
 
 
 
@@ -229,10 +265,15 @@ function HistoryWithdraw() {
                                 </Row>
 
                                 <Row>
-                                    <Col span={2} offset={16}>
-                                        <Button type="primary" htmlType="submit">
-                                            Tìm kiếm
-                                        </Button>
+                                    <Col span={2} offset={13}>
+                                        <Space>
+                                            <Button htmlType="button" onClick={onReset}>
+                                                Xóa
+                                            </Button>
+                                            <Button type="primary" htmlType="submit">
+                                                Tìm kiếm
+                                            </Button>
+                                        </Space>
                                     </Col>
                                 </Row>
                             </Col>
@@ -242,7 +283,25 @@ function HistoryWithdraw() {
                     <ModalRequestWithdraw userId={user.id} callBack={() => handleSearchDataTable()} style={{ marginBottom: "5px" }} />
                 </Card>
                 <Card style={{ marginTop: "20px" }}>
-                    <Table columns={columns} pagination={{ pageSize: 5 }} dataSource={dataTable} rowKey={(record) => record.withdrawTransactionId} />
+                    {(() => {
+                        if (tableParams.pagination.total > PAGE_SIZE) {
+                            return (
+                                <Row align="end">
+                                    <b>{tableParams.pagination.total} Bản ghi</b>
+                                </Row>
+                            )
+                        } else {
+                            return <></>
+                        }
+                    })()}
+
+                    <Table
+                        columns={columns}
+                        pagination={tableParams.pagination}
+                        dataSource={dataTable}
+                        rowKey={(record) => record.withdrawTransactionId}
+                        onChange={handleTableChange}
+                    />
                 </Card>
             </Spinning>
         </>
