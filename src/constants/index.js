@@ -250,3 +250,6 @@ export const SORTED_BY_DATETIME = 1;
 export const SORTED_BY_SALE = 2;
 export const SORTED_BY_PRICE_ASC = 3;
 export const SORTED_BY_PRICE_DESC = 4;
+
+export const STATISTIC_BY_MONTH = 0;
+export const STATISTIC_BY_YEAR = 1;
