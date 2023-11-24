@@ -262,7 +262,7 @@ function HistoryDeposit() {
                 </Card>
                 <Card style={{ marginTop: "20px" }}>
                     <Row align="end">
-                        <b>{totalRecord} Bản ghi</b>
+                        <b>{totalRecord} Kết quả</b>
                     </Row>
                     <Table
                         columns={columns}

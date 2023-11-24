@@ -298,7 +298,7 @@ function HistoryWithdraw() {
                         if (totalRecord > PAGE_SIZE) {
                             return (
                                 <Row align="end">
-                                    <b>{totalRecord} Bản ghi</b>
+                                    <b>{totalRecord} Kết quả</b>
                                 </Row>
                             )
                         } else {
