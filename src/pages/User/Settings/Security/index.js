@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import ModalSend2FaQrCode from "~/components/Modals/ModalSend2FaQrCode";
 import { getUserId } from '~/utils';
 import { useNavigate } from 'react-router-dom';
-import { RESPONSE_CODE_SUCCESS } from '~/constants';
+import { RESPONSE_CODE_SUCCESS, RESPONSE_CODE_NOT_ACCEPT } from '~/constants';
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user';
 import { getUserById, checkExistUsername, editUserInfo } from "~/api/user";
@@ -30,6 +30,7 @@ function Security() {
     ];
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    // const [reload]
     const [confirmLoading, setConfirmLoading] = useState(false);
     const userId = getUserId();
     const [userInfo, setUserInfo] = useState({});
@@ -59,10 +60,8 @@ function Security() {
     };
 
     useEffect(() => {
-        if (userId === null) {
-            alert("Some err!");
-            return navigate("/login");
-        }
+        if (userId === null) return navigate("/login");
+
         getUserById(userId)
             .then((res) => {
                 setUserInfo({
@@ -73,14 +72,18 @@ function Security() {
                     status: res.data.status,
                     username: res.data.username
                 });
-                setUser2FaStatus(res.data.twoFactorAuthentication)
-                if (res.data.username === undefined || res.data.username === "") {
-                    setTabList((prev) => [...prev, { key: 'tab3', tab: 'Kích hoạt tài khoản và mật khẩu' }])
+                setUser2FaStatus(res.data.twoFactorAuthentication);
+                const newTabList = [...tabList.filter(x => x.key !== 'tab3')]
+                if (!res.data.isChangeUsername) {
+                    setTabList([...newTabList, { key: 'tab3', tab: 'Kích hoạt tài khoản và mật khẩu' }]);
+                } else {
+                    setTabList([...newTabList]);
                 }
             })
             .catch(() => {
                 notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             });
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId])
 
@@ -176,30 +179,19 @@ function Security() {
     const AccountLogin = () => (
         <div className="accountLogin">
             <Card
-                style={{
-                    width: '100%',
-                    marginBottom: 15
-                }}
-                hoverable
-
-            >
+                style={{ width: '100%', marginBottom: 15 }} hoverable>
                 <Row className={cx('space-bottom-row')}>
                     <Col><Title level={5}><GooglePlusOutlined />&nbsp;&nbsp;Liên kết Google:</Title></Col>
                     <Col><Text className={cx('ml-30')}>{userInfo.email}</Text></Col>
                 </Row>
             </Card>
             <Card
-                style={{
-                    width: '100%',
-                }}
-                hoverable
-            >
+                style={{ width: '100%' }} hoverable>
                 <Row className={cx('space-bottom-row')}>
                     <Col><Title level={5}><FacebookOutlined />&nbsp;&nbsp;Liên kết Facebook:</Title></Col>
                     <Col><Button type="primary" disabled className={cx('style-button')}>Liên kết</Button></Col>
                 </Row>
             </Card>
-
         </div>
     )
 
@@ -270,22 +262,29 @@ function Security() {
 
         checkExistUsername(username)
             .then((res) => {
-                if (res.data === 'Y') {
-                    notification("error", "Tên tài khoản đã được sử dụng, vui lòng chọn tên khác!")
-                } else {
-                    editUserInfo(bodyFormData)
-                        .then((res) => {
-                            if (res.status === 200) {
-                                const data = res.data;
-                                const status = data.status;
-                                if (status.responseCode === RESPONSE_CODE_SUCCESS) {
-                                    notification("success", "Kích hoạt tài khoản và mật khẩu thành công!")
-                                    const tabListFilter = tabList.filter(item => item.key !== 'tab3')
-                                    setTabList(tabListFilter);
-                                    setTabKey('tab2');
+                if (res.status === 200) {
+                    const data = res.data;
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        editUserInfo(bodyFormData)
+                            .then((res) => {
+                                if (res.status === 200) {
+                                    const data = res.data;
+                                    const status = data.status;
+                                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                                        notification("success", "Kích hoạt tài khoản và mật khẩu thành công!")
+                                        const tabListFilter = tabList.filter(item => item.key !== 'tab3')
+                                        setTabList(tabListFilter);
+                                        setTabKey('tab2');
+                                    }
                                 }
-                            }
-                        })
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                            })
+                    } else if (status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
+                        notification("error", "Tên tài khoản đã được sử dụng, vui lòng chọn tên khác!")
+                    }
                 }
             });
 
@@ -323,86 +322,82 @@ function Security() {
     }
 
     const ActiveUsernamePassword = () => (
-        <div>
-
-            <Form
-                name="basic"
-                labelCol={{
-                    span: 5,
-                }}
-                wrapperCol={{
-                    span: 15,
-                }}
-                style={{
-                    maxWidth: '100vh',
-                    margin: '0 auto',
-                    marginTop: 30
-                }}
-                initialValues={{
-                    remember: true,
-                }}
-                onFinish={onFinish}
-                form={form}
-                onFinishFailed={onFinishFailed}
-                autoComplete="off"
+        <Form
+            name="basic"
+            labelCol={{
+                span: 5,
+            }}
+            wrapperCol={{
+                span: 15,
+            }}
+            style={{
+                maxWidth: '100vh',
+                margin: '0 auto',
+                marginTop: 30
+            }}
+            initialValues={{
+                remember: true,
+            }}
+            onFinish={onFinish}
+            form={form}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+        >
+            <Form.Item
+                label="Username"
+                name="username"
+                rules={[
+                    {
+                        required: true,
+                        message: 'Tài khoản không hợp lệ!',
+                    }
+                ]}
             >
-                <Form.Item
-                    label="Username"
-                    name="username"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Tài khoản không hợp lệ!',
-                        }
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
+                <Input />
+            </Form.Item>
 
-                <Form.Item
-                    label="New Password"
-                    name="newPassword"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Mật khẩu không hợp lệ',
-                        },
-                        {
-                            validator: newPasswordValidator
-                        }
-                    ]}
-                >
-                    <Input.Password />
-                </Form.Item>
+            <Form.Item
+                label="New Password"
+                name="newPassword"
+                rules={[
+                    {
+                        required: true,
+                        message: 'Mật khẩu không hợp lệ',
+                    },
+                    {
+                        validator: newPasswordValidator
+                    }
+                ]}
+            >
+                <Input.Password />
+            </Form.Item>
 
-                <Form.Item
-                    label="Confirm Password"
-                    name="confirmPassword"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Mật khẩu không hợp lệ',
-                        },
-                        {
-                            validator: confirmPasswordValidator
-                        }
-                    ]}
-                >
-                    <Input.Password />
-                </Form.Item>
-                <Form.Item
-                    wrapperCol={{
-                        offset: 8,
-                        span: 16,
-                    }}
-                >
-                    <Button type="primary" htmlType="submit">
-                        Confirm
-                    </Button>
-                </Form.Item>
-            </Form>
-
-        </div>
+            <Form.Item
+                label="Confirm Password"
+                name="confirmPassword"
+                rules={[
+                    {
+                        required: true,
+                        message: 'Mật khẩu không hợp lệ',
+                    },
+                    {
+                        validator: confirmPasswordValidator
+                    }
+                ]}
+            >
+                <Input.Password />
+            </Form.Item>
+            <Form.Item
+                wrapperCol={{
+                    offset: 8,
+                    span: 16,
+                }}
+            >
+                <Button type="primary" htmlType="submit">
+                    Confirm
+                </Button>
+            </Form.Item>
+        </Form>
     )
 
 

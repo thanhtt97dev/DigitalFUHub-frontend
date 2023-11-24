@@ -13,13 +13,13 @@ const cx = classNames.bind(styles);
 
 /// styles
 const styleImage = { width: '100%', height: 192 }
-const ratingStarStyle = { color: '#ee4d2d', fontSize: '.625rem', borderBottom: '1px solid white' }
+const styleRatingStar = { color: '#ee4d2d', fontSize: '.625rem', borderBottom: '1px solid white' }
 const styleContainerImage = { width: '100%', height: 192, display: 'flex', alignItems: 'center', justifyContent: 'center' }
 const styleOriginPrice = { fontSize: 14 };
 const styleCardInputSearch = { marginBottom: 10, borderRadius: 2, background: 'rgba(0,0,0,.03)', boxShadow: '#d3d3d3 0px 1px 2px 0px' };
 const styleBodyCardInputSearch = { padding: 20 };
 const styleDiscountPrice = { color: '#ee4d2d', fontSize: '1rem', marginTop: 25 };
-const opacityDisabledStyle = { opacity: 0.5 };
+const styleOpacityDisabled = { opacity: 0.5 };
 const styleSpaceContainerProductItem = { padding: 8, height: 124, width: '100%' };
 const styleProductName = { fontSize: 12, color: '#000000', cursor: 'pointer' };
 ///
@@ -82,7 +82,7 @@ const Products = ({ products, searchParam, totalProducts, setSearchParam }) => {
         <Space size={[9, 16]} wrap>
             {products.map((product, index) => (
                 <div
-                    style={product.quantityProductRemaining === 0 || product.productStatusId === PRODUCT_BAN ? opacityDisabledStyle : {}}
+                    style={product.quantityProductRemaining === 0 || product.productStatusId === PRODUCT_BAN ? styleOpacityDisabled : {}}
                     key={index}
                     className={cx('item-product')}
                     onClick={() => handleClickToProduct(product.productId)}
@@ -108,7 +108,7 @@ const Products = ({ products, searchParam, totalProducts, setSearchParam }) => {
                             ) : (<p level={4} style={styleDiscountPrice}>{formatPrice(product.productVariant.price)}</p>)
                         }
                         <Space align="center" style={{ marginTop: 5 }}>
-                            <Rate disabled defaultValue={product.totalRatingStar / product.numberFeedback} style={ratingStarStyle} />
+                            <Rate disabled defaultValue={product.totalRatingStar / product.numberFeedback} style={styleRatingStar} />
                             <p style={{ fontSize: 12 }}>Đã bán {formatNumber(product.soldCount)}</p>
                         </Space>
 
