@@ -140,7 +140,7 @@ export function LineChart() {
         setDateSelected(value ? value : dayjs())
     }
 
-    return (<Card>
+    return (<Card title="Biểu đồ phân tích">
         <Spin spinning={loading}>
             <Space >
                 <Space wrap={true}>
