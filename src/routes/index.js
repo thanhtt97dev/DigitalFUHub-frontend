@@ -40,6 +40,7 @@ import SearchProduct from '~/pages/SearchProduct';
 
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import SearchShop from '../pages/SearchShop';
+import Statistics from '~/pages/Seller/Statistics';
 
 const routesConfig = [
     {
@@ -157,16 +158,9 @@ const routesConfig = [
     },
     {
         title: 'Seller statistic',
-        path: '/seller',
-        layout: <SellerLayout />,
-        component: <></>,
-        role: [SELLER_ROLE],
-    },
-    {
-        title: 'Seller statistic',
         path: '/seller/statistic',
         layout: <SellerLayout />,
-        component: <></>,
+        component: <Statistics />,
         role: [SELLER_ROLE],
     },
     {

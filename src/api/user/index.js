@@ -48,6 +48,10 @@ export const checkExistUsername = async (username) => {
     return await apiGetAuth(`api/users/IsExistUsername/${username}`);
 };
 
+export const activeUserNameAndPassword = (data) => {
+    return apiPostAuth(`api/users/ActiveUserNameAndPassword`, data);
+};
+
 export const editUserInfo = (data) => {
     return apiPutAuthForm(`api/users/EditUserInfo`, data);
 };

@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useContext } from "react";
+import Spinning from "~/components/Spinning";
 import ModalSend2FaQrCode from "~/components/Modals/ModalSend2FaQrCode";
 import { getUserId } from '~/utils';
+import { useAuthUser } from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
-import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user';
-import { getUserById, checkExistUsername, editUserInfo } from "~/api/user";
+import { getUserById, activeUserNameAndPassword } from "~/api/user";
 import { ExclamationCircleFilled, GooglePlusOutlined, FacebookOutlined } from "@ant-design/icons";
 import { Button, Divider, Modal, Input, Space, Card, Typography, Col, Row, Form } from "antd";
+import { RESPONSE_CODE_SUCCESS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_USER_USERNAME_ALREADY_EXISTS, REGEX_USERNAME_SIGN_UP, REGEX_PASSWORD_SIGN_UP } from '~/constants';
 
 import classNames from 'classnames/bind';
 import styles from './Security.module.scss';
@@ -18,6 +20,9 @@ const cx = classNames.bind(styles)
 const { Title, Text } = Typography;
 
 function Security() {
+    /// variables
+    const auth = useAuthUser();
+    const user = auth();
     const initialTabList = [
         {
             key: 'tab1',
@@ -28,8 +33,12 @@ function Security() {
             tab: 'Bảo mật hai lớp',
         }
     ];
+    ///
+
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [reloadUserInfoFlag, setReloadUserInfoFlag] = useState(false);
+    const [isSpinningPage, setIsSpinningPage] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const userId = getUserId();
     const [userInfo, setUserInfo] = useState({});
@@ -59,10 +68,8 @@ function Security() {
     };
 
     useEffect(() => {
-        if (userId === null) {
-            alert("Some err!");
-            return navigate("/login");
-        }
+        if (userId === null) return navigate("/login");
+
         getUserById(userId)
             .then((res) => {
                 setUserInfo({
@@ -73,16 +80,20 @@ function Security() {
                     status: res.data.status,
                     username: res.data.username
                 });
-                setUser2FaStatus(res.data.twoFactorAuthentication)
-                if (res.data.username === undefined || res.data.username === "") {
-                    setTabList((prev) => [...prev, { key: 'tab3', tab: 'Kích hoạt tài khoản và mật khẩu' }])
+                setUser2FaStatus(res.data.twoFactorAuthentication);
+                const newTabList = [...tabList.filter(x => x.key !== 'tab3')]
+                if (!res.data.isChangeUsername) {
+                    setTabList([...newTabList, { key: 'tab3', tab: 'Kích hoạt tài khoản và mật khẩu' }]);
+                } else {
+                    setTabList([...newTabList]);
                 }
             })
             .catch(() => {
                 notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             });
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userId])
+    }, [userId, reloadUserInfoFlag])
 
     const handleActivate2FA = () => {
         setLoading(true)
@@ -176,30 +187,19 @@ function Security() {
     const AccountLogin = () => (
         <div className="accountLogin">
             <Card
-                style={{
-                    width: '100%',
-                    marginBottom: 15
-                }}
-                hoverable
-
-            >
+                style={{ width: '100%', marginBottom: 15 }} hoverable>
                 <Row className={cx('space-bottom-row')}>
                     <Col><Title level={5}><GooglePlusOutlined />&nbsp;&nbsp;Liên kết Google:</Title></Col>
                     <Col><Text className={cx('ml-30')}>{userInfo.email}</Text></Col>
                 </Row>
             </Card>
             <Card
-                style={{
-                    width: '100%',
-                }}
-                hoverable
-            >
+                style={{ width: '100%' }} hoverable>
                 <Row className={cx('space-bottom-row')}>
                     <Col><Title level={5}><FacebookOutlined />&nbsp;&nbsp;Liên kết Facebook:</Title></Col>
                     <Col><Button type="primary" disabled className={cx('style-button')}>Liên kết</Button></Col>
                 </Row>
             </Card>
-
         </div>
     )
 
@@ -260,33 +260,51 @@ function Security() {
     )
 
 
-    const onFinish = (values) => {
-        const username = values.username;
-        const newPassword = values.newPassword;
-        var bodyFormData = new FormData();
-        bodyFormData.append('userId', userId)
-        bodyFormData.append('username', username)
-        bodyFormData.append('password', encryptPassword(newPassword))
+    /// handles
+    const reloadUserInfo = () => {
+        setReloadUserInfoFlag(!reloadUserInfoFlag);
+    }
 
-        checkExistUsername(username)
+    const onFinish = (values) => {
+
+        if (user === undefined || user === null) {
+            return navigate('/login');
+        }
+
+        setIsSpinningPage(true);
+
+        // check UserName availability
+        const requestData = {
+            UserId: user.id,
+            Username: values.username,
+            Password: encryptPassword(values.password)
+        }
+
+        activeUserNameAndPassword(requestData)
             .then((res) => {
-                if (res.data === 'Y') {
-                    notification("error", "Tên tài khoản đã được sử dụng, vui lòng chọn tên khác!")
-                } else {
-                    editUserInfo(bodyFormData)
-                        .then((res) => {
-                            if (res.status === 200) {
-                                const data = res.data;
-                                const status = data.status;
-                                if (status.responseCode === RESPONSE_CODE_SUCCESS) {
-                                    notification("success", "Kích hoạt tài khoản và mật khẩu thành công!")
-                                    const tabListFilter = tabList.filter(item => item.key !== 'tab3')
-                                    setTabList(tabListFilter);
-                                    setTabKey('tab2');
-                                }
-                            }
-                        })
+                if (res.status === 200) {
+                    const data = res.data;
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+
+                        if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                            notification("success", "Kích hoạt tài khoản và mật khẩu thành công!");
+                            reloadUserInfo();
+                            setTabKey('tab2');
+                        } else {
+                            notification("error", "Tên tài khoản đã được sử dụng, vui lòng chọn tên khác")
+                        }
+                    } else if (status.responseCode === RESPONSE_CODE_USER_USERNAME_ALREADY_EXISTS) {
+                        notification("error", "Tên tài khoản đã được sử dụng, vui lòng chọn tên khác");
+                    } else if (status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
+                        notification("error", "Có lỗi xảy ra");
+                    }
+
+                    setIsSpinningPage(false);
                 }
+            })
+            .catch((err) => {
+                console.log(err);
             });
 
     };
@@ -296,11 +314,8 @@ function Security() {
     };
 
     const confirmPasswordValidator = (value) => {
-        let newPassword = form.getFieldValue('newPassword');
+        let newPassword = form.getFieldValue('password');
         let confirmPassword = form.getFieldValue(value.field);
-
-        newPassword = newPassword === undefined ? '' : newPassword;
-        confirmPassword = confirmPassword === undefined ? '' : confirmPassword;
 
         if (!validator.equals(newPassword, confirmPassword)) {
             return Promise.reject('Mật khẩu không trùng khớp');
@@ -310,99 +325,98 @@ function Security() {
         }
     }
 
-    const newPasswordValidator = (value) => {
-        let newPassword = form.getFieldValue(value.field);
-        newPassword = newPassword === undefined ? '' : newPassword;
+    const passwordValidator = (value) => {
+        let password = form.getFieldValue(value.field);
+        console.log('new pass = ' + password);
 
-        if (!validator.isLength(newPassword, { min: 3 })) {
-            return Promise.reject('Mật khẩu không đủ mạnh. Phải có ít nhất 3 kí tự');
+        if (!validator.matches(password, REGEX_PASSWORD_SIGN_UP)) {
+            return Promise.reject('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự và không chứa các kí tự đặc biệt');
         } else {
             return Promise.resolve();
         }
 
     }
 
+    const usernameValidator = (value) => {
+        let username = form.getFieldValue(value.field);
+
+        if (!validator.matches(username, REGEX_USERNAME_SIGN_UP)) {
+            return Promise.reject('Tên tài khoản phải bắt đầu với kí tự chữ thường và có độ dài 6 - 12 ký tự');
+        } else {
+            return Promise.resolve();
+        }
+
+    }
+    ///
+
     const ActiveUsernamePassword = () => (
-        <div>
-
-            <Form
-                name="basic"
-                labelCol={{
-                    span: 5,
-                }}
-                wrapperCol={{
-                    span: 15,
-                }}
-                style={{
-                    maxWidth: '100vh',
-                    margin: '0 auto',
-                    marginTop: 30
-                }}
-                initialValues={{
-                    remember: true,
-                }}
-                onFinish={onFinish}
-                form={form}
-                onFinishFailed={onFinishFailed}
-                autoComplete="off"
+        <Form
+            name="basic"
+            labelCol={{
+                span: 5,
+            }}
+            wrapperCol={{
+                span: 15,
+            }}
+            style={{
+                maxWidth: '100vh',
+                margin: '0 auto',
+                marginTop: 30
+            }}
+            initialValues={{
+                remember: true,
+            }}
+            onFinish={onFinish}
+            form={form}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+        >
+            <Form.Item
+                label="Username"
+                name="username"
+                rules={[
+                    {
+                        validator: usernameValidator
+                    }
+                ]}
             >
-                <Form.Item
-                    label="Username"
-                    name="username"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Tài khoản không hợp lệ!',
-                        }
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
+                <Input />
+            </Form.Item>
 
-                <Form.Item
-                    label="New Password"
-                    name="newPassword"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Mật khẩu không hợp lệ',
-                        },
-                        {
-                            validator: newPasswordValidator
-                        }
-                    ]}
-                >
-                    <Input.Password />
-                </Form.Item>
+            <Form.Item
+                label="New Password"
+                name="password"
+                rules={[
+                    {
+                        validator: passwordValidator
+                    }
+                ]}
+            >
+                <Input.Password />
+            </Form.Item>
 
-                <Form.Item
-                    label="Confirm Password"
-                    name="confirmPassword"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Mật khẩu không hợp lệ',
-                        },
-                        {
-                            validator: confirmPasswordValidator
-                        }
-                    ]}
-                >
-                    <Input.Password />
-                </Form.Item>
-                <Form.Item
-                    wrapperCol={{
-                        offset: 8,
-                        span: 16,
-                    }}
-                >
-                    <Button type="primary" htmlType="submit">
-                        Confirm
-                    </Button>
-                </Form.Item>
-            </Form>
-
-        </div>
+            <Form.Item
+                label="Confirm Password"
+                name="confirmPassword"
+                rules={[
+                    {
+                        validator: confirmPasswordValidator
+                    }
+                ]}
+            >
+                <Input.Password />
+            </Form.Item>
+            <Form.Item
+                wrapperCol={{
+                    offset: 8,
+                    span: 16,
+                }}
+            >
+                <Button type="primary" htmlType="submit">
+                    Confirm
+                </Button>
+            </Form.Item>
+        </Form>
     )
 
 
@@ -414,7 +428,7 @@ function Security() {
     };
 
     return (
-        <>
+        <Spinning spinning={isSpinningPage}>
             <Card
                 style={{
                     width: '100%',
@@ -475,7 +489,7 @@ function Security() {
                 </div>
             </Modal>
 
-        </>
+        </Spinning>
     );
 }
 

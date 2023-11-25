@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Switch, InputNumber, Tooltip, Typography, Tag } from "antd";
+import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Typography, Tag } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
 import Spinning from "~/components/Spinning";
@@ -17,7 +17,7 @@ import {
 } from "~/constants";
 import Column from "antd/es/table/Column";
 import { PlusOutlined, SearchOutlined, ShopOutlined, ShoppingOutlined } from "@ant-design/icons";
-import { removeCouponSeller, getCouponsSeller, updateStatusCouponSeller, updateCouponFinish } from "~/api/coupon";
+import { removeCouponSeller, getCouponsSeller, updateCouponFinish } from "~/api/coupon";
 import styles from "./Coupon.module.scss"
 import classNames from "classnames/bind";
 import { Link } from "react-router-dom";

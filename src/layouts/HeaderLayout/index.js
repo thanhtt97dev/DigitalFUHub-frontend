@@ -59,7 +59,7 @@ const itemsFixed = [
     },
     {
         key: 'seller',
-        label: <Link to={"/seller"}><ShopOutlined /> Kênh người bán</Link>,
+        label: <Link to={"/seller/statistic"}><ShopOutlined /> Kênh người bán</Link>,
         roles: [SELLER_ROLE]
     },
     {
