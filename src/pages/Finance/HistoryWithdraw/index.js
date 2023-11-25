@@ -31,7 +31,7 @@ function HistoryWithdraw() {
         {
             title: 'Mã giao dịch',
             dataIndex: 'withdrawTransactionId',
-            width: '10%',
+            width: '7%',
         },
         {
             title: 'Số tiền',
@@ -39,39 +39,51 @@ function HistoryWithdraw() {
             width: '10%',
             render: (amount) => {
                 return (
-                    <p>{formatPrice(amount)}</p>
+                    <span>{formatPrice(amount)}</span>
                 )
             }
         },
         {
-            title: 'Thời gian tạo yêu cầu',
+            title: 'Thời gian yêu cầu',
             dataIndex: 'requestDate',
-            width: '15%',
+            width: '8%',
             render: (requestDate) => {
                 return (
-                    <p>{ParseDateTime(requestDate)}</p>
+                    <span>{ParseDateTime(requestDate)}</span>
                 )
+            }
+        },
+        {
+            title: 'Thời gian chuyển khoản',
+            dataIndex: 'paidDate',
+            width: '7%',
+            render: (paidDate) => {
+                if (paidDate === null) {
+                    return "N/A"
+                } else {
+                    return <span>{ParseDateTime(paidDate)}</span>
+                }
             }
         },
         {
             title: 'Đơn vị thụ hưởng',
             dataIndex: 'creditAccountName',
-            width: '17%',
+            width: '12%',
         },
         {
             title: 'Số tài khoản',
             dataIndex: 'creditAccount',
-            width: '12%',
+            width: '10%',
         },
         {
             title: 'Ngân hàng đối tác',
             dataIndex: 'bankName',
-            width: '17%',
+            width: '12%',
         },
         {
             title: 'Trạng thái',
             dataIndex: 'withdrawTransactionStatusId',
-            width: '7%',
+            width: '6%',
             render: (withdrawTransactionStatusId, record) => {
                 if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_IN_PROCESSING) {
                     return <Tag color="#ecc30b">Đang xử lý</Tag>
@@ -82,7 +94,8 @@ function HistoryWithdraw() {
                 } else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_CANCEL) {
                     return <Tag color="gray">Đã hủy</Tag>
                 }
-            }
+            },
+            fixed: "right",
         },
         {
             title: '',
@@ -98,7 +111,8 @@ function HistoryWithdraw() {
                     return ""
                 }
 
-            }
+            },
+            fixed: "right",
         },
 
     ];
@@ -312,6 +326,10 @@ function HistoryWithdraw() {
                         dataSource={dataTable}
                         rowKey={(record) => record.withdrawTransactionId}
                         onChange={handleTableChange}
+                        scroll={{
+                            x: 1300,
+                        }}
+                        size="middle"
                     />
                 </Card>
             </Spinning>
