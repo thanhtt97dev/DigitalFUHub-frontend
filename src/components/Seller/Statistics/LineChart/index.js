@@ -10,7 +10,10 @@ import {
     Legend,
     BarElement,
 } from 'chart.js';
-import { Line, Bar } from 'react-chartjs-2';
+import {
+    Line
+    // , Bar 
+} from 'react-chartjs-2';
 import { Card, DatePicker, Select, Space, Spin } from 'antd';
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { ORDER_COMPLAINT, ORDER_CONFIRMED, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_REFUNDED, ORDER_SELLER_VIOLATES, ORDER_WAIT_CONFIRMATION, RESPONSE_CODE_SUCCESS, STATISTIC_BY_MONTH, STATISTIC_BY_YEAR } from '../../../../constants';

@@ -44,7 +44,7 @@ function Coupons() {
         startDate: null,
         endDate: null,
         isPublic: 0,
-        status: COUPON_STATUS_ONGOING,
+        status: COUPON_STATUS_ALL,
         page: page
     });
 

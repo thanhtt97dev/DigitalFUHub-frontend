@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
 import ModalAlert from '~/components/Modals/ModalAlert';

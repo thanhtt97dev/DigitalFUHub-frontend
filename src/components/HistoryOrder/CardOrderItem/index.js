@@ -1,16 +1,16 @@
 import {
     ShopOutlined,
     CheckCircleOutlined,
-    ClockCircleOutlined,
-    CloseCircleOutlined,
-    ExclamationCircleOutlined,
-    MinusCircleOutlined,
+    // ClockCircleOutlined,
+    // CloseCircleOutlined,
+    // ExclamationCircleOutlined,
+    // MinusCircleOutlined,
     SyncOutlined,
-    PlusOutlined,
+    // PlusOutlined,
     MessageOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Col, Divider, Form, Image, Modal, Rate, Row, Space, Tag, Tooltip, Typography, Upload } from "antd";
-import TextArea from "antd/es/input/TextArea";
+import { Button, Card, Col, Divider, Image, Row, Space, Tag, Tooltip, Typography } from "antd";
+// import TextArea from "antd/es/input/TextArea";
 import { memo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthUser } from 'react-auth-kit'
