@@ -37,6 +37,7 @@ const Cart = () => {
     const [userCoin, setUserCoin] = useState(0);
     const [isUseCoin, setIsUseCoin] = useState(false);
     const [coupons, setCoupons] = useState([]);
+    const [reloadCoinFlag, setReloadCoinFlag] = useState(false);
     const [couponCodeSelecteds, setCouponCodeSelecteds] = useState([]); // object type {shopId, couponCode}
     const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(false);
     ///
@@ -49,6 +50,10 @@ const Cart = () => {
 
     const unLoadingCartInfo = () => {
         setIsLoadingCartInfo(false);
+    }
+
+    const reloadCoinUser = () => {
+        setReloadCoinFlag(!reloadCoinFlag);
     }
 
     const getCouponCodeSelecteds = (shopId) => {
@@ -77,6 +82,12 @@ const Cart = () => {
                         const result = data.result;
                         setCarts(result);
                         unLoadingCartInfo();
+
+                        if (result.length > 0) {
+                            for (let i = 0; i < result.length; i++) {
+                                console.log(JSON.stringify(result[i]))
+                            }
+                        }
                     }
                 }
             })
@@ -86,6 +97,7 @@ const Cart = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reloadCartsFlag])
+
 
     useEffect(() => {
         if (user === null || user === undefined) return;
@@ -103,7 +115,7 @@ const Cart = () => {
                 console.log(err.message)
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [reloadCoinFlag])
 
 
     useEffect(() => {
@@ -197,6 +209,13 @@ const Cart = () => {
 
         getCartDetails(carts);
     }, [carts])
+
+    useEffect(() => {
+        if (cartDetailIdSelecteds.length === 0) {
+            setIsUseCoin(false);
+        }
+
+    }, [cartDetailIdSelecteds])
     ///
 
     /// functions
@@ -245,7 +264,8 @@ const Cart = () => {
         isUseCoin: isUseCoin,
         reloadCarts: reloadCarts,
         couponCodeSelecteds,
-        getCouponCodeSelecteds: getCouponCodeSelecteds
+        getCouponCodeSelecteds: getCouponCodeSelecteds,
+        reloadCoinUser: reloadCoinUser
     }
     ///
 
