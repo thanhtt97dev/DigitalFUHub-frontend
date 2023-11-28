@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 
 import logoFPT from '~/assets/images/fpt-logo.jpg';
+import logo from '~/assets/images/DIGITALFUHUB.png';
 import { CUSTOMER_ROLE, RESPONSE_CODE_SUCCESS, SELLER_ROLE } from '~/constants';
 import ModalRequestDeposit from '../../components/Modals/ModalRequestDeposit';
 // import AccountBalance from '../../components/AccountBalance';
@@ -190,7 +191,7 @@ function HeaderLayout() {
                     </Link> */}
                     {/* {isGridVisible && ( */}
                     <Link to={'/home'} className={cx("link")}>
-                        <h3>DigitalFUHub</h3>
+                        <img src={logo} style={{ width: '180px', 'marginTop': '1em' }} alt='logo' />
                     </Link>
                     {/* )} */}
                 </Space>

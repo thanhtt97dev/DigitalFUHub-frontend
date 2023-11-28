@@ -22,7 +22,8 @@ import { Layout, Menu, Space, Avatar, Button, Row, Col, Dropdown, Badge } from '
 import styles from './SellerLayout.module.scss'
 import classNames from 'classnames/bind';
 import { Link, Outlet } from 'react-router-dom';
-import logo from '~/assets/images/fpt-logo.jpg'
+import logoFPT from '~/assets/images/fpt-logo.jpg';
+import logo from '~/assets/images/DIGITALFUHUB.png';
 import Logout from '~/components/Logout';
 import Notification from '~/components/Notification';
 
@@ -127,7 +128,7 @@ const SellerLayout = () => {
                 <div className={cx('header-logo')}>
                     <Space>
                         <Link to={'/home'} className={cx("link")}>
-                            <h3>DigitalFUHub</h3>
+                            <img src={logo} style={{ width: '180px', marginTop: '1em' }} alt='logo' />
                         </Link>
                     </Space>
                 </div>
@@ -178,7 +179,7 @@ const SellerLayout = () => {
                                             pointAtCenter: true,
                                         }}
                                     >
-                                        <Avatar src={logo} size="large" />
+                                        <Avatar src={logoFPT} size="large" />
                                     </Dropdown>
                                 </Col>
                             </Row>
