@@ -1,6 +1,6 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Card, Col, Row, Statistic, Tooltip } from "antd";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { getStatisticSalesCurrentMonth } from "~/api/statistic";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { formatPrice } from "~/utils";
@@ -18,7 +18,7 @@ function SalesSummaryCurrentMonth() {
             .catch(err => {
 
             })
-    }, [data])
+    }, [])
     return (<>
         <Row gutter={[16, 16]}>
             <Col span={8}>
@@ -62,4 +62,4 @@ function SalesSummaryCurrentMonth() {
     </>);
 }
 
-export default SalesSummaryCurrentMonth;
+export default memo(SalesSummaryCurrentMonth);

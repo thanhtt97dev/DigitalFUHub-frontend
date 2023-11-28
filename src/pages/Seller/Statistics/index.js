@@ -1,5 +1,5 @@
 import { Col, Row } from "antd";
-import { LineChart } from "~/components/Seller/Statistics/LineChart";
+import LineChart from "~/components/Seller/Statistics/LineChart";
 import SalesSummaryCurrentMonth from "~/components/Seller/Statistics/SalesSummaryCurrentMonth";
 import TodoList from "~/components/Seller/Statistics/TodoList";
 

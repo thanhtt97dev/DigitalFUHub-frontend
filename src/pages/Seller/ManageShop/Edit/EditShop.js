@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Card, Row, Col, Form, Input, Button, Upload, Avatar, Space } from "antd";
+import { Card, Row, Col, Form, Input, Button, Upload, Avatar, Space, Modal } from "antd";
 import { editShop, getShopOfSeller } from "~/api/shop";
 // import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import Spinning from "~/components/Spinning";
 import { getUserId } from '~/utils';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { UploadOutlined, UserOutlined } from "@ant-design/icons";
 
@@ -26,6 +26,8 @@ function EditShop() {
     const [shopDescription, setShopDescription] = useState('');
     const [fileList, setFileList] = useState([]);
     // const navigate = useNavigate()
+    const [openNotificationFileExceedLimit, setOpenNotificationFileExceedLimit] = useState(false);
+    const [msgNotificationFileExceedLimit, setMsgNotificationFileExceedLimit] = useState([]);
     const [imgPreview, setImgPreview] = useState('');
     const handlePreview = async (file) => {
         const imgBase64 = await getBase64(file.originFileObj);
@@ -34,6 +36,14 @@ function EditShop() {
     const handleChange = (info) => {
         let newFileList = [...info.fileList];
         newFileList = newFileList.slice(-1);
+        const lsFileExist = newFileList.filter(v => v.size > UPLOAD_FILE_SIZE_LIMIT)
+        if (lsFileExist.length > 0) {
+            newFileList = newFileList.filter(v => v.size <= UPLOAD_FILE_SIZE_LIMIT);
+            var msgFileExceedLimit = `"${lsFileExist[0].name}" không thể được tải lên.`;
+            setMsgNotificationFileExceedLimit([msgFileExceedLimit])
+            setOpenNotificationFileExceedLimit(true);
+            return;
+        }
         newFileList = newFileList.map((file) => {
             if (file.response) {
                 file.url = file.response.url;
@@ -42,6 +52,7 @@ function EditShop() {
         });
         setFileList(newFileList);
         handlePreview(newFileList[0]);
+
     };
 
     useEffect(() => {
@@ -79,9 +90,28 @@ function EditShop() {
                 notification('error', "Đã có lỗi xảy ra vui lòng thử lại sau.");
             })
     }
-
+    const handleCloseNotificationFileExceedLimit = () => {
+        setMsgNotificationFileExceedLimit([]);
+        setOpenNotificationFileExceedLimit(false);
+    }
     return (
         <Spinning spinning={loading}>
+            <Modal
+                open={openNotificationFileExceedLimit}
+                footer={null}
+                onCancel={handleCloseNotificationFileExceedLimit}
+                title="Lưu ý"
+            >
+                <div>
+                    {msgNotificationFileExceedLimit.map((v, i) => <div key={i}>{v}</div>)}
+                    <div>- Kích thước tập tin vượt quá 2.0 MB.</div>
+                    <Row justify="end">
+                        <Col>
+                            <Button type="primary" danger onClick={handleCloseNotificationFileExceedLimit}>Xác nhận</Button>
+                        </Col>
+                    </Row>
+                </div>
+            </Modal>
             <Card
                 title="Chỉnh sửa thông tin cửa hàng"
                 style={{

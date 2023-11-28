@@ -1,5 +1,5 @@
 import { Card, Col, Row } from "antd";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { getTodoList } from "~/api/statistic";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 
@@ -60,4 +60,4 @@ function TodoList() {
     </>);
 }
 
-export default TodoList;
+export default memo(TodoList);

@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { PlusOutlined, UploadOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, InputNumber, Upload, Modal, Table, Space, theme, Tag, Tooltip, Card, Spin } from 'antd';
+import { Button, Form, Input, Select, InputNumber, Upload, Modal, Table, Space, theme, Tag, Tooltip, Card, Spin, Row, Col } from 'antd';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import Spinning from '~/components/Spinning';
 import { NotificationContext } from '~/context/UI/NotificationContext';
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 import { getUserId, readDataFileExcelImportProduct } from '~/utils';
 import { getAllCategory } from '~/api/category';
 import { useNavigate } from 'react-router-dom';
 import { addProductSeller } from '~/api/product';
-import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT } from '~/constants';
+import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, UPLOAD_FILE_SIZE_LIMIT } from '~/constants';
 
 const columns = [
     {
@@ -70,7 +69,6 @@ function AddProduct() {
     const [previewImageTitle, setPreviewImageTitle] = useState('');
     const [previewOpen, setPreviewOpen] = useState(false);
     const navigate = useNavigate();
-
     const handlePreviewImage = async (file) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
@@ -83,8 +81,8 @@ function AddProduct() {
     const handleCancel = () => setPreviewOpen(false);
 
     // const dataFiles = useRef([]);
-
-
+    const [openNotificationFileExceedLimit, setOpenNotificationFileExceedLimit] = useState(false);
+    const [msgNotificationFileExceedLimit, setMsgNotificationFileExceedLimit] = useState([]);
     // get list categories
     useEffect(() => {
         getAllCategory()
@@ -103,6 +101,14 @@ function AddProduct() {
     const handleThumbnailChange = (info) => {
         let newFileList = [...info.fileList];
         newFileList = newFileList.slice(-1);
+        const lsFileExist = newFileList.filter(v => v.size > UPLOAD_FILE_SIZE_LIMIT)
+        if (lsFileExist.length > 0) {
+            newFileList = newFileList.filter(v => v.size <= UPLOAD_FILE_SIZE_LIMIT);
+            var msgFileExceedLimit = `"${lsFileExist[0].name}" không thể được tải lên.`;
+            setMsgNotificationFileExceedLimit([msgFileExceedLimit])
+            setOpenNotificationFileExceedLimit(true);
+            return;
+        }
         newFileList = newFileList.map((file) => {
             if (file.response) {
                 file.url = file.response.url;
@@ -115,9 +121,20 @@ function AddProduct() {
     };
 
     // handle upload images product
-    const handleImgProdChange = (info) => {
+    const handleImgProdChange = async (info) => {
         let newFileList = [...info.fileList];
         newFileList = newFileList.slice(-5);
+        const lsFileExist = newFileList.filter(v => v.size > UPLOAD_FILE_SIZE_LIMIT)
+        if (lsFileExist.length > 0) {
+            newFileList = newFileList.filter(v => v.size <= UPLOAD_FILE_SIZE_LIMIT)
+            var msgFileExceedLimit = [];
+
+            lsFileExist.forEach(v => {
+                msgFileExceedLimit.push(`${v.name} không thể được tải lên.`);
+            })
+            setMsgNotificationFileExceedLimit(msgFileExceedLimit)
+            setOpenNotificationFileExceedLimit(true);
+        }
         newFileList = newFileList.map((file) => {
             if (file.response) {
                 file.url = file.response.url;
@@ -158,18 +175,24 @@ function AddProduct() {
         // upload file
         else {
             newFileList = newFileList.slice(-1);
-            newFileList = newFileList.map((file) => {
-                if (file.response) {
-                    file.url = file.response.url;
-                }
-                file.response = '';
-                file.status = 'done';
-                return file;
-            });
-            setExcelFileList(prev => {
-                prev[btnUploadRef.current] = newFileList[0]
-                return [...prev];
-            });
+            if (newFileList && newFileList[0].size <= UPLOAD_FILE_SIZE_LIMIT) {
+                newFileList = newFileList.map((file) => {
+                    if (file.response) {
+                        file.url = file.response.url;
+                    }
+                    file.response = '';
+                    file.status = 'done';
+                    return file;
+                });
+                setExcelFileList(prev => {
+                    prev[btnUploadRef.current] = newFileList[0]
+                    return [...prev];
+                });
+            } else {
+                var msgFileExceedLimit = `"${newFileList[0].name}" không thể được tải lên.`;
+                setMsgNotificationFileExceedLimit([msgFileExceedLimit])
+                setOpenNotificationFileExceedLimit(true);
+            }
         }
     }
     const handlePreviewDataFileExcel = (index) => {
@@ -251,10 +274,29 @@ function AddProduct() {
                 return navigate('/seller/product/list')
             })
     }
-
+    const handleCloseNotificationFileExceedLimit = () => {
+        setMsgNotificationFileExceedLimit([]);
+        setOpenNotificationFileExceedLimit(false);
+    }
     return (
         <>
             <Spin spinning={loading}>
+                <Modal
+                    open={openNotificationFileExceedLimit}
+                    footer={null}
+                    onCancel={handleCloseNotificationFileExceedLimit}
+                    title="Lưu ý"
+                >
+                    <div>
+                        {msgNotificationFileExceedLimit.map((v, i) => <div key={i}>{v}</div>)}
+                        <div>- Kích thước tập tin vượt quá 2.0 MB.</div>
+                        <Row justify="end">
+                            <Col>
+                                <Button type="primary" danger onClick={handleCloseNotificationFileExceedLimit}>Xác nhận</Button>
+                            </Col>
+                        </Row>
+                    </div>
+                </Modal>
                 <Card
                     onScroll={(e) => { console.log(e.y) }}
                     style={{
