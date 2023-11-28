@@ -111,7 +111,7 @@ const WishList = () => {
     }
 
     const handleClickToProduct = (productId) => {
-        return navigate(`/product/${productId}`);;
+        return navigate(`/product/${productId}`);
     }
 
     const handleChangePage = (page) => {
@@ -254,7 +254,7 @@ const WishList = () => {
                                                 ) : (<p level={4} style={styleDiscountPrice}>{formatPrice(product.productVariant.price)}</p>)
                                             }
 
-                                            {isEdit ? (<div className={cx('flex-item-center')} style={unDisableCardStyle}><Checkbox value={product.productId} /></div>) : (
+                                            {isEdit ? (<div className={cx('flex-item-center')} style={unDisableCardStyle}><Checkbox key={product.productId} value={product.productId} /></div>) : (
                                                 <Space style={unDisableCardStyle} align="center" size={30} className={cx('flex-item-center', 'margin-bottom')}>
                                                     <Button type="primary" shape="circle" icon={<ShoppingCartOutlined />} onClick={() => handleAddProductToCart(product.productId)} />
                                                     <Button type="primary" danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleRemoveWishList(product.productId)} />

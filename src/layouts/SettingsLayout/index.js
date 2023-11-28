@@ -49,7 +49,7 @@ const items = [
         icon: HeartOutlined,
         label: 'Sản phẩm yêu thích',
         link: '/settings/wishlist',
-        role: [CUSTOMER_ROLE]
+        role: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {
         icon: ShoppingOutlined,
