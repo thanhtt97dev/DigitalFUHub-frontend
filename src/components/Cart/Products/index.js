@@ -166,6 +166,11 @@ const Products = ({ dataPropProductComponent }) => {
                         setContentModalAlert(RESPONSE_MESSAGE_CART_NOT_FOUND)
                         openModalAlert();
                     } else if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
+
+                        // new cart detail id selected
+                        const newCartDetailIdSelecteds = cartDetailIdSelecteds.filter(x => x !== cartDetailId);
+                        setCartDetailIdSelecteds(newCartDetailIdSelecteds);
+
                         reloadCarts();
                     }
                 }
@@ -180,19 +185,13 @@ const Products = ({ dataPropProductComponent }) => {
 
         if (e.target.checked) {
             const listCartDetailIds = [];
-            // const listCartIds = [];
             for (let i = 0; i < cartDetails.length; i++) {
-                // listCartIds.push(carts[i].cartId);
-                // Add cart detail id 
                 if (cartDetails[i].quantityProductRemaining > 0 && cartDetails[i].productActivate) {
                     listCartDetailIds.push(cartDetails[i].cartDetailId);
                 }
             }
-
-            // setCartIdSelecteds(listCartIds);
             setCartDetailIdSelecteds([].concat(...listCartDetailIds));
         } else {
-            // setCartIdSelecteds([]);
             setCartDetailIdSelecteds([]);
         }
     }
@@ -299,7 +298,6 @@ const Products = ({ dataPropProductComponent }) => {
     const checkAllCart = totalCartDetailValid > 0 && cartDetailIdSelecteds.length === totalCartDetailValid;
     //
 
-
     return (
         <>
             <Col span={18} style={{ padding: 5 }}>
@@ -321,7 +319,7 @@ const Products = ({ dataPropProductComponent }) => {
                                 title={
                                     <Checkbox.Group value={cartIdSelecteds}>
                                         <Space align="center" size={10}>
-                                            <Checkbox value={cart.cartId} onChange={(e) => { handleOnChangeCheckboxCartItem(cart.cartId, e) }}>
+                                            <Checkbox key={cart.cartId} value={cart.cartId} onChange={(e) => { handleOnChangeCheckboxCartItem(cart.cartId, e) }}>
                                             </Checkbox>
                                             <ShopOutlined className={cx('margin-left-40')} /> {cart.shopName}
                                         </Space>
@@ -332,7 +330,7 @@ const Products = ({ dataPropProductComponent }) => {
                                         <Row className={product.productActivate === false || product.quantityProductRemaining === 0 ? cx('disable-item', 'margin-bottom-item') : cx('margin-bottom-item')} key={index}>
                                             <Col span={1}>
                                                 {
-                                                    product.productActivate && product.quantityProductRemaining > 0 ? <Checkbox value={product.cartDetailId}></Checkbox> : <></>
+                                                    product.productActivate && product.quantityProductRemaining > 0 ? <Checkbox key={product.cartDetailId} value={product.cartDetailId}></Checkbox> : <></>
                                                 }
                                             </Col>
 

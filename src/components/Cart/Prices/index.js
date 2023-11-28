@@ -323,7 +323,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                     <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
 
                         <Text><EuroCircleOutlined />&nbsp;&nbsp;<Text type="warning">{formatNumber(userCoin)}</Text> - Sử dụng Coin:</Text>&nbsp;&nbsp;
-                        <Checkbox disabled={userCoin !== 0 && totalPrice.originPrice > 0 ? false : true} onChange={handleUseCoin}></Checkbox>
+                        <Checkbox disabled={userCoin !== 0 && totalPrice.originPrice > 0 ? false : true} onChange={handleUseCoin} checked={isUseCoin}></Checkbox>
                     </div>
                     <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
                         <Text>Tổng giá trị phải thanh toán:</Text>&nbsp;&nbsp;

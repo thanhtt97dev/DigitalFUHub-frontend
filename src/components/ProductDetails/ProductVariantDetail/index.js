@@ -189,13 +189,13 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
-                    if (data.status.responseCode === RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY && data.status.ok === false) {
+                    if (data.status.responseCode === RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY) {
                         const message = `Sản phẩm này đang có số lượng ${data.result} trong giỏ hàng của bạn,
                         không thể thêm số lượng đã chọn vào giỏ hàng vì đã vượt quá số lượng sản phẩm có sẵn`
                         setContentProductInvalidQuantity(message);
                         showModalNotifyQuantity();
 
-                    } else if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS && data.status.ok === true) {
+                    } else if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
                         if (!isBuyNow) {
                             notification("success", "Sản phẩm đã được thêm vào trong giỏ hàng của bạn");
                         } else {

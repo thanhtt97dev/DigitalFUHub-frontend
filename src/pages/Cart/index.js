@@ -82,6 +82,12 @@ const Cart = () => {
                         const result = data.result;
                         setCarts(result);
                         unLoadingCartInfo();
+
+                        if (result.length > 0) {
+                            for (let i = 0; i < result.length; i++) {
+                                console.log(JSON.stringify(result[i]))
+                            }
+                        }
                     }
                 }
             })
@@ -91,6 +97,7 @@ const Cart = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reloadCartsFlag])
+
 
     useEffect(() => {
         if (user === null || user === undefined) return;
@@ -202,6 +209,13 @@ const Cart = () => {
 
         getCartDetails(carts);
     }, [carts])
+
+    useEffect(() => {
+        if (cartDetailIdSelecteds.length === 0) {
+            setIsUseCoin(false);
+        }
+
+    }, [cartDetailIdSelecteds])
     ///
 
     /// functions
