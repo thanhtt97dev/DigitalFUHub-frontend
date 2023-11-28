@@ -255,3 +255,5 @@ export const SORTED_BY_PRICE_DESC = 4;
 
 export const STATISTIC_BY_MONTH = 0;
 export const STATISTIC_BY_YEAR = 1;
+
+export const UPLOAD_FILE_SIZE_LIMIT = 2 * 1024 * 1024;

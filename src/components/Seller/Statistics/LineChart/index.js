@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -58,7 +58,7 @@ export const options = {
 };
 
 const labels = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
-export function LineChart() {
+function LineChart() {
     const [typeSearch, setTypeSearch] = useState(STATISTIC_BY_YEAR);
     const [dateSelected, setDateSelected] = useState(dayjs())
     const [typeOrders, setTypeOrders] = useState(ORDER_CONFIRMED)
@@ -172,3 +172,4 @@ export function LineChart() {
         </Spin>
     </Card >);
 }
+export default memo(LineChart);

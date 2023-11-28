@@ -4,14 +4,14 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { NotificationContext } from '~/context/UI/NotificationContext';
 
-import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Spin, Switch } from 'antd';
+import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Spin, Switch, Row, Col } from 'antd';
 import { PlusOutlined, UploadOutlined, CloseOutlined, QuestionCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
 import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 import { editProductSeller, getProductSellerById } from "~/api/product";
-import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PRODUCT_ACTIVE, PRODUCT_HIDE, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PRODUCT_ACTIVE, PRODUCT_HIDE, RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
 const columns = [
     {
         title: 'Số thứ tự',
@@ -136,8 +136,13 @@ function EditProduct() {
 
     // handle upload thumbnail
     const handleThumbnailChange = async (info) => {
-        const urlBase64 = await getBase64(info.file.originFileObj);
-        setProductThumbnailSrc([{ src: urlBase64, file: info.file.originFileObj }])
+        if (info.file.size > UPLOAD_FILE_SIZE_LIMIT) {
+            setMsgNotificationFileExceedLimit([`"${info.file.name}" không thể được tải lên.`])
+            setOpenNotificationFileExceedLimit(true);
+        } else {
+            const urlBase64 = await getBase64(info.file.originFileObj);
+            setProductThumbnailSrc([{ src: urlBase64, file: info.file.originFileObj }])
+        }
     };
 
 
@@ -146,6 +151,22 @@ function EditProduct() {
         let newFileList = [...info.fileList];
         newFileList = newFileList.slice(-5);
         let newArrays = [];
+        var msgFileExceedLimit = [];
+
+        let indexFilesExist = newFileList.map((v, i) => {
+            if (v.originFileObj && v.size > UPLOAD_FILE_SIZE_LIMIT) {
+                msgFileExceedLimit.push(`"${v.name}" không thể được tải lên.`);
+                return i;
+            }
+            return -1;
+        })
+
+        indexFilesExist = indexFilesExist.filter(v => v >= 0)
+        if (indexFilesExist.length > 0) {
+            newFileList = newFileList.filter((v, i) => !indexFilesExist.includes(i))
+            setMsgNotificationFileExceedLimit(msgFileExceedLimit)
+            setOpenNotificationFileExceedLimit(true);
+        }
         for (let i = 0; i < newFileList.length; i++) {
             if (newFileList[i].name) {
                 const urlBase64 = await getBase64(newFileList[i].originFileObj);
@@ -179,18 +200,24 @@ function EditProduct() {
         // upload file
         else {
             newFileList = newFileList.slice(-1);
-            newFileList = newFileList.map((file) => {
-                if (file.response) {
-                    file.url = file.response.url;
-                }
-                file.response = '';
-                file.status = 'done';
-                return file;
-            });
-            setProductVariants(prev => {
-                prev[btnUploadRef.current].file = newFileList[0]
-                return [...prev];
-            });
+            if (newFileList && newFileList[0].size <= UPLOAD_FILE_SIZE_LIMIT) {
+                newFileList = newFileList.map((file) => {
+                    if (file.response) {
+                        file.url = file.response.url;
+                    }
+                    file.response = '';
+                    file.status = 'done';
+                    return file;
+                });
+                setProductVariants(prev => {
+                    prev[btnUploadRef.current].file = newFileList[0]
+                    return [...prev];
+                });
+            } else {
+                var msgFileExceedLimit = `"${newFileList[0].name}" không thể được tải lên.`;
+                setMsgNotificationFileExceedLimit([msgFileExceedLimit])
+                setOpenNotificationFileExceedLimit(true);
+            }
         }
     }
     // handle preview data file excel import
@@ -294,10 +321,31 @@ function EditProduct() {
         URL.revokeObjectURL(link.href);
         link.remove();
     }
-
+    const [openNotificationFileExceedLimit, setOpenNotificationFileExceedLimit] = useState(false);
+    const [msgNotificationFileExceedLimit, setMsgNotificationFileExceedLimit] = useState([]);
+    const handleCloseNotificationFileExceedLimit = () => {
+        setMsgNotificationFileExceedLimit([]);
+        setOpenNotificationFileExceedLimit(false);
+    }
     return (
         <>
             <Spin spinning={loading}>
+                <Modal
+                    open={openNotificationFileExceedLimit}
+                    footer={null}
+                    onCancel={handleCloseNotificationFileExceedLimit}
+                    title="Lưu ý"
+                >
+                    <div>
+                        {msgNotificationFileExceedLimit.map((v, i) => <div key={i}>{v}</div>)}
+                        <div>- Kích thước tập tin vượt quá 2.0 MB.</div>
+                        <Row justify="end">
+                            <Col>
+                                <Button type="primary" danger onClick={handleCloseNotificationFileExceedLimit}>Xác nhận</Button>
+                            </Col>
+                        </Row>
+                    </div>
+                </Modal>
                 <Modal open={previewOpen} title={previewImageTitle} footer={null} onCancel={handleCancel}>
                     <img
                         alt="thumbnail"

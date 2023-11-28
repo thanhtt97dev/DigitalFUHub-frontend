@@ -51,8 +51,8 @@ const items = [
 
 const menuItems = [
     {
-        label: <Link to=''>Thống kê</Link>,
-        key: 'dashboard',
+        label: <Link to='/seller/statistic'>Thống kê</Link>,
+        key: 'statistic',
         icon: <AreaChartOutlined className={cx('menu-icon')} />,
     },
     {
