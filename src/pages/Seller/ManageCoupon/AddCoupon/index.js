@@ -1,24 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { Card, DatePicker, } from "antd";
+import { Card } from "antd";
 
-import { useContext, useEffect, useLayoutEffect } from "react";
+import { useContext, useLayoutEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { addCouponSeller } from "~/api/coupon";
 import { COUPON_TYPE_SPECIFIC_PRODUCTS, COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { getUserId } from "~/utils";
 import { AddCouponForShop, AddCouponForProduct } from "~/components/Seller/Coupon";
-import NotFound from "~/pages/NotFound";
+// import NotFound from "~/pages/NotFound";
 
-const { RangePicker } = DatePicker;
-const range = (start, end) => {
-    const result = [];
-    for (let i = start; i < end; i++) {
-        result.push(i);
-    }
-    return result;
-};
+// const { RangePicker } = DatePicker;
+// const range = (start, end) => {
+//     const result = [];
+//     for (let i = start; i < end; i++) {
+//         result.push(i);
+//     }
+//     return result;
+// };
 
 const removeSecondOfDateTime = (date) => date.slice(0, date.length - 6) + ' ' + date.slice(-2)
 

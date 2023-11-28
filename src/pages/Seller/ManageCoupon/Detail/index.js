@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { EditOutlined, PlusOutlined, QuestionCircleOutlined, ShopOutlined, ShoppingOutlined } from "@ant-design/icons";
 import { Button, Card, Col, DatePicker, Form, Image, Input, InputNumber, Row, Space, Switch, Table, Tag, Tooltip } from "antd";
 import dayjs from "dayjs";
@@ -9,13 +9,13 @@ import { COUPON_TYPE_SPECIFIC_PRODUCTS, RESPONSE_CODE_SUCCESS } from "~/constant
 import { getCouponSellerById } from "~/api/coupon";
 import Column from "antd/es/table/Column";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { NotificationContext } from "~/context/UI/NotificationContext";
+// import { NotificationContext } from "~/context/UI/NotificationContext";
 import { getListOrdersByCoupon } from "~/api/order";
 
 
 function CouponDetail() {
     const navigate = useNavigate();
-    const notification = useContext(NotificationContext);
+    // const notification = useContext(NotificationContext);
     const { couponId } = useParams();
     const [coupon, setCoupon] = useState();
     const [page, setPage] = useState(1)

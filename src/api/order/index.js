@@ -1,4 +1,4 @@
-import { apiPostAuth, apiGetAuth, apiPostFile } from '../defaultApi';
+import { apiPostAuth, apiGetAuth } from '../defaultApi';
 
 export const addOrder = (data) => {
     return apiPostAuth(`api/Orders/Customer/AddOrder`, data);

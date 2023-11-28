@@ -1,15 +1,12 @@
 import React from "react";
 import classNames from 'classnames/bind';
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
-import fptImage from '~/assets/images/fpt-logo.jpg';
 import { addConversation } from '~/api/chat';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
-import { faCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { formatNumber, getVietnamCurrentTime } from '~/utils';
 import { MessageOutlined, ShopOutlined } from '@ant-design/icons';
-import { Col, Row, Button, Skeleton, Avatar, Card, Space, Typography } from 'antd';
+import { Col, Row, Button, Skeleton, Avatar, Card, Space } from 'antd';
 
 ///
 require('moment/locale/vi');

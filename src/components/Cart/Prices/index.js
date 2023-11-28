@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
 import ModalAlert from '~/components/Modals/ModalAlert';
@@ -10,7 +10,6 @@ import { formatNumber } from '~/utils';
 import { useAuthUser } from 'react-auth-kit';
 import { getCustomerBalance } from '~/api/user';
 import { EuroCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { NotificationContext } from "~/context/UI/NotificationContext";
 import { Button, Col, Typography, Checkbox, Divider, Card, Space } from 'antd';
 import {
     RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_COUPON_NOT_EXISTED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY,

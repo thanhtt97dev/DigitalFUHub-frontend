@@ -48,8 +48,10 @@ function Orders() {
         orderId: '',
         username: '',
         userId: getUserId(),
-        fromDate: dayjs().subtract(7, 'day').format('M/D/YYYY'),
-        toDate: dayjs().format('M/D/YYYY'),
+        fromDate: null,
+        toDate: null,
+        // fromDate: dayjs().subtract(7, 'day').format('M/D/YYYY'),
+        // toDate: dayjs().format('M/D/YYYY'),
         status: 0,
         page: page
     });
