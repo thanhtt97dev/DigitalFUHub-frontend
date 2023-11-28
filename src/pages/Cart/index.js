@@ -37,6 +37,7 @@ const Cart = () => {
     const [userCoin, setUserCoin] = useState(0);
     const [isUseCoin, setIsUseCoin] = useState(false);
     const [coupons, setCoupons] = useState([]);
+    const [reloadCoinFlag, setReloadCoinFlag] = useState(false);
     const [couponCodeSelecteds, setCouponCodeSelecteds] = useState([]); // object type {shopId, couponCode}
     const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(false);
     ///
@@ -49,6 +50,10 @@ const Cart = () => {
 
     const unLoadingCartInfo = () => {
         setIsLoadingCartInfo(false);
+    }
+
+    const reloadCoinUser = () => {
+        setReloadCoinFlag(!reloadCoinFlag);
     }
 
     const getCouponCodeSelecteds = (shopId) => {
@@ -103,7 +108,7 @@ const Cart = () => {
                 console.log(err.message)
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [reloadCoinFlag])
 
 
     useEffect(() => {
@@ -245,7 +250,8 @@ const Cart = () => {
         isUseCoin: isUseCoin,
         reloadCarts: reloadCarts,
         couponCodeSelecteds,
-        getCouponCodeSelecteds: getCouponCodeSelecteds
+        getCouponCodeSelecteds: getCouponCodeSelecteds,
+        reloadCoinUser: reloadCoinUser
     }
     ///
 

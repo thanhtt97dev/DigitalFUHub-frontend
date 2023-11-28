@@ -10,7 +10,6 @@ import { formatNumber } from '~/utils';
 import { useAuthUser } from 'react-auth-kit';
 import { getCustomerBalance } from '~/api/user';
 import { EuroCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { NotificationContext } from "~/context/UI/NotificationContext";
 import { Button, Col, Typography, Checkbox, Divider, Card, Space } from 'antd';
 import {
     RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_COUPON_NOT_EXISTED, RESPONSE_CODE_ORDER_INSUFFICIENT_BALANCE, RESPONSE_CODE_ORDER_NOT_ENOUGH_QUANTITY,
@@ -36,6 +35,7 @@ const Prices = ({ dataPropPriceComponent }) => {
         cartDetailIdSelecteds,
         setCartDetailIdSelecteds,
         getCouponCodeSelecteds,
+        reloadCoinUser
     } = dataPropPriceComponent;
     ///
 
@@ -206,6 +206,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                                         unLoadingButtonBuy();
 
                                         // reload balance
+                                        reloadCoinUser();
                                         setReloadBalanceFlag(!reloadBalanceFlag);
                                     }
                                 }
@@ -278,6 +279,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                     if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
                         unLoadingButtonDelete();
                         closeModalConfirmationDelete();
+
                         reloadCarts();
 
                         // del all cart item selecteds
