@@ -1,13 +1,12 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { useState, useContext } from 'react';
 import {
-    Alert,
     Button,
     Form,
     Input,
     Spin,
 } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { checkExistEmail, signUp, checkExistUsername } from '~/api/user';
 import { encryptPassword, regexPattern } from '~/utils';
 import { REGEX_PASSWORD_SIGN_UP, REGEX_USERNAME_SIGN_UP, RESPONSE_CODE_SUCCESS } from '~/constants';
@@ -29,8 +28,8 @@ const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 function SignUp() {
     const notification = useContext(NotificationContext);
     const [form] = Form.useForm();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
     // const navigate = useNavigate();
     const onFinish = (values) => {
         setLoading(true);
@@ -44,16 +43,19 @@ function SignUp() {
         signUp(dataBody)
             .then(res => {
                 form.resetFields();
-                setLoading(false);
-                setMessage(`Vui lòng đến ${dataBody.email} để xác thực tài khoản.`);
-                // return navigate('/confirmEmail')
+                notification("success", `Vui lòng đến "${dataBody.email}" để xác thực tài khoản.`, <b>Thông báo</b>, 5, 'center');
+                return navigate('/login')
             })
             .catch(err => {
-                setLoading(false);
-                notification("error", "Đã có lỗi xảy ra")
+                notification("error", "Đã có lỗi xảy ra, vui lòng thử lại.")
+            })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setLoading(false);
+                    clearTimeout(idTimeout);
+                }, 500)
             })
     }
-
     return (
         <div style={{
             width: '100vw',
@@ -75,7 +77,6 @@ function SignUp() {
             >
                 <Spin spinning={loading} indicator={antIcon}>
                     <h4 style={{ textAlign: 'center', fontSize: '25px' }}>Đăng Ký</h4>
-                    {message && <Alert message={message} type="success" />}
                     <Form.Item label="Họ tên" name='fullname'
                         required
                         rules={[

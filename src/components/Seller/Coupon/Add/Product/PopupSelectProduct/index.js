@@ -15,15 +15,15 @@ const columns = [
         title: 'Tên sản phẩm',
         dataIndex: 'productName',
         render: (_, record) => <Space size={[8, 8]}>
-            <Image width={90} src={record.thumbnail} />
+            <Image width={80} height={80} preview={false} src={record.thumbnail} />
             <p>{record.productName}</p>
         </Space>
     },
     {
-        title: 'Điểm đánh giá',
+        title: 'Doanh số',
         width: '20%',
-        dataIndex: 'totalRating',
-        render: (_, record) => <div>{record.numberFeedback !== 0 ? record.totalRatingStar / record.numberFeedback : 0}</div>
+        dataIndex: 'soldCount',
+        render: (_, record) => <div>{record.soldCount}</div>
     },
 ];
 

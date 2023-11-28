@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, Select, Row, Col } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames/bind";
 import styles from './Order.module.scss'
 import { exportOrdersToExcel, getOrdersSeller } from '~/api/order'
@@ -17,7 +17,8 @@ import {
     ORDER_DISPUTE,
     ORDER_REJECT_COMPLAINT,
     ORDER_SELLER_VIOLATES,
-    ORDER_SELLER_REFUNDED
+    ORDER_SELLER_REFUNDED,
+    ORDER_STATUS_ALL
 } from "~/constants";
 import Column from "antd/es/table/Column";
 import { FileExcelOutlined, SearchOutlined } from "@ant-design/icons";
@@ -38,7 +39,9 @@ function base64ToBlob(base64String, contentType) {
     return blob;
 }
 function Orders() {
-    const notification = useContext(NotificationContext)
+    const notification = useContext(NotificationContext);
+    const location = useLocation();
+    console.log(location)
     const [loading, setLoading] = useState(true)
     const [form] = Form.useForm();
     const [orders, setOrders] = useState([]);
@@ -52,7 +55,7 @@ function Orders() {
         toDate: null,
         // fromDate: dayjs().subtract(7, 'day').format('M/D/YYYY'),
         // toDate: dayjs().format('M/D/YYYY'),
-        status: 0,
+        status: location?.state ? location?.state?.status : ORDER_STATUS_ALL,
         page: page
     });
 
@@ -193,7 +196,7 @@ function Orders() {
                             <Col span={6}>
                                 <Form.Item name="status" >
                                     <Select >
-                                        <Select.Option value={0}>Tất cả</Select.Option>
+                                        <Select.Option value={ORDER_STATUS_ALL}>Tất cả</Select.Option>
                                         <Select.Option value={ORDER_WAIT_CONFIRMATION}>Chờ xác nhận</Select.Option>
                                         <Select.Option value={ORDER_CONFIRMED}>Đã xác nhận</Select.Option>
                                         <Select.Option value={ORDER_COMPLAINT}>Khiếu nại</Select.Option>

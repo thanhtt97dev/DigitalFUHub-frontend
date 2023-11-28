@@ -400,7 +400,7 @@ function AddCouponForProduct({ coupon, onEditCoupon = () => { } }) {
                                 key="productName"
                                 render={(_, record) => (
                                     <Space size={[8, 8]}>
-                                        <Image width={90} src={record.thumbnail} />
+                                        <Image width={80} height={80} preview={false} src={record.thumbnail} />
                                         <p>{record.productName}</p>
                                     </Space>
                                 )}
