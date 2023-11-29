@@ -4,6 +4,7 @@ import Spinning from "~/components/Spinning";
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 import { useAuthUser } from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
+import validator from 'validator';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import { Modal, List, Space, Input, Button, Form } from 'antd';
 import { NotificationContext } from '~/context/UI/NotificationContext';
@@ -130,13 +131,16 @@ const ReportProduct = ({ isOpenReasons, setIsOpenReasons, productId }) => {
     ///
 
     /// functions
-    const validateDescription = (rule, value) => {
-        const trimmedValue = value.replace(/\s+/g, ' ');
+    const validateDescription = (value) => {
+        let valueDescription = form.getFieldValue(value.field);
+        if (valueDescription === undefined || valueDescription === null) return Promise.reject('Mô tả tố cáo phải có từ 10-50 ký tự');
+        const trimmedValue = valueDescription.replace(/\s+/g, ' ');
 
-        if (trimmedValue.length < 10 || trimmedValue.length > 50) {
+        if (!validator.isLength(trimmedValue, { min: 10, max: 50 })) {
             return Promise.reject('Mô tả tố cáo phải có từ 10-50 ký tự');
+        } else {
+            return Promise.resolve();
         }
-        return Promise.resolve();
     };
 
     ///
@@ -160,7 +164,6 @@ const ReportProduct = ({ isOpenReasons, setIsOpenReasons, productId }) => {
                             onFinish={onFinishDescription}
                         >
                             <Form.Item name='description' rules={[
-                                { required: true, message: 'Vui lòng nhập mô tả tố cáo.' },
                                 { validator: validateDescription }
                             ]}>
                                 <TextArea rows={4} placeholder="Mô tả tố cáo (Vui lòng nhập từ 10-50 ký tự)" />
