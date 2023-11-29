@@ -323,7 +323,7 @@ function AddProduct() {
                         }}
                         onFinish={onFinish}
                     >
-                        <Form.Item name='nameProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Tên sản phẩm <Tooltip title="Tên sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
+                        <Form.Item name='nameProduct' label={<lable style={{ fontSize: 14 }}>Tên sản phẩm <Tooltip title="Tên sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             rules={[
                                 (getFieldValue) => ({
                                     validator(_, value) {
@@ -338,7 +338,7 @@ function AddProduct() {
                         >
                             <Input placeholder='Tên sản phẩm' />
                         </Form.Item>
-                        <Form.Item name='description' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Mô tả <Tooltip title="Mô tả sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
+                        <Form.Item name='description' label={<lable style={{ fontSize: 14 }}>Mô tả <Tooltip title="Mô tả sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>} required
                             rules={[
                                 (getFieldValue) => ({
                                     validator(_, value) {
@@ -371,7 +371,7 @@ function AddProduct() {
                                 }}
                             />
                         </Form.Item>
-                        <Form.Item name='thumbnailProduct' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh đại diện sản phẩm (Hình ảnh tỷ lệ 1:1) <Tooltip title="Ảnh đại diện sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
+                        <Form.Item name='thumbnailProduct' label={<lable style={{ fontSize: 14 }}>Ảnh đại diện sản phẩm (Hình ảnh tỷ lệ 1:1) <Tooltip title="Ảnh đại diện sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={[
                                 {
                                     required: true,
@@ -400,7 +400,7 @@ function AddProduct() {
                                 </div> : null}
                             </Upload>
                         </Form.Item>
-                        <Form.Item name='productImages' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Ảnh chi tiết sản phẩm (Hình ảnh tỷ lệ 1:1, tối đa 5 ảnh) <Tooltip title="Ảnh chi tiết của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
+                        <Form.Item name='productImages' label={<lable style={{ fontSize: 14 }}>Ảnh chi tiết sản phẩm (Hình ảnh tỷ lệ 1:1, tối đa 5 ảnh) <Tooltip title="Ảnh chi tiết của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={[
                                 {
                                     required: true,
@@ -430,7 +430,7 @@ function AddProduct() {
                                 </div> : null}
                             </Upload>
                         </Form.Item>
-                        {/* <Form.Item name='discount' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Giảm giá <Tooltip title="Phần trăm giảm giá sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
+                        {/* <Form.Item name='discount' label={<lable style={{  fontSize: 14 }}>Giảm giá <Tooltip title="Phần trăm giảm giá sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
                                     required: true,
@@ -439,7 +439,7 @@ function AddProduct() {
                         >
                             <InputNumber style={{ width: '100%' }} placeholder='Giảm giá' addonAfter="%" min={0} max={100} />
                         </Form.Item> */}
-                        <Form.Item name='category' label={<lable style={{ fontWeight: 'bold', fontSize: 14 }}>Danh mục <Tooltip title="Danh mục của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
+                        <Form.Item name='category' label={<lable style={{ fontSize: 14 }}>Danh mục <Tooltip title="Danh mục của sản phẩm."><QuestionCircleOutlined /></Tooltip></lable>}
                             rules={
                                 [{
                                     required: true,
@@ -461,7 +461,7 @@ function AddProduct() {
                             {(fields, { add, remove }) => (
                                 <>
                                     <Space direction='horizontal'>
-                                        <Form.Item label={<div style={{ fontWeight: 'bold', fontSize: 14 }}>Loại sản phẩm <a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a> <Tooltip title="Phân loại của sản phẩm, nếu chưa có mẫu nhập sản phẩm vui lòng nhấn vào tải mẫu nhập sản phẩm."><QuestionCircleOutlined /></Tooltip></div>} style={{ marginBottom: -30 }}
+                                        <Form.Item label={<div style={{ fontSize: 14 }}>Loại sản phẩm <a href={maunhapsanpham} download>Tải mẫu nhập sản phẩm</a> <Tooltip title="Phân loại của sản phẩm, nếu chưa có mẫu nhập sản phẩm vui lòng nhấn vào tải mẫu nhập sản phẩm."><QuestionCircleOutlined /></Tooltip></div>} style={{ marginBottom: -30 }}
                                             required={true}
                                         />
                                     </Space>
@@ -612,7 +612,7 @@ function AddProduct() {
                                 </>
                             )}
                         </Form.List>
-                        <Form.Item name='tagsProduct' label={<div style={{ fontWeight: 'bold', fontSize: 14 }}>Nhãn <Tooltip title="Nhãn của sản phẩm."><QuestionCircleOutlined /></Tooltip></div>} required={true}
+                        <Form.Item name='tagsProduct' label={<div style={{ fontSize: 14 }}>Nhãn <Tooltip title="Nhãn của sản phẩm."><QuestionCircleOutlined /></Tooltip></div>} required={true}
 
                             validateTrigger={["onBlur", "onChange", "onFocus", "onMouseEnter", "onMouseLeave", "onKeyDown"]}
                             rules={

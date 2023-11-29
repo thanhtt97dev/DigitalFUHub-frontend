@@ -125,6 +125,7 @@ export const RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY = "CART_02";
 export const RESPONSE_CODE_CART_PRODUCT_VARIANT_NOT_IN_SHOP = "CART_03";
 
 // status order
+export const ORDER_STATUS_ALL = 0;
 export const ORDER_WAIT_CONFIRMATION = 1;
 export const ORDER_CONFIRMED = 2;
 export const ORDER_COMPLAINT = 3;

@@ -311,7 +311,8 @@ function OrderDetailSeller() {
                                                 <Col flex={0}>
                                                     <Link to={`/product/${v.productId}`} target="_blank" rel="noopener noreferrer" >
                                                         <Image
-                                                            width={120}
+                                                            width={100}
+                                                            height={100}
                                                             src={v.thumbnail}
                                                             preview={false}
                                                         />

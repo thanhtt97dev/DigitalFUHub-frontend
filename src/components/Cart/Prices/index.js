@@ -35,6 +35,7 @@ const Prices = ({ dataPropPriceComponent }) => {
         cartDetailIdSelecteds,
         setCartDetailIdSelecteds,
         getCouponCodeSelecteds,
+        reloadCoinUser
     } = dataPropPriceComponent;
     ///
 
@@ -205,6 +206,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                                         unLoadingButtonBuy();
 
                                         // reload balance
+                                        reloadCoinUser();
                                         setReloadBalanceFlag(!reloadBalanceFlag);
                                     }
                                 }
@@ -277,6 +279,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                     if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
                         unLoadingButtonDelete();
                         closeModalConfirmationDelete();
+
                         reloadCarts();
 
                         // del all cart item selecteds
@@ -320,7 +323,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                     <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
 
                         <Text><EuroCircleOutlined />&nbsp;&nbsp;<Text type="warning">{formatNumber(userCoin)}</Text> - Sử dụng Coin:</Text>&nbsp;&nbsp;
-                        <Checkbox disabled={userCoin !== 0 && totalPrice.originPrice > 0 ? false : true} onChange={handleUseCoin}></Checkbox>
+                        <Checkbox disabled={userCoin !== 0 && totalPrice.originPrice > 0 ? false : true} onChange={handleUseCoin} checked={isUseCoin}></Checkbox>
                     </div>
                     <div className={cx('space-div-flex')} style={{ marginBottom: 30 }}>
                         <Text>Tổng giá trị phải thanh toán:</Text>&nbsp;&nbsp;

@@ -15,9 +15,7 @@ const ProductDescription = ({ product }) => {
                     <p className={cx('text-title')}>CHI TIẾT SẢN PHẨM</p>
                 </Col>
                 {
-                    product ? <Col span={23} offset={1} style={{ display: 'flex', alignItems: 'center' }}>
-                        <div dangerouslySetInnerHTML={{ __html: product.description }} />
-                    </Col> : <Skeleton active />
+                    product ? <div dangerouslySetInnerHTML={{ __html: product.description }} /> : <Skeleton active />
                 }
             </Row>
         </Card>

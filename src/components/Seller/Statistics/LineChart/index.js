@@ -115,7 +115,6 @@ function LineChart() {
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     const { dataStatistics } = res.data.result;
-                    console.log(dataStatistics);
                     setDataStatistic(dataStatistics)
                 } else {
                     setDataStatistic([])

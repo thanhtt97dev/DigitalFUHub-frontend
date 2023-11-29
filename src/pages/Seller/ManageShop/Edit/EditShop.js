@@ -10,6 +10,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { UploadOutlined, UserOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -113,7 +114,7 @@ function EditShop() {
                 </div>
             </Modal>
             <Card
-                title="Chỉnh sửa thông tin cửa hàng"
+                title={<div>Chỉnh sửa thông tin cửa hàng <Link to={`/shop/${getUserId()}`} target="_blank"><Button>Xem cửa hàng của tôi</Button></Link></div>}
                 style={{
                     width: '100%',
                 }}
