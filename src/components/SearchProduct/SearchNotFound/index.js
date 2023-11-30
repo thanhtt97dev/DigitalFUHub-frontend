@@ -1,4 +1,5 @@
 import { Col, Row, Space } from 'antd';
+import { Link } from 'react-router-dom';
 import notFound from '~/assets/images/notFound.png'
 
 function SearchNotFound() {
@@ -11,6 +12,9 @@ function SearchNotFound() {
                         color: 'rgba(0, 0, 0, .87)',
                         fontSize: '1.125rem'
                     }}>Không tìm thấy kết quả nào</div>
+                    <div>
+                        <Link to={"/"}><div>Trở về trang chủ</div></Link>
+                    </div>
                 </Space>
             </Col>
         </Row>

@@ -115,47 +115,51 @@ function SearchProduct() {
     return (
         <Spin spinning={loading}>
             <Layout className={cx('container')} >
-                <Sider className={cx('sider')}>
-                    <Space style={{ marginBottom: '1.8em' }}>
-                        <FilterOutlined style={{ fontSize: '1.17em' }} />
-                        <h3> Bộ Lọc Tìm Kiếm</h3>
-                    </Space>
-                    <FilterGroupCategory
-                        valueSelected={parseInt(getSearchParams.category) ? parseInt(getSearchParams.category) : ALL_CATEGORY}
-                        listCategory={categories}
-                        onChange={handleChangeSelectCategory}
-                    />
-                    <Divider />
-                    <InputRangePrice
-                        minValue={parseInt(getSearchParams.minPrice) ? parseInt(getSearchParams.minPrice) : null}
-                        maxValue={parseInt(getSearchParams.maxPrice) ? parseInt(getSearchParams.maxPrice) : null}
-                        onChange={handleInputRangePrice} />
-                    <Divider />
-                    <FilterGroupRating
-                        valueSelected={parseInt(getSearchParams.rating)}
-                        onChange={handleChangeSelectRating}
-                    />
-                </Sider>
-                <Layout className={cx('wrapper-content')}>
-                    <Content className={cx('content')}>
-                        <MostPopularShop mostPopularShop={mostPopularShop} keyword={getSearchParams.keyword} />
-                        <div style={{ marginBottom: '1em' }}>
-                            <BulbOutlined style={{ fontSize: 18 }} />
-                            <span style={{ marginInlineStart: '0.8em', fontSize: 16 }}>Kết quả tìm kiếm cho từ khoá
-                                '<span style={{ color: '#1677ff' }}>{getSearchParams.keyword}</span>'
-                            </span>
-                        </div>
-                        <SortBar
-                            valueSelected={parseInt(getSearchParams.sort)}
-                            onChange={handleChangeSelectSort}
-                        />
-                        {!loading && products && products.length > 0 ?
-                            <Products products={products} totalItems={totalItems} page={parseInt(getSearchParams.page) ? parseInt(getSearchParams.page) : 1} onSelectPage={handleSelectPage} />
-                            :
-                            <SearchNotFound />
-                        }
-                    </Content>
-                </Layout>
+                {!loading && products && products.length > 0 ?
+                    <>
+                        <Sider className={cx('sider')}>
+                            <Space style={{ marginBottom: '1.8em' }}>
+                                <FilterOutlined style={{ fontSize: '1.17em' }} />
+                                <h3> Bộ Lọc Tìm Kiếm</h3>
+                            </Space>
+                            <FilterGroupCategory
+                                valueSelected={parseInt(getSearchParams.category) ? parseInt(getSearchParams.category) : ALL_CATEGORY}
+                                listCategory={categories}
+                                onChange={handleChangeSelectCategory}
+                            />
+                            <Divider />
+                            <InputRangePrice
+                                minValue={parseInt(getSearchParams.minPrice) ? parseInt(getSearchParams.minPrice) : null}
+                                maxValue={parseInt(getSearchParams.maxPrice) ? parseInt(getSearchParams.maxPrice) : null}
+                                onChange={handleInputRangePrice} />
+                            <Divider />
+                            <FilterGroupRating
+                                valueSelected={parseInt(getSearchParams.rating)}
+                                onChange={handleChangeSelectRating}
+                            />
+                        </Sider>
+                        <Layout className={cx('wrapper-content')}>
+                            <Content className={cx('content')}>
+                                <MostPopularShop mostPopularShop={mostPopularShop} keyword={getSearchParams.keyword} />
+                                <div style={{ marginBottom: '1em' }}>
+                                    <BulbOutlined style={{ fontSize: 18 }} />
+                                    <span style={{ marginInlineStart: '0.8em', fontSize: 16 }}>Kết quả tìm kiếm cho từ khoá
+                                        '<span style={{ color: '#1677ff' }}>{getSearchParams.keyword}</span>'
+                                    </span>
+                                </div>
+                                <SortBar
+                                    valueSelected={parseInt(getSearchParams.sort)}
+                                    onChange={handleChangeSelectSort}
+                                />
+
+                                <Products products={products} totalItems={totalItems} page={parseInt(getSearchParams.page) ? parseInt(getSearchParams.page) : 1} onSelectPage={handleSelectPage} />
+
+                            </Content>
+                        </Layout>
+                    </>
+                    :
+                    <SearchNotFound />
+                }
             </Layout>
         </Spin>
     );
