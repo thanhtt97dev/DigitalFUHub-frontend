@@ -31,6 +31,26 @@ const { confirm } = Modal;
 
 // const removeSecondOfDateTime = (date) => date.slice(0, date.length - 6) + ' ' + date.slice(-2)
 
+
+const tabList = [
+    {
+        label: "Tất cả",
+        key: "tab1",
+    },
+    {
+        label: "Sắp diễn ra",
+        key: "tab2",
+    },
+    {
+        label: "Đang diễn ra",
+        key: "tab3",
+    },
+    {
+        label: "Đã kết thúc",
+        key: "tab4",
+    },
+]
+
 function Coupons() {
     const notification = useContext(NotificationContext)
     const [loading, setLoading] = useState(true);
@@ -47,6 +67,7 @@ function Coupons() {
         status: COUPON_STATUS_ALL,
         page: page
     });
+
 
     const initFormValues = [
         {
@@ -203,6 +224,215 @@ function Coupons() {
             })
         }
     };
+
+    const table = (data) => {
+        return <>
+            <Table
+                onChange={handleTableChange}
+                pagination={{
+                    current: page,
+                    total: totalItems,
+                    pageSize: 10,
+                }}
+                rowKey={(record) => record.couponId}
+                dataSource={data}
+                size='small'
+                scroll={
+                    {
+                        y: 290,
+                        x: 1300
+                    }
+                }
+            >
+                <Column
+                    fixed='left'
+                    width="25%"
+                    title="Tên Mã giảm giá"
+                    key="couponName"
+                    render={(_, record) => (
+                        <p>{record.couponName}</p>
+                    )}
+                />
+                <Column
+                    fixed='left'
+                    width="20%"
+                    title="Mã giảm giá"
+                    key="couponCode"
+                    render={(_, record) => (
+                        <p>{record.couponCode}</p>
+                    )}
+                />
+
+
+                <Column
+                    width="25%"
+                    title="Thời gian bắt đầu"
+                    key="startDate"
+                    render={(_, record) => (
+                        <p>{ParseDateTime(record.startDate)}</p>
+                    )}
+                />
+                <Column
+                    width="25%"
+                    title="Thời gian kết thúc"
+                    key="endDate"
+                    render={(_, record) => (
+                        <p>{ParseDateTime(record.endDate)}</p>
+                    )}
+                />
+                <Column
+                    width="25%"
+                    title="Sản phẩm áp dụng"
+                    key="productApplied"
+                    render={(_, record) => (
+                        <p>{record.couponTypeId === COUPON_TYPE_ALL_PRODUCTS_OF_SHOP ? 'Tất cả sản phẩm' : `Tổng cộng ${record.productsApplied.length} sản phẩm`}</p>
+                    )}
+                />
+                <Column
+                    width="25%"
+                    title="Đơn hàng tối thiểu"
+                    key="minTotalOrderValue"
+                    render={(_, record) => (
+                        <p>{formatPrice(record.minTotalOrderValue)}</p>
+                    )}
+                />
+                <Column
+                    width="25%"
+                    title="Số tiền giảm giá"
+                    key="priceDiscount"
+                    render={(_, record) => (
+                        <p>{formatPrice(record.priceDiscount)}</p>
+                    )}
+                />
+                <Column
+                    width="15%"
+                    title="Số lượng"
+                    key="quantity"
+                    render={(_, record) => (
+                        <p>{record.quantity}</p>
+                    )}
+                />
+
+                <Column
+                    width="15%"
+                    title="Hiển thị"
+                    key="isPublic"
+                    render={(_, record) => (
+                        <p>{record.isPublic ? 'Công khai' : 'Riêng tư'}</p>
+                    )}
+                />
+                <Column
+                    width="20%"
+                    fixed='right'
+                    title="Trạng thái"
+                    key="status"
+                    render={(_, record) => {
+                        const now = dayjs();
+                        const startDate = dayjs(record.startDate)
+                        const endDate = dayjs(record.endDate)
+                        if (startDate.isBefore(now) && now.isBefore(endDate)) {
+                            return <Tag color="green">Đang diễn ra</Tag>
+                        } else if (endDate.isBefore(now)) {
+                            return <Tag color="red">Đã kết thúc</Tag>
+                        } else {
+                            return <Tag>Sắp diễn ra </Tag>
+                        }
+                    }}
+                />
+                <Column
+                    width="18%"
+                    fixed='right'
+                    title="Thao tác"
+                    key="actions"
+                    render={(_, record) => {
+                        const now = dayjs();
+                        const startDate = dayjs(record.startDate)
+                        const endDate = dayjs(record.endDate)
+                        if (now.isBefore(startDate)) {
+                            return <Row gutter={[8, 0]}>
+                                <Col>
+                                    <Link to={`/seller/coupon/detail/${record.couponId}`}>
+                                        <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
+                                    </Link>
+                                </Col>
+                                <Col>
+                                    <Link to={`/seller/coupon/edit/${record.couponId}`} >
+                                        <Button type="link" style={{ width: '80px' }}>Chỉnh sửa</Button>
+                                    </Link>
+                                </Col>
+                                <Col>
+                                    <Button type="link" style={{ width: '80px' }} onClick={() => handleRemoveCoupon(record.couponId)}>Xóa</Button>
+                                </Col>
+                            </Row>
+                        } else if (startDate.isBefore(now) && now.isBefore(endDate)) {
+                            return <Row gutter={[8, 0]}>
+                                <Col>
+                                    <Link to={`/seller/coupon/detail/${record.couponId}`}>
+                                        <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
+                                    </Link>
+                                </Col>
+                                <Col>
+                                    <Button type="link" style={{ width: '80px' }} onClick={() => handleUpdateCouponFinish(record.couponId)}>Kết thúc</Button>
+                                </Col>
+                            </Row>
+                        } else {
+                            return <Row gutter={[8, 0]}>
+                                <Col>
+                                    <Link to={`/seller/coupon/detail/${record.couponId}`}>
+                                        <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
+                                    </Link>
+                                </Col>
+                            </Row>
+                        }
+                    }}
+                />
+            </Table>
+        </>
+    }
+
+    const [activeTabKey, setActiveTabKey] = useState('tab1');
+
+    const contentList = {
+        tab1: table(listCoupons),
+        tab2: table(listCoupons),
+        tab3: table(listCoupons),
+        tab4: table(listCoupons),
+    };
+
+    const onTabChange = (key) => {
+        switch (key) {
+            case 'tab1':
+                setSearchData({
+                    ...searchData,
+                    page: 1,
+                    status: COUPON_STATUS_ALL
+                })
+                break;
+            case 'tab2':
+                setSearchData({
+                    ...searchData,
+                    status: COUPON_STATUS_COMING_SOON
+                })
+                break;
+            case 'tab3':
+                setSearchData({
+                    ...searchData,
+                    page: 1,
+                    status: COUPON_STATUS_ONGOING
+                })
+                break;
+            case 'tab4':
+                setSearchData({
+                    ...searchData,
+                    page: 1,
+                    status: COUPON_STATUS_FINISHED
+                })
+                break;
+            default: return;
+        }
+        setActiveTabKey(key);
+    }
+
     return (
         <>
             <Modal title="Chọn loại mã giảm giá" open={isOpenOptionAddCouponModal}
@@ -238,13 +468,7 @@ function Coupons() {
                 </Row>
             </Modal>
             <Spinning spinning={loading}>
-                <Card
-                    style={{
-                        width: '100%',
-                        minHeight: "690px"
-                    }}
-                    title="Danh sách mã giảm giá"
-                >
+                <Card>
                     <Form
                         form={formSearch}
                         onFinish={onFinishSearch}
@@ -257,17 +481,25 @@ function Coupons() {
                                     <Input placeholder="Mã giảm giá" />
                                 </Form.Item>
                             </Col>
-                            <Col span={2} offset={1}><label>Trạng thái</label></Col>
-                            <Col span={6}>
-                                <Form.Item name="status" >
-                                    <Select >
-                                        <Select.Option value={COUPON_STATUS_ALL}>Tất cả</Select.Option>
-                                        <Select.Option value={COUPON_STATUS_COMING_SOON}>Sắp diễn ra</Select.Option>
-                                        <Select.Option value={COUPON_STATUS_ONGOING}>Đang diễn ra</Select.Option>
-                                        <Select.Option value={COUPON_STATUS_FINISHED}>Đã kết thúc</Select.Option>
-                                    </Select>
-                                </Form.Item>
-                            </Col>
+                            <>
+                                {activeTabKey === 'tab1' ?
+                                    <>
+                                        <Col span={2} offset={1}><label>Trạng thái</label></Col>
+                                        <Col span={6}>
+                                            <Form.Item name="status" >
+                                                <Select >
+                                                    <Select.Option value={COUPON_STATUS_ALL}>Tất cả</Select.Option>
+                                                    <Select.Option value={COUPON_STATUS_COMING_SOON}>Sắp diễn ra</Select.Option>
+                                                    <Select.Option value={COUPON_STATUS_ONGOING}>Đang diễn ra</Select.Option>
+                                                    <Select.Option value={COUPON_STATUS_FINISHED}>Đã kết thúc</Select.Option>
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                    </>
+                                    :
+                                    <></>
+                                }
+                            </>
                         </Row>
 
                         <Row>
@@ -305,169 +537,15 @@ function Coupons() {
                             </Col>
                         </Row>
                     </Form>
-                    <Table
-                        style={{
-                            marginTop: '10px'
-                        }}
-                        onChange={handleTableChange}
-                        pagination={{
-                            current: page,
-                            total: totalItems,
-                            pageSize: 10,
-                        }}
-                        rowKey={(record) => record.couponId}
-                        dataSource={listCoupons}
-                        size='small'
-                        scroll={
-                            {
-                                y: 290,
-                                x: 1300
-                            }
-                        }
-                    >
-                        <Column
-                            fixed='left'
-                            width="25%"
-                            title="Tên Mã giảm giá"
-                            key="couponName"
-                            render={(_, record) => (
-                                <p>{record.couponName}</p>
-                            )}
-                        />
-                        <Column
-                            fixed='left'
-                            width="20%"
-                            title="Mã giảm giá"
-                            key="couponCode"
-                            render={(_, record) => (
-                                <p>{record.couponCode}</p>
-                            )}
-                        />
 
-
-                        <Column
-                            width="25%"
-                            title="Thời gian bắt đầu"
-                            key="startDate"
-                            render={(_, record) => (
-                                <p>{ParseDateTime(record.startDate)}</p>
-                            )}
-                        />
-                        <Column
-                            width="25%"
-                            title="Thời gian kết thúc"
-                            key="endDate"
-                            render={(_, record) => (
-                                <p>{ParseDateTime(record.endDate)}</p>
-                            )}
-                        />
-                        <Column
-                            width="25%"
-                            title="Sản phẩm áp dụng"
-                            key="productApplied"
-                            render={(_, record) => (
-                                <p>{record.couponTypeId === COUPON_TYPE_ALL_PRODUCTS_OF_SHOP ? 'Tất cả sản phẩm' : `Tổng cộng ${record.productsApplied.length} sản phẩm`}</p>
-                            )}
-                        />
-                        <Column
-                            width="25%"
-                            title="Đơn hàng tối thiểu"
-                            key="minTotalOrderValue"
-                            render={(_, record) => (
-                                <p>{formatPrice(record.minTotalOrderValue)}</p>
-                            )}
-                        />
-                        <Column
-                            width="25%"
-                            title="Số tiền giảm giá"
-                            key="priceDiscount"
-                            render={(_, record) => (
-                                <p>{formatPrice(record.priceDiscount)}</p>
-                            )}
-                        />
-                        <Column
-                            width="15%"
-                            title="Số lượng"
-                            key="quantity"
-                            render={(_, record) => (
-                                <p>{record.quantity}</p>
-                            )}
-                        />
-
-                        <Column
-                            width="15%"
-                            title="Hiển thị"
-                            key="isPublic"
-                            render={(_, record) => (
-                                <p>{record.isPublic ? 'Công khai' : 'Riêng tư'}</p>
-                            )}
-                        />
-                        <Column
-                            width="20%"
-                            fixed='right'
-                            title="Trạng thái"
-                            key="status"
-                            render={(_, record) => {
-                                const now = dayjs();
-                                const startDate = dayjs(record.startDate)
-                                const endDate = dayjs(record.endDate)
-                                if (startDate.isBefore(now) && now.isBefore(endDate)) {
-                                    return <Tag color="green">Đang diễn ra</Tag>
-                                } else if (endDate.isBefore(now)) {
-                                    return <Tag color="red">Đã kết thúc</Tag>
-                                } else {
-                                    return <Tag>Sắp diễn ra </Tag>
-                                }
-                            }}
-                        />
-                        <Column
-                            width="18%"
-                            fixed='right'
-                            title="Thao tác"
-                            key="actions"
-                            render={(_, record) => {
-                                const now = dayjs();
-                                const startDate = dayjs(record.startDate)
-                                const endDate = dayjs(record.endDate)
-                                if (now.isBefore(startDate)) {
-                                    return <Row gutter={[8, 0]}>
-                                        <Col>
-                                            <Link to={`/seller/coupon/detail/${record.couponId}`}>
-                                                <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
-                                            </Link>
-                                        </Col>
-                                        <Col>
-                                            <Link to={`/seller/coupon/edit/${record.couponId}`} >
-                                                <Button type="link" style={{ width: '80px' }}>Chỉnh sửa</Button>
-                                            </Link>
-                                        </Col>
-                                        <Col>
-                                            <Button type="link" style={{ width: '80px' }} onClick={() => handleRemoveCoupon(record.couponId)}>Xóa</Button>
-                                        </Col>
-                                    </Row>
-                                } else if (startDate.isBefore(now) && now.isBefore(endDate)) {
-                                    return <Row gutter={[8, 0]}>
-                                        <Col>
-                                            <Link to={`/seller/coupon/detail/${record.couponId}`}>
-                                                <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
-                                            </Link>
-                                        </Col>
-                                        <Col>
-                                            <Button type="link" style={{ width: '80px' }} onClick={() => handleUpdateCouponFinish(record.couponId)}>Kết thúc</Button>
-                                        </Col>
-                                    </Row>
-                                } else {
-                                    return <Row gutter={[8, 0]}>
-                                        <Col>
-                                            <Link to={`/seller/coupon/detail/${record.couponId}`}>
-                                                <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
-                                            </Link>
-                                        </Col>
-                                    </Row>
-                                }
-                            }}
-                        />
-                    </Table>
+                </Card>
+                <Card
+                    style={{ marginTop: "10px" }}
+                    tabList={tabList}
+                    activeTabKey={activeTabKey}
+                    onTabChange={onTabChange}
+                >
+                    {contentList[activeTabKey]}
                 </Card>
             </Spinning>
         </>

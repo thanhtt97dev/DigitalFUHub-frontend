@@ -14,6 +14,7 @@ function Logout() {
         const jwtId = getJwtId();
 
         removeDataAuthInCookies();
+        signOut();
         revokeToken(jwtId)
             .then((res) => {
                 signOut();
