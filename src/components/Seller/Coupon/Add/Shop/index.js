@@ -116,6 +116,7 @@ function AddCouponForShop({ onAddCoupon = () => { } }) {
                     <Col span={11}>
                         <Form.Item name="startDate"
                             initialValue={dayjs().add(10, 'minute')}
+                            validateTrigger={["onBlur", "onFocus", "onInput", "onChange", "onMouseEnter", "onMouseLeave", "onMouseOver"]}
                             rules={[
                                 ({ getFieldValue }) => ({
                                     validator(_, value) {
@@ -125,8 +126,10 @@ function AddCouponForShop({ onAddCoupon = () => { } }) {
                                                 return Promise.reject(new Error("Vui lòng nhập thời gian bắt đầu muộn hơn thời gian hiện tại."));
                                             } else {
                                                 if (endDate) {
-                                                    if (endDate.diff(value) < MIN_DURATION_COUPON_TAKE_PLACE) {
-                                                        return Promise.reject(new Error("Chương trình phải kéo dài ít nhất là 1h kể từ khi bắt đầu."));
+                                                    if (endDate.isBefore(value) || endDate.isSame(value)) {
+                                                        return Promise.reject(new Error("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc."));
+                                                    } else {
+                                                        return Promise.resolve();
                                                     }
                                                 }
                                                 return Promise.resolve();
@@ -160,14 +163,21 @@ function AddCouponForShop({ onAddCoupon = () => { } }) {
                     <Col span={11}>
                         <Form.Item name="endDate"
                             initialValue={dayjs().add(70, 'minute')}
+                            validateTrigger={["onBlur", "onFocus", "onInput", "onChange", "onMouseEnter", "onMouseLeave", "onMouseOver"]}
                             rules={[
                                 ({ getFieldValue }) => ({
                                     validator(_, value) {
                                         const startDate = getFieldValue("startDate");
                                         if (value) {
                                             if (startDate) {
-                                                if (value.diff(startDate) < MIN_DURATION_COUPON_TAKE_PLACE) {
-                                                    return Promise.reject(new Error("Chương trình phải kéo dài ít nhất là 1h kể từ khi bắt đầu."));
+                                                if (value.isAfter(startDate)) {
+                                                    if (value.diff(startDate) < MIN_DURATION_COUPON_TAKE_PLACE) {
+                                                        return Promise.reject(new Error("Chương trình phải kéo dài ít nhất là 1h kể từ khi bắt đầu."));
+                                                    } else {
+                                                        return Promise.resolve();
+                                                    }
+                                                } else {
+                                                    return Promise.resolve();
                                                 }
                                             }
                                             return Promise.resolve();
