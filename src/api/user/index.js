@@ -56,6 +56,15 @@ export const editUserInfo = (data) => {
     return apiPutAuthForm(`api/users/EditUserInfo`, data);
 };
 
+export const editFullNameUser = (data) => {
+    return apiPut(`api/users/EditFullNameUser`, data);
+};
+
+export const editAvatarUser = (data) => {
+    return apiPutAuthForm(`api/users/EditAvatarUser`, data);
+};
+
+
 export const generate2FaKey = (id) => {
     return apiPostAuth(`api/users/Generate2FaKey/${id}`);
 };
