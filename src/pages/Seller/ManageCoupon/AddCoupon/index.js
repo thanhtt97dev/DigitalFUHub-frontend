@@ -1,14 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
-import { Card } from "antd";
-
-import { useContext, useLayoutEffect } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { addCouponSeller } from "~/api/coupon";
+import { Card, Space, Typography, Modal } from "antd";
 import { COUPON_TYPE_SPECIFIC_PRODUCTS, COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { getUserId } from "~/utils";
 import { AddCouponForShop, AddCouponForProduct } from "~/components/Seller/Coupon";
+import { ExclamationCircleFilled, LeftOutlined } from "@ant-design/icons";
+const { Link } = Typography;
+const { confirm } = Modal;
 // import NotFound from "~/pages/NotFound";
 
 // const { RangePicker } = DatePicker;
@@ -26,8 +27,8 @@ function AddCoupon() {
     const notification = useContext(NotificationContext)
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const [loading, setLoading] = useState(false);
     useLayoutEffect(() => {
-        console.log(searchParams.get("case"))
         if (searchParams.get("case") !== COUPON_TYPE_ALL_PRODUCTS_OF_SHOP + '' && searchParams.get("case") !== COUPON_TYPE_SPECIFIC_PRODUCTS + '') {
             return navigate("/notfound");
         }
@@ -48,6 +49,7 @@ function AddCoupon() {
         if (values.typeId === COUPON_TYPE_SPECIFIC_PRODUCTS) {
             data.productsApplied = values.productsApplied
         }
+        setLoading(true);
         addCouponSeller(data)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -60,15 +62,37 @@ function AddCoupon() {
             .catch((err) => {
                 notification("error", "Đã có lỗi xảy ra.")
             })
+            .finally(() => {
+                setLoading(false);
+            })
+    }
+    const handleBackPage = () => {
+        confirm({
+            title: 'Xác nhận',
+            icon: <ExclamationCircleFilled />,
+            content: 'Hủy thay đổi?',
+            onOk() {
+                return navigate('/seller/coupon/list');
+            },
+            onCancel() {
+            },
+        });
     }
 
 
-    return (<Card title="Thêm mã giảm giá">
+    return (<Card
+        title={
+            <Space>
+                <Link style={{ fontWeight: '600', fontSize: '16px', lineHeight: '1em' }} onClick={handleBackPage} ><LeftOutlined /> <span style={{ fontWeight: '600', fontSize: '16px' }}>Trở lại</span></Link>
+                <div>Thêm mã giảm giá</div>
+            </Space>
+        }
+    >
         {(() => {
             if (searchParams.get("case") === COUPON_TYPE_ALL_PRODUCTS_OF_SHOP + '') {
-                return <AddCouponForShop onAddCoupon={onAddCoupon} />;
+                return <AddCouponForShop loading={loading} onAddCoupon={onAddCoupon} />;
             } else if (searchParams.get("case") === COUPON_TYPE_SPECIFIC_PRODUCTS + '') {
-                return <AddCouponForProduct onAddCoupon={onAddCoupon} />;
+                return <AddCouponForProduct loading={loading} onAddCoupon={onAddCoupon} />;
             } else {
                 return null
             }

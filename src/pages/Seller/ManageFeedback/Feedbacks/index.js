@@ -7,7 +7,7 @@ import locale from 'antd/es/date-picker/locale/vi_VN';
 import { getListFeedbackSeller } from "~/api/feedback";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { SearchOutlined } from "@ant-design/icons";
-
+const { RangePicker } = DatePicker;
 const { Title, Text, Paragraph } = Typography
 function Feedbacks() {
     const [loading, setLoading] = useState(false);
@@ -21,6 +21,7 @@ function Feedbacks() {
         username: '',
         userId: getUserId(),
         fromDate: null,
+        toDate: null,
         rate: 0,
         page: page
     });
@@ -34,8 +35,8 @@ function Feedbacks() {
             value: searchData.username,
         },
         {
-            name: 'fromDate',
-            value: searchData.fromDate === null ? null : dayjs(searchData.fromDate, 'M/D/YYYY')
+            name: 'date',
+            value: [searchData.fromDate !== null ? dayjs(searchData.fromDate, 'M/D/YYYY') : null, searchData.toDate !== null ? dayjs(searchData.toDate, 'M/D/YYYY') : null]
         },
         {
             name: 'rate',
@@ -60,7 +61,8 @@ function Feedbacks() {
             username: !values.username ? "" : values.username.trim(),
             orderId: !values.orderId ? "" : values.orderId.trim(),
             userId: getUserId(),
-            fromDate: values.fromDate ? values.fromDate.$d.toLocaleDateString() : null,
+            fromDate: values.date && values.date[0] ? values.date[0].$d.toLocaleDateString() : null,
+            toDate: values.date && values.date[1] ? values.date[1].$d.toLocaleDateString() : null,
             rate: values.rate,
             page: 1
         });
@@ -94,7 +96,7 @@ function Feedbacks() {
                                 <Input placeholder="Mã đơn hàng" />
                             </Form.Item>
                         </Col>
-                        <Col span={3} offset={1}><label>Người dùng  </label></Col>
+                        <Col span={3} offset={2}><label>Người dùng  </label></Col>
                         <Col span={6} style={{ marginLeft: '-1.6em' }}>
                             <Form.Item name="username" >
                                 <Input placeholder="Tên đăng nhập" />
@@ -105,14 +107,14 @@ function Feedbacks() {
                     <Row>
                         <Col span={3} offset={1}><label>Thời gian đánh giá </label></Col>
                         <Col span={6}>
-                            <Form.Item name="fromDate" >
-                                <DatePicker locale={locale}
+                            <Form.Item name="date" >
+                                <RangePicker locale={locale}
                                     style={{ width: '100%' }}
                                     format={"M/D/YYYY"}
                                     placement={"bottomLeft"} />
                             </Form.Item>
                         </Col>
-                        <Col span={3} offset={1}><label>Điểm đánh giá </label></Col>
+                        <Col span={3} offset={2}><label>Điểm đánh giá </label></Col>
                         <Col span={6} style={{ marginLeft: '-1.6em' }}>
                             <Form.Item name="rate" >
                                 <Select >
@@ -125,12 +127,28 @@ function Feedbacks() {
                                 </Select>
                             </Form.Item>
                         </Col>
-                        <Col offset={1}>
-                            <Space>
-                                <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-                                    Tìm kiếm
-                                </Button>
-                            </Space>
+                        <Col span={24} >
+                            <Row gutter={[8, 8]} justify="end" style={{ marginBottom: '1em', marginRight: '4em' }}>
+                                <Col>
+                                    <Button onClick={() => {
+                                        setPage(1);
+                                        setSearchData({
+                                            orderId: '',
+                                            username: '',
+                                            userId: getUserId(),
+                                            fromDate: null,
+                                            toDate: null,
+                                            rate: 0,
+                                            page: 1
+                                        });
+                                    }}>Xóa</Button>
+                                </Col>
+                                <Col>
+                                    <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                                        Tìm kiếm
+                                    </Button>
+                                </Col>
+                            </Row>
                         </Col>
                     </Row>
                     <Form.Item style={{ position: 'absolute', top: 180, left: 550 }}>

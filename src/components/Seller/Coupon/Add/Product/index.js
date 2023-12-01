@@ -14,7 +14,7 @@ const debounceCheckCouponCodeExist = debounce((value) => {
     const res = checkCouponCodeExist('A', value)
     return Promise.resolve({ res: res });
 }, 500);
-function AddCouponForProduct({ onAddCoupon = () => { } }) {
+function AddCouponForProduct({ loading = false, onAddCoupon = () => { } }) {
     const [formAdd] = Form.useForm();
     const [lsProductApplied, setLsProductApplied] = useState([])
 
@@ -391,7 +391,7 @@ function AddCouponForProduct({ onAddCoupon = () => { } }) {
             </Row>
             <Row>
                 <Col span={16} style={{ textAlign: 'center', marginTop: '2em' }}>
-                    <Button htmlType="submit" type="primary">Xác nhận</Button>
+                    <Button loading={loading} htmlType="submit" type="primary">Xác nhận</Button>
                 </Col>
             </Row>
         </Form>

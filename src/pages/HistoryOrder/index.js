@@ -1,5 +1,6 @@
 import { Card, Spin } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import {
     AllOrder,
@@ -46,14 +47,18 @@ const tabList = [
 function HistoryOrder() {
     const [loading, setLoading] = useState(true);
     const [activeTabKey, setActiveTabKey] = useState('tab1');
+    const handleActiveTabKey = (key) => {
+        setActiveTabKey(key);
+        setLoading(true);
+    }
     const contentList = {
-        tab1: <AllOrder status={[0]} loading={loading} setLoading={setLoading} />,
-        tab2: <OrdersConfirmed status={[2]} loading={loading} setLoading={setLoading} />,
-        tab3: <OrdersWaitConfirm status={[1]} loading={loading} setLoading={setLoading} />,
-        tab4: <OrdersComplaint status={[3]} loading={loading} setLoading={setLoading} />,
-        tab5: <OrdersDispute status={[5]} loading={loading} setLoading={setLoading} />,
-        tab6: <OrdersRejectComplaint status={[6]} loading={loading} setLoading={setLoading} />,
-        tab7: <OrdersRefund status={[4, 7]} loading={loading} setLoading={setLoading} />
+        tab1: <AllOrder status={[0]} onActiveTabKey={handleActiveTabKey} loading={loading} setLoading={setLoading} />,
+        tab2: <OrdersConfirmed status={[2]} onActiveTabKey={handleActiveTabKey} loading={loading} setLoading={setLoading} />,
+        tab3: <OrdersWaitConfirm status={[1]} onActiveTabKey={handleActiveTabKey} loading={loading} setLoading={setLoading} />,
+        tab4: <OrdersComplaint status={[3]} onActiveTabKey={handleActiveTabKey} loading={loading} setLoading={setLoading} />,
+        tab5: <OrdersDispute status={[5]} onActiveTabKey={handleActiveTabKey} loading={loading} setLoading={setLoading} />,
+        tab6: <OrdersRejectComplaint status={[6]} onActiveTabKey={handleActiveTabKey} loading={loading} setLoading={setLoading} />,
+        tab7: <OrdersRefund status={[4, 7]} onActiveTabKey={handleActiveTabKey} loading={loading} setLoading={setLoading} />
     };
 
     const onTabChange = (key) => {

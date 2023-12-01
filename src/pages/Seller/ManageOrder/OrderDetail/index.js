@@ -222,6 +222,12 @@ function OrderDetailSeller() {
             onCancel={handleCancelModal}>
             <Form
                 onFinish={handleSubmitRefundOrder}
+                fields={[
+                    {
+                        name: 'note',
+                        value: ''
+                    }
+                ]}
             >
                 <Row>
                     <Col span={4} offset={1}><Text> <span style={{ color: '#ff4d4f', marginInlineEnd: '4px' }}>*</span>Lý do:</Text></Col>
@@ -246,7 +252,7 @@ function OrderDetailSeller() {
                 </Row>
 
                 <Row justify="end" gutter={[16, 0]}>
-                    <Col><Button type="default" danger >Hủy</Button></Col>
+                    <Col><Button type="default" danger onClick={handleCancelModal}>Hủy</Button></Col>
                     <Col><Button type="primary" htmlType="submit">Xác nhận</Button></Col>
                 </Row>
             </Form>

@@ -28,7 +28,6 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [btnLoading, setBtnLoading] = useState(false)
 
-
     useEffect(() => {
         if (user === null) return;
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,7 +90,7 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
             <Button danger onClick={handleOpenModal}
                 type="primary"
                 style={style}
-                loading={btnLoading}>
+                loading={confirmLoading}>
                 {(() => {
                     if (user.roleName === CUSTOMER_ROLE) {
                         return "Khiếu nại"

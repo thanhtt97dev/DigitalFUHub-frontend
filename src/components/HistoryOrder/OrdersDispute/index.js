@@ -1,11 +1,13 @@
 import CardOrderItem from "../CardOrderItem";
 import { Col, Empty, Row, Spin } from "antd";
-import { useEffect, useRef, useState } from "react";
-import { getListOrdersCustomer } from "~/api/order";
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { useContext, useEffect, useRef, useState } from "react";
+import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
+import { ORDER_CONFIRMED, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { getUserId } from "~/utils";
 
-function OrdersDispute({ status, loading, setLoading }) {
+function OrdersDispute({ status, loading, setLoading, onActiveTabKey = () => { } }) {
+    const notification = useContext(NotificationContext);
     const [paramSearch, setParamSearch] = useState({
         userId: getUserId(),
         limit: 5,
@@ -15,6 +17,7 @@ function OrdersDispute({ status, loading, setLoading }) {
     const [orders, setOrders] = useState([]);
     const nextOffset = useRef(0)
     const [loadingMoreData, setLoadingMoreData] = useState(false);
+    const [loadingButton, setLoadingButton] = useState(false);
     useEffect(() => {
         if (nextOffset.current !== -1) {
             if (nextOffset.current !== 0) {
@@ -53,6 +56,37 @@ function OrdersDispute({ status, loading, setLoading }) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+    const handleOrderComplete = (orderId, shopId) => {
+        // call api
+        const dataBody = {
+            userId: getUserId(),
+            shopId: shopId,
+            orderId: orderId,
+            statusId: ORDER_CONFIRMED
+        }
+        setLoadingButton(true);
+        customerUpdateStatusOrder(dataBody)
+            .then(res => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    // setOrders(prev => {
+                    //     const order = prev.find((value) => value.orderId === orderId);
+                    //     order.statusId = dataBody.statusId
+                    //     return [...prev]
+                    // })
+                    notification("success", "Xác nhận đơn hàng thành công.")
+                    onActiveTabKey('tab2')
+                } else {
+                    notification("error", "Đã có lỗi xảy ra.")
+                }
+            })
+            .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setLoadingButton(false);
+                    clearTimeout(idTimeout);
+                }, 500)
+            })
+    }
     return (<div>
         {!loading ?
             orders.length > 0 ?
@@ -72,6 +106,8 @@ function OrdersDispute({ status, loading, setLoading }) {
                                 totalCouponDiscount={v.totalCouponDiscount}
                                 totalPayment={v.totalPayment}
                                 orderDetails={v.orderDetails}
+                                loadingButton={loadingButton}
+                                onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
                             />
                         </Col>
                     })}

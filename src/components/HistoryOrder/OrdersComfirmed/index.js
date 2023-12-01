@@ -86,7 +86,9 @@ function OrdersConfirmed({ status, loading, setLoading }) {
     const handleViewFeedbackCancel = () => {
         setIsModalViewFeedbackOpen(false);
     }
+    const [modalLoading, setModalLoading] = useState(false);
     const handleCustomerViewFeedback = (orderId) => {
+        setModalLoading(true);
         getFeedbackDetail(getUserId(), orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -95,6 +97,12 @@ function OrdersConfirmed({ status, loading, setLoading }) {
                 }
             })
             .catch((err) => {
+            })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setModalLoading(false);
+                    clearTimeout(idTimeout);
+                }, 500)
             })
     }
     return (<div>
@@ -135,57 +143,59 @@ function OrdersConfirmed({ status, loading, setLoading }) {
                             </Button>,
                         ]}
                     >
-                        <Row gutter={[0, 16]}>
-                            {feedbackDetail.map((v, i) => <>
-                                <Col span={24} key={i}>
-                                    <Row gutter={[8, 8]} wrap={false}>
-                                        <Col flex={0}>
-                                            <Link to={`/product/${v.productId}`}>
-                                                <Image
-                                                    preview={false}
-                                                    width={60}
-                                                    src={v.thumbnail}
-                                                />
-                                            </Link>
-                                        </Col>
-                                        <Col flex={5}>
-                                            <Row>
-                                                <Col span={23}><Title level={5}>{v.productName}</Title></Col>
-                                                <Col span={23}><Text>{`Phân loại: ${v.productVariantName} x ${v.quantity}`}</Text></Col>
-                                            </Row>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                                <Col span={23} offset={1}>
-                                    <Row gutter={[8, 8]} wrap={false}>
-                                        <Col flex={0}>
-                                            <Avatar size="large" src={v.avatar || logoFPT} />
-                                        </Col>
-                                        <Col flex={5} >
-                                            <Row >
-                                                <Col span={23}><Text>{v.username}</Text></Col>
-                                                <Col span={23}><Rate value={v.rate} disabled style={{ fontSize: "14px" }} /></Col>
-                                                <Col span={23}><Paragraph>{v.content}</Paragraph></Col>
-                                                <Col span={23} >
-                                                    <Row gutter={[8, 8]}>
-                                                        {v?.urlImages?.map((url, i) => <Col>
-                                                            <Image
-                                                                width={80}
-                                                                src={url}
-                                                                preview={{
-                                                                    movable: false,
-                                                                }}
-                                                            />
-                                                        </Col>)}
-                                                    </Row>
-                                                </Col>
-                                                <Col span={23}><Text>{ParseDateTime(v.date)}</Text></Col>
-                                            </Row>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </>)}
-                        </Row>
+                        <Spin spinning={modalLoading}>
+                            <Row gutter={[0, 16]}>
+                                {feedbackDetail.map((v, i) => <>
+                                    <Col span={24} key={i}>
+                                        <Row gutter={[8, 8]} wrap={false}>
+                                            <Col flex={0}>
+                                                <Link to={`/product/${v.productId}`}>
+                                                    <Image
+                                                        preview={false}
+                                                        width={60}
+                                                        src={v.thumbnail}
+                                                    />
+                                                </Link>
+                                            </Col>
+                                            <Col flex={5}>
+                                                <Row>
+                                                    <Col span={23}><Title level={5}>{v.productName}</Title></Col>
+                                                    <Col span={23}><Text>{`Phân loại: ${v.productVariantName} x ${v.quantity}`}</Text></Col>
+                                                </Row>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                    <Col span={23} offset={1}>
+                                        <Row gutter={[8, 8]} wrap={false}>
+                                            <Col flex={0}>
+                                                <Avatar size="large" src={v.avatar || logoFPT} />
+                                            </Col>
+                                            <Col flex={5} >
+                                                <Row >
+                                                    <Col span={23}><Text>{v.username}</Text></Col>
+                                                    <Col span={23}><Rate value={v.rate} disabled style={{ fontSize: "14px" }} /></Col>
+                                                    <Col span={23}><Paragraph>{v.content}</Paragraph></Col>
+                                                    <Col span={23} >
+                                                        <Row gutter={[8, 8]}>
+                                                            {v?.urlImages?.map((url, i) => <Col>
+                                                                <Image
+                                                                    width={80}
+                                                                    src={url}
+                                                                    preview={{
+                                                                        movable: false,
+                                                                    }}
+                                                                />
+                                                            </Col>)}
+                                                        </Row>
+                                                    </Col>
+                                                    <Col span={23}><Text>{ParseDateTime(v.date)}</Text></Col>
+                                                </Row>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                </>)}
+                            </Row>
+                        </Spin>
                     </Modal>
                 </>
                 :

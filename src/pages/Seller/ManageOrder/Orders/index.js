@@ -175,7 +175,7 @@ function Orders() {
                                     <Input placeholder="Mã đơn hàng" />
                                 </Form.Item>
                             </Col>
-                            <Col span={2} offset={1}><label>Người mua </label></Col>
+                            <Col span={2} offset={2}><label>Người mua </label></Col>
                             <Col span={6}>
                                 <Form.Item name="username" >
                                     <Input placeholder="Tên đăng nhập" />
@@ -188,11 +188,12 @@ function Orders() {
                             <Col span={6}>
                                 <Form.Item name="date" >
                                     <RangePicker locale={locale}
+                                        style={{ width: '100%' }}
                                         format={"M/D/YYYY"}
                                         placement={"bottomLeft"} />
                                 </Form.Item>
                             </Col>
-                            <Col span={2} offset={1}><label>Trạng thái </label></Col>
+                            <Col span={2} offset={2}><label>Trạng thái </label></Col>
                             <Col span={6}>
                                 <Form.Item name="status" >
                                     <Select >
@@ -207,22 +208,40 @@ function Orders() {
                                     </Select>
                                 </Form.Item>
                             </Col>
+                        </Row>
+                        <Row style={{ marginBottom: '1em' }}>
                             <Col offset={1}>
-                                <Space>
-                                    <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-                                        Tìm kiếm
-                                    </Button>
-                                </Space>
+                                <Button disabled={totalItems <= 0} className={cx('btn-export-excel')} onClick={handleExportExcel} colorBgContainer icon={<FileExcelOutlined />} >
+                                    Xuất báo cáo
+                                </Button>
+                            </Col>
+                            <Col flex={5}>
+                                <Row gutter={[16, 16]} justify="end" style={{ marginRight: '4em' }}>
+                                    <Col>
+                                        <Button onClick={() => {
+                                            setSearchData({
+                                                orderId: '',
+                                                username: '',
+                                                userId: getUserId(),
+                                                fromDate: null,
+                                                toDate: null,
+                                                status: location?.state ? location?.state?.status : ORDER_STATUS_ALL,
+                                                page: page
+                                            })
+                                        }}>
+                                            Xóa
+                                        </Button>
+                                    </Col>
+                                    <Col>
+                                        <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                                            Tìm kiếm
+                                        </Button>
+                                    </Col>
+                                </Row>
                             </Col>
                         </Row>
                     </Form>
-                    <Row justify="end" style={{ marginBottom: '1em' }}>
-                        <Col>
-                            <Button disabled={totalItems <= 0} className={cx('btn-export-excel')} onClick={handleExportExcel} colorBgContainer icon={<FileExcelOutlined />} >
-                                Xuất báo cáo
-                            </Button>
-                        </Col>
-                    </Row>
+
                     <Table
                         pagination={{
                             current: page,
@@ -262,7 +281,7 @@ function Orders() {
                         />
                         <Column
                             width="15%"
-                            title="Số tiền"
+                            title="Tổng đơn hàng"
                             key="totalAmount"
                             render={(_, record) => (
                                 <p>{formatPrice(record.totalAmount - record.totalCouponDiscount)}</p>

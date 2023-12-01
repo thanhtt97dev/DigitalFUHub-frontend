@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Typography, Tag } from "antd";
+import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Typography, Tag, Spin } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
 import Spinning from "~/components/Spinning";
@@ -13,6 +13,7 @@ import {
     COUPON_STATUS_ONGOING,
     COUPON_TYPE_ALL_PRODUCTS_OF_SHOP,
     COUPON_TYPE_SPECIFIC_PRODUCTS,
+    PAGE_SIZE,
     RESPONSE_CODE_SUCCESS,
 } from "~/constants";
 import Column from "antd/es/table/Column";
@@ -53,7 +54,7 @@ const tabList = [
 
 function Coupons() {
     const notification = useContext(NotificationContext)
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [formSearch] = Form.useForm();
     const [listCoupons, setListCoupons] = useState([]);
     const [page, setPage] = useState(1);
@@ -68,7 +69,6 @@ function Coupons() {
         page: page
     });
 
-
     const initFormValues = [
         {
             name: 'couponCode',
@@ -82,10 +82,10 @@ function Coupons() {
             name: 'isPublic',
             value: searchData.isPublic,
         },
-        {
-            name: 'status',
-            value: searchData.status,
-        },
+        // {
+        //     name: 'status',
+        //     value: searchData.status,
+        // },
     ];
 
     useEffect(() => {
@@ -96,7 +96,6 @@ function Coupons() {
         setLoading(true);
         getCouponsSeller(data)
             .then((res) => {
-                setLoading(false);
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setListCoupons(res.data.result.coupons);
                     setTotalItems(res.data.result.totalItems)
@@ -105,8 +104,13 @@ function Coupons() {
                 }
             })
             .catch((err) => {
-                setLoading(false);
                 notification('error', 'Đã có lỗi xảy ra.')
+            })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setLoading(false);
+                    clearTimeout(idTimeout);
+                }, 500)
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,7 +124,7 @@ function Coupons() {
             startDate: values.date && values.date[0] ? values.date[0].$d.toLocaleDateString() : null,
             endDate: values.date && values.date[1] ? values.date[1].$d.toLocaleDateString() : null,
             isPublic: values.isPublic,
-            status: values.status,
+            status: searchData.status,
             page: 1
         });
 
@@ -232,7 +236,7 @@ function Coupons() {
                 pagination={{
                     current: page,
                     total: totalItems,
-                    pageSize: 10,
+                    pageSize: PAGE_SIZE,
                 }}
                 rowKey={(record) => record.couponId}
                 dataSource={data}
@@ -262,8 +266,6 @@ function Coupons() {
                         <p>{record.couponCode}</p>
                     )}
                 />
-
-
                 <Column
                     width="25%"
                     title="Thời gian bắt đầu"
@@ -411,6 +413,7 @@ function Coupons() {
             case 'tab2':
                 setSearchData({
                     ...searchData,
+                    page: 1,
                     status: COUPON_STATUS_COMING_SOON
                 })
                 break;
@@ -481,8 +484,9 @@ function Coupons() {
                                     <Input placeholder="Mã giảm giá" />
                                 </Form.Item>
                             </Col>
+
                             <>
-                                {activeTabKey === 'tab1' ?
+                                {/* {activeTabKey === 'tab1' ?
                                     <>
                                         <Col span={2} offset={1}><label>Trạng thái</label></Col>
                                         <Col span={6}>
@@ -498,7 +502,7 @@ function Coupons() {
                                     </>
                                     :
                                     <></>
-                                }
+                                } */}
                             </>
                         </Row>
 
@@ -513,7 +517,7 @@ function Coupons() {
                                         placement={"bottomLeft"} />
                                 </Form.Item>
                             </Col>
-                            <Col span={2} offset={1}><label>Hiển thị</label></Col>
+                            <Col span={2} offset={2}><label>Hiển thị</label></Col>
                             <Col span={6}>
                                 <Form.Item name="isPublic" >
                                     <Select >
@@ -523,31 +527,53 @@ function Coupons() {
                                     </Select>
                                 </Form.Item>
                             </Col>
-                            <Col offset={1}>
-                                <Space>
-                                    <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-                                        Tìm kiếm
-                                    </Button>
-                                </Space>
-                            </Col>
                         </Row>
                         <Row>
                             <Col offset={1}>
                                 <Button type="primary" icon={<PlusOutlined />} ghost onClick={() => setIsOpenOptionAddCouponModal(true)}>Tạo mã giảm giá</Button>
+                            </Col>
+                            <Col flex={5} style={{ marginRight: '4em' }}>
+                                <Row gutter={[16, 16]} justify="end">
+                                    <Col>
+                                        <Button onClick={() => {
+                                            setSearchData(prev => {
+                                                const newSearchData =
+                                                {
+                                                    couponCode: '',
+                                                    userId: getUserId(),
+                                                    startDate: null,
+                                                    endDate: null,
+                                                    isPublic: 0,
+                                                    status: prev.status,
+                                                    page: page
+                                                }
+                                                return newSearchData;
+                                            })
+                                        }}>
+                                            Xóa
+                                        </Button>
+                                    </Col>
+                                    <Col>
+                                        <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                                            Tìm kiếm
+                                        </Button>
+                                    </Col>
+
+                                </Row>
                             </Col>
                         </Row>
                     </Form>
 
                 </Card>
                 <Card
-                    style={{ marginTop: "10px" }}
+                    style={{ marginTop: "10px", minHeight: '100vh' }}
                     tabList={tabList}
                     activeTabKey={activeTabKey}
                     onTabChange={onTabChange}
                 >
                     {contentList[activeTabKey]}
                 </Card>
-            </Spinning>
+            </Spinning >
         </>
     )
 }

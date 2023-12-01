@@ -11,7 +11,8 @@ function OrderDetailItem({ orderDetail, statusId, handleFeedbackOrder = () => { 
                 <Col flex={0}>
                     <Link to={`/product/${orderDetail.productId}`}>
                         <Image
-                            width={120}
+                            width={90}
+                            height={90}
                             src={orderDetail.thumbnail}
                             preview={false}
                         />

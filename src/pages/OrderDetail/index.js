@@ -167,13 +167,13 @@ function OrderDetail() {
                     <ModalChangeOrderStatusComplaint orderId={orderId} shopId={order?.shopId} callBack={handleOrderComplaint} />
                 </Col>
                 <Col>
-                    <Button type="primary" onClick={handleOrderComplete}>Xác nhận</Button>
+                    <Button type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
                 </Col>
             </Row>
         } else if (order?.statusId === ORDER_CONFIRMED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
+                    <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
                 </Col>
                 {order.orderDetails.some((v, i) => v.isFeedback === true) ?
                     <Col>
@@ -185,10 +185,10 @@ function OrderDetail() {
         } else if (order?.statusId === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} style={{ fontSize: 14, height: 32, lineHeight: 2.2 }} color="warning">Đang khiếu nại</Tag>
+                    <Tag icon={<SyncOutlined size={16} spin />} style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }} color="warning">Đang khiếu nại</Tag>
                 </Col>
                 <Col>
-                    <Button type="primary" onClick={handleOrderComplete}>Xác nhận</Button>
+                    <Button type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
                 </Col>
 
             </Row>
@@ -205,20 +205,22 @@ function OrderDetail() {
                     </Button>
                 </Col>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
+                    <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
+                </Col>
+                <Col>
+                    <Button type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
                 </Col>
             </Row>
         } else if (order?.statusId === ORDER_REJECT_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="red" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Từ chối khiếu nại</Tag>
+                    <Tag color="red" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Từ chối khiếu nại</Tag>
                 </Col>
-
             </Row>
         } else if (order?.statusId === ORDER_SELLER_REFUNDED || order?.statusId === ORDER_SELLER_VIOLATES) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="cyan" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
+                    <Tag color="cyan" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
                 </Col>
             </Row>
         }

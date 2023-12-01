@@ -44,6 +44,7 @@ function CardOrderItem({
     totalCouponDiscount,
     totalPayment,
     orderDetails,
+    loadingButton = false,
     onOrderComplete = () => { },
     onOrderComplaint = () => { },
     onFeedback = () => { },
@@ -81,7 +82,7 @@ function CardOrderItem({
     //     });
     //     setFileList(newFileList);
     // }
-
+    const [orderIdChoosen, setOrderIdChoosen] = useState(0);
     const getButtonsStatus = () => {
         if (statusId === ORDER_WAIT_CONFIRMATION) {
             return <Row justify="end" gutter={[8]}>
@@ -89,7 +90,11 @@ function CardOrderItem({
                     <ModalChangeOrderStatusComplaint orderId={orderId} shopId={shopId} callBack={onOrderComplaint} />
                 </Col>
                 <Col>
-                    <Button type="primary" onClick={onOrderComplete}>Xác nhận</Button>
+                    <Button loading={orderIdChoosen === orderId && loadingButton} type="primary" onClick={() => {
+                        onOrderComplete();
+                        setOrderIdChoosen(orderId);
+                    }}
+                    >Xác nhận đơn hàng</Button>
                 </Col>
                 <Col>
                     <Link to={`/history/order/${orderId}`}>
@@ -100,7 +105,7 @@ function CardOrderItem({
         } else if (statusId === ORDER_CONFIRMED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
+                    <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
                 </Col>
                 {orderDetails.some((v, i) => v.isFeedback === true) ?
                     <Col>
@@ -117,10 +122,13 @@ function CardOrderItem({
         } else if (statusId === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} style={{ fontSize: 14, height: 32, lineHeight: 2.2 }} color="warning">Đang khiếu nại</Tag>
+                    <Tag icon={<SyncOutlined size={16} spin />} style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }} color="warning">Đang khiếu nại</Tag>
                 </Col>
                 <Col>
-                    <Button type="primary" onClick={onOrderComplete}>Xác nhận</Button>
+                    <Button loading={orderIdChoosen === orderId && loadingButton} type="primary" onClick={() => {
+                        onOrderComplete();
+                        setOrderIdChoosen(orderId);
+                    }}>Xác nhận đơn hàng</Button>
                 </Col>
                 <Col>
                     <Link to={`/history/order/${orderId}`}>
@@ -141,10 +149,13 @@ function CardOrderItem({
                     </Button>
                 </Col>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
+                    <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
                 </Col>
                 <Col>
-                    <Button type="primary" onClick={onOrderComplete}>Xác nhận đơn hàng</Button>
+                    <Button loading={orderIdChoosen === orderId && loadingButton} type="primary" onClick={() => {
+                        onOrderComplete();
+                        setOrderIdChoosen(orderId);
+                    }}>Xác nhận đơn hàng</Button>
                 </Col>
                 <Col>
                     <Link to={`/history/order/${orderId}`}>
@@ -155,7 +166,7 @@ function CardOrderItem({
         } else if (statusId === ORDER_REJECT_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="red" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Từ chối khiếu nại</Tag>
+                    <Tag color="red" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Từ chối khiếu nại</Tag>
                 </Col>
                 <Col>
                     <Link to={`/history/order/${orderId}`}>
@@ -166,7 +177,7 @@ function CardOrderItem({
         } else if (statusId === ORDER_SELLER_REFUNDED || statusId === ORDER_SELLER_VIOLATES) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="cyan" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
+                    <Tag color="cyan" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
                 </Col>
                 <Col>
                     <Link to={`/history/order/${orderId}`}>
@@ -224,110 +235,18 @@ function CardOrderItem({
         if (conversationId === null) return;
         navigate('/chatBox', { state: { data: conversationId } })
     }
+    const handleRedirectToShop = () => {
+        return navigate(`/shop/${shopId}`)
+    }
 
     return <>
-        {/* <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
-            <img
-                alt="preview"
-                style={{
-                    width: '100%',
-                }}
-                src={previewImage}
-            />
-        </Modal> */}
         <ModalAddFeedbackOrder
+            buttonLoading={loadingButton}
             isModalOpen={isModalOpen}
             handleModalFeedbackOk={handleModalFeedbackOk}
             handleModalFeedbackCancel={handleModalFeedbackCancel}
             handleSubmitFeedback={handleSubmitFeedback}
         />
-        {/* <Modal
-            title="Đánh giá sản phẩm"
-            footer={null}
-            open={isModalOpen}
-            onOk={handleModalFeedbackOk}
-            onCancel={handleModalFeedbackCancel}>
-            <Form
-                form={form}
-                onFinish={handleSubmitFeedback}
-            >
-                <Row>
-                    <Col span={8} offset={1}><Text>Điểm đánh giá</Text></Col>
-                    <Col span={15}>
-                        <Form.Item name="rate"
-                            rules={[
-                                ({ getFieldValue }) => ({
-                                    validator(_, value) {
-                                        if (value !== 0) {
-                                            return Promise.resolve();
-                                        }
-                                        return Promise.reject(new Error('Vui lòng không để trống điểm đánh giá.'));
-                                    },
-                                }),
-                            ]}
-                        >
-                            <Rate style={{
-                                lineHeight: '0'
-                            }} />
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span={8} offset={1}><Text>Nội dung</Text></Col>
-                    <Col span={15}>
-                        <Form.Item name="content"
-                            rules={[
-                                ({ getFieldValue }) => ({
-                                    validator(_, value) {
-                                        if (!value) {
-                                            return Promise.resolve();
-                                        } else if (value.length > 200) {
-                                            return Promise.reject(new Error('Nội dung đánh giá không vượt quá 200 ký tự.'));
-                                        } else {
-                                            return Promise.resolve();
-                                        }
-                                    },
-                                }),
-                            ]}
-                        >
-                            <TextArea />
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span={8} offset={1}><Text>Hình ảnh</Text></Col>
-                    <Col span={15}>
-                        <Form.Item name="imageFiles">
-                            <Upload
-                                accept=".png, .jpeg, .jpg"
-                                beforeUpload={false}
-                                listType="picture-card"
-                                fileList={fileList}
-                                onPreview={handlePreview}
-                                onChange={handleChange}
-                                maxCount={5}
-                            >
-
-                                {fileList.length >= 5 ? null : <div>
-                                    <PlusOutlined />
-                                    <div
-                                        style={{
-                                            marginTop: 8,
-                                        }}
-                                    >
-                                        Tải lên
-                                    </div>
-                                </div>}
-                            </Upload>
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Row justify="end" gutter={[16, 0]}>
-                    <Col><Button type="default" danger onClick={handleModalFeedbackCancel}>Hủy</Button></Col>
-                    <Col><Button type="primary" htmlType="submit">Xác nhận</Button></Col>
-                </Row>
-            </Form>
-        </Modal > */}
         <Card
             title={<Row gutter={[8, 0]} align="bottom">
                 <Col>
@@ -342,6 +261,7 @@ function CardOrderItem({
                             type="default"
                             size="small"
                             icon={<ShopOutlined />}
+                            onClick={handleRedirectToShop}
                         >
                             Xem cửa hàng
                         </Button></Title>
@@ -367,8 +287,8 @@ function CardOrderItem({
                             <Col flex={0}>
                                 <Link to={`/product/${v.productId}`}>
                                     <Image
-                                        width={120}
-                                        height={75}
+                                        width={90}
+                                        height={90}
                                         src={v.thumbnail}
                                         preview={false}
                                     />

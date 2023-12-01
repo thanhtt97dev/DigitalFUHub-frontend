@@ -8,6 +8,7 @@ import { NotificationContext } from "~/context/UI/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
 import { Link } from "react-router-dom";
 import logoFPT from '~/assets/images/fpt-logo.jpg'
+import Spinning from "~/components/Spinning";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -22,9 +23,9 @@ function AllOrder({ status = 0, loading, setLoading }) {
     const [orders, setOrders] = useState([]);
     const nextOffset = useRef(0)
     const [loadingMoreData, setLoadingMoreData] = useState(false);
+    const [loadingButton, setLoadingButton] = useState(false);
     useEffect(() => {
         if (nextOffset.current !== -1) {
-
             if (nextOffset.current !== 0) {
                 setLoadingMoreData(true);
             }
@@ -40,7 +41,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
                 const idTimeout = setTimeout(() => {
                     setLoading(false);
                     clearTimeout(idTimeout)
-                }, 300)
+                }, 500)
             }
             setLoadingMoreData(false);
         }
@@ -82,6 +83,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
             orderId: orderId,
             statusId: ORDER_CONFIRMED
         }
+        setLoadingButton(true);
         customerUpdateStatusOrder(dataBody)
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -97,9 +99,15 @@ function AllOrder({ status = 0, loading, setLoading }) {
                 }
             })
             .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setLoadingButton(false);
+                    clearTimeout(idTimeout);
+                }, 500)
+            })
     }
-
     const handleCustomerFeedback = (formData) => {
+        setLoadingButton(true);
         const orderId = formData.get("orderId");
         const orderDetailId = formData.get("orderDetailId");
         addFeedbackOrder(formData)
@@ -114,7 +122,12 @@ function AllOrder({ status = 0, loading, setLoading }) {
                 }
             })
             .catch((err) => {
-
+            })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setLoadingButton(false);
+                    clearTimeout(idTimeout);
+                }, 3000)
             })
     }
     const [isModalViewFeedbackOpen, setIsModalViewFeedbackOpen] = useState(false);
@@ -128,7 +141,9 @@ function AllOrder({ status = 0, loading, setLoading }) {
     const handleViewFeedbackCancel = () => {
         setIsModalViewFeedbackOpen(false);
     }
+    const [modalLoading, setModalLoading] = useState(false);
     const handleCustomerViewFeedback = (orderId) => {
+        setModalLoading(true);
         getFeedbackDetail(getUserId(), orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -137,6 +152,11 @@ function AllOrder({ status = 0, loading, setLoading }) {
                 }
             })
             .catch((err) => {
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setModalLoading(false);
+                }, 500)
             })
     }
     return (<div >
@@ -158,6 +178,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
                                     totalCoinDiscount={v.totalCoinDiscount}
                                     totalCouponDiscount={v.totalCouponDiscount}
                                     totalPayment={v.totalPayment}
+                                    loadingButton={loadingButton}
                                     orderDetails={v.orderDetails}
                                     onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
                                     onOrderComplaint={() => handleOrderComplaint(v.orderId, v.shopId)}
@@ -180,58 +201,61 @@ function AllOrder({ status = 0, loading, setLoading }) {
                             </Button>,
                         ]}
                     >
-                        <Row gutter={[0, 16]}>
-                            {feedbackDetail.map((v, i) => <>
-                                <Col span={24} key={i}>
-                                    <Row gutter={[8, 8]} wrap={false}>
-                                        <Col flex={0}>
-                                            <Link to={`/product/${v.productId}`}>
-                                                <Image
-                                                    preview={false}
-                                                    width={60}
-                                                    src={v.thumbnail}
-                                                />
-                                            </Link>
-                                        </Col>
-                                        <Col flex={5}>
-                                            <Row>
-                                                <Col span={23}><Title level={5}>{v.productName}</Title></Col>
-                                                <Col span={23}><Text>{`Phân loại: ${v.productVariantName} x ${v.quantity}`}</Text></Col>
-                                            </Row>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                                <Col span={23} offset={1}>
-                                    <Row gutter={[8, 8]} wrap={false}>
-                                        <Col flex={0}>
-                                            <Avatar size="large" src={v.avatar || logoFPT} />
-                                        </Col>
-                                        <Col flex={5} >
-                                            <Row >
-                                                <Col span={23}><Text>{v.username}</Text></Col>
-                                                <Col span={23}><Rate value={v.rate} disabled style={{ fontSize: "14px" }} /></Col>
-                                                <Col span={23}><Paragraph>{v.content}</Paragraph></Col>
-                                                <Col span={23} >
-                                                    <Row gutter={[8, 8]}>
-                                                        {v?.urlImages?.map((url, i) => <Col>
-                                                            <Image
-                                                                width={80}
-                                                                src={url}
-                                                                preview={{
-                                                                    movable: false,
-                                                                }}
-                                                            />
-                                                        </Col>)}
-                                                    </Row>
-                                                </Col>
-                                                <Col span={23}><Text>{ParseDateTime(v.date)}</Text></Col>
-                                            </Row>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </>)}
+                        <Spin spinning={modalLoading}>
+                            <Row gutter={[0, 16]}>
+                                {feedbackDetail.map((v, i) => <>
+                                    <Col span={24} key={i}>
+                                        <Row gutter={[8, 8]} wrap={false}>
+                                            <Col flex={0}>
+                                                <Link to={`/product/${v.productId}`}>
+                                                    <Image
+                                                        preview={false}
+                                                        width={60}
+                                                        src={v.thumbnail}
+                                                    />
+                                                </Link>
+                                            </Col>
+                                            <Col flex={5}>
+                                                <Row>
+                                                    <Col span={23}><Title level={5}>{v.productName}</Title></Col>
+                                                    <Col span={23}><Text>{`Phân loại: ${v.productVariantName} x ${v.quantity}`}</Text></Col>
+                                                </Row>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                    <Col span={23} offset={1}>
+                                        <Row gutter={[8, 8]} wrap={false}>
+                                            <Col flex={0}>
+                                                <Avatar size="large" src={v.avatar || logoFPT} />
+                                            </Col>
+                                            <Col flex={5} >
+                                                <Row >
+                                                    <Col span={23}><Text>{v.username}</Text></Col>
+                                                    <Col span={23}><Rate value={v.rate} disabled style={{ fontSize: "14px" }} /></Col>
+                                                    <Col span={23}><Paragraph>{v.content}</Paragraph></Col>
+                                                    <Col span={23} >
+                                                        <Row gutter={[8, 8]}>
+                                                            {v?.urlImages?.map((url, i) => <Col>
+                                                                <Image
+                                                                    width={80}
+                                                                    height={80}
+                                                                    src={url}
+                                                                    preview={{
+                                                                        movable: false,
+                                                                    }}
+                                                                />
+                                                            </Col>)}
+                                                        </Row>
+                                                    </Col>
+                                                    <Col span={23}><Text>{ParseDateTime(v.date)}</Text></Col>
+                                                </Row>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                </>)}
+                            </Row>
+                        </Spin>
 
-                        </Row>
                     </Modal>
                 </>
                 :

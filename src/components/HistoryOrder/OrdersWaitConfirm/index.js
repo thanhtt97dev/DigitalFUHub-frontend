@@ -6,7 +6,7 @@ import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
 import { ORDER_COMPLAINT, ORDER_CONFIRMED, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 
-function OrdersWaitConfirm({ status, loading, setLoading }) {
+function OrdersWaitConfirm({ status, loading, setLoading, onActiveTabKey = () => { } }) {
     const notification = useContext(NotificationContext);
     const [paramSearch, setParamSearch] = useState({
         userId: getUserId(),
@@ -17,6 +17,7 @@ function OrdersWaitConfirm({ status, loading, setLoading }) {
     const [orders, setOrders] = useState([]);
     const nextOffset = useRef(0)
     const [loadingMoreData, setLoadingMoreData] = useState(false);
+    const [loadingButton, setLoadingButton] = useState(false);
     useEffect(() => {
         if (nextOffset.current !== -1) {
             if (nextOffset.current !== 0) {
@@ -57,11 +58,13 @@ function OrdersWaitConfirm({ status, loading, setLoading }) {
     }, [])
 
     const handleOrderComplaint = (orderId, shopId) => {
-        setOrders(prev => {
-            const order = prev.find((value) => value.orderId === orderId);
-            order.statusId = ORDER_COMPLAINT
-            return [...prev]
-        })
+        // setOrders(prev => {
+        //     const order = prev.find((value) => value.orderId === orderId);
+        //     order.statusId = ORDER_COMPLAINT
+        //     return [...prev]
+        // })
+        notification("success", "Đơn hàng đang được khiếu nại.")
+        onActiveTabKey('tab4');
     }
 
     const handleOrderComplete = (orderId, shopId) => {
@@ -72,19 +75,28 @@ function OrdersWaitConfirm({ status, loading, setLoading }) {
             orderId: orderId,
             statusId: ORDER_CONFIRMED
         }
+        setLoadingButton(true);
         customerUpdateStatusOrder(dataBody)
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrders(prev => {
-                        const order = prev.find((value) => value.orderId === orderId);
-                        order.statusId = dataBody.statusId
-                        return [...prev]
+                        // const order = prev.find((value) => value.orderId === orderId);
+                        // order.statusId = dataBody.statusId
+                        // return [...prev]
+                        notification("success", "Xác nhận đơn hàng thành công.")
+                        onActiveTabKey("tab2")
                     })
                 } else {
                     notification("error", "Đã có lỗi xảy ra.")
                 }
             })
             .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setLoadingButton(false);
+                    clearTimeout(idTimeout);
+                }, 500)
+            })
     }
     return (<div>
         {!loading ?
@@ -104,6 +116,7 @@ function OrdersWaitConfirm({ status, loading, setLoading }) {
                                 totalCoinDiscount={v.totalCoinDiscount}
                                 totalCouponDiscount={v.totalCouponDiscount}
                                 totalPayment={v.totalPayment}
+                                loadingButton={loadingButton}
                                 orderDetails={v.orderDetails}
                                 onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
                                 onOrderComplaint={() => handleOrderComplaint(v.orderId, v.shopId)}

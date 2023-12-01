@@ -1,13 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
-import { Card, Spin, } from "antd";
+import { Card, Space, Spin, Typography, Modal } from "antd";
 import { getUserId } from "~/utils";
 import { COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, COUPON_TYPE_SPECIFIC_PRODUCTS, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { useNavigate, useParams } from "react-router-dom";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { editCouponSeller, getCouponSellerById } from "~/api/coupon";
 import { EditCouponForProduct, EditCouponForShop } from "~/components/Seller/Coupon";
-
+import { ExclamationCircleFilled, LeftOutlined } from "@ant-design/icons";
+const { Link } = Typography;
+const { confirm } = Modal;
 function EditCoupon() {
     const navigate = useNavigate();
     const notification = useContext(NotificationContext);
@@ -56,8 +58,24 @@ function EditCoupon() {
                 notification("error", "Đã có lỗi xảy ra")
             })
     }
-
-    return (<Card title="Cập nhật mã giảm giá">
+    const handleBackPage = () => {
+        confirm({
+            title: 'Xác nhận',
+            icon: <ExclamationCircleFilled />,
+            content: 'Hủy thay đổi?',
+            onOk() {
+                return navigate('/seller/coupon/list');
+            },
+            onCancel() {
+            },
+        });
+    }
+    return (<Card title={
+        <Space>
+            <Link style={{ fontWeight: '600', fontSize: '16px', lineHeight: '1em' }} onClick={handleBackPage} ><LeftOutlined /> <span style={{ fontWeight: '600', fontSize: '16px' }}>Trở lại</span></Link>
+            <div>Cập nhật mã giảm giá</div>
+        </Space>
+    }>
         {!coupon ?
             <Spin spinning={true}></Spin>
             :

@@ -6,7 +6,7 @@ import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { getUserId } from "~/utils";
 
-function OrdersComplaint({ status, loading, setLoading }) {
+function OrdersComplaint({ status, loading, setLoading, onActiveTabKey = () => { } }) {
     const notification = useContext(NotificationContext);
     const [paramSearch, setParamSearch] = useState({
         userId: getUserId(),
@@ -71,6 +71,7 @@ function OrdersComplaint({ status, loading, setLoading }) {
                         order.statusId = dataBody.statusId
                         return [...prev]
                     })
+
                 } else {
                     notification("error", "Đã có lỗi xảy ra.")
                 }
@@ -96,6 +97,8 @@ function OrdersComplaint({ status, loading, setLoading }) {
                         order.statusId = dataBody.statusId
                         return [...prev]
                     })
+                    notification("success", "Xác nhận đơn hàng thành công.")
+                    onActiveTabKey('tab2')
                 } else {
                     notification("error", "Đã có lỗi xảy ra.")
                 }

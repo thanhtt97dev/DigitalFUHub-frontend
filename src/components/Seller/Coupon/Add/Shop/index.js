@@ -11,7 +11,7 @@ const debounceCheckCouponCodeExist = debounce((value) => {
     return Promise.resolve({ res: res });
 }, 500);
 
-function AddCouponForShop({ onAddCoupon = () => { } }) {
+function AddCouponForShop({ loading = false, onAddCoupon = () => { } }) {
     const [formAdd] = Form.useForm();
     const isBeforeDate = current => {
         return current && current < dayjs().startOf('day');
@@ -308,7 +308,7 @@ function AddCouponForShop({ onAddCoupon = () => { } }) {
         </Row>
         <Row>
             <Col span={16} style={{ textAlign: 'center' }}>
-                <Button htmlType="submit" type="primary">Xác nhận</Button>
+                <Button loading={loading} htmlType="submit" type="primary">Xác nhận</Button>
             </Col>
         </Row>
     </Form>);

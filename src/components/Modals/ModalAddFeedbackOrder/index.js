@@ -16,7 +16,9 @@ const getBase64 = (file) =>
     });
 
 function ModalAddFeedbackOrder(
-    { isModalOpen,
+    {
+        buttonLoading,
+        isModalOpen,
         handleModalFeedbackOk,
         handleModalFeedbackCancel,
         handleSubmitFeedback,
@@ -75,13 +77,13 @@ function ModalAddFeedbackOrder(
                 onFinish={handleSubmitFeedback}
             >
                 <Row>
-                    <Col span={8} offset={1}><Text>Điểm đánh giá</Text></Col>
+                    <Col span={8} offset={1}><Text><span style={{ color: 'red' }}>*</span> Điểm đánh giá</Text></Col>
                     <Col span={15}>
                         <Form.Item name="rate"
                             rules={[
                                 ({ getFieldValue }) => ({
                                     validator(_, value) {
-                                        if (value !== 0) {
+                                        if (value !== undefined && value !== 0) {
                                             return Promise.resolve();
                                         }
                                         return Promise.reject(new Error('Vui lòng không để trống điểm đánh giá.'));
@@ -148,7 +150,7 @@ function ModalAddFeedbackOrder(
                 </Row>
                 <Row justify="end" gutter={[16, 0]}>
                     <Col><Button type="default" danger onClick={handleModalFeedbackCancel}>Hủy</Button></Col>
-                    <Col><Button type="primary" htmlType="submit">Xác nhận</Button></Col>
+                    <Col><Button loading={buttonLoading} type="primary" htmlType="submit">Xác nhận</Button></Col>
                 </Row>
             </Form>
         </Modal >

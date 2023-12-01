@@ -34,6 +34,7 @@ function EditShop() {
         const imgBase64 = await getBase64(file.originFileObj);
         setImgPreview(imgBase64);
     };
+    const [buttonLoading, setButtonLoading] = useState(false);
     const handleChange = (info) => {
         let newFileList = [...info.fileList];
         newFileList = newFileList.slice(-1);
@@ -57,6 +58,7 @@ function EditShop() {
     };
 
     useEffect(() => {
+        setLoading(true);
         getShopOfSeller()
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -68,10 +70,16 @@ function EditShop() {
                 }
             })
             .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setLoading(false);
+                    clearTimeout(idTimeout);
+                }, 500);
+            })
     }, []);
 
     const onFinish = (values) => {
-        setLoading(true);
+        setButtonLoading(true);
         const data = {
             userId: getUserId(),
             shopDescription: shopDescription,
@@ -79,7 +87,6 @@ function EditShop() {
         }
         editShop(data)
             .then(res => {
-                setLoading(false);
                 if (res.data.status.responseCode === "00") {
                     notification('success', "Cập nhật thông tin cửa hàng thành công.");
                 } else {
@@ -87,8 +94,13 @@ function EditShop() {
                 }
             })
             .catch(err => {
-                setLoading(false);
                 notification('error', "Đã có lỗi xảy ra vui lòng thử lại sau.");
+            })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setButtonLoading(false);
+                    clearTimeout(idTimeout);
+                }, 500)
             })
     }
     const handleCloseNotificationFileExceedLimit = () => {
@@ -117,6 +129,7 @@ function EditShop() {
                 title={<div>Chỉnh sửa thông tin cửa hàng <Link to={`/shop/${getUserId()}`} target="_blank"><Button>Xem cửa hàng của tôi</Button></Link></div>}
                 style={{
                     width: '100%',
+                    height: '100vh',
                 }}
                 type="inner"
             >
@@ -205,7 +218,7 @@ function EditShop() {
                                         offset: 6
                                     }}
                                     style={{ textAlign: 'center' }}>
-                                    <Button type="primary" htmlType="submit">Xác nhận</Button>
+                                    <Button loading={buttonLoading} type="primary" htmlType="submit">Xác nhận</Button>
                                 </Form.Item>
                             </Col>
                         </Row>
