@@ -51,6 +51,7 @@ function ModalUpdateBankAccount({ userId, callBack }) {
     const [loadingBtnSubmit, setLoadingBtnSubmit] = useState(false)
 
     const [disableInput, setDisableInput] = useState(false);
+    const [disableBtnSubmit, setDisableBtnSubmit] = useState(true)
 
     useEffect(() => {
         if (userId === null) {
@@ -84,6 +85,7 @@ function ModalUpdateBankAccount({ userId, callBack }) {
                     })
                     setBankAccountName(res.data.result)
                     setDisableInput(true)
+                    setDisableBtnSubmit(false)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
                     notification("error", "Tài khoản ngân hàng không tồn tại!")
                 } else {
@@ -133,7 +135,6 @@ function ModalUpdateBankAccount({ userId, callBack }) {
 
     const handleCancel = () => {
         setDisableInput(false)
-        setBankAccountName("")
         setOpenModal(false)
     }
 
@@ -141,6 +142,7 @@ function ModalUpdateBankAccount({ userId, callBack }) {
         form.resetFields();
         setBankAccountName("")
         setDisableInput(false)
+        setDisableBtnSubmit(true)
     };
 
     return (
@@ -157,13 +159,20 @@ function ModalUpdateBankAccount({ userId, callBack }) {
             <Modal
                 title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Thay đổi tài khoản ngân hàng</>}
                 open={openModal}
-                onOk={handleSubmit}
                 onCancel={handleCancel}
-                confirmLoading={loadingBtnSubmit}
-
-                okText={"Xác nhận"}
-                cancelText={"Hủy"}
                 width={"40%"}
+                footer={
+                    <Space>
+                        <Button onClick={handleCancel} >Hủy</Button>
+                        <Button type="primary"
+                            onClick={handleSubmit}
+                            loading={loadingBtnSubmit}
+                            disabled={disableBtnSubmit}
+                        >
+                            Xác nhận
+                        </Button>
+                    </Space>
+                }
             >
 
                 <>

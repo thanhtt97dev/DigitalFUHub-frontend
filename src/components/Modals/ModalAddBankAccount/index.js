@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Divider, notification, Modal, Button, Input, Select, Form, Space } from "antd";
+import { Divider, Modal, Button, Input, Select, Form, Space } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
+
+import { NotificationContext } from "~/context/UI/NotificationContext";
 
 import { BANKS_INFO } from "~/constants";
 import { inquiryAccountName, addBankAccount } from '~/api/bank'
-import { RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_SUCCESS, RESPONSE_CODE_NOT_ACCEPT } from "~/constants";
+import {
+    RESPONSE_CODE_DATA_NOT_FOUND,
+    RESPONSE_CODE_SUCCESS,
+    RESPONSE_CODE_NOT_ACCEPT
+}
+    from "~/constants";
 
 import classNames from 'classnames/bind';
 import styles from './ModalAddBankAccount.module.scss';
@@ -32,7 +39,7 @@ BANKS_INFO.forEach((bank) => {
 
 function ModalAddBankAccount({ userId, callBack }) {
 
-    const [api, contextHolder] = notification.useNotification();
+    const notification = useContext(NotificationContext);
     const navigate = useNavigate();
     const [form] = Form.useForm();
 
@@ -48,24 +55,18 @@ function ModalAddBankAccount({ userId, callBack }) {
     const [openModal, setOpenModal] = useState(false);
     const [loadingBtnCheckAccount, setLoadingBtnCheckAccount] = useState(false);
     const [loadingBtnSubmit, setLoadingBtnSubmit] = useState(false)
+    const [disableBtnSubmit, setDisableBtnSubmit] = useState(true)
 
     const [disableInput, setDisableInput] = useState(false);
 
     useEffect(() => {
         if (userId === null) {
-            openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+            notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             return navigate("/settings")
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-    const openNotification = (type, message) => {
-        api[type]({
-            message: `Thông báo`,
-            description: `${message}`
-        });
-    };
 
     const filterOptions = (inputValue, option) => {
         return option.props.name.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1;
@@ -90,15 +91,16 @@ function ModalAddBankAccount({ userId, callBack }) {
                     })
                     setBankAccountName(res.data.result)
                     setDisableInput(true)
+                    setDisableBtnSubmit(false)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
-                    openNotification("error", "Tài khoản ngân hàng không tồn tại!")
+                    notification("error", "Tài khoản ngân hàng không tồn tại!")
                 }
                 else {
-                    openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
+                    notification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
                 }
             })
             .catch((err) => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
                 setTimeout(() => {
@@ -110,7 +112,7 @@ function ModalAddBankAccount({ userId, callBack }) {
 
     const handleSubmit = () => {
         if (!disableInput) {
-            openNotification("error", "Bạn chư điền đủ thông tin! Hãy thử lại!")
+            notification("error", "Bạn chư điền đủ thông tin! Hãy thử lại!")
             return;
         }
 
@@ -119,15 +121,16 @@ function ModalAddBankAccount({ userId, callBack }) {
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOpenModal(false)
-                    openNotification("success", "Thay đổi tài khoản ngân hàng thành công!")
+                    callBack()
+                    notification("success", "Thay đổi tài khoản ngân hàng thành công!")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
-                    openNotification("error", "Bạn đã đăng ký 1 tài khoản ngân hàng khác!")
+                    notification("error", "Bạn đã đăng ký 1 tài khoản ngân hàng khác!")
                 } else {
-                    openNotification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
+                    notification("error", "Hệ thống đang bảo trì! Hãy thử sau!")
                 }
             })
             .catch(() => {
-                openNotification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
+                notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             })
             .finally(() => {
                 setTimeout(() => {
@@ -139,7 +142,6 @@ function ModalAddBankAccount({ userId, callBack }) {
 
     const handleCancel = () => {
         setDisableInput(false)
-        setBankAccountName("")
         setOpenModal(false)
     }
 
@@ -147,12 +149,11 @@ function ModalAddBankAccount({ userId, callBack }) {
         form.resetFields();
         setBankAccountName("")
         setDisableInput(false)
+        setDisableBtnSubmit(true)
     };
 
     return (
         <>
-            {contextHolder}
-
             <Button
                 type="primary"
                 style={{ background: "#28a745" }}
@@ -165,13 +166,20 @@ function ModalAddBankAccount({ userId, callBack }) {
             <Modal
                 title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Liên kết tài khoản ngân hàng</>}
                 open={openModal}
-                onOk={handleSubmit}
                 onCancel={handleCancel}
-                confirmLoading={loadingBtnSubmit}
-
-                okText={"Xác nhận"}
-                cancelText={"Hủy"}
                 width={"40%"}
+                footer={
+                    <Space>
+                        <Button onClick={handleCancel} >Hủy</Button>
+                        <Button type="primary"
+                            onClick={handleSubmit}
+                            loading={loadingBtnSubmit}
+                            disabled={disableBtnSubmit}
+                        >
+                            Xác nhận
+                        </Button>
+                    </Space>
+                }
             >
 
                 <>
