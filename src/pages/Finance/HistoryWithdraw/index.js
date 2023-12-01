@@ -105,9 +105,11 @@ function HistoryWithdraw() {
                 if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_PAID ||
                     withdrawTransactionStatusId === WITHDRAW_TRANSACTION_REJECT) {
                     return <DrawerWithdrawTransactionBill userId={record.userId} withdrawTransactionId={record.withdrawTransactionId} />
-                } else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_IN_PROCESSING) {
-                    return <ModalCancleWithdrawTransaction withdrawTransactionId={record.withdrawTransactionId} callBack={handleSearchDataTable} />
-                } else {
+                }
+                // else if (withdrawTransactionStatusId === WITHDRAW_TRANSACTION_IN_PROCESSING) {
+                //     return <ModalCancleWithdrawTransaction withdrawTransactionId={record.withdrawTransactionId} callBack={handleSearchDataTable} />
+                // } 
+                else {
                     return ""
                 }
 
@@ -283,7 +285,7 @@ function HistoryWithdraw() {
                                                 <Select.Option value={1}>Đang xử lý</Select.Option>
                                                 <Select.Option value={2}>Thành công</Select.Option>
                                                 <Select.Option value={3}>Từ chối</Select.Option>
-                                                <Select.Option value={WITHDRAW_TRANSACTION_CANCEL}>Đã hủy</Select.Option>
+                                                {/* <Select.Option value={WITHDRAW_TRANSACTION_CANCEL}>Đã hủy</Select.Option> */}
                                             </Select>
                                         </Form.Item>
                                     </Col>
