@@ -237,7 +237,7 @@ function Personal() {
                             <Form.Item >
                                 <Row>
                                     <Col offset={4}>
-                                        <Button type="primary" htmlType="submit" loading={isloadingButtonSaveInfo}>Lưu</Button>
+                                        <Button type="primary" htmlType="submit" loading={isloadingButtonSaveInfo}>Lưu thông tin cá nhân</Button>
                                     </Col>
                                 </Row>
                             </Form.Item>
@@ -271,7 +271,7 @@ function Personal() {
                                 fileList.length > 0 ? (
                                     <Row className={cx('flex-item-center')}>
                                         <Col>
-                                            <Button type="primary" htmlType="submit" loading={isloadingButtonSaveAvatar}>Lưu</Button>
+                                            <Button type="primary" htmlType="submit" loading={isloadingButtonSaveAvatar}>Lưu ảnh đại diện</Button>
                                         </Col>
                                     </Row>
                                 ) : <></>

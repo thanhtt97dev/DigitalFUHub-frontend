@@ -10,6 +10,7 @@ const ModelConfirmation = ({ title, isOpen, onOk, onCancel, contentModal, conten
             open={isOpen}
             onOk={onOk}
             onCancel={onCancel}
+            maskClosable={!isLoading}
             footer={[
                 <Button icon={<RollbackOutlined />} onClick={onCancel}>
                     {contentButtonCancel}

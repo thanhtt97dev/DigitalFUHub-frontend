@@ -38,7 +38,7 @@ function Security() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [reloadUserInfoFlag, setReloadUserInfoFlag] = useState(false);
-    const [isSpinningPage, setIsSpinningPage] = useState(false);
+    const [isSpinningPage, setIsSpinningPage] = useState(true);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const userId = getUserId();
     const [userInfo, setUserInfo] = useState({});
@@ -70,6 +70,8 @@ function Security() {
     useEffect(() => {
         if (userId === null) return navigate("/login");
 
+        setIsSpinningPage(true);
+
         getUserById(userId)
             .then((res) => {
                 setUserInfo({
@@ -87,6 +89,8 @@ function Security() {
                 } else {
                     setTabList([...newTabList]);
                 }
+
+                setIsSpinningPage(false);
             })
             .catch(() => {
                 notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
@@ -353,10 +357,10 @@ function Security() {
         <Form
             name="basic"
             labelCol={{
-                span: 5,
+                span: 6,
             }}
             wrapperCol={{
-                span: 15,
+                span: 14,
             }}
             style={{
                 maxWidth: '100vh',
@@ -372,7 +376,7 @@ function Security() {
             autoComplete="off"
         >
             <Form.Item
-                label="Username"
+                label="Tài khoản"
                 name="username"
                 rules={[
                     {
@@ -384,7 +388,7 @@ function Security() {
             </Form.Item>
 
             <Form.Item
-                label="New Password"
+                label="Mật khẩu mới"
                 name="password"
                 rules={[
                     {
@@ -396,7 +400,7 @@ function Security() {
             </Form.Item>
 
             <Form.Item
-                label="Confirm Password"
+                label="Nhập lại mật khẩu mới"
                 name="confirmPassword"
                 rules={[
                     {
@@ -408,12 +412,12 @@ function Security() {
             </Form.Item>
             <Form.Item
                 wrapperCol={{
-                    offset: 8,
-                    span: 16,
+                    offset: 11,
+                    span: 13,
                 }}
             >
                 <Button type="primary" htmlType="submit">
-                    Confirm
+                    Kích hoạt
                 </Button>
             </Form.Item>
         </Form>
@@ -427,7 +431,7 @@ function Security() {
         tab3: (<ActiveUsernamePassword />)
     };
 
-    return (
+    return (<>
         <Spinning spinning={isSpinningPage}>
             <Card
                 style={{
@@ -488,8 +492,8 @@ function Security() {
                     <i className={cx('text-message-err')}>{mesage2FA}</i>
                 </div>
             </Modal>
-
         </Spinning>
+    </>
     );
 }
 
