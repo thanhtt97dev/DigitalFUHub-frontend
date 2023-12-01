@@ -221,6 +221,7 @@ export const RESPONSE_CODE_BANK_CUSTOMER_REQUEST_DEPOSIT_EXCEEDED_REQUESTS_CREAT
 export const MAX_PRICE_CAN_WITHDRAW = 3000000;
 //export const MIN_PRICE_CAN_WITHDRAW = 500000;
 export const MIN_PRICE_CAN_WITHDRAW = 10000;
+export const NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY = 20;
 
 export const REGEX_USERNAME_SIGN_UP = "^(?=[a-z])[a-z\\d]{6,12}$";
 export const REGEX_PASSWORD_SIGN_UP = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,16}$";

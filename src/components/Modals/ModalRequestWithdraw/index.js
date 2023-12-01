@@ -12,7 +12,8 @@ import {
     RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED,
     RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_AMOUNT_A_DAY,
     MIN_PRICE_CAN_WITHDRAW,
-    MAX_PRICE_CAN_WITHDRAW
+    MAX_PRICE_CAN_WITHDRAW,
+    NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY
 } from '~/constants'
 import { formatPrice } from "~/utils";
 
@@ -28,6 +29,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
     const [openModal, setOpenModal] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [btnLoading, setBtnLoading] = useState(false)
+    const [disableBtnSubmit, setDisableBtnSubmit] = useState(false)
 
     const [amount, setAmount] = useState("500000");
     const [message, setMessage] = useState("");
@@ -94,10 +96,13 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
         let value = e.target.value;
         setAmount(e.target.value)
         if (value < MIN_PRICE_CAN_WITHDRAW) {
+            setDisableBtnSubmit(true)
             setMessage("Số tiền cần phải lớn hơn hoặc bằng 500,000 VND ")
         } else if (value > MAX_PRICE_CAN_WITHDRAW) {
             setMessage("Số tiền cần phải nhỏ hơn hoặc bằng 3,000,000 VND ")
+            setDisableBtnSubmit(true)
         } else {
+            setDisableBtnSubmit(false)
             setMessage("")
         }
     }
@@ -140,9 +145,19 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                 onOk={handleSubmit}
                 onCancel={() => setOpenModal(false)}
                 confirmLoading={confirmLoading}
-                okText={"Xác nhận"}
-                cancelText={"Hủy"}
                 width={"35%"}
+                footer={
+                    <Space>
+                        <Button onClick={() => setOpenModal(false)}>Hủy</Button>
+                        <Button
+                            type="primary"
+                            onClick={handleSubmit}
+                            disabled={disableBtnSubmit}
+                        >
+                            Xác nhận
+                        </Button>
+                    </Space>
+                }
             >
                 <>
                     <Card
@@ -171,6 +186,8 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                             <i>Số tiền bạn có thể rút trong 1 ngày nhỏ hơn 3,000,000 VND</i>
                             <br />
                             <i>Số dư của bạn sau khi rút lớn hơn 500,000 VND</i>
+                            <br />
+                            <i>Một ngày bạn có thể tạo tối đa {NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY} yêu cầu rút tiền </i>
                         </div>
                     </div>
                 </>

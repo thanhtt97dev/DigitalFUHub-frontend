@@ -50,7 +50,7 @@ const itemsFixed = [
     },
     {
         key: 'history transaction',
-        label: <Link to={"/finance"}><CreditCardOutlined /> Giao dịch tài chính</Link>,
+        label: <Link to={"/finance"}><CreditCardOutlined /> Tài chính</Link>,
         roles: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {

@@ -41,7 +41,7 @@ const items = [
     },
     {
         icon: CreditCardOutlined,
-        label: 'Giao dịch tài chính',
+        label: 'Tài chính',
         link: '/finance',
         role: [CUSTOMER_ROLE, SELLER_ROLE]
     },
