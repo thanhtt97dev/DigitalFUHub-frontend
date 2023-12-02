@@ -75,12 +75,15 @@ const WishList = () => {
 
                         setProducts(result.products);
                         setTotalProducts(result.totalProduct);
-                        setIsLoadingProducts(false);
                     }
                 }
             })
             .catch((err) => {
                 console.log(err);
+            }).finally(() => {
+                setTimeout(() => {
+                    setIsLoadingProducts(false);
+                }, 500)
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps

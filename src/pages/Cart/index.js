@@ -39,7 +39,7 @@ const Cart = () => {
     const [coupons, setCoupons] = useState([]);
     const [reloadCoinFlag, setReloadCoinFlag] = useState(false);
     const [couponCodeSelecteds, setCouponCodeSelecteds] = useState([]); // object type {shopId, couponCode}
-    const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(false);
+    const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(true);
     ///
 
 
@@ -81,7 +81,6 @@ const Cart = () => {
                     if (status.responseCode === RESPONSE_CODE_SUCCESS) {
                         const result = data.result;
                         setCarts(result);
-                        unLoadingCartInfo();
 
                         if (result.length > 0) {
                             for (let i = 0; i < result.length; i++) {
@@ -93,6 +92,10 @@ const Cart = () => {
             })
             .catch((errors) => {
                 console.log(errors)
+            }).finally(() => {
+                setTimeout(() => {
+                    unLoadingCartInfo();
+                }, 500)
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps

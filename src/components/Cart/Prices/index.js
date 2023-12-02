@@ -9,6 +9,7 @@ import { deleteCart } from '~/api/cart';
 import { formatNumber } from '~/utils';
 import { useAuthUser } from 'react-auth-kit';
 import { getCustomerBalance } from '~/api/user';
+import { useNavigate } from 'react-router-dom';
 import { EuroCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, Col, Typography, Checkbox, Divider, Card, Space } from 'antd';
 import {
@@ -42,6 +43,7 @@ const Prices = ({ dataPropPriceComponent }) => {
     /// variables
     const auth = useAuthUser();
     const user = auth();
+    const navigate = useNavigate();
     ///
 
     /// states
@@ -196,18 +198,20 @@ const Prices = ({ dataPropPriceComponent }) => {
                 if (res.status === 200) {
                     const data = res.data;
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        unLoadingButtonBuy();
+                        navigate('/history/order');
                         // delete cart selecteds
                         deleteCart(dataRemoveCart)
                             .then((res) => {
                                 if (res.status === 200) {
                                     const data = res.data;
                                     if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
-                                        setCartDetailIdSelecteds([]);
-                                        unLoadingButtonBuy();
+                                        // setCartDetailIdSelecteds([]);
+                                        // unLoadingButtonBuy();
 
                                         // reload balance
-                                        reloadCoinUser();
-                                        setReloadBalanceFlag(!reloadBalanceFlag);
+                                        // reloadCoinUser();
+                                        // setReloadBalanceFlag(!reloadBalanceFlag);
                                     }
                                 }
                             })
