@@ -14,6 +14,7 @@ const InputMessageChat = ({ conversationSelected }) => {
 
     /// states
     const [form] = Form.useForm();
+    const [isLoadingButtonSend, setIsLoadingButtonSend] = useState(false);
     const [newMessage, setNewMessage] = useState('');
     const [isUploadFile, setIsUploadFile] = useState(false);
     ///
@@ -27,6 +28,8 @@ const InputMessageChat = ({ conversationSelected }) => {
         if (user === null || user === undefined) return;
         const { fileUpload } = values;
         if ((newMessage === undefined || newMessage.length === 0) && fileUpload === undefined) return;
+        setIsLoadingButtonSend(true);
+
         const currentTime = getVietnamCurrentTime();
 
         var bodyFormData = new FormData();
@@ -47,6 +50,8 @@ const InputMessageChat = ({ conversationSelected }) => {
                     form.resetFields();
                     setIsUploadFile(false);
                     setNewMessage('');
+
+                    setIsLoadingButtonSend(false);
                 }
             })
             .catch(error => {
@@ -118,6 +123,7 @@ const InputMessageChat = ({ conversationSelected }) => {
                             <Button
                                 type="primary"
                                 icon={<SendOutlined />}
+                                loading={isLoadingButtonSend}
                                 htmlType="submit"
                             />
                         }
