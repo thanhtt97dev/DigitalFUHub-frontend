@@ -320,7 +320,7 @@ function CardOrderItem({
                                             <Col span={23}>
                                                 <Row justify="end">
                                                     {v.discount === 0 ?
-                                                        <Text>{formatPrice(v.price)}₫</Text>
+                                                        <Text>{formatPrice(v.price)}</Text>
                                                         :
                                                         <Space size={[8, 0]}>
                                                             <Text delete>{formatPrice(v.price)}</Text>
