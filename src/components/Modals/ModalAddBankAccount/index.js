@@ -142,6 +142,8 @@ function ModalAddBankAccount({ userId, callBack }) {
 
     const handleCancel = () => {
         setDisableInput(false)
+        setBankAccountName("")
+        setDisableBtnSubmit(true)
         setOpenModal(false)
     }
 
