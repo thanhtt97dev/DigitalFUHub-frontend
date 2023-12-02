@@ -55,34 +55,8 @@ function OrdersComplaint({ status, loading, setLoading, onActiveTabKey = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-    const handleOrderComplaint = (orderId, shopId) => {
-        // call api
-        const dataBody = {
-            userId: getUserId(),
-            shopId: shopId,
-            orderId: orderId,
-            statusId: 3
-        }
-        customerUpdateStatusOrder(dataBody)
-            .then(res => {
-                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    setOrders(prev => {
-                        const order = prev.find((value) => value.orderId === orderId);
-                        order.statusId = dataBody.statusId
-                        return [...prev]
-                    })
-
-                } else {
-                    notification("error", "Đã có lỗi xảy ra.")
-                }
-            })
-            .catch(err => {
-                notification("error", "Đã có lỗi xảy ra.")
-            })
-    }
 
     const handleOrderComplete = (orderId, shopId) => {
-        // call api
         const dataBody = {
             userId: getUserId(),
             shopId: shopId,
@@ -125,7 +99,6 @@ function OrdersComplaint({ status, loading, setLoading, onActiveTabKey = () => {
                                 totalPayment={v.totalPayment}
                                 orderDetails={v.orderDetails}
                                 onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
-                                onOrderComplaint={() => handleOrderComplaint(v.orderId, v.shopId)}
                             />
                         </Col>
                     })}
