@@ -19,6 +19,7 @@ import locale from 'antd/es/date-picker/locale/vi_VN';
 import { ORDER_COMPLAINT, ORDER_CONFIRMED, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_REFUNDED, ORDER_SELLER_VIOLATES, ORDER_WAIT_CONFIRMATION, RESPONSE_CODE_SUCCESS, STATISTIC_BY_MONTH, STATISTIC_BY_YEAR } from '../../../../constants';
 import { getStatisticSales } from '~/api/statistic';
 import dayjs from 'dayjs';
+import { formatPrice } from '~/utils';
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -43,19 +44,30 @@ export const options = {
             text: '',
         },
     },
+    locale: 'vi-vn',
     scales: {
         y: {
             type: 'linear',
             display: true,
             position: 'left',
+            ticks: {
+                callback: function (value, index, ticks) {
+                    return formatPrice(value);
+                }
+            }
         },
         y1: {
             type: 'linear',
-            display: false,
+            display: true,
             position: 'right',
             grid: {
-                drawOnChartArea: false,
+                drawOnChartArea: true,
             },
+            ticks: {
+                callback: function (value, index, ticks) {
+                    return value + ' đơn hàng';
+                }
+            }
         },
     },
 };
@@ -82,16 +94,18 @@ function LineChart() {
             labels: labelsChartRef.current,
             datasets: [
                 {
-                    label: 'Doanh thu (bao gồm phí dịch vụ)',
+                    label: 'Lợi nhuận (đã trừ phí dịch vụ)',
                     data: dataStatistic.map((value, index) => value.revenue),
                     borderColor: 'rgb(255, 99, 132)',
                     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    yAxisID: 'y',
                 },
                 {
                     label: 'Tổng số đơn hàng',
                     data: dataStatistic.map((value, index) => value.totalOrders),
                     borderColor: 'rgb(53, 162, 235)',
                     backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                    yAxisID: 'y1',
                 },
             ],
         }
