@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useContext } from "react";
 import classNames from 'classnames/bind';
+import Spinning from "~/components/Spinning";
+import cartEmpty from '~/assets/images/cartEmpty.png';
 import ModalConfirmation from "~/components/Modals/ModalConfirmation";
 import styles from '~/pages/User/Settings/WishList/WishList.module.scss';
-import Spinning from "~/components/Spinning";
 import { useAuthUser } from 'react-auth-kit';
 import { RESPONSE_CODE_SUCCESS, PRODUCT_BAN, PAGE_SIZE_PRODUCT_WISH_LIST } from '~/constants';
 import { formatPrice, discountPrice } from '~/utils';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { NotificationContext } from "~/context/UI/NotificationContext";
-import { Card, Typography, Space, Row, Pagination, Button, Checkbox } from 'antd';
+import { Card, Typography, Space, Row, Pagination, Button, Checkbox, Result } from 'antd';
 import { ShoppingCartOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getAllWishList, removeWishList, removeWishListSelecteds } from '~/api/wishList';
 
@@ -41,6 +42,7 @@ const WishList = () => {
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [reloadProductsFlag, setReloadProductsFlag] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
+    const [isLoadingButtonAcceptDelete, setIsLoadingButtonAcceptDelete] = useState(false);
     const [totalProducts, setTotalProducts] = useState(0);
     const [requestParam, setRequestParam] = useState({
         userId: user ? user.id : 0,
@@ -73,12 +75,15 @@ const WishList = () => {
 
                         setProducts(result.products);
                         setTotalProducts(result.totalProduct);
-                        setIsLoadingProducts(false);
                     }
                 }
             })
             .catch((err) => {
                 console.log(err);
+            }).finally(() => {
+                setTimeout(() => {
+                    setIsLoadingProducts(false);
+                }, 500)
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -145,6 +150,9 @@ const WishList = () => {
     const handleOkConfirmationDeleteSelecteds = () => {
         if (user === undefined || user === null) return;
 
+        setIsLoadingButtonAcceptDelete(true);
+
+
         // data request delete
         const request = {
             userId: user.id,
@@ -160,6 +168,7 @@ const WishList = () => {
                     if (status.responseCode === RESPONSE_CODE_SUCCESS) {
                         notification("success", "Xóa sản phẩm yêu thích thành công");
 
+                        setIsLoadingButtonAcceptDelete(false);
                         // reload
                         reloadProducts();
 
@@ -169,8 +178,8 @@ const WishList = () => {
                 }
             })
             .catch((error) => {
-                console.log(error);
             }).finally(() => {
+
                 handleCloseConfirmationDeleteSelecteds();
             })
     }
@@ -212,7 +221,7 @@ const WishList = () => {
 
     return (
         <Spinning spinning={isLoadingProducts}>
-            <div className={cx('container')}>
+            <div>
                 <Card title={<Space size={20} align="center">{isEdit ? <Checkbox onChange={handleCheckAll} indeterminate={indeterminateCheckAll} checked={checkAll}></Checkbox> : <></>}<p>Danh sách các sản phẩm yêu thích</p></Space>} style={styleContainer}
                     bodyStyle={{ padding: 15 }}
                     extra={<>
@@ -223,66 +232,77 @@ const WishList = () => {
                             : <></>}
 
                     </>}>
-                    <Checkbox.Group onChange={handleChangeCheckbox} value={productIdSlecteds} >
-                        {
-                            <Space size={[7, 10]} wrap>
-                                {products.map((product, index) => (
-                                    <div
-                                        style={product.quantityProductRemaining === 0 || product.productStatusId === PRODUCT_BAN ? opacityDisabledStyle : {}}
-                                        key={index}
-                                        className={cx('item-product')}
-                                    // onClick={() => handleClickToProduct(product.productId)}
-                                    >
-                                        <div style={styleContainerImage}>
-                                            {
-                                                product.productStatusId === PRODUCT_BAN ?
-                                                    <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div>
-                                                    : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
-                                            }
-                                            <img style={styleImage} src={product.thumbnail} alt="product" />
-                                        </div>
-                                        <Space direction="vertical" style={styleSpaceContainerProductItem}>
-                                            <p onClick={() => handleClickToProduct(product.productId)} style={styleProductName}>{product.productName}</p>
-                                            {
-                                                product.productVariant?.discount !== 0 ? (<>
-                                                    <div className={cx('discount-style')}><p style={{ fontSize: 10 }}>{product.productVariant.discount}% giảm</p></div>
-                                                    <Space align="center">
-                                                        <Text delete strong type="secondary" style={styleOriginPrice}>{formatPrice(product.productVariant.price)}</Text>
-                                                        <Text style={styleDiscountPrice}>{formatPrice(discountPrice(product.productVariant.price, product.productVariant.discount))}</Text>
+                    {
+                        products.length > 0 ? (
+                            <>
+                                <Checkbox.Group onChange={handleChangeCheckbox} value={productIdSlecteds} >
+                                    {
+                                        <Space size={[7, 10]} wrap>
+                                            {products.map((product, index) => (
+                                                <div
+                                                    style={product.quantityProductRemaining === 0 || product.productStatusId === PRODUCT_BAN ? opacityDisabledStyle : {}}
+                                                    key={index}
+                                                    className={cx('item-product')}
+                                                >
+                                                    <div style={styleContainerImage}>
+                                                        {
+                                                            product.productStatusId === PRODUCT_BAN ?
+                                                                <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div>
+                                                                : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
+                                                        }
+                                                        <Link to={`/product/${product.productId}`}>
+                                                            <img style={styleImage} src={product.thumbnail} alt="product" />
+                                                        </Link>
+                                                    </div>
+                                                    <Space direction="vertical" style={styleSpaceContainerProductItem}>
+                                                        <p onClick={() => handleClickToProduct(product.productId)} style={styleProductName}>{product.productName}</p>
+                                                        {
+                                                            product.productVariant?.discount !== 0 ? (<>
+                                                                <div className={cx('discount-style')}><p style={{ fontSize: 10 }}>{product.productVariant.discount}% giảm</p></div>
+                                                                <Space align="center">
+                                                                    <Text delete strong type="secondary" style={styleOriginPrice}>{formatPrice(product.productVariant.price)}</Text>
+                                                                    <Text style={styleDiscountPrice}>{formatPrice(discountPrice(product.productVariant.price, product.productVariant.discount))}</Text>
+                                                                </Space>
+                                                            </>
+                                                            ) : (<p level={4} style={styleDiscountPrice}>{formatPrice(product.productVariant.price)}</p>)
+                                                        }
+
+                                                        {isEdit ? (<div className={cx('flex-item-center')} style={unDisableCardStyle}><Checkbox key={product.productId} value={product.productId} /></div>) : (
+                                                            <Space style={unDisableCardStyle} align="center" size={30} className={cx('flex-item-center', 'margin-bottom')}>
+                                                                <Button type="primary" shape="circle" icon={<ShoppingCartOutlined />} onClick={() => handleAddProductToCart(product.productId)} />
+                                                                <Button type="primary" danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleRemoveWishList(product.productId)} />
+                                                            </Space>
+                                                        )}
+
                                                     </Space>
-                                                </>
-                                                ) : (<p level={4} style={styleDiscountPrice}>{formatPrice(product.productVariant.price)}</p>)
-                                            }
 
-                                            {isEdit ? (<div className={cx('flex-item-center')} style={unDisableCardStyle}><Checkbox key={product.productId} value={product.productId} /></div>) : (
-                                                <Space style={unDisableCardStyle} align="center" size={30} className={cx('flex-item-center', 'margin-bottom')}>
-                                                    <Button type="primary" shape="circle" icon={<ShoppingCartOutlined />} onClick={() => handleAddProductToCart(product.productId)} />
-                                                    <Button type="primary" danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleRemoveWishList(product.productId)} />
-                                                </Space>
-                                            )}
-
+                                                </div>
+                                            ))}
                                         </Space>
 
-                                    </div>
-                                ))}
-                            </Space>
+                                    }
 
-                        }
-
-                    </Checkbox.Group>
-                    {
-                        products.length > 0 ?
-                            <Row className={cx('flex-item-center', 'margin-top-40')}>
-                                <Pagination current={requestParam.page} defaultCurrent={1} total={totalProducts} pageSize={PAGE_SIZE_PRODUCT_WISH_LIST} onChange={handleChangePage} />
-                            </Row> : <></>
+                                </Checkbox.Group>
+                                {
+                                    products.length > 0 ?
+                                        <Row className={cx('flex-item-center', 'margin-top-40')}>
+                                            <Pagination current={requestParam.page} defaultCurrent={1} total={totalProducts} pageSize={PAGE_SIZE_PRODUCT_WISH_LIST} onChange={handleChangePage} />
+                                        </Row> : <></>
+                                }
+                                <ModalConfirmation title='Xóa sản phẩm yêu thích'
+                                    isOpen={isOpenModalConfirmationDelete}
+                                    onOk={handleOkConfirmationDeleteSelecteds}
+                                    onCancel={handleCloseConfirmationDeleteSelecteds}
+                                    contentModal={`Bạn có muốn xóa ${productIdSlecteds.length} sản phẩm không?`}
+                                    contentButtonCancel='Không'
+                                    contentButtonOk='Đồng ý'
+                                    isLoading={isLoadingButtonAcceptDelete} />
+                            </>
+                        ) : (<Result
+                            title="Không có sản phẩm nào"
+                            icon={<img alt='cart empty' src={cartEmpty} />}
+                        />)
                     }
-                    <ModalConfirmation title='Xóa sản phẩm yêu thích'
-                        isOpen={isOpenModalConfirmationDelete}
-                        onOk={handleOkConfirmationDeleteSelecteds}
-                        onCancel={handleCloseConfirmationDeleteSelecteds}
-                        contentModal={`Bạn có muốn xóa ${productIdSlecteds.length} sản phẩm không?`}
-                        contentButtonCancel='Không'
-                        contentButtonOk='Đồng ý' />
                 </Card>
             </div>
         </Spinning>

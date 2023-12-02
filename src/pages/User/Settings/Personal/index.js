@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
+import validator from 'validator';
 import classNames from 'classnames/bind';
 import styles from './Personal.module.scss';
+import Spinning from "~/components/Spinning";
 import { useAuthUser } from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
 import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
-import { getUserById, editUserInfo } from "~/api/user";
+import { getUserById, editFullNameUser, editAvatarUser } from "~/api/user";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { Col, Row, Form, Input, Button, Upload, Card, Avatar } from 'antd';
 
@@ -28,12 +30,15 @@ function Personal() {
 
     /// states
     const navigate = useNavigate();
+    const [isLoadingSpinning, setIsLoadingSpinning] = useState(true);
     const [userInfo, setUserInfo] = useState({});
     const [imgPreview, setImgPreview] = useState('');
     const [reloadUserInfoFlag, setReloadUserInfoFlag] = useState(false);
-    const [isloadingButtonSave, setIsloadingButtonSave] = useState(false);
+    const [isloadingButtonSaveInfo, setIsloadingButtonSaveInfo] = useState(false);
+    const [isloadingButtonSaveAvatar, setIsloadingButtonSaveAvatar] = useState(false);
     const [fileList, setFileList] = useState([]);
-    const [form] = Form.useForm();
+    const [formUserInfo] = Form.useForm();
+    const [formUserAvatar] = Form.useForm();
     ///
 
     /// contexts
@@ -51,6 +56,8 @@ function Personal() {
             return navigate('/login');
         }
 
+        setIsLoadingSpinning(true);
+
         getUserById(user.id)
             .then((res) => {
                 if (res.status === 200) {
@@ -65,6 +72,10 @@ function Personal() {
                         twoFactorAuthentication: res.data.twoFactorAuthentication,
                         status: res.data.status ? 1 : 0,
                     });
+
+                    formUserInfo.setFieldValue("fullName", res.data.fullname);
+
+                    setIsLoadingSpinning(false);
                 }
             })
             .catch((error) => {
@@ -76,33 +87,24 @@ function Personal() {
     ///
 
     /// handles
-    const loadingButtonSave = () => {
-        setIsloadingButtonSave(true);
-    }
-
-    const unLoadingButtonSave = () => {
-        setIsloadingButtonSave(false);
-    }
-
     const reloadUserInfo = () => {
         setReloadUserInfoFlag(!reloadUserInfoFlag);
     }
 
-    const onFinish = (values) => {
-        loadingButtonSave();
+    const onFinishFormInfo = (value) => {
+        // debugger
+        setIsloadingButtonSaveInfo(true);
 
+        const { fullName } = value;
         if (user === null || user === undefined) return navigate('/login');
-
-        const { fileUpload, fullName } = values;
 
         // data request dto
         const dataRequest = {
             userId: user.id,
-            fullName: fullName,
-            avatar: fileUpload ? fileUpload.fileList[0].originFileObj : null
+            fullName: fullName
         }
 
-        editUserInfo(dataRequest)
+        editFullNameUser(dataRequest)
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
@@ -110,15 +112,59 @@ function Personal() {
                     if (status.responseCode === RESPONSE_CODE_SUCCESS) {
                         reloadUserInfo();
                         notification("success", "Chỉnh sửa thông tin thành công");
-
-                        form.resetFields();
-                        unLoadingButtonSave();
+                        setIsloadingButtonSaveInfo(false);
                     }
                 }
             })
             .catch(error => {
                 console.error(error);
             });
+
+    };
+
+    const fullNameValidator = (value) => {
+        let newFullName = formUserInfo.getFieldValue(value.field);
+
+        if (newFullName === undefined || newFullName === "") {
+            return Promise.reject("Họ và tên không được bỏ trống");
+        } else if (!validator.isAlpha(newFullName, 'vi-VN', { ignore: ' ' })) {
+
+            return Promise.reject("Họ và tên chỉ chứa các kí tự chữ cái");
+        } else {
+            return Promise.resolve()
+
+        }
+    }
+
+    const onFinishFormAvatar = (values) => {
+        setIsloadingButtonSaveAvatar(true);
+
+        if (user === null || user === undefined) return navigate('/login');
+
+        const { fileUpload } = values;
+
+        // data request dto
+        const dataRequest = {
+            userId: user.id,
+            avatar: fileUpload ? fileUpload.fileList[0].originFileObj : null
+        }
+
+        editAvatarUser(dataRequest)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        reloadUserInfo();
+                        notification("success", "Chỉnh sửa ảnh đại diện thành công");
+
+                        formUserAvatar.resetFields();
+                        setFileList([]);
+                        setIsloadingButtonSaveAvatar(false);
+                    }
+                }
+            })
+            .catch(error => { });
 
     };
 
@@ -142,20 +188,25 @@ function Personal() {
     ///
 
     return (
-        <>
+        <Spinning spinning={isLoadingSpinning}>
             <Card title="Thông tin cá nhân" style={styleCard} type="inner">
-                <Form
-                    labelCol={{
-                        flex: '110px',
-                    }}
-                    name="control-hooks"
-                    form={form}
-                    onFinish={onFinish}
-                    labelWrap >
-                    <Row>
-                        <Col span={15} offset={1} style={{ borderRight: '1px solid #e8e8e8' }}>
-
-                            <Form.Item name='fullName' label="Họ và tên" labelAlign="left" style={{ width: '100%' }}>
+                <Row>
+                    <Col span={15} offset={1} style={{ borderRight: '1px solid #e8e8e8' }}>
+                        <Form
+                            labelCol={{
+                                flex: '110px',
+                            }}
+                            name="control-hooks"
+                            form={formUserInfo}
+                            onFinish={onFinishFormInfo}
+                            labelWrap >
+                            <Form.Item name='fullName' label="Họ và tên" labelAlign="left" style={{ width: '100%' }}
+                                rules={[
+                                    {
+                                        validator: fullNameValidator
+                                    }
+                                ]}
+                            >
                                 <Row gutter={8}>
                                     <Col span={17}>
                                         <Input value={userInfo.fullname} style={{ width: '100%' }} onChange={(e) => setUserInfo({ ...userInfo, fullname: e.target.value })} />
@@ -186,14 +237,19 @@ function Personal() {
                             <Form.Item >
                                 <Row>
                                     <Col offset={4}>
-                                        <Button type="primary" htmlType="submit" loading={isloadingButtonSave}>Lưu</Button>
+                                        <Button type="primary" htmlType="submit" loading={isloadingButtonSaveInfo}>Lưu thông tin cá nhân</Button>
                                     </Col>
                                 </Row>
                             </Form.Item>
-                        </Col >
+                        </Form>
+                    </Col >
 
 
-                        <Col span={8}>
+                    <Col span={8}>
+                        <Form
+                            onFinish={onFinishFormAvatar}
+                            form={formUserAvatar}
+                        >
                             <div className={cx('container-image')}>
                                 {imgPreview ?
                                     <Avatar size={100} src={imgPreview} />
@@ -211,11 +267,21 @@ function Personal() {
                                     </Upload>
                                 </Form.Item>
                             </div>
-                        </Col>
-                    </Row >
-                </Form>
+                            {
+                                fileList.length > 0 ? (
+                                    <Row className={cx('flex-item-center')}>
+                                        <Col>
+                                            <Button type="primary" htmlType="submit" loading={isloadingButtonSaveAvatar}>Lưu ảnh đại diện</Button>
+                                        </Col>
+                                    </Row>
+                                ) : <></>
+                            }
+
+                        </Form>
+                    </Col>
+                </Row >
             </Card >
-        </>
+        </Spinning>
     );
 }
 

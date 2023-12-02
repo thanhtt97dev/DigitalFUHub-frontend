@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
 import ModalAlert from '~/components/Modals/ModalAlert';
 import ModalConfirmation from '~/components/Modals/ModalConfirmation';
+import { NotificationContext } from '~/context/UI/NotificationContext';
 import { formatPrice } from '~/utils';
 import { addOrder } from '~/api/order';
 import { deleteCart } from '~/api/cart';
 import { formatNumber } from '~/utils';
 import { useAuthUser } from 'react-auth-kit';
 import { getCustomerBalance } from '~/api/user';
+import { useNavigate } from 'react-router-dom';
 import { EuroCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, Col, Typography, Checkbox, Divider, Card, Space } from 'antd';
 import {
@@ -42,6 +44,11 @@ const Prices = ({ dataPropPriceComponent }) => {
     /// variables
     const auth = useAuthUser();
     const user = auth();
+    const navigate = useNavigate();
+    ///
+
+    /// contexts
+    const notification = useContext(NotificationContext)
     ///
 
     /// states
@@ -196,18 +203,21 @@ const Prices = ({ dataPropPriceComponent }) => {
                 if (res.status === 200) {
                     const data = res.data;
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        unLoadingButtonBuy();
+                        notification("success", "Thanh toán đơn hàng thành công, đơn hàng của bạn đang được xử lý");
+                        navigate('/history/order');
                         // delete cart selecteds
                         deleteCart(dataRemoveCart)
                             .then((res) => {
                                 if (res.status === 200) {
                                     const data = res.data;
                                     if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
-                                        setCartDetailIdSelecteds([]);
-                                        unLoadingButtonBuy();
+                                        // setCartDetailIdSelecteds([]);
+                                        // unLoadingButtonBuy();
 
                                         // reload balance
-                                        reloadCoinUser();
-                                        setReloadBalanceFlag(!reloadBalanceFlag);
+                                        // reloadCoinUser();
+                                        // setReloadBalanceFlag(!reloadBalanceFlag);
                                     }
                                 }
                             })
