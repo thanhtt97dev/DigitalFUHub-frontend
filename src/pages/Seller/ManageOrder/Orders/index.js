@@ -236,7 +236,7 @@ function Orders() {
                         </Row>
                     </Form>
                 </Card>
-                <Card style={{ marginTop: "20px", height: '100vh' }}>
+                <Card style={{ marginTop: "20px", height: '75vh' }}>
                     <Table
                         pagination={{
                             current: page,
@@ -249,7 +249,7 @@ function Orders() {
                         onChange={handleTableChange}
                         scroll={
                             {
-                                y: 290,
+                                y: 600,
                                 x: 1300
                             }
                         }
