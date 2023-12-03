@@ -11,6 +11,8 @@ import {
     RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_INSUFFICIENT_BALANCE,
     RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED,
     RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_AMOUNT_A_DAY,
+    RESPONSE_CODE_BANK_SELLER_REQUEST_WITHDRAW_ACCOUNT_BALLANCE_REQUIRED,
+    ACCOUNT_BALANCE_REQUIRED_FOR_SELLER,
     MIN_PRICE_CAN_WITHDRAW,
     MAX_PRICE_CAN_WITHDRAW,
     NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY
@@ -50,7 +52,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
     }, [userId])
 
     const handleSubmit = () => {
-
+        setConfirmLoading(true)
         if (amount < MIN_PRICE_CAN_WITHDRAW) {
             return;
         }
@@ -78,6 +80,8 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                         <Space direction="vertical">
                             <span>Xin lỗi ! Hôm nay bạn đã yêu cầu rút {formatPrice(res.data.result)}!</span>
                         </Space>)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_SELLER_REQUEST_WITHDRAW_ACCOUNT_BALLANCE_REQUIRED) {
+                    notification("error", <span>Số du sau khi rút của bạn phải lớn hơn {formatPrice(ACCOUNT_BALANCE_REQUIRED_FOR_SELLER)} </span>)
                 } else {
                     notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
                 }
@@ -85,10 +89,8 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
             .catch(() => {
                 notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
             }).finally(() => {
-                setTimeout(() => {
-                    callBack();
-                    setConfirmLoading(false);
-                }, 500);
+                setTimeout(() => { setConfirmLoading(false); }, 500);
+                callBack();
             })
     }
 
@@ -97,7 +99,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
         setAmount(e.target.value)
         if (value < MIN_PRICE_CAN_WITHDRAW) {
             setDisableBtnSubmit(true)
-            setMessage("Số tiền cần phải lớn hơn hoặc bằng 500,000 VND ")
+            setMessage("Số tiền cần phải lớn hơn hoặc bằng 200,000 VND ")
         } else if (value > MAX_PRICE_CAN_WITHDRAW) {
             setMessage("Số tiền cần phải nhỏ hơn hoặc bằng 3,000,000 VND ")
             setDisableBtnSubmit(true)
@@ -142,9 +144,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
             <Modal
                 title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Yêu cầu rút tiền</>}
                 open={openModal}
-                onOk={handleSubmit}
                 onCancel={() => setOpenModal(false)}
-                confirmLoading={confirmLoading}
                 width={"35%"}
                 footer={
                     <Space>
@@ -153,6 +153,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                             type="primary"
                             onClick={handleSubmit}
                             disabled={disableBtnSubmit}
+                            loading={confirmLoading}
                         >
                             Xác nhận
                         </Button>
