@@ -2,7 +2,7 @@ import CardOrderItem from "../CardOrderItem";
 import { Col, Empty, Row, Spin } from "antd";
 import { useContext, useEffect, useRef, useState } from "react";
 import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { getUserId } from "~/utils";
 
@@ -73,8 +73,10 @@ function OrdersComplaint({ status, loading, setLoading, onActiveTabKey = () => {
                     })
                     notification("success", "Xác nhận đơn hàng thành công.")
                     onActiveTabKey('tab2')
+                } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
+                    notification("error", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
                 } else {
-                    notification("error", "Đã có lỗi xảy ra.")
+                    notification("error", "Vui lòng kiểm tra lại.")
                 }
             })
             .catch(err => { notification("error", "Đã có lỗi xảy ra.") })

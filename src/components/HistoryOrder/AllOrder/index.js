@@ -94,7 +94,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
                     })
                     notification("success", "Xác nhận đơn hàng thành công.")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
-                    notification("error", "Trạng thái đơn hàng đã được thay đổi, vui lòng tải lại trang.")
+                    notification("error", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
                 } else {
                     notification("error", "Vui lòng kiểm tra lại.")
                 }

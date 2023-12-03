@@ -16,7 +16,7 @@ import {
     MessageOutlined
 } from "@ant-design/icons";
 import { Button, Card, Col, Divider, Row, Typography, Tag, Spin, Descriptions } from "antd";
-import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_NOT_FEEDBACK_AGAIN } from "~/constants";
+import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_NOT_FEEDBACK_AGAIN, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
 import { useAuthUser } from 'react-auth-kit'
@@ -68,6 +68,7 @@ function OrderDetail() {
     }
 
     const handleOrderComplete = () => {
+        setButtonLoading(true);
         // call api
         const dataBody = {
             userId: getUserId(),
@@ -79,13 +80,20 @@ function OrderDetail() {
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     getOrderDetail();
-                }
-                else {
+                    notification("success", "Xác nhận đơn hàng thành công.")
+                } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
+                    notification("error", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
+                } else {
                     notification("error", "Vui lòng kiểm tra lại.")
                 }
             })
             .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
-            .finally();
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setButtonLoading(false);
+                    clearTimeout(idTimeout);
+                }, 500)
+            });
     }
     const [isModalAddFeedbackOpen, setIsModalAddFeedbackOpen] = useState(false);
     const orderDetailRef = useRef();
@@ -185,7 +193,7 @@ function OrderDetail() {
                     <ModalChangeOrderStatusComplaint orderId={orderId} shopId={order?.shopId} callBack={handleOrderComplaint} />
                 </Col>
                 <Col>
-                    <Button type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
+                    <Button loading={buttonLoading} type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
                 </Col>
             </Row>
         } else if (order?.statusId === ORDER_CONFIRMED) {
@@ -206,7 +214,7 @@ function OrderDetail() {
                     <Tag icon={<SyncOutlined size={16} spin />} style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }} color="warning">Đang khiếu nại</Tag>
                 </Col>
                 <Col>
-                    <Button type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
+                    <Button loading={buttonLoading} type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
                 </Col>
 
             </Row>
@@ -226,7 +234,7 @@ function OrderDetail() {
                     <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
                 </Col>
                 <Col>
-                    <Button type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
+                    <Button loading={buttonLoading} type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
                 </Col>
             </Row>
         } else if (order?.statusId === ORDER_REJECT_COMPLAINT) {
@@ -318,13 +326,16 @@ function OrderDetail() {
                                     </Col>
                                     <Col>
                                         <Title level={5}>
-                                            <Button
-                                                type="default"
-                                                size="small"
-                                                icon={<ShopOutlined />}
-                                            >
-                                                Xem cửa hàng
-                                            </Button></Title>
+                                            <Link to={`/shop/${order.shopId}`}>
+                                                <Button
+                                                    type="default"
+                                                    size="small"
+                                                    icon={<ShopOutlined />}
+                                                >
+                                                    Xem cửa hàng
+                                                </Button>
+                                            </Link>
+                                        </Title>
                                     </Col>
                                     <Col>
                                         <Title level={5}>
