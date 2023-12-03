@@ -32,7 +32,7 @@ const Products = ({ products, searchParam, totalProducts, setSearchParam }) => {
 
     /// handles
     const handleClickToProduct = (productId) => {
-        return navigate(`/product/${productId}`);;
+        return navigate(`/product/${productId}`);
     }
 
     const handleChangePage = (page) => {

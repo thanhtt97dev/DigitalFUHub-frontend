@@ -79,7 +79,6 @@ function Personal() {
                 }
             })
             .catch((error) => {
-                console.log(error);
                 notification("error", "Chưa thể đáp ứng yêu cầu! Hãy thử lại!")
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps

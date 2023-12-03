@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './Home.module.scss';
 import classNames from 'classnames/bind';
 import Spinning from "~/components/Spinning";
+import Sliders from '~/components/Home/Sliders';
 import Products from '~/components/Home/Products';
 import Categories from '~/components/Home/Categories';
 import { FloatButton } from 'antd';
@@ -55,6 +56,7 @@ const Home = () => {
     return (
         <Spinning spinning={isLoadingProducts}>
             <div className={cx('container')}>
+                <Sliders />
                 <Categories searchParam={searchParam}
                     setSearchParam={setSearchParam} />
                 <Products products={products}
