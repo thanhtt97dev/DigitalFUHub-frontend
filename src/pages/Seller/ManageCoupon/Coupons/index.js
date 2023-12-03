@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Typography, Tag, Spin } from "antd";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Typography, Tag } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
 import Spinning from "~/components/Spinning";
@@ -27,8 +27,6 @@ const { Title } = Typography;
 const cx = classNames.bind(styles)
 
 const { RangePicker } = DatePicker;
-
-const { confirm } = Modal;
 
 // const removeSecondOfDateTime = (date) => date.slice(0, date.length - 6) + ' ' + date.slice(-2)
 
@@ -162,60 +160,62 @@ function Coupons() {
     //     })
     // }
     const handleRemoveCoupon = (couponId) => {
-        confirm({
-            title: `Bạn có muốn xóa mã giảm giá này không?`,
-            okText: 'Đồng ý',
-            cancelText: 'Hủy',
-            onOk() {
-                const data = {
-                    userId: getUserId(),
-                    couponId: couponId,
+        setButtonLoading(true)
+        const data = {
+            userId: getUserId(),
+            couponId: couponId,
+        }
+        removeCouponSeller(data)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setSearchData({
+                        ...searchData,
+                        userId: getUserId(),
+                    });
+                    notification("success", "Xóa mã giảm giá thành công.")
+                } else {
+                    notification("error", "Xóa mã giảm giá thất bại.")
                 }
-                removeCouponSeller(data)
-                    .then((res) => {
-                        if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                            setSearchData({
-                                ...searchData,
-                                userId: getUserId(),
-                            });
-                            notification("success", "Xóa mã giảm giá thành công.")
-                        } else {
-                            notification("error", "Xóa mã giảm giá thất bại.")
-                        }
-                    })
-                    .catch((err) => {
-                        notification("error", "Đã có lỗi xảy ra.")
-                    })
-            },
-            onCancel() {
-            }
-        })
+            })
+            .catch((err) => {
+                notification("error", "Đã có lỗi xảy ra.")
+            })
+            .finally(() => {
+                couponIdRef.current = 0;
+                const idTimeout = setTimeout(() => {
+                    setButtonLoading(false);
+                    handleCloseDeleteCouponModal();
+                    clearTimeout(idTimeout);
+                }, 500)
+            })
+
     }
     const handleUpdateCouponFinish = (couponId) => {
-        confirm({
-            title: `Bạn có muốn kết thúc chương trình giảm giá này không?`,
-            okText: 'Đồng ý',
-            cancelText: 'Hủy',
-            onOk() {
-                updateCouponFinish(couponId)
-                    .then((res) => {
-                        if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                            setSearchData({
-                                ...searchData,
-                                userId: getUserId(),
-                            });
-                            notification("success", "Kết thúc chương trình giảm giá thành công.")
-                        } else {
-                            notification("error", "Kết thúc chương trình giảm giá thất bại.")
-                        }
-                    })
-                    .catch((err) => {
-                        notification("error", "Đã có lỗi xảy ra.")
-                    })
-            },
-            onCancel() {
-            }
-        })
+        setButtonLoading(true);
+        updateCouponFinish(couponId)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setSearchData({
+                        ...searchData,
+                        userId: getUserId(),
+                    });
+                    notification("success", "Kết thúc chương trình giảm giá thành công.")
+                } else {
+                    notification("error", "Kết thúc chương trình giảm giá thất bại.")
+                }
+            })
+            .catch((err) => {
+                notification("error", "Đã có lỗi xảy ra.")
+            })
+            .finally(() => {
+                couponIdRef.current = 0;
+                const idTimeout = setTimeout(() => {
+                    setButtonLoading(false);
+                    handleCloseFinishCouponModal();
+                    clearTimeout(idTimeout);
+                }, 500)
+            })
+
     }
     const [isOpenOptionAddCouponModal, setIsOpenOptionAddCouponModal] = useState(false);
 
@@ -228,7 +228,7 @@ function Coupons() {
             })
         }
     };
-
+    const couponIdRef = useRef(0);
     const table = (data) => {
         return <>
             <Table
@@ -363,7 +363,7 @@ function Coupons() {
                                     </Link>
                                 </Col>
                                 <Col>
-                                    <Button type="link" style={{ width: '80px' }} onClick={() => handleRemoveCoupon(record.couponId)}>Xóa</Button>
+                                    <Button type="link" style={{ width: '80px' }} onClick={() => { handleOpenDeleteCouponModal(); couponIdRef.current = record.couponId }}>Xóa</Button>
                                 </Col>
                             </Row>
                         } else if (startDate.isBefore(now) && now.isBefore(endDate)) {
@@ -374,7 +374,7 @@ function Coupons() {
                                     </Link>
                                 </Col>
                                 <Col>
-                                    <Button type="link" style={{ width: '80px' }} onClick={() => handleUpdateCouponFinish(record.couponId)}>Kết thúc</Button>
+                                    <Button type="link" style={{ width: '80px' }} onClick={() => { handleOpenFinishCouponModal(); couponIdRef.current = record.couponId }}>Kết thúc</Button>
                                 </Col>
                             </Row>
                         } else {
@@ -435,9 +435,53 @@ function Coupons() {
         }
         setActiveTabKey(key);
     }
+    const [buttonLoading, setButtonLoading] = useState(false);
+    const [showDeleteCouponModal, setShowDeleteCouponModal] = useState(false);
 
+    const handleOpenDeleteCouponModal = () => {
+        setShowDeleteCouponModal(true);
+    }
+    const handleCloseDeleteCouponModal = () => {
+        setShowDeleteCouponModal(false);
+    }
+    const [showFinishCouponModal, setShowFinishCouponModal] = useState(false);
+
+    const handleOpenFinishCouponModal = () => {
+        setShowFinishCouponModal(true);
+    }
+    const handleCloseFinishCouponModal = () => {
+        setShowFinishCouponModal(false);
+    }
     return (
         <>
+            <Modal title="Xác nhận" open={showDeleteCouponModal} footer={null}
+                onOk={handleCloseDeleteCouponModal}
+                onCancel={handleCloseDeleteCouponModal}
+            >
+                <div>Bạn có muốn xóa mã giảm giá này không?</div>
+                <Row justify="end" gutter={[16, 16]}>
+                    <Col>
+                        <Button onClick={handleCloseDeleteCouponModal} danger>Hủy</Button>
+                    </Col>
+                    <Col>
+                        <Button loading={buttonLoading} type="primary" onClick={() => handleRemoveCoupon(couponIdRef.current)}>Đồng ý</Button>
+                    </Col>
+                </Row>
+            </Modal>
+            <Modal title="Xác nhận" open={showFinishCouponModal} footer={null}
+                onOk={handleCloseFinishCouponModal}
+                onCancel={handleCloseFinishCouponModal}
+            >
+                <div>Bạn có kết thúc chương trình giảm giá này không?</div>
+                <Row justify="end" gutter={[16, 16]}>
+                    <Col>
+                        <Button onClick={handleCloseFinishCouponModal} danger>Hủy</Button>
+                    </Col>
+                    <Col>
+                        <Button loading={buttonLoading} type="primary" onClick={() => handleUpdateCouponFinish(couponIdRef.current)}>Đồng ý</Button>
+                    </Col>
+                </Row>
+            </Modal>
             <Modal title="Chọn loại mã giảm giá" open={isOpenOptionAddCouponModal}
                 onOk={() => { setIsOpenOptionAddCouponModal(false) }}
                 onCancel={() => { setIsOpenOptionAddCouponModal(false) }}

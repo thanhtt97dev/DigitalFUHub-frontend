@@ -3,7 +3,7 @@ import { Col, Empty, Row, Spin } from "antd";
 import { useEffect, useState, useContext, useRef } from "react";
 import { getUserId } from "~/utils";
 import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
-import { ORDER_COMPLAINT, ORDER_CONFIRMED, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { ORDER_CONFIRMED, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 
 function OrdersWaitConfirm({ status, loading, setLoading, onActiveTabKey = () => { } }) {
@@ -86,8 +86,10 @@ function OrdersWaitConfirm({ status, loading, setLoading, onActiveTabKey = () =>
                         notification("success", "Xác nhận đơn hàng thành công.")
                         onActiveTabKey("tab2")
                     })
+                } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
+                    notification("error", "Trạng thái đơn hàng đã được thay đổi, vui lòng tải lại trang.")
                 } else {
-                    notification("error", "Đã có lỗi xảy ra.")
+                    notification("error", "Vui lòng kiểm tra lại.")
                 }
             })
             .catch(err => { notification("error", "Đã có lỗi xảy ra.") })

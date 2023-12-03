@@ -1,12 +1,13 @@
 import CardOrderItem from "../CardOrderItem";
 import { Avatar, Button, Col, Empty, Image, Modal, Rate, Row, Spin, Typography } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { ParseDateTime, getUserId } from "~/utils";
 import { getListOrdersCustomer } from "~/api/order";
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { RESPONSE_CODE_NOT_FEEDBACK_AGAIN, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
 import logoFPT from '~/assets/images/fpt-logo.jpg'
 import { Link } from "react-router-dom";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 
 const { Title, Text, Paragraph } = Typography
 function OrdersConfirmed({ status, loading, setLoading }) {
@@ -16,9 +17,11 @@ function OrdersConfirmed({ status, loading, setLoading }) {
         offset: 0,
         statusId: status
     });
+    const notification = useContext(NotificationContext);
     const [orders, setOrders] = useState([]);
     const nextOffset = useRef(0)
     const [loadingMoreData, setLoadingMoreData] = useState(false);
+    const [buttonLoading, setButtonLoading] = useState(false);
     useEffect(() => {
         if (nextOffset.current !== -1) {
             if (nextOffset.current !== 0) {
@@ -57,7 +60,8 @@ function OrdersConfirmed({ status, loading, setLoading }) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-    const handleCustomerFeedback = (formData) => {
+    const handleCustomerFeedback = (formData, callback) => {
+        setButtonLoading(true);
         const orderId = formData.get("orderId");
         const orderDetailId = formData.get("orderDetailId");
         addFeedbackOrder(formData)
@@ -69,10 +73,22 @@ function OrdersConfirmed({ status, loading, setLoading }) {
                         orderDetail.isFeedback = true;
                         return [...prev];
                     })
+                    notification("success", `Đánh giá sản phẩm thành công bạn nhận được + ${res.data.result ? res.data.result : 0} xu.`);
+                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_FEEDBACK_AGAIN) {
+                    notification("error", "Sản phẩm đã được đánh giá, vui lòng tải lại trang.");
+                } else {
+                    notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.");
                 }
             })
             .catch((err) => {
-
+                notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.");
+            })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setButtonLoading(false);
+                    callback();
+                    clearTimeout(idTimeout);
+                }, 500)
             })
     }
     const [isModalViewFeedbackOpen, setIsModalViewFeedbackOpen] = useState(false);
@@ -89,14 +105,17 @@ function OrdersConfirmed({ status, loading, setLoading }) {
     const [modalLoading, setModalLoading] = useState(false);
     const handleCustomerViewFeedback = (orderId) => {
         setModalLoading(true);
+        showModalViewFeedback();
         getFeedbackDetail(getUserId(), orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setFeedbackDetail(res.data.result);
-                    showModalViewFeedback();
+                } else {
+                    notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.")
                 }
             })
             .catch((err) => {
+                notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.")
             })
             .finally(() => {
                 const idTimeout = setTimeout(() => {
@@ -124,6 +143,7 @@ function OrdersConfirmed({ status, loading, setLoading }) {
                                     totalCoinDiscount={v.totalCoinDiscount}
                                     totalCouponDiscount={v.totalCouponDiscount}
                                     totalPayment={v.totalPayment}
+                                    buttonLoading={buttonLoading}
                                     orderDetails={v.orderDetails}
                                     onFeedback={handleCustomerFeedback}
                                     onViewFeedback={() => handleCustomerViewFeedback(v.orderId)}

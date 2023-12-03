@@ -30,8 +30,8 @@ function HistoryOrderStatus({ historyOrderStatus, current }) {
         if (historyStatus?.length === 1) {
             setHistoryStatus([...historyStatus,
             {
-                orderId: 5,
-                orderStatusId: 3,
+                orderId: 0,
+                orderStatusId: ORDER_CONFIRMED,
                 dateCreate: "",
                 note: ""
             }])

@@ -23,9 +23,11 @@ function OrderDetailItem({ orderDetail, statusId, handleFeedbackOrder = () => { 
                         <Col span={24}>
                             <Row>
                                 <Col span={17}>
-                                    <Title level={5} style={{ marginBottom: 0 }}>
-                                        {orderDetail.productName.length > 70 ? <Tooltip title={orderDetail.productName}>{orderDetail.productName.slice(0, 70)}...</Tooltip> : orderDetail.productName}
-                                    </Title>
+                                    <Link to={`/product/${orderDetail.productId}`}>
+                                        <Title level={5} style={{ marginBottom: 0 }}>
+                                            {orderDetail.productName.length > 70 ? <Tooltip title={orderDetail.productName}>{orderDetail.productName.slice(0, 70)}...</Tooltip> : orderDetail.productName}
+                                        </Title>
+                                    </Link>
                                 </Col>
                                 {!orderDetail.isFeedback && statusId === ORDER_CONFIRMED && <Col offset={1} span={6}>
                                     <Row justify="end">

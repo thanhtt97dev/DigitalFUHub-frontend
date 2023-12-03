@@ -3,12 +3,12 @@ import CardOrderItem from "../CardOrderItem";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ParseDateTime, getUserId } from "~/utils";
 import { customerUpdateStatusOrder, getListOrdersCustomer } from "~/api/order";
-import { ORDER_COMPLAINT, ORDER_CONFIRMED, RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE } from "~/constants";
+import { ORDER_COMPLAINT, ORDER_CONFIRMED, RESPONSE_CODE_SUCCESS, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE, RESPONSE_CODE_NOT_FEEDBACK_AGAIN } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
 import { Link } from "react-router-dom";
 import logoFPT from '~/assets/images/fpt-logo.jpg'
-import Spinning from "~/components/Spinning";
+// import Spinning from "~/components/Spinning";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -23,7 +23,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
     const [orders, setOrders] = useState([]);
     const nextOffset = useRef(0)
     const [loadingMoreData, setLoadingMoreData] = useState(false);
-    const [loadingButton, setLoadingButton] = useState(false);
+    const [buttonLoading, setButtonLoading] = useState(false);
     useEffect(() => {
         if (nextOffset.current !== -1) {
             if (nextOffset.current !== 0) {
@@ -83,7 +83,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
             orderId: orderId,
             statusId: ORDER_CONFIRMED
         }
-        setLoadingButton(true);
+        setButtonLoading(true);
         customerUpdateStatusOrder(dataBody)
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -92,8 +92,9 @@ function AllOrder({ status = 0, loading, setLoading }) {
                         order.statusId = dataBody.statusId
                         return [...prev]
                     })
+                    notification("success", "Xác nhận đơn hàng thành công.")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
-                    notification("info", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
+                    notification("error", "Trạng thái đơn hàng đã được thay đổi, vui lòng tải lại trang.")
                 } else {
                     notification("error", "Vui lòng kiểm tra lại.")
                 }
@@ -101,13 +102,13 @@ function AllOrder({ status = 0, loading, setLoading }) {
             .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
             .finally(() => {
                 const idTimeout = setTimeout(() => {
-                    setLoadingButton(false);
+                    setButtonLoading(false);
                     clearTimeout(idTimeout);
                 }, 500)
             })
     }
-    const handleCustomerFeedback = (formData) => {
-        setLoadingButton(true);
+    const handleCustomerFeedback = (formData, callback) => {
+        setButtonLoading(true);
         const orderId = formData.get("orderId");
         const orderDetailId = formData.get("orderDetailId");
         addFeedbackOrder(formData)
@@ -119,15 +120,22 @@ function AllOrder({ status = 0, loading, setLoading }) {
                         orderDetail.isFeedback = true;
                         return [...prev];
                     })
+                    notification("success", `Đánh gián sản phẩm thành công bạn nhận được + ${res.data.result ? res.data.result : 0} xu.`);
+                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_FEEDBACK_AGAIN) {
+                    notification("error", "Sản phẩm đã được đánh giá, vui lòng tải lại trang.");
+                } else {
+                    notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.");
                 }
             })
             .catch((err) => {
+                notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.");
             })
             .finally(() => {
                 const idTimeout = setTimeout(() => {
-                    setLoadingButton(false);
+                    setButtonLoading(false);
+                    callback();
                     clearTimeout(idTimeout);
-                }, 3000)
+                }, 500)
             })
     }
     const [isModalViewFeedbackOpen, setIsModalViewFeedbackOpen] = useState(false);
@@ -143,15 +151,20 @@ function AllOrder({ status = 0, loading, setLoading }) {
     }
     const [modalLoading, setModalLoading] = useState(false);
     const handleCustomerViewFeedback = (orderId) => {
+        showModalViewFeedback();
         setModalLoading(true);
         getFeedbackDetail(getUserId(), orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setFeedbackDetail(res.data.result);
-                    showModalViewFeedback();
+                } else {
+                    handleViewFeedbackCancel();
+                    notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.")
                 }
             })
             .catch((err) => {
+                handleViewFeedbackCancel();
+                notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.")
             })
             .finally(() => {
                 setTimeout(() => {
@@ -178,7 +191,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
                                     totalCoinDiscount={v.totalCoinDiscount}
                                     totalCouponDiscount={v.totalCouponDiscount}
                                     totalPayment={v.totalPayment}
-                                    loadingButton={loadingButton}
+                                    buttonLoading={buttonLoading}
                                     orderDetails={v.orderDetails}
                                     onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
                                     onOrderComplaint={() => handleOrderComplaint(v.orderId, v.shopId)}

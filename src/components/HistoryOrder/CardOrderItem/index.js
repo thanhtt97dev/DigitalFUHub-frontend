@@ -44,7 +44,7 @@ function CardOrderItem({
     totalCouponDiscount,
     totalPayment,
     orderDetails,
-    loadingButton = false,
+    buttonLoading = false,
     onOrderComplete = () => { },
     onOrderComplaint = () => { },
     onFeedback = () => { },
@@ -90,7 +90,7 @@ function CardOrderItem({
                     <ModalChangeOrderStatusComplaint orderId={orderId} shopId={shopId} callBack={onOrderComplaint} />
                 </Col>
                 <Col>
-                    <Button loading={orderIdChoosen === orderId && loadingButton} type="primary" onClick={() => {
+                    <Button loading={orderIdChoosen === orderId && buttonLoading} type="primary" onClick={() => {
                         onOrderComplete();
                         setOrderIdChoosen(orderId);
                     }}
@@ -125,7 +125,7 @@ function CardOrderItem({
                     <Tag icon={<SyncOutlined size={16} spin />} style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }} color="warning">Đang khiếu nại</Tag>
                 </Col>
                 <Col>
-                    <Button loading={orderIdChoosen === orderId && loadingButton} type="primary" onClick={() => {
+                    <Button loading={orderIdChoosen === orderId && buttonLoading} type="primary" onClick={() => {
                         onOrderComplete();
                         setOrderIdChoosen(orderId);
                     }}>Xác nhận đơn hàng</Button>
@@ -152,7 +152,7 @@ function CardOrderItem({
                     <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
                 </Col>
                 <Col>
-                    <Button loading={orderIdChoosen === orderId && loadingButton} type="primary" onClick={() => {
+                    <Button loading={orderIdChoosen === orderId && buttonLoading} type="primary" onClick={() => {
                         onOrderComplete();
                         setOrderIdChoosen(orderId);
                     }}>Xác nhận đơn hàng</Button>
@@ -214,8 +214,7 @@ function CardOrderItem({
         } else {
             formData.append("imageFiles", null);
         }
-        handleModalFeedbackOk()
-        onFeedback(formData);
+        onFeedback(formData, handleModalFeedbackOk);
     }
 
     const handleOpenChatWithSeller = () => {
@@ -241,7 +240,7 @@ function CardOrderItem({
 
     return <>
         <ModalAddFeedbackOrder
-            buttonLoading={loadingButton}
+            buttonLoading={buttonLoading}
             isModalOpen={isModalOpen}
             handleModalFeedbackOk={handleModalFeedbackOk}
             handleModalFeedbackCancel={handleModalFeedbackCancel}
@@ -277,6 +276,11 @@ function CardOrderItem({
                             Nhắn tin
                         </Button></Title>
                 </Col>
+                <Col flex={5}>
+                    <Row justify="end">
+                        <div style={{ color: 'rgba(0, 0, 0, 0.88)' }}>Mã đơn hàng: {orderId}</div>
+                    </Row>
+                </Col>
             </Row>}
             bordered={true}
         >
@@ -299,9 +303,11 @@ function CardOrderItem({
                                     <Col span={24}>
                                         <Row>
                                             <Col span={17}>
-                                                <Title level={5}>
-                                                    {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
-                                                </Title>
+                                                <Link to={`/product/${v.productId}`}>
+                                                    <Title level={5}>
+                                                        {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
+                                                    </Title>
+                                                </Link>
                                             </Col>
                                             {!v.isFeedback && statusId === ORDER_CONFIRMED && getDistanceDayTwoDate(orderDate, new Date()) <= 7 && <Col offset={1} span={6}>
                                                 <Row justify="end">

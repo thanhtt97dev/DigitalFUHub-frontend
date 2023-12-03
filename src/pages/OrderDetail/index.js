@@ -16,7 +16,7 @@ import {
     MessageOutlined
 } from "@ant-design/icons";
 import { Button, Card, Col, Divider, Row, Typography, Tag, Spin, Descriptions } from "antd";
-import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED } from "~/constants";
+import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_NOT_FEEDBACK_AGAIN } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
 import { useAuthUser } from 'react-auth-kit'
@@ -79,7 +79,8 @@ function OrderDetail() {
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     getOrderDetail();
-                } else {
+                }
+                else {
                     notification("error", "Vui lòng kiểm tra lại.")
                 }
             })
@@ -97,6 +98,7 @@ function OrderDetail() {
     const handleModalAddFeedbackCancel = () => {
         setIsModalAddFeedbackOpen(false);
     };
+    const [buttonLoading, setButtonLoading] = useState(false);
     const handleSubmitFeedback = (values) => {
         var formData = new FormData();
         formData.append("userId", getUserId());
@@ -111,15 +113,28 @@ function OrderDetail() {
         } else {
             formData.append("imageFiles", null);
         }
-        handleModalAddFeedbackOk()
+        setButtonLoading(true);
+
         addFeedbackOrder(formData)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    notification("success", `Đánh giá sản phẩm thành công bạn nhận được + ${res.data.result ? res.data.result : 0} xu.`);
                     getOrderDetail();
+                } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_FEEDBACK_AGAIN) {
+                    notification("error", "Sản phẩm đã được đánh giá, vui lòng tải lại trang.");
+                } else {
+                    notification("error", "Vui lòng kiểm tra lại.")
                 }
             })
             .catch((err) => {
-
+                notification("error", "Đã có lỗi xảy ra.")
+            })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setButtonLoading(false);
+                    handleModalAddFeedbackOk();
+                    clearTimeout(idTimeout);
+                }, 500)
             })
     }
     const [isModalViewFeedbackOpen, setIsModalViewFeedbackOpen] = useState(false);
@@ -134,14 +149,17 @@ function OrderDetail() {
         setIsModalViewFeedbackOpen(false);
     }
     const handleCustomerViewFeedback = (orderId) => {
+        showModalViewFeedback();
         getFeedbackDetail(getUserId(), orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    showModalViewFeedback();
                     setFeedbackDetail(res.data.result);
+                } else {
+                    notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.")
                 }
             })
             .catch((err) => {
+                notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.")
             })
     }
 
@@ -257,6 +275,7 @@ function OrderDetail() {
             feedbackDetail={feedbackDetail}
         />
         <ModalAddFeedbackOrder
+            buttonLoading={buttonLoading}
             isModalOpen={isModalAddFeedbackOpen}
             handleModalFeedbackOk={handleModalAddFeedbackOk}
             handleModalFeedbackCancel={handleModalAddFeedbackCancel}
@@ -357,10 +376,13 @@ function OrderDetail() {
                                                 }
                                                 infoPayment.push({
                                                     key: '3',
-                                                    label: 'Số xu sử dụng',
+                                                    label: <div>
+                                                        <span>Số xu sử dụng </span>
+                                                        <span>({order?.totalCoinDiscount} xu)</span>
+                                                    </div>,
                                                     labelStyle: { 'text-align': 'right' },
                                                     span: '3',
-                                                    children: <Text>-{order?.totalCoinDiscount} xu</Text>
+                                                    children: <Text>-{formatPrice(order?.totalCoinDiscount)}</Text>
                                                 })
                                                 infoPayment.push({
                                                     key: '4',
