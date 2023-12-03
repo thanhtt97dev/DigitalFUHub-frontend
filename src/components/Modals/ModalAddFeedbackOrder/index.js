@@ -5,6 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Col, Rate, Row, Typography, Form, Upload, Modal, } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import { UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
 
 const { Text } = Typography;
 const getBase64 = (file) =>
@@ -45,7 +46,16 @@ function ModalAddFeedbackOrder(
         let newFileList = [...info.fileList];
 
         newFileList = newFileList.slice(-5);
-
+        const lsFileExist = newFileList.filter(v => v.size > UPLOAD_FILE_SIZE_LIMIT)
+        if (lsFileExist.length > 0) {
+            newFileList = newFileList.filter(v => v.size <= UPLOAD_FILE_SIZE_LIMIT)
+            var msgFileExceedLimit = [];
+            lsFileExist.forEach(v => {
+                msgFileExceedLimit.push(`${v.name} không thể được tải lên.`);
+            })
+            setMsgNotificationFileExceedLimit(msgFileExceedLimit)
+            setOpenNotificationFileExceedLimit(true);
+        }
         newFileList = newFileList.map((file) => {
             if (file.response) {
                 file.url = file.response.url;
@@ -56,6 +66,12 @@ function ModalAddFeedbackOrder(
         });
         setFileList(newFileList);
     }
+    const [openNotificationFileExceedLimit, setOpenNotificationFileExceedLimit] = useState(false);
+    const [msgNotificationFileExceedLimit, setMsgNotificationFileExceedLimit] = useState([]);
+    const handleCloseNotificationFileExceedLimit = () => {
+        setMsgNotificationFileExceedLimit([]);
+        setOpenNotificationFileExceedLimit(false);
+    }
     return (<>
         <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
             <img
@@ -65,6 +81,22 @@ function ModalAddFeedbackOrder(
                 }}
                 src={previewImage}
             />
+        </Modal>
+        <Modal
+            open={openNotificationFileExceedLimit}
+            footer={null}
+            onCancel={handleCloseNotificationFileExceedLimit}
+            title="Lưu ý"
+        >
+            <div>
+                {msgNotificationFileExceedLimit.map((v, i) => <div key={i}>{v}</div>)}
+                <div>- Kích thước tập tin vượt quá 2.0 MB.</div>
+                <Row justify="end">
+                    <Col>
+                        <Button type="primary" danger onClick={handleCloseNotificationFileExceedLimit}>Xác nhận</Button>
+                    </Col>
+                </Row>
+            </div>
         </Modal>
         <Modal
             title="Đánh giá sản phẩm"

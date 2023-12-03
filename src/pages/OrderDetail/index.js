@@ -281,6 +281,7 @@ function OrderDetail() {
             handleModalFeedbackCancel={handleModalAddFeedbackCancel}
             handleSubmitFeedback={handleSubmitFeedback}
         />
+
         {order &&
             <Card
                 title={

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Card, Table, Tag, Button, Form, Input, Space, DatePicker, Select, Row, Col } from "antd";
+import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames/bind";
@@ -236,7 +236,7 @@ function Orders() {
                         </Row>
                     </Form>
                 </Card>
-                <Card style={{ marginTop: "20px" }}>
+                <Card style={{ marginTop: "20px", height: '100vh' }}>
                     <Table
                         pagination={{
                             current: page,
@@ -247,9 +247,16 @@ function Orders() {
                         dataSource={orders}
                         size='small'
                         onChange={handleTableChange}
+                        scroll={
+                            {
+                                y: 290,
+                                x: 1300
+                            }
+                        }
                     >
                         <Column
-                            width="9%"
+                            width="12%"
+                            fixed="left"
                             title="Mã đơn hàng"
                             key="orderId"
                             render={(_, record) => (
@@ -258,6 +265,7 @@ function Orders() {
                         />
                         <Column
                             width="10%"
+                            fixed="left"
                             title="Người mua"
                             key="username"
                             render={(_, record) => (
@@ -275,14 +283,46 @@ function Orders() {
                         />
                         <Column
                             width="15%"
-                            title="Tổng đơn hàng"
+                            title="Mã giảm giá sử dụng"
+                            key="totalAmount"
+                            render={(_, record) => (
+                                <p>{record.couponCode ? record.couponCode : "Không sử dụng"}</p>
+                            )}
+                        />
+                        <Column
+                            width="15%"
+                            title="Tổng giá trị đơn hàng"
                             key="totalAmount"
                             render={(_, record) => (
                                 <p>{formatPrice(record.totalAmount - record.totalCouponDiscount)}</p>
                             )}
                         />
                         <Column
+                            width="10%"
+                            title="Phí dịch vụ"
+                            key="businessFee"
+                            render={(_, record) => (
+                                <p>{record.businessFee}%</p>
+                            )}
+                        />
+                        <Column
                             width="15%"
+                            title="Lợi nhuận"
+                            key="profit"
+                            render={(_, record) => (
+                                <p>{formatPrice(record.profit)}</p>
+                            )}
+                        />
+                        <Column
+                            width="15%"
+                            title="Đánh giá"
+                            key="isFeedback"
+                            render={(_, record) => (
+                                <p>{record.isFeedback ? "Đã đánh giá" : "Chưa đánh giá"}</p>
+                            )}
+                        />
+                        <Column
+                            width="13%"
                             title="Trạng thái"
                             key="orderStatusId"
                             render={(_, record) => {
@@ -305,6 +345,7 @@ function Orders() {
                         />
                         <Column
                             width="9%"
+                            fixed="right"
                             key="actions"
                             title="Thao tác"
                             render={(_, record) => (
