@@ -156,13 +156,7 @@ function Orders() {
     return (
         <>
             <Spinning spinning={loading}>
-                <Card
-                    style={{
-                        width: '100%',
-                        minHeight: "690px"
-                    }}
-                    title="Lịch sử các đơn hàng"
-                >
+                <Card>
                     <Form
                         form={form}
                         onFinish={onFinish}
@@ -241,7 +235,8 @@ function Orders() {
                             </Col>
                         </Row>
                     </Form>
-
+                </Card>
+                <Card style={{ marginTop: "20px" }}>
                     <Table
                         pagination={{
                             current: page,
@@ -251,7 +246,6 @@ function Orders() {
                         rowKey={(record) => record.orderId}
                         dataSource={orders}
                         size='small'
-                        scroll={{ y: 350 }}
                         onChange={handleTableChange}
                     >
                         <Column

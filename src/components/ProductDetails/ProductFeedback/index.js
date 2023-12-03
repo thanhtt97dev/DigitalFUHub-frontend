@@ -20,6 +20,7 @@ import classNames from 'classnames/bind';
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 import ProductFeedbackMedia from "../ProductFeedbackMedia";
 import ProductFeedbackSearchForm from "../ProductFeedbackSearchForm";
+import Spinning from "~/components/Spinning";
 
 const { Title } = Typography;
 require('moment/locale/vi');
@@ -40,8 +41,10 @@ const ProductFeedback = ({ product }) => {
         pageSize: PAGE_SIZE_FEEDBACK,
     });
     const [data, setData] = useState(null)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
+        setLoading(true)
         search(searchParams)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -54,6 +57,9 @@ const ProductFeedback = ({ product }) => {
                 }
             }).catch((err) => {
 
+            })
+            .finally(() => {
+                setTimeout(() => { setLoading(false) }, 500)
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams, product])
@@ -140,7 +146,7 @@ const ProductFeedback = ({ product }) => {
 
 
     return (
-        <>
+        <Spinning spinning={loading}>
             {product ?
                 <Card className={cx('margin-bottom')}>
                     <Row>
@@ -225,7 +231,7 @@ const ProductFeedback = ({ product }) => {
                 :
                 <></>
             }
-        </>
+        </Spinning>
     )
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Divider, Modal, Button, Input, Card, Space } from "antd";
+import { useAuthUser } from 'react-auth-kit'
 
 import { ExclamationCircleFilled } from "@ant-design/icons";
 
@@ -11,9 +12,12 @@ import {
     RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_INSUFFICIENT_BALANCE,
     RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED,
     RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_AMOUNT_A_DAY,
+    RESPONSE_CODE_BANK_SELLER_REQUEST_WITHDRAW_ACCOUNT_BALLANCE_REQUIRED,
+    ACCOUNT_BALANCE_REQUIRED_FOR_SELLER,
     MIN_PRICE_CAN_WITHDRAW,
     MAX_PRICE_CAN_WITHDRAW,
-    NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY
+    NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY,
+    SELLER_ROLE
 } from '~/constants'
 import { formatPrice } from "~/utils";
 
@@ -25,13 +29,16 @@ const styleCardItem = {
 
 function ModalRequestWithdraw({ userId, text, style, callBack }) {
 
+    const auth = useAuthUser()
+    const user = auth()
+
     const notification = useContext(NotificationContext);
     const [openModal, setOpenModal] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [btnLoading, setBtnLoading] = useState(false)
     const [disableBtnSubmit, setDisableBtnSubmit] = useState(false)
 
-    const [amount, setAmount] = useState("500000");
+    const [amount, setAmount] = useState("100000");
     const [message, setMessage] = useState("");
     const [customerBalance, setCustomerBalance] = useState(0)
 
@@ -50,7 +57,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
     }, [userId])
 
     const handleSubmit = () => {
-
+        setConfirmLoading(true)
         if (amount < MIN_PRICE_CAN_WITHDRAW) {
             return;
         }
@@ -78,6 +85,8 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                         <Space direction="vertical">
                             <span>Xin lỗi ! Hôm nay bạn đã yêu cầu rút {formatPrice(res.data.result)}!</span>
                         </Space>)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_SELLER_REQUEST_WITHDRAW_ACCOUNT_BALLANCE_REQUIRED) {
+                    notification("error", <span>Số du sau khi rút của bạn phải lớn hơn {formatPrice(ACCOUNT_BALANCE_REQUIRED_FOR_SELLER)} </span>)
                 } else {
                     notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
                 }
@@ -85,10 +94,8 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
             .catch(() => {
                 notification("error", "Xảy ra một vài sự cố! Hãy thử lại sau!")
             }).finally(() => {
-                setTimeout(() => {
-                    callBack();
-                    setConfirmLoading(false);
-                }, 500);
+                setTimeout(() => { setConfirmLoading(false); }, 500);
+                callBack();
             })
     }
 
@@ -97,11 +104,15 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
         setAmount(e.target.value)
         if (value < MIN_PRICE_CAN_WITHDRAW) {
             setDisableBtnSubmit(true)
-            setMessage("Số tiền cần phải lớn hơn hoặc bằng 500,000 VND ")
+            setMessage("Số tiền cần phải lớn hơn hoặc bằng 100,000 VND ")
         } else if (value > MAX_PRICE_CAN_WITHDRAW) {
             setMessage("Số tiền cần phải nhỏ hơn hoặc bằng 3,000,000 VND ")
             setDisableBtnSubmit(true)
-        } else {
+        } else if (value > customerBalance) {
+            setMessage("Số dư không đủ!")
+            setDisableBtnSubmit(true)
+        }
+        else {
             setDisableBtnSubmit(false)
             setMessage("")
         }
@@ -142,9 +153,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
             <Modal
                 title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Yêu cầu rút tiền</>}
                 open={openModal}
-                onOk={handleSubmit}
                 onCancel={() => setOpenModal(false)}
-                confirmLoading={confirmLoading}
                 width={"35%"}
                 footer={
                     <Space>
@@ -153,6 +162,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                             type="primary"
                             onClick={handleSubmit}
                             disabled={disableBtnSubmit}
+                            loading={confirmLoading}
                         >
                             Xác nhận
                         </Button>
@@ -181,11 +191,11 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                     <div>
                         <b style={{ color: "red" }}>Chú ý:</b>
                         <div style={{ marginLeft: "30px" }}>
-                            <i>Số tiền bạn có thể rút trong 1 yêu cầu lớn hơn 500,000 VND</i>
+                            <i>Số tiền bạn có thể rút trong 1 yêu cầu lớn hơn 100,000 VND</i>
                             <br />
                             <i>Số tiền bạn có thể rút trong 1 ngày nhỏ hơn 3,000,000 VND</i>
                             <br />
-                            <i>Số dư của bạn sau khi rút lớn hơn 500,000 VND</i>
+                            {user.roleName === SELLER_ROLE ? <i>Bạn là người bán hàng.Số dư của bạn sau khi rút lớn hơn 500,000 VND</i> : ""}
                             <br />
                             <i>Một ngày bạn có thể tạo tối đa {NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY} yêu cầu rút tiền </i>
                         </div>
