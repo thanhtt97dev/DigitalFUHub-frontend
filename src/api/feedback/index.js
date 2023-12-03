@@ -10,6 +10,9 @@ export const addFeedbackOrder = (data) => {
 export const getFeedbackDetail = (userId, orderId) => {
     return apiGetAuth(`api/Feedbacks/Customer/${userId}/${orderId}`);
 }
+export const getFeedbackDetailOrderOfSeller = (userId, orderId) => {
+    return apiGetAuth(`api/Feedbacks/Seller/${userId}/${orderId}`);
+}
 export const getListFeedbackSeller = (data) => {
     return apiPostAuth(`api/Feedbacks/Seller/List`, data);
 }

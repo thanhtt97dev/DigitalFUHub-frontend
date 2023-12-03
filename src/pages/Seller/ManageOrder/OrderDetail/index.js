@@ -11,7 +11,7 @@ import {
     ExclamationCircleFilled
 } from "@ant-design/icons";
 import logoFPT from '~/assets/images/fpt-logo.jpg'
-import { Button, Card, Col, Divider, Image, Row, Space, Typography, Tag, Tooltip, Form, Modal, Avatar, Spin, Descriptions } from "antd";
+import { Button, Card, Col, Divider, Image, Row, Space, Typography, Tag, Tooltip, Form, Modal, Avatar, Spin, Descriptions, Rate } from "antd";
 import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { useAuthUser } from 'react-auth-kit'
@@ -19,8 +19,9 @@ import { getConversation } from '~/api/chat'
 import TextArea from "antd/es/input/TextArea";
 import ModalChangeOrderStatusDispute from "~/components/Modals/ModalChangeOrderStatusDispute";
 import HistoryOrderStatus from "~/components/OrderDetail/HistoryOrderStatus";
+import { getFeedbackDetailOrderOfSeller } from "~/api/feedback";
 
-const { Text, Title } = Typography;
+const { Text, Title, Paragraph } = Typography;
 
 function OrderDetailSeller() {
     const auth = useAuthUser()
@@ -78,7 +79,39 @@ function OrderDetailSeller() {
     //             notification("error", "Đã có lỗi xảy ra.")
     //         })
     // }
-
+    const [isModalViewFeedbackOpen, setIsModalViewFeedbackOpen] = useState(false);
+    const [feedbackDetail, setFeedbackDetail] = useState([]);
+    const [modalLoading, setModalLoading] = useState(false);
+    const showModalViewFeedback = () => {
+        setIsModalViewFeedbackOpen(true);
+    };
+    const handleViewFeedbackOk = () => {
+        setIsModalViewFeedbackOpen(false);
+    }
+    const handleViewFeedbackCancel = () => {
+        setIsModalViewFeedbackOpen(false);
+    }
+    const handleSellerViewFeedback = (orderId) => {
+        showModalViewFeedback();
+        setModalLoading(true);
+        getFeedbackDetailOrderOfSeller(getUserId(), orderId)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setFeedbackDetail(res.data.result);
+                } else {
+                    notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.")
+                }
+            })
+            .catch((err) => {
+                notification("error", "Đã có lỗi xảy ra, vui lòng thử lại sau.")
+            })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setModalLoading(false);
+                    clearTimeout(idTimeout);
+                }, 500)
+            })
+    }
     const getTextStatusOrder = () => {
         if (order?.statusId === ORDER_WAIT_CONFIRMATION) {
             return <Text>Chờ xác nhận</Text>
@@ -106,6 +139,12 @@ function OrderDetailSeller() {
                 <Col>
                     <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
                 </Col>
+                {order.orderDetails.some((v, i) => v.isFeedback === true) ?
+                    <Col>
+                        <Button type="default" onClick={() => handleSellerViewFeedback(orderId)}>Xem đánh giá</Button>
+                    </Col>
+                    : ''
+                }
             </Row>
         } else if (order?.statusId === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
@@ -212,6 +251,68 @@ function OrderDetailSeller() {
         getOrderDetail();
     };
     return (<>
+        <Modal title="Đánh giá cửa hàng" open={isModalViewFeedbackOpen} onOk={handleViewFeedbackOk} onCancel={handleViewFeedbackCancel}
+            footer={[
+                <Button key="close" onClick={handleViewFeedbackOk}>
+                    Đóng
+                </Button>,
+            ]}
+        >
+            <Spin spinning={modalLoading}>
+                <Row gutter={[0, 16]}>
+                    {feedbackDetail.map((v, i) => <>
+                        <Col span={24} key={i}>
+                            <Row gutter={[8, 8]} wrap={false}>
+                                <Col flex={0}>
+                                    <Link to={`/product/${v.productId}`}>
+                                        <Image
+                                            preview={false}
+                                            width={60}
+                                            height={60}
+                                            src={v.thumbnail}
+                                        />
+                                    </Link>
+                                </Col>
+                                <Col flex={5}>
+                                    <Row>
+                                        <Col span={23}><Title level={5}>{v.productName}</Title></Col>
+                                        <Col span={23}><Text>{`Phân loại: ${v.productVariantName} x ${v.quantity}`}</Text></Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                        </Col>
+                        <Col span={23} offset={1}>
+                            <Row gutter={[8, 8]} wrap={false}>
+                                <Col flex={0}>
+                                    <Avatar size="large" src={v.avatar || logoFPT} />
+                                </Col>
+                                <Col flex={5} >
+                                    <Row >
+                                        <Col span={23}><Text>{v.username}</Text></Col>
+                                        <Col span={23}><Rate value={v.rate} disabled style={{ fontSize: "14px" }} /></Col>
+                                        <Col span={23}><Paragraph>{v.content}</Paragraph></Col>
+                                        <Col span={23} >
+                                            <Row gutter={[8, 8]}>
+                                                {v?.urlImages?.map((url, i) => <Col>
+                                                    <Image
+                                                        width={80}
+                                                        src={url}
+                                                        preview={{
+                                                            movable: false,
+                                                        }}
+                                                    />
+                                                </Col>)}
+                                            </Row>
+                                        </Col>
+                                        <Col span={23}><Text>{ParseDateTime(v.date)}</Text></Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </>)}
+                </Row>
+            </Spin>
+        </Modal>
         <Modal
             title={<><ExclamationCircleFilled style={{ color: "#faad14" }} />Bạn có chắc chắn muốn hoàn trả tiền người mua</>}
             footer={null}
@@ -331,6 +432,19 @@ function OrderDetailSeller() {
                                                                         {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
                                                                     </Title>
                                                                 </Col>
+                                                                {v.isFeedback && <Col offset={1} span={6}>
+                                                                    <Row justify="end" gutter={[8, 0]}>
+                                                                        <Col>
+                                                                            <Text>Đánh giá</Text>
+                                                                        </Col>
+                                                                        <Col>
+                                                                            <Rate style={{
+                                                                                fontSize: '14px',
+                                                                                lineHeight: '1.2',
+                                                                            }} disabled value={v.feedbackRate} />
+                                                                        </Col>
+                                                                    </Row>
+                                                                </Col>}
                                                             </Row>
                                                         </Col>
                                                         <Col span={24}><Text>{`Phân loại: ${v.productVariantName}`}</Text></Col>

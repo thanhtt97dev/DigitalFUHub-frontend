@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import dayjs from 'dayjs';
-import { Button, Card, Col, DatePicker, Form, Input, Typography, Row, Select, Space, Rate, Image, Pagination, Empty, Tooltip } from "antd";
+import { Button, Card, Col, DatePicker, Form, Input, Typography, Row, Select, Rate, Image, Pagination, Empty, Tooltip } from "antd";
 import Spinning from "~/components/Spinning";
 import { ParseDateTime, getUserId } from "~/utils";
 import locale from 'antd/es/date-picker/locale/vi_VN';
@@ -198,10 +198,12 @@ function Feedbacks() {
                                                             <Col span={2}>
                                                                 <Image
                                                                     width={80}
+                                                                    height={80}
                                                                     src={value.thumbnail}
-                                                                    preview={{
-                                                                        movable: false,
-                                                                    }}
+                                                                    preview={false}
+                                                                // preview={{
+                                                                //     movable: false,
+                                                                // }}
                                                                 />
                                                             </Col>
                                                             <Col span={6}>
@@ -210,10 +212,10 @@ function Feedbacks() {
                                                                         {
                                                                             value.productName.length > 38 ?
                                                                                 <Tooltip title={value.productName}>
-                                                                                    <Text>{value.productName.slice(0, 38)}...</Text>
+                                                                                    <Text style={{ fontWeight: 600 }}>{value.productName.slice(0, 38)}...</Text>
                                                                                 </Tooltip>
                                                                                 :
-                                                                                <Text>{value.productName}</Text>
+                                                                                <Text style={{ fontWeight: 600 }}>{value.productName}</Text>
                                                                         }
                                                                     </Col>
                                                                     <Col span={24}>

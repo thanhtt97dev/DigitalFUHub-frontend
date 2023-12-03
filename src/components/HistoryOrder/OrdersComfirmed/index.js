@@ -173,6 +173,7 @@ function OrdersConfirmed({ status, loading, setLoading }) {
                                                     <Image
                                                         preview={false}
                                                         width={60}
+                                                        height={60}
                                                         src={v.thumbnail}
                                                     />
                                                 </Link>

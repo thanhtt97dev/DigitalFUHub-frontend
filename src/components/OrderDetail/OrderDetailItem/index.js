@@ -43,7 +43,7 @@ function OrderDetailItem({ orderDetail, statusId, handleFeedbackOrder = () => { 
                                             <Rate style={{
                                                 fontSize: '14px',
                                                 lineHeight: '1.2',
-                                            }} disabled value={orderDetail.feebackRate} />
+                                            }} disabled value={orderDetail.feedbackRate} />
                                         </Col>
                                     </Row>
                                 </Col>}
