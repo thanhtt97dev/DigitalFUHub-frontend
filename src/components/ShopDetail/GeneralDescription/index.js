@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import classNames from 'classnames/bind';
 import styles from '~/pages/ShopDetail/ShopDetail.module.scss';
+import { formatNumber } from '~/utils';
 import { useAuthUser } from 'react-auth-kit';
+import { getConversation } from '~/api/chat';
 import { useNavigate } from 'react-router-dom';
-import { addConversation } from '~/api/chat';
 import { MessageOutlined } from '@ant-design/icons';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import { Col, Row, Button, Space, Avatar } from 'antd';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingBag, faStar, faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import { formatNumber, getVietnamCurrentTime } from '~/utils';
+
 
 ///
 require('moment/locale/vi');
@@ -23,6 +25,9 @@ const styleColUserInfo = { borderRight: '1px solid rgb(232, 232, 232)' };
 
 const GeneralDescription = ({ shop, userId }) => { // userId : shop id from param
 
+    /// states
+    const [isLoadingButtonSendMessage, setIsLoadingButtonSendMessage] = useState(false);
+    ///
     /// router
     const navigate = useNavigate();
     ///
@@ -39,28 +44,45 @@ const GeneralDescription = ({ shop, userId }) => { // userId : shop id from para
         return shop.totalRatingStar / shop.numberFeedback;
     }
 
+    // const handleSendMessage = () => {
+    //     if (user === undefined || user === null) {
+    //         return navigate('/login');
+    //     } else {
+    //         const dataAddConversation = {
+    //             dateCreate: getVietnamCurrentTime(),
+    //             UserId: user.id,
+    //             RecipientIds: [userId]
+    //         }
+    //         addConversation(dataAddConversation)
+    //             .then((res) => {
+    //                 if (res.status === 200) {
+    //                     // data state
+    //                     const data = {
+    //                         data: res.data
+    //                     }
+    //                     navigate('/chatBox', { state: data })
+    //                 }
+    //             }).catch((error) => {
+    //                 console.log(error)
+    //             })
+    //     }
+    // }
+
     const handleSendMessage = () => {
-        if (user === undefined || user === null) {
-            return navigate('/login');
-        } else {
-            const dataAddConversation = {
-                dateCreate: getVietnamCurrentTime(),
-                UserId: user.id,
-                RecipientIds: [userId]
-            }
-            addConversation(dataAddConversation)
-                .then((res) => {
-                    if (res.status === 200) {
-                        // data state
-                        const data = {
-                            data: res.data
-                        }
-                        navigate('/chatBox', { state: data })
-                    }
-                }).catch((error) => {
-                    console.log(error)
-                })
-        }
+        if (user === undefined || user === null) return navigate('/login');
+
+        setIsLoadingButtonSendMessage(true);
+
+        const data = { shopId: userId, userId: user.id }
+
+        getConversation(data)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setIsLoadingButtonSendMessage(false);
+                    navigate('/chatBox', { state: { data: res.data.result } })
+                }
+            })
+            .catch(() => { })
     }
     ///
 
