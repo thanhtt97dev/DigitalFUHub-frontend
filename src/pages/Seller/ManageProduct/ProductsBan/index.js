@@ -42,10 +42,7 @@ const columns = [
                         <Row>
                             <b>{record.productName}</b>
                         </Row>
-                        <Row>
-                            <span><Link to={`/admin/shop/${record.shopId}`}>{record.shopName}</Link></span>
-                        </Row>
-                        <Row>
+                        <Row style={{ marginTop: "10px" }}>
                             <Col offset={1} span={10}>
                                 <Row>
                                     <Tooltip placement="top" title="Số lượt xem">
