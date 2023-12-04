@@ -4,7 +4,7 @@ export const getProductById = (id) => {
     return apiGet(`api/Products/GetById/${id}`);
 };
 export const getProductForHomePageCustomer = (data) => {
-    return apiPost(`api/Products/GetProductHomePageCustomer`, data);
+    return apiPost(`api/Products/homepage`, data);
 };
 export const getAllProductsSeller = (userId) => {
     return apiGetAuth(`api/Products/Seller/${userId}/All`);

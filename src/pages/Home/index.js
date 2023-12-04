@@ -21,8 +21,6 @@ const Home = () => {
     const [totalProducts, setTotalProducts] = useState(0);
     const [searchParam, setSearchParam] = useState({
         categoryId: 0,
-        isOrderFeedback: false,
-        isOrderSoldCount: false,
         page: 1
     });
     ///
@@ -41,13 +39,14 @@ const Home = () => {
                         const result = data.result;
                         setProducts(result.products);
                         setTotalProducts(result.totalProduct);
-
-                        setIsLoadingProducts(false);
                     }
                 }
             })
-            .catch((err) => {
-                console.log(err);
+            .catch((err) => { })
+            .finally(() => {
+                setTimeout(() => {
+                    setIsLoadingProducts(false);
+                }, 500);
             })
 
     }, [searchParam])
