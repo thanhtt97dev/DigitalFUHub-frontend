@@ -400,10 +400,12 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                         </Space>
                                     </Col>
                                     <Col>
-                                        <Space align='center' style={spaceFeedbackStyle} onClick={scrollToStartFeedback}>
-                                            <Text style={numberFeedbackProductStyle}>{formatNumber(product.numberFeedback)}</Text>
-                                            <Text style={feedbackProductStyle} type="secondary">Đánh Giá</Text>
-                                        </Space>
+                                        {
+                                            product.numberFeedback > 0 ? (<Space align='center' style={spaceFeedbackStyle} onClick={scrollToStartFeedback}>
+                                                <Text style={numberFeedbackProductStyle}>{formatNumber(product.numberFeedback)}</Text>
+                                                <Text style={feedbackProductStyle} type="secondary">Đánh Giá</Text>
+                                            </Space>) : (<></>)
+                                        }
                                     </Col>
                                     <Col>
                                         <Space align='center' style={spaceSoldCountStyle}>

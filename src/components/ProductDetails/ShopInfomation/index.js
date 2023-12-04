@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import classNames from 'classnames/bind';
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
-import { addConversation } from '~/api/chat';
+import { getConversation } from '~/api/chat';
 import { useNavigate } from 'react-router-dom';
 import { useAuthUser } from 'react-auth-kit';
-import { formatNumber, getVietnamCurrentTime } from '~/utils';
+import { formatNumber } from '~/utils';
 import { MessageOutlined, ShopOutlined } from '@ant-design/icons';
 import { Col, Row, Button, Skeleton, Avatar, Card, Space } from 'antd';
+import { RESPONSE_CODE_SUCCESS } from '~/constants';
 
 ///
 require('moment/locale/vi');
@@ -21,6 +22,10 @@ const styleColUserInfo = { borderRight: '1px solid rgb(232, 232, 232)' };
 
 const ShopInfomations = ({ product }) => {
 
+    /// states
+    const [isLoadingButtonSendMessage, setIsLoadingButtonSendMessage] = useState(false);
+    ///
+
     /// navigates
     const navigate = useNavigate();
     ///
@@ -32,29 +37,20 @@ const ShopInfomations = ({ product }) => {
 
     /// handles
     const handleSendMessage = () => {
-        if (user === undefined || user === null) {
-            return navigate('/login');
-        } else {
+        if (user === undefined || user === null) return navigate('/login');
 
-            const dataAddConversation = {
-                dateCreate: getVietnamCurrentTime(),
-                UserId: user.id,
-                RecipientIds: [product.shop.shopId]
-            }
-            addConversation(dataAddConversation)
-                .then((res) => {
-                    if (res.status === 200) {
+        setIsLoadingButtonSendMessage(true);
 
-                        // data state
-                        const data = {
-                            data: res.data
-                        }
-                        navigate('/chatBox', { state: data })
-                    }
-                }).catch((error) => {
-                    console.log(error)
-                })
-        }
+        const data = { shopId: product.shop.shopId, userId: user.id }
+
+        getConversation(data)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setIsLoadingButtonSendMessage(false);
+                    navigate('/chatBox', { state: { data: res.data.result } })
+                }
+            })
+            .catch(() => { })
     }
 
     const handleViewShop = (shopId) => {
@@ -82,7 +78,7 @@ const ShopInfomations = ({ product }) => {
                                     </Space>
                                     <Space align="center">
                                         <Button icon={<ShopOutlined />} type="primary" danger ghost onClick={() => handleViewShop(product.shop.shopId)}>Xem Shop</Button>
-                                        <Button disabled={user?.id !== product.shop.shopId ? false : true} type="primary" className={cx('margin-element')} icon={<MessageOutlined />} onClick={handleSendMessage} style={{ marginLeft: 10 }}>
+                                        <Button loading={isLoadingButtonSendMessage} disabled={user?.id !== product.shop.shopId ? false : true} type="primary" className={cx('margin-element')} icon={<MessageOutlined />} onClick={handleSendMessage} style={{ marginLeft: 10 }}>
                                             Chat ngay
                                         </Button>
                                     </Space>
