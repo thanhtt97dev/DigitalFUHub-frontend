@@ -5,11 +5,11 @@ import styles from './Personal.module.scss';
 import Spinning from "~/components/Spinning";
 import { useAuthUser } from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
-import { UserOutlined, UploadOutlined } from '@ant-design/icons';
+import { UserOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
 import { getUserById, editFullNameUser, editAvatarUser } from "~/api/user";
 import { NotificationContext } from "~/context/UI/NotificationContext";
-import { Col, Row, Form, Input, Button, Upload, Card, Avatar } from 'antd';
+import { Col, Row, Form, Input, Button, Upload, Card, Avatar, Space } from 'antd';
 
 ///
 const cx = classNames.bind(styles);
@@ -20,6 +20,7 @@ const getBase64 = (file) =>
         reader.onload = () => resolve(reader.result);
         reader.onerror = (error) => reject(error);
     });
+let fullNameDefault = '';
 ///
 
 /// styles
@@ -30,6 +31,7 @@ function Personal() {
 
     /// states
     const navigate = useNavigate();
+    const [isEditFullName, setIsEditFullName] = useState(false);
     const [isLoadingSpinning, setIsLoadingSpinning] = useState(true);
     const [userInfo, setUserInfo] = useState({});
     const [imgPreview, setImgPreview] = useState('');
@@ -74,7 +76,7 @@ function Personal() {
                     });
 
                     formUserInfo.setFieldValue("fullName", res.data.fullname);
-
+                    fullNameDefault = res.data.fullname;
                     setIsLoadingSpinning(false);
                 }
             })
@@ -112,6 +114,7 @@ function Personal() {
                         reloadUserInfo();
                         notification("success", "Chỉnh sửa thông tin thành công");
                         setIsloadingButtonSaveInfo(false);
+                        setIsEditFullName(false);
                     }
                 }
             })
@@ -184,6 +187,20 @@ function Personal() {
         setFileList(newFileList);
         handlePreview(newFileList[0]);
     };
+
+    const handleClickEditFullName = () => {
+        setIsEditFullName(!isEditFullName);
+    }
+
+    const handleClickCancel = () => {
+        formUserInfo.resetFields();
+        setUserInfo({
+            ...userInfo,
+            fullname: fullNameDefault
+        });
+
+        setIsEditFullName(false);
+    }
     ///
 
     return (
@@ -208,7 +225,18 @@ function Personal() {
                             >
                                 <Row gutter={8}>
                                     <Col span={17}>
-                                        <Input value={userInfo.fullname} style={{ width: '100%' }} onChange={(e) => setUserInfo({ ...userInfo, fullname: e.target.value })} />
+                                        <Space align="center" size={10}>
+                                            <Input disabled={!isEditFullName} value={userInfo.fullname} style={{ width: 280 }} onChange={(e) => setUserInfo({ ...userInfo, fullname: e.target.value })} />
+
+                                            {
+                                                isEditFullName ?
+                                                    (<Space align="center">
+                                                        <Button danger ghost loading={isloadingButtonSaveInfo} htmlType="submit">Lưu</Button>
+                                                        <Button onClick={handleClickCancel}>Hủy</Button>
+                                                    </Space>)
+                                                    : (<Button icon={<EditOutlined />} onClick={handleClickEditFullName}>Chỉnh sửa</Button>)
+                                            }
+                                        </Space>
                                         <p style={{ color: 'gray', marginTop: 10 }}>
                                             Tên của bạn xuất hiện trên trang cá nhân và bên cạnh các đánh giá của bạn.
                                         </p>
@@ -230,13 +258,6 @@ function Personal() {
                                 <Row gutter={8}>
                                     <Col span={17}>
                                         <Input value={userInfo.email} disabled style={{ backgroundColor: "white" }} />
-                                    </Col>
-                                </Row>
-                            </Form.Item>
-                            <Form.Item >
-                                <Row>
-                                    <Col offset={4}>
-                                        <Button type="primary" htmlType="submit" loading={isloadingButtonSaveInfo}>Lưu thông tin cá nhân</Button>
                                     </Col>
                                 </Row>
                             </Form.Item>
