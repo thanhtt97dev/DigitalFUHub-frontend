@@ -348,7 +348,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                     <Card style={styleCardItem}>
                         <Space align='center' size={15}>
                             <Text style={{ fontSize: '15px', fontWeight: 'bold' }}>
-                                Số dư còn lại
+                                Số dư:
                             </Text>
                             <p style={{
                                 whiteSpace: 'nowrap',

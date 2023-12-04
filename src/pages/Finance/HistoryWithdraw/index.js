@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col, Space } from "antd";
+import { Card, Table, Tag, Button, Form, InputNumber, DatePicker, Select, Row, Col, Space } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { useAuthUser } from 'react-auth-kit'
 
@@ -19,7 +19,7 @@ import {
     PAGE_SIZE
 } from "~/constants";
 import DrawerWithdrawTransactionBill from "~/components/Drawers/DrawerWithdrawTransactionBill";
-import ModalCancleWithdrawTransaction from "~/components/Modals/ModalCancleWithdrawTransaction";
+//import ModalCancleWithdrawTransaction from "~/components/Modals/ModalCancleWithdrawTransaction";
 
 const { RangePicker } = DatePicker;
 
@@ -259,7 +259,7 @@ function HistoryWithdraw() {
                                     <Col span={6} offset={2}>Mã giao dịch:</Col>
                                     <Col span={12}>
                                         <Form.Item name="withdrawTransactionId" >
-                                            <Input />
+                                            <InputNumber style={{ width: '100%' }} />
                                         </Form.Item>
                                     </Col>
                                 </Row>

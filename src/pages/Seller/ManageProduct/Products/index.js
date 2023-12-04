@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Card, Form, Row, Col, Space, Select, Input, Button } from 'antd';
+import { Card, Form, Row, Col, Space, Select, Input, Button, InputNumber } from 'antd';
 
 import { NotificationContext } from "~/context/UI/NotificationContext";
 
@@ -239,7 +239,7 @@ function Products() {
                                 <Col span={6} offset={2}><label>Mã sản phẩm: </label></Col>
                                 <Col span={12}>
                                     <Form.Item name="productId" >
-                                        <Input />
+                                        <InputNumber style={{ width: '100%' }} />
                                     </Form.Item>
                                 </Col>
                             </Row>

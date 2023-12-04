@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col, Space } from "antd";
+import { Card, Table, Tag, Button, Form, DatePicker, Select, Row, Col, Space, InputNumber } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
 import { useAuthUser } from 'react-auth-kit'
@@ -215,7 +215,7 @@ function HistoryDeposit() {
                                     <Col span={6} offset={2}>Mã giao dịch:</Col>
                                     <Col span={12}>
                                         <Form.Item name="depositTransactionId" >
-                                            <Input />
+                                            <InputNumber style={{ width: '100%' }} />
                                         </Form.Item>
                                     </Col>
                                 </Row>
