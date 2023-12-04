@@ -26,7 +26,6 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
     const [form] = Form.useForm();
     const [openModal, setOpenModal] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const [btnLoading, setBtnLoading] = useState(false)
 
     useEffect(() => {
         if (user === null) return;
@@ -71,7 +70,6 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
     }
 
     const handleOpenModal = () => {
-        setBtnLoading(false)
         setOpenModal(true)
         //checking user has been linked bank account
 

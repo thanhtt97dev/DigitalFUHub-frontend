@@ -37,6 +37,7 @@ import CouponDetail from '~/pages/Seller/ManageCoupon/Detail';
 import EditShop from '~/pages/Seller/ManageShop/Edit/EditShop';
 import ShopDetail from '~/pages/ShopDetail';
 import SearchProduct from '~/pages/SearchProduct';
+import ProductsBan from '~/pages/Seller/ManageProduct/ProductsBan';
 
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import SearchShop from '../pages/SearchShop';
@@ -223,7 +224,7 @@ const routesConfig = [
         title: 'Seller products banned',
         path: '/seller/product/banned',
         layout: <SellerLayout />,
-        component: <></>,
+        component: <ProductsBan />,
         role: [SELLER_ROLE],
     },
     {
