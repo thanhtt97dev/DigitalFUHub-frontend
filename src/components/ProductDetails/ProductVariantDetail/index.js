@@ -10,7 +10,7 @@ import { useAuthUser } from 'react-auth-kit';
 import { isProductWishList, addWishList, removeWishList } from '~/api/wishList';
 import { discountPrice, formatPrice, formatNumber } from '~/utils';
 import { useNavigate } from 'react-router-dom';
-import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS, PRODUCT_BAN, RESPONSE_CODE_SUCCESS } from '~/constants';
+import { RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_SUCCESS, PRODUCT_BAN, PRODUCT_HIDE, RESPONSE_CODE_SUCCESS } from '~/constants';
 import { CreditCardOutlined, ShoppingCartOutlined, HeartFilled } from '@ant-design/icons';
 import { Col, Row, Button, Divider, Spin, InputNumber, Radio, Card, Typography, Space, Rate } from 'antd';
 
@@ -312,9 +312,14 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         return formattedPrice;
     }
 
-    const isProductBan = () => {
-        return product?.productStatusId === PRODUCT_BAN ? true : false;
+    const isHideProduct = () => {
+        return (product?.productStatusId === PRODUCT_BAN
+            ||
+            product?.productStatusId === PRODUCT_HIDE
+            ||
+            product?.shop.isActive === false)
     }
+
     ///
 
     /// useEffect
@@ -369,13 +374,13 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
         <>
             {
                 product ?
-                    <Card className={product?.quantity <= 0 || isProductBan() ? cx('margin-bottom', 'opacity-disabled') : cx('margin-bottom')}>
+                    <Card className={product?.quantity <= 0 || isHideProduct() ? cx('margin-bottom', 'opacity-disabled') : cx('margin-bottom')}>
                         <Row>
                             <Col span={10} className={cx('flex-item-center')}>
                                 <ProductMedias productMedias={product.productMedias} />
                                 {
-                                    isProductBan() ?
-                                        <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div>
+                                    isHideProduct() ?
+                                        <div className={cx('circle')}>Đã ẩn</div>
                                         : product?.quantity <= 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
                                 }
                             </Col>
@@ -454,15 +459,15 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                 </div>
                                 <Divider />
                                 <Space align='center'>
-                                    <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={isProductBan() || product.quantity <= 0 || user?.id === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<CreditCardOutlined />} size={'large'} loading={isLoadingButtonBuyNow}>
+                                    <Button name="btnBuyNow" onClick={() => handleAddProductToCart(true)} disabled={isHideProduct() || product.quantity <= 0 || user?.id === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<CreditCardOutlined />} size={'large'} loading={isLoadingButtonBuyNow}>
                                         Mua ngay
                                     </Button>
-                                    <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={isProductBan() || product.quantity <= 0 || user?.id === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<ShoppingCartOutlined />} size={'large'} loading={isLoadingButtonAddToCart}>
+                                    <Button name="btnAddToCart" onClick={() => handleAddProductToCart(false)} disabled={isHideProduct() || product.quantity <= 0 || user?.id === product.shop.shopId ? true : false} className={cx('margin-element')} type="primary" icon={<ShoppingCartOutlined />} size={'large'} loading={isLoadingButtonAddToCart}>
                                         Thêm vào giỏ
                                     </Button>
                                     {
                                         user?.id !== product.shop.shopId ? (
-                                            <Button disabled={isProductBan() ? true : false} style={buttonStyle} onClick={handleClickWishList} size={'large'} className={cx('flex-item-center')} loading={isLoadingButtonWishList}>
+                                            <Button disabled={isHideProduct() ? true : false} style={buttonStyle} onClick={handleClickWishList} size={'large'} className={cx('flex-item-center')} loading={isLoadingButtonWishList}>
                                                 <HeartFilled style={iconStyle} />
                                             </Button>
                                         ) : (<></>)
