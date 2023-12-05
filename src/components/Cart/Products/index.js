@@ -165,37 +165,12 @@ const Products = ({ dataPropProductComponent }) => {
             })
     }
 
-    const funcDeleteCartDetail = (cartDetailId) => {
-
-        deleteCartDetail(cartDetailId)
-            .then((res) => {
-                if (res.status === 200) {
-                    const data = res.data;
-                    if (data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
-                        setContentModalAlert(RESPONSE_MESSAGE_CART_NOT_FOUND)
-                        openModalAlert();
-                    } else if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
-
-                        // new cart detail id selected
-                        const newCartDetailIdSelecteds = cartDetailIdSelecteds.filter(x => x !== cartDetailId);
-                        setCartDetailIdSelecteds(newCartDetailIdSelecteds);
-
-                        reloadCarts();
-                    }
-                }
-            })
-            .catch((errors) => {
-                console.log(errors)
-                notification("error", "Có lỗi trong quá trình xóa, vui lòng thử lại");
-            })
-    };
-
     const handleCheckAll = (e) => {
 
         if (e.target.checked) {
             const listCartDetailIds = [];
             for (let i = 0; i < cartDetails.length; i++) {
-                if (cartDetails[i].quantityProductRemaining > 0 && cartDetails[i].productActivate) {
+                if (cartDetails[i].quantityProductRemaining > 0 && cartDetails[i].productActivate && cartDetails[i].productVariantActivate) {
                     listCartDetailIds.push(cartDetails[i].cartDetailId);
                 }
             }
@@ -212,7 +187,7 @@ const Products = ({ dataPropProductComponent }) => {
         if (!cartFind) return;
         const cartDetails = cartFind.products;
         for (let i = 0; i < cartDetails.length; i++) {
-            if (cartDetails[i].quantityProductRemaining > 0 && cartDetails[i].productActivate) {
+            if (cartDetails[i].quantityProductRemaining > 0 && cartDetails[i].productActivate && cartDetails[i].productVariantActivate) {
                 cartDetailIds.push(cartDetails[i].cartDetailId);
             }
         }
@@ -261,7 +236,7 @@ const Products = ({ dataPropProductComponent }) => {
     /// useEffect 
     // calculator number cart details
     useEffect(() => {
-        const totalCartDetailValid = cartDetails.filter(x => x.productActivate && x.quantityProductRemaining > 0).length;
+        const totalCartDetailValid = cartDetails.filter(x => x.productActivate && x.productVariantActivate && x.quantityProductRemaining > 0).length;
 
         setTotalCartDetailValid(totalCartDetailValid);
 
@@ -271,7 +246,7 @@ const Products = ({ dataPropProductComponent }) => {
     useEffect(() => {
         const listCartIds = [];
         for (let i = 0; i < carts.length; i++) {
-            const cartDetailValid = carts[i].products.filter(x => x.quantityProductRemaining > 0 && x.productActivate);
+            const cartDetailValid = carts[i].products.filter(x => x.quantityProductRemaining > 0 && x.productActivate && x.productVariantActivate);
 
             const isAllElementsExist = cartDetailValid.every(x => cartDetailIdSelecteds.includes(x.cartDetailId));
 
@@ -300,6 +275,37 @@ const Products = ({ dataPropProductComponent }) => {
         cartDetailIdSelecteds
     }
 
+    ///
+
+    /// functions
+    const funcDeleteCartDetail = (cartDetailId) => {
+
+        deleteCartDetail(cartDetailId)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    if (data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
+                        setContentModalAlert(RESPONSE_MESSAGE_CART_NOT_FOUND)
+                        openModalAlert();
+                    } else if (data.status.responseCode === RESPONSE_CODE_CART_SUCCESS) {
+
+                        // new cart detail id selected
+                        const newCartDetailIdSelecteds = cartDetailIdSelecteds.filter(x => x !== cartDetailId);
+                        setCartDetailIdSelecteds(newCartDetailIdSelecteds);
+
+                        reloadCarts();
+                    }
+                }
+            })
+            .catch((errors) => {
+                console.log(errors)
+                notification("error", "Có lỗi trong quá trình xóa, vui lòng thử lại");
+            })
+    };
+
+    // const isHideProduct = (shopActivate, productActivate, productVariantActivate) => {
+    //     return !shopActivate || !productActivate || !productVariantActivate;
+    // }
     ///
 
 
@@ -338,10 +344,10 @@ const Products = ({ dataPropProductComponent }) => {
                                         key={index} bodyStyle={styleCardBodyCartItem} headStyle={styleCardHeadCartItem} style={styleCardCartItem}>
                                         {
                                             cart.products.map((product, index) => (
-                                                <Row className={product.productActivate === false || product.quantityProductRemaining === 0 ? cx('disable-item', 'margin-bottom-item') : cx('margin-bottom-item')} key={index}>
+                                                <Row className={product.productVariantActivate === false || product.productActivate === false || product.quantityProductRemaining === 0 ? cx('disable-item', 'margin-bottom-item') : cx('margin-bottom-item')} key={index}>
                                                     <Col span={1}>
                                                         {
-                                                            product.productActivate && product.quantityProductRemaining > 0 ? <Checkbox key={product.cartDetailId} value={product.cartDetailId}></Checkbox> : <></>
+                                                            product.productVariantActivate && product.productActivate && product.quantityProductRemaining > 0 ? <Checkbox key={product.cartDetailId} value={product.cartDetailId}></Checkbox> : <></>
                                                         }
                                                     </Col>
 
@@ -354,7 +360,7 @@ const Products = ({ dataPropProductComponent }) => {
                                                                     src={product.productThumbnail}
                                                                 />
                                                                 {
-                                                                    product.productActivate === false ?
+                                                                    !cart.shopActivate || !product.productActivate || !product.productVariantActivate ?
                                                                         <div className={cx('circle')}>Đã ẩn</div>
                                                                         : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
                                                                 }

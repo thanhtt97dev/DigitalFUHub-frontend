@@ -180,7 +180,7 @@ export const RESPONSE_MESSAGE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP = 'Loại sản 
 export const RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED = 'Sản phẩm đã bị cấm';
 export const RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT = 'Không thể mua sản phẩm của chính mình';
 export const RESPONSE_MESSAGE_ORDER_COUPON_INVALID_PRODUCT_APPLY = 'Đơn hàng không đủ điều kiện để áp dụng mã giảm giá';
-export const RESPONSE_MESSAGE_ORDER_SELLER_LOCK_TRANSACTION = 'Không thể thực hiện vì giao dịch đã bị khóa';
+export const RESPONSE_MESSAGE_ORDER_SELLER_LOCK_TRANSACTION = 'Giao dịch hiện không khả dụng do tạm thời bị chặn bởi người bán. Để giải quyết vấn đề này, vui lòng liên hệ trực tiếp với người bán để được hỗ trợ';
 
 // cart message
 export const RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY = 'Không thể cập nhật vì số lượng sản phẩm không đủ';
