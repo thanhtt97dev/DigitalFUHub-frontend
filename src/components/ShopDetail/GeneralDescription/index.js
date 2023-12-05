@@ -23,7 +23,7 @@ const styleContainerComponent = { backgroundColor: 'white', padding: 20, borderR
 const styleColUserInfo = { borderRight: '1px solid rgb(232, 232, 232)' };
 ///
 
-const GeneralDescription = ({ shop, userId }) => { // userId : shop id from param
+const GeneralDescription = ({ shop, userId, isShopBan }) => { // userId : shop id from param
 
     /// states
     const [isLoadingButtonSendMessage, setIsLoadingButtonSendMessage] = useState(false);
@@ -43,30 +43,6 @@ const GeneralDescription = ({ shop, userId }) => { // userId : shop id from para
         if (!shop) return 0;
         return shop.totalRatingStar / shop.numberFeedback;
     }
-
-    // const handleSendMessage = () => {
-    //     if (user === undefined || user === null) {
-    //         return navigate('/login');
-    //     } else {
-    //         const dataAddConversation = {
-    //             dateCreate: getVietnamCurrentTime(),
-    //             UserId: user.id,
-    //             RecipientIds: [userId]
-    //         }
-    //         addConversation(dataAddConversation)
-    //             .then((res) => {
-    //                 if (res.status === 200) {
-    //                     // data state
-    //                     const data = {
-    //                         data: res.data
-    //                     }
-    //                     navigate('/chatBox', { state: data })
-    //                 }
-    //             }).catch((error) => {
-    //                 console.log(error)
-    //             })
-    //     }
-    // }
 
     const handleSendMessage = () => {
         if (user === undefined || user === null) return navigate('/login');
@@ -89,6 +65,7 @@ const GeneralDescription = ({ shop, userId }) => { // userId : shop id from para
     return (
         <div style={styleContainerComponent}>
             <Row className={cx('container-page-detail')}>
+
                 <Col span={8} style={styleColUserInfo}>
                     <Space align="center" size={15}>
                         <div className={cx('big-avatar')}>
@@ -100,7 +77,7 @@ const GeneralDescription = ({ shop, userId }) => { // userId : shop id from para
                                 <p className={cx('shop-name')}>{shop.shopName}</p>
                                 <p className={cx('active-time')}>{shop.user?.isOnline ? 'Đang hoạt động' : 'Hoạt động ' + moment(shop.user?.lastTimeOnline).fromNow()}</p>
                             </Space>
-                            <Button disabled={user?.id === +userId ? true : false} className={cx('margin-element')} icon={<MessageOutlined />} size={'small'} onClick={handleSendMessage}>
+                            <Button disabled={user?.id === +userId || isShopBan() ? true : false} className={cx('margin-element')} icon={<MessageOutlined />} size={'small'} onClick={handleSendMessage} loading={isLoadingButtonSendMessage}>
                                 Chat ngay
                             </Button>
                         </Space>

@@ -17,7 +17,6 @@ const styleRatingStar = { color: '#ee4d2d', fontSize: '.625rem', borderBottom: '
 const styleContainerImage = { width: '100%', height: 192, display: 'flex', alignItems: 'center', justifyContent: 'center' }
 const styleOriginPrice = { fontSize: 14 };
 const styleDiscountPrice = { color: '#ee4d2d', fontSize: '1rem', marginTop: 25 };
-const styleOpacityDisabled = { opacity: 0.5 };
 const styleSpaceContainerProductItem = { padding: 8, height: 124, width: '100%' };
 const styleProductName = { fontSize: 12, color: '#000000', cursor: 'pointer' };
 ///

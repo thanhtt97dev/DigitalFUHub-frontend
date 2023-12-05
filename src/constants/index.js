@@ -244,7 +244,7 @@ export const MIN_DURATION_COUPON_TAKE_PLACE = 60 * 60 * 1000;
 // Paginations
 export const PAGE_SIZE = 10;
 export const PAGE_SIZE_FEEDBACK = 5;
-export const PAGE_SIZE_PRODUCT = 30;
+export const PAGE_SIZE_PRODUCT_SHOP_DETAIL_CUSTOMER = 30;
 export const PAGE_SIZE_NOTIFICATION = 5;
 export const PAGE_SIZE_PRODUCT_WISH_LIST = 30;
 export const PAGE_SIZE_PRODUCT_HOME_PAGE = 48;

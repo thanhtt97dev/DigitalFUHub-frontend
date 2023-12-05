@@ -198,6 +198,7 @@ function Personal() {
             ...userInfo,
             fullname: fullNameDefault
         });
+        formUserInfo.setFieldValue("fullName", fullNameDefault);
 
         setIsEditFullName(false);
     }

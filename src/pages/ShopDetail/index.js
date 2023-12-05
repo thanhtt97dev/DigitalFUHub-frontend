@@ -39,6 +39,12 @@ const ShopDetail = () => {
     }
     ///
 
+    /// functions
+    const isShopBan = () => {
+        return shop?.isActive ? false : true;
+    }
+    ///
+
     /// useEffects
     useEffect(() => {
 
@@ -58,8 +64,11 @@ const ShopDetail = () => {
 
     }, [navigate, userId])
 
-    return (<>
-        <GeneralDescription shop={shop} userId={userId} />
+    return (<div className={isShopBan() ? cx('opacity-disabled') : {}}>
+        <GeneralDescription shop={shop} userId={userId} isShopBan={isShopBan} />
+        {
+            isShopBan() ? <div className={cx('circle-shop-ban')}>Đã ẩn</div> : <></>
+        }
         <div style={styleContainerTab} className={cx('margin-bottom-10')}>
             <Row className={cx('container-page-detail')}>
                 <Tabs activeKey="1" tabBarStyle={styleTabBar} onChange={handleTabChange}>
@@ -70,8 +79,9 @@ const ShopDetail = () => {
         </div>
         <DetailedDescription shop={shop} />
         <div ref={productStartRef} />
-        <ProductList userId={userId} />
-    </>)
+        <ProductList userId={userId} isShopBan={isShopBan} />
+
+    </div>)
 }
 
 export default ShopDetail;
