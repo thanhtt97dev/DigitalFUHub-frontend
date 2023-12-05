@@ -177,7 +177,7 @@ function SignUp() {
                                         if (result) {
                                             return Promise.resolve();
                                         } else {
-                                            return Promise.reject(new Error('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự'));
+                                            return Promise.reject(new Error('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự và không chứa các kí tự đặc biệt'));
                                         }
                                     } else {
                                         return Promise.reject(new Error('Mật khẩu không để trống'));

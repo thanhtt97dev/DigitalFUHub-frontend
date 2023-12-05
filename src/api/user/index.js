@@ -52,6 +52,10 @@ export const activeUserNameAndPassword = (data) => {
     return apiPostAuth(`api/users/ActiveUserNameAndPassword`, data);
 };
 
+export const changePassword = (data) => {
+    return apiPostAuth(`api/users/changePassword`, data);
+};
+
 export const editUserInfo = (data) => {
     return apiPutAuthForm(`api/users/EditUserInfo`, data);
 };

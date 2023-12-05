@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useContext } from "react";
 import Spinning from "~/components/Spinning";
+import ChangePassword from "~/components/Security";
 import ModalSend2FaQrCode from "~/components/Modals/ModalSend2FaQrCode";
 import { getUserId } from '~/utils';
 import { useAuthUser } from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
 import { NotificationContext } from "~/context/UI/NotificationContext";
-import { generate2FaKey, activate2Fa, deactivate2Fa } from '~/api/user';
-import { getUserById, activeUserNameAndPassword } from "~/api/user";
-import { ExclamationCircleFilled, GooglePlusOutlined, FacebookOutlined } from "@ant-design/icons";
 import { Button, Divider, Modal, Input, Space, Card, Typography, Col, Row, Form } from "antd";
-import { RESPONSE_CODE_SUCCESS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_USER_USERNAME_ALREADY_EXISTS, REGEX_USERNAME_SIGN_UP, REGEX_PASSWORD_SIGN_UP } from '~/constants';
+import { ExclamationCircleFilled, GooglePlusOutlined, FacebookOutlined } from "@ant-design/icons";
+import { generate2FaKey, activate2Fa, deactivate2Fa, getUserById, activeUserNameAndPassword, changePassword } from '~/api/user';
+import { RESPONSE_CODE_SUCCESS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_USER_USERNAME_ALREADY_EXISTS, REGEX_USERNAME_SIGN_UP, REGEX_PASSWORD_SIGN_UP, RESPONSE_CODE_USER_USERNAME_PASSWORD_NOT_ACTIVE, RESPONSE_CODE_USER_PASSWORD_OLD_INCORRECT } from '~/constants';
 
 import classNames from 'classnames/bind';
 import styles from './Security.module.scss';
@@ -57,6 +57,7 @@ function Security() {
     const [tabList, setTabList] = useState(initialTabList);
 
     const [form] = Form.useForm();
+    const [formChangePassword] = Form.useForm();
 
     /// contexts
     const notification = useContext(NotificationContext)
@@ -83,11 +84,11 @@ function Security() {
                     username: res.data.username
                 });
                 setUser2FaStatus(res.data.twoFactorAuthentication);
-                const newTabList = [...tabList.filter(x => x.key !== 'tab3')]
+                const newTabList = [...tabList.filter(x => !['tab3', 'tab4'].includes(x.key))]
                 if (!res.data.isChangeUsername) {
                     setTabList([...newTabList, { key: 'tab3', tab: 'Kích hoạt tài khoản và mật khẩu' }]);
                 } else {
-                    setTabList([...newTabList]);
+                    setTabList([...newTabList, { key: 'tab4', tab: 'Thay đổi mật khẩu' }]);
                 }
 
                 setIsSpinningPage(false);
@@ -265,6 +266,47 @@ function Security() {
 
 
     /// handles
+    const onChangePasswordFinish = (values) => {
+        if (user === undefined || user === null) return navigate('/login');
+
+        setIsSpinningPage(true);
+
+        const { oldPassword, newPassword } = values;
+
+        const dataRequest = {
+            UserId: user.id,
+            OldPassword: encryptPassword(oldPassword),
+            NewPassword: encryptPassword(newPassword)
+        }
+
+        changePassword(dataRequest)
+            .then((res) => {
+                if (res.status === 200) {
+                    const data = res.data;
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        formChangePassword.resetFields();
+                        notification("success", "Thay đổi mật khẩu thành công");
+                    } else if (status.responseCode === RESPONSE_CODE_USER_USERNAME_PASSWORD_NOT_ACTIVE) {
+                        notification("error", "Bạn chưa kích hoạt đăng nhập bằng tài khoản và mật khẩu");
+                        reloadUserInfo();
+                    } else if (status.responseCode === RESPONSE_CODE_USER_PASSWORD_OLD_INCORRECT) {
+                        notification("error", "Mật khẩu cũ không chính xác");
+                    } else {
+                        notification("error", "Có lỗi xảy ra, vui lòng thử lại sau");
+                    }
+                } else {
+                    notification("error", "Có lỗi xảy ra, vui lòng thử lại sau");
+                }
+            })
+            .catch(() => { notification("error", "Có lỗi xảy ra, vui lòng thử lại sau"); })
+            .finally(() => {
+                setTimeout(() => {
+                    setIsSpinningPage(false);
+                }, 500);
+            })
+    }
+
     const reloadUserInfo = () => {
         setReloadUserInfoFlag(!reloadUserInfoFlag);
     }
@@ -294,7 +336,7 @@ function Security() {
                         if (status.responseCode === RESPONSE_CODE_SUCCESS) {
                             notification("success", "Kích hoạt tài khoản và mật khẩu thành công!");
                             reloadUserInfo();
-                            setTabKey('tab2');
+                            setTabKey('tab1');
                         } else {
                             notification("error", "Tên tài khoản đã được sử dụng, vui lòng chọn tên khác")
                         }
@@ -316,7 +358,10 @@ function Security() {
     const onFinishFailed = (errorInfo) => {
         console.log('On finish failed at security page:', errorInfo);
     };
+    ///
 
+
+    /// validators
     const confirmPasswordValidator = (value) => {
         let newPassword = form.getFieldValue('password');
         let confirmPassword = form.getFieldValue(value.field);
@@ -331,7 +376,6 @@ function Security() {
 
     const passwordValidator = (value) => {
         let password = form.getFieldValue(value.field);
-        console.log('new pass = ' + password);
 
         if (!validator.matches(password, REGEX_PASSWORD_SIGN_UP)) {
             return Promise.reject('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự và không chứa các kí tự đặc biệt');
@@ -428,7 +472,9 @@ function Security() {
     const contentList = {
         tab1: (<AccountLogin />),
         tab2: (<TwoFactorAuthentication />),
-        tab3: (<ActiveUsernamePassword />)
+        tab3: (<ActiveUsernamePassword />),
+        tab4: (<ChangePassword onChangePasswordFinish={onChangePasswordFinish}
+            formChangePassword={formChangePassword} />)
     };
 
     return (<>
