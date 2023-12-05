@@ -355,7 +355,7 @@ const Products = ({ dataPropProductComponent }) => {
                                                                 />
                                                                 {
                                                                     product.productActivate === false ?
-                                                                        <div className={cx('circle')}>Sản phẩm này đã bị ẩn</div>
+                                                                        <div className={cx('circle')}>Đã ẩn</div>
                                                                         : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
                                                                 }
                                                             </div>

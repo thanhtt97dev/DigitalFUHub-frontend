@@ -19,7 +19,8 @@ import {
     RESPONSE_CODE_ORDER_NOT_ELIGIBLE, RESPONSE_CODE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP, RESPONSE_CODE_ORDER_PRODUCT_HAS_BEEN_BANED,
     RESPONSE_CODE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT, RESPONSE_MESSAGE_ORDER_NOT_ELIGIBLE, RESPONSE_MESSAGE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP,
     RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED, RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT,
-    RESPONSE_CODE_ORDER_COUPON_INVALID_PRODUCT_APPLY, RESPONSE_MESSAGE_ORDER_COUPON_INVALID_PRODUCT_APPLY
+    RESPONSE_CODE_ORDER_COUPON_INVALID_PRODUCT_APPLY, RESPONSE_MESSAGE_ORDER_COUPON_INVALID_PRODUCT_APPLY,
+    RESPONSE_CODE_ORDER_SELLER_LOCK_TRANSACTION, RESPONSE_MESSAGE_ORDER_SELLER_LOCK_TRANSACTION
 } from '~/constants';
 
 const { Title, Text } = Typography;
@@ -246,6 +247,8 @@ const Prices = ({ dataPropPriceComponent }) => {
                             setContentModalAlert(RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT);
                         } else if (data.status.responseCode === RESPONSE_CODE_ORDER_COUPON_INVALID_PRODUCT_APPLY) {
                             setContentModalAlert(RESPONSE_MESSAGE_ORDER_COUPON_INVALID_PRODUCT_APPLY);
+                        } else if (data.status.responseCode === RESPONSE_CODE_ORDER_SELLER_LOCK_TRANSACTION) {
+                            setContentModalAlert(RESPONSE_MESSAGE_ORDER_SELLER_LOCK_TRANSACTION);
                         } else {
                             setContentModalAlert("Có lỗi xảy ra! Vui lòng thử lại sau!");
                         }
@@ -254,9 +257,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                         closeModalConfirmationBuy();
                     }
                 }
-            }).catch((error) => {
-                console.log(error)
-            })
+            }).catch((error) => { })
     }
 
 
