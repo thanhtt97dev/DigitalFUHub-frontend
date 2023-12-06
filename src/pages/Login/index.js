@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, Form, Input, Spin, Modal, Space } from 'antd';
+import { Button, Form, Input, Spin, Modal, Space, Row, Col } from 'antd';
 import { LoadingOutlined, WarningOutlined } from '@ant-design/icons';
 import { useSignIn } from 'react-auth-kit';
 
@@ -104,102 +104,114 @@ function Login() {
                 alignItems: 'center',
             }}
             >
-                <Modal
-                    title={
-                        <>
-                            <WarningOutlined style={{ fontSize: 30, color: "#faad14" }} />
-                            <b> Cảnh báo</b>
-                        </>}
-                    open={modalOpen}
-                    onOk={onModalOk}
-                    onCancel={onModalCancel}
-                >
-                    <p>Bạn có chắc đăng xuất tài khoản hiện tại không?</p>
-                </Modal>
-                <Form
-                    layout='vertical'
-                    // labelCol={{
-                    //     span: 8,
-                    // }}
-                    // wrapperCol={{
-                    //     span: 16,
-                    // }}
-                    style={{
-                        maxWidth: 600,
-                        width: 400,
-                        padding: 10,
-                        marginTop: '-10rem'
-                    }}
-                    initialValues={{
-                        remember: true,
-                    }}
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                    autoComplete="off"
-                >
-                    <h4 style={{ textAlign: 'center', fontSize: '25px' }}>Đăng Nhập</h4>
-                    <Form.Item
-                        label="Tài khoản"
-                        name="username"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Tài khoản không hợp lệ!',
-                            },
-                        ]}
-                    >
-                        <Input size='large' />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Mật khẩu"
-                        name="password"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Mật khẩu không hợp lệ!',
-                            },
-                        ]}
-                    >
-                        <Input.Password size='large' />
-                    </Form.Item>
-
-                    {message !== '' ? (
-                        <Form.Item
-                        // wrapperCol={{
-                        //     offset: 8,
-                        //     span: 0,
-                        // }}
+                <Row style={{
+                    boxShadow: '0px 0px 9px 2px rgba(0,0,0,.4)',
+                    borderRadius: '10px',
+                    overflow: 'hidden'
+                }}>
+                    <Col>
+                        <img style={{ height: '100%' }} alt="" src={'https://bcp.cdnchinhphu.vn/Uploaded/phungthithuhuyen/2020_05_21/5542_1604_thuong_mai_dt.jpg'} />
+                    </Col>
+                    <Col>
+                        <Modal
+                            title={
+                                <>
+                                    <WarningOutlined style={{ fontSize: 30, color: "#faad14" }} />
+                                    <b> Cảnh báo</b>
+                                </>}
+                            open={modalOpen}
+                            onOk={onModalOk}
+                            onCancel={onModalCancel}
                         >
-                            <span style={{ color: 'red' }}>{message}</span>
-                        </Form.Item>
-                    ) : (
-                        ''
-                    )}
+                            <p>Bạn có chắc đăng xuất tài khoản hiện tại không?</p>
+                        </Modal>
+                        <Form
+                            layout='vertical'
+                            // labelCol={{
+                            //     span: 8,
+                            // }}
+                            // wrapperCol={{
+                            //     span: 16,
+                            // }}
+                            style={{
+                                maxWidth: 600,
+                                width: 400,
+                                padding: 20,
+                                // marginTop: '-10rem'
+                            }}
+                            initialValues={{
+                                remember: true,
+                            }}
+                            onFinish={onFinish}
+                            onFinishFailed={onFinishFailed}
+                            autoComplete="off"
+                        >
+                            <h4 style={{ textAlign: 'center', fontSize: '25px' }}>Đăng Nhập</h4>
+                            <Form.Item
+                                label="Tài khoản"
+                                name="username"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Tài khoản không hợp lệ!',
+                                    },
+                                ]}
+                            >
+                                <Input size='large' />
+                            </Form.Item>
+
+                            <Form.Item
+                                label="Mật khẩu"
+                                name="password"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Mật khẩu không hợp lệ!',
+                                    },
+                                ]}
+                            >
+                                <Input.Password size='large' />
+                            </Form.Item>
+
+                            {message !== '' ? (
+                                <Form.Item
+                                // wrapperCol={{
+                                //     offset: 8,
+                                //     span: 0,
+                                // }}
+                                >
+                                    <span style={{ color: 'red' }}>{message}</span>
+                                </Form.Item>
+                            ) : (
+                                ''
+                            )}
 
 
-                    <Form.Item style={{ textAlign: 'center' }}
-                    // wrapperCol={{
-                    //     offset: 8,
-                    //     span: 16,
-                    // }}
-                    >
-                        <Space direction="vertical" style={{ width: '100%' }}>
-                            <Space.Compact style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <Link to={'/resetPassword'}>Quên mật khẩu?</Link>
-                                <Link to={'/signup'}>Chưa có tài khoản?</Link>
-                            </Space.Compact>
-                            <Space.Compact >
-                                <Button size='large' type="primary" htmlType="submit">
-                                    Đăng nhập
-                                </Button>
-                            </Space.Compact>
-                        </Space>
-                    </Form.Item>
-                    <Form.Item style={{ display: 'flex', justifyContent: 'center' }}>
-                        <GoogleSignIn onFinish={onFinish} />
-                    </Form.Item>
-                </Form>
+                            <Form.Item style={{ textAlign: 'center' }}
+                            // wrapperCol={{
+                            //     offset: 8,
+                            //     span: 16,
+                            // }}
+                            >
+                                <Space direction="vertical" style={{ width: '100%' }}>
+                                    <Space.Compact style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <Link to={'/resetPassword'}>Quên mật khẩu?</Link>
+                                        <Link to={'/signup'}>Chưa có tài khoản?</Link>
+                                    </Space.Compact>
+                                    <Space.Compact >
+                                        <Button size='large' type="primary" htmlType="submit">
+                                            Đăng nhập
+                                        </Button>
+                                    </Space.Compact>
+                                </Space>
+                            </Form.Item>
+                            <Form.Item style={{ display: 'flex', justifyContent: 'center' }}>
+                                <GoogleSignIn onFinish={onFinish} />
+                            </Form.Item>
+                        </Form>
+                    </Col>
+                </Row>
+
             </div>
         </Spin >
     );
