@@ -141,6 +141,7 @@ function AddCouponForProduct({ loading = false, onAddCoupon = () => { } }) {
                         <Col span={11}>
                             <Form.Item name="startDate"
                                 initialValue={dayjs().add(10, 'minute')}
+                                validateTrigger={["onBlur", "onFocus", "onInput", "onChange", "onMouseEnter", "onMouseLeave", "onMouseOver"]}
                                 rules={[
                                     ({ getFieldValue }) => ({
                                         validator(_, value) {
@@ -187,6 +188,7 @@ function AddCouponForProduct({ loading = false, onAddCoupon = () => { } }) {
                         <Col span={11}>
                             <Form.Item name="endDate"
                                 initialValue={dayjs().add(70, 'minute')}
+                                validateTrigger={["onBlur", "onFocus", "onInput", "onChange", "onMouseEnter", "onMouseLeave", "onMouseOver"]}
                                 rules={[
                                     ({ getFieldValue }) => ({
                                         validator(_, value) {
@@ -232,6 +234,7 @@ function AddCouponForProduct({ loading = false, onAddCoupon = () => { } }) {
                 <Col span={5} offset={1}><label>Giá trị đơn hàng tối thiểu <Tooltip title="Số tiền tối thiểu của đơn hàng để có thể áp dụng được mã giảm giá."><QuestionCircleOutlined /></Tooltip></label></Col>
                 <Col span={10}>
                     <Form.Item name="minTotalOrderValue"
+                        validateTrigger={["onBlur", "onFocus", "onInput", "onChange", "onMouseEnter", "onMouseLeave", "onMouseOver"]}
                         rules={[
                             ({ getFieldValue }) => ({
                                 validator(_, value) {
@@ -270,6 +273,7 @@ function AddCouponForProduct({ loading = false, onAddCoupon = () => { } }) {
                 <Col span={5} offset={1}><label>Số tiền giảm giá <Tooltip title="Số tiền được giảm khi áp dụng mã cho đơn hàng."><QuestionCircleOutlined /></Tooltip></label></Col>
                 <Col span={10}>
                     <Form.Item name="priceDiscount"
+                        validateTrigger={["onBlur", "onFocus", "onInput", "onChange", "onMouseEnter", "onMouseLeave", "onMouseOver"]}
                         rules={[
                             ({ getFieldValue }) => ({
                                 validator(_, value) {
