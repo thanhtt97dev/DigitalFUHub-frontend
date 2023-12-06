@@ -56,7 +56,8 @@ const Products = ({ dataPropProductComponent }) => {
     const [isOpenModalAlert, setIsOpenModalAlert] = useState(false);
     const [contentModalAlert, setContentModalAlert] = useState('');
     const [isOpenModalCoupons, setIsOpenModalCoupons] = useState(false);
-    const [totalCartDetailValid, setTotalCartDetailValid] = useState(0);
+    const [cartValids, setCartValids] = useState([]);
+    const [cartDetailValids, setCartDetailValids] = useState([]);
     const [shopIdSelected, setShopIdSelected] = useState(0);
     const [cartIdSelecteds, setCartIdSelecteds] = useState([]);
     ///
@@ -106,9 +107,7 @@ const Products = ({ dataPropProductComponent }) => {
                     reloadCarts();
                 }
             })
-            .catch((error) => {
-                console.log(error)
-            })
+            .catch((error) => { })
     }
 
     const handleAddOne = (quantity, cartDetailId, productVariantId) => {
@@ -125,9 +124,7 @@ const Products = ({ dataPropProductComponent }) => {
                     reloadCarts();
                 }
             })
-            .catch((error) => {
-                console.log(error)
-            })
+            .catch((error) => { })
     }
 
     const onBlurQuantity = (e, cartDetailId, productVariantId) => {
@@ -145,9 +142,7 @@ const Products = ({ dataPropProductComponent }) => {
                     reloadCarts();
                 }
             })
-            .catch((error) => {
-                console.log(error)
-            })
+            .catch((error) => { })
     }
 
     const showCouponShop = (shopId) => {
@@ -160,21 +155,15 @@ const Products = ({ dataPropProductComponent }) => {
                     openModalCoupons();
                 }
             })
-            .catch((error) => {
-                console.log(error)
-            })
+            .catch((error) => { })
     }
 
     const handleCheckAll = (e) => {
 
         if (e.target.checked) {
-            const listCartDetailIds = [];
-            for (let i = 0; i < cartDetails.length; i++) {
-                if (cartDetails[i].quantityProductRemaining > 0 && cartDetails[i].productActivate && cartDetails[i].productVariantActivate) {
-                    listCartDetailIds.push(cartDetails[i].cartDetailId);
-                }
-            }
-            setCartDetailIdSelecteds([].concat(...listCartDetailIds));
+            const listCartDetailIds = cartDetailValids.map(x => x.cartDetailId);
+
+            setCartDetailIdSelecteds(listCartDetailIds);
         } else {
             setCartDetailIdSelecteds([]);
         }
@@ -183,7 +172,7 @@ const Products = ({ dataPropProductComponent }) => {
     const handleOnChangeCheckboxCartItem = (cartId, e) => {
 
         let cartDetailIds = [];
-        const cartFind = carts.find(x => x.cartId === cartId);
+        const cartFind = cartValids.find(x => x.cartId === cartId);
         if (!cartFind) return;
         const cartDetails = cartFind.products;
         for (let i = 0; i < cartDetails.length; i++) {
@@ -234,14 +223,28 @@ const Products = ({ dataPropProductComponent }) => {
     ///
 
     /// useEffect 
-    // calculator number cart details
+    // get cart valid
     useEffect(() => {
-        const totalCartDetailValid = cartDetails.filter(x => x.productActivate && x.productVariantActivate && x.quantityProductRemaining > 0).length;
+        const listCartValids = [];
+        const listCartDetailValids = [];
+        for (let i = 0; i < carts.length; i++) {
+            if (carts[i].shopActivate) {
+                // add cart valid
+                listCartValids.push(carts[i]);
 
-        setTotalCartDetailValid(totalCartDetailValid);
+                const cartDetailValid = carts[i].products.filter(x => x.quantityProductRemaining > 0 && x.productActivate && x.productVariantActivate);
+
+                if (cartDetailValid.length > 0) {
+                    listCartDetailValids.push(cartDetailValid);
+                }
+            }
+        }
+
+        setCartValids(listCartValids);
+        setCartDetailValids([].concat(...listCartDetailValids));
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cartDetails])
+    }, [carts])
 
     useEffect(() => {
         const listCartIds = [];
@@ -298,19 +301,13 @@ const Products = ({ dataPropProductComponent }) => {
                 }
             })
             .catch((errors) => {
-                console.log(errors)
                 notification("error", "Có lỗi trong quá trình xóa, vui lòng thử lại");
             })
     };
 
-    // const isHideProduct = (shopActivate, productActivate, productVariantActivate) => {
-    //     return !shopActivate || !productActivate || !productVariantActivate;
-    // }
-    ///
-
 
     // checkbox all cart
-    const checkAllCart = totalCartDetailValid > 0 && cartDetailIdSelecteds.length === totalCartDetailValid;
+    const checkAllCart = cartDetailValids.length > 0 && cartDetailIdSelecteds.length === cartDetailValids.length;
     //
 
     return (
@@ -332,12 +329,14 @@ const Products = ({ dataPropProductComponent }) => {
                             {
                                 carts.map((cart, index) => (
                                     <Card
+                                        className={!cart.shopActivate ? cx('disable-item') : {}}
                                         hoverable
                                         title={
                                             <Checkbox.Group value={cartIdSelecteds}>
                                                 <Space align="center" size={10}>
-                                                    <Checkbox key={cart.cartId} value={cart.cartId} onChange={(e) => { handleOnChangeCheckboxCartItem(cart.cartId, e) }}>
-                                                    </Checkbox>
+                                                    {
+                                                        cart.shopActivate ? <Checkbox key={cart.cartId} value={cart.cartId} onChange={(e) => { handleOnChangeCheckboxCartItem(cart.cartId, e) }} /> : <></>
+                                                    }
                                                     <ShopOutlined className={cx('margin-left-40')} /> {cart.shopName}
                                                 </Space>
                                             </Checkbox.Group>}
@@ -347,7 +346,7 @@ const Products = ({ dataPropProductComponent }) => {
                                                 <Row className={product.productVariantActivate === false || product.productActivate === false || product.quantityProductRemaining === 0 ? cx('disable-item', 'margin-bottom-item') : cx('margin-bottom-item')} key={index}>
                                                     <Col span={1}>
                                                         {
-                                                            product.productVariantActivate && product.productActivate && product.quantityProductRemaining > 0 ? <Checkbox key={product.cartDetailId} value={product.cartDetailId}></Checkbox> : <></>
+                                                            cart.shopActivate && product.productVariantActivate && product.productActivate && product.quantityProductRemaining > 0 ? <Checkbox key={product.cartDetailId} value={product.cartDetailId}></Checkbox> : <></>
                                                         }
                                                     </Col>
 
