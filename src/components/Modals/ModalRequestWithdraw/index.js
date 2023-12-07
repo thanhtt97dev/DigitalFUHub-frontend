@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { Divider, Modal, Button, Input, Card, Space } from "antd";
 import { useAuthUser } from 'react-auth-kit'
 
-import { ExclamationCircleFilled } from "@ant-design/icons";
+import { ExclamationCircleFilled, PlusOutlined } from "@ant-design/icons";
 
 import { createWithdrawTransaction, getUserBankAccount } from "~/api/bank";
 import { getCustomerBalance } from '~/api/user'
@@ -144,10 +144,11 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
             <Button
                 onClick={handleOpenModal}
                 type="primary"
+                icon={<PlusOutlined />}
                 style={style}
                 loading={btnLoading}
             >
-                {text === undefined ? "+ Tạo yêu cầu rút tiền" : text}
+                {text === undefined ? "Tạo yêu cầu rút tiền" : text}
             </Button>
 
             <Modal

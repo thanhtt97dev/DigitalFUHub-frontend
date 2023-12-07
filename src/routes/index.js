@@ -42,6 +42,7 @@ import ProductsBan from '~/pages/Seller/ManageProduct/ProductsBan';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import SearchShop from '../pages/SearchShop';
 import Statistics from '~/pages/Seller/Statistics';
+import Wallet from '~/pages/User/Settings/Wallet';
 
 const routesConfig = [
     {
@@ -92,9 +93,9 @@ const routesConfig = [
     },
     {
         title: 'user settings',
-        path: '/settings',
+        path: '/settings/wallet',
         layout: <NormalLayout />,
-        component: <SettingsLayout><Personal /></SettingsLayout>,
+        component: <SettingsLayout><Wallet /></SettingsLayout>,
         role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {

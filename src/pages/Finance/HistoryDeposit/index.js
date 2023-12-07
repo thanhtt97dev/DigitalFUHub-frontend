@@ -258,7 +258,7 @@ function HistoryDeposit() {
                             </Col>
                         </Row>
                     </Form>
-                    <ModalRequestDeposit userId={user.id} style={{ marginBottom: "5px" }} text={"+ Nạp tiền"} />
+                    <ModalRequestDeposit userId={user.id} style={{ marginBottom: "5px" }} text={"Nạp tiền"} />
                 </Card>
                 <Card style={{ marginTop: "20px" }}>
                     <Row align="end">

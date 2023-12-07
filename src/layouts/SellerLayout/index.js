@@ -21,7 +21,7 @@ import {
 import { Layout, Menu, Space, Avatar, Button, Row, Col, Dropdown, Badge } from 'antd';
 import styles from './SellerLayout.module.scss'
 import classNames from 'classnames/bind';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import logoFPT from '~/assets/images/fpt-logo.jpg';
 import logo from '~/assets/images/DIGITALFUHUB.png';
 import Logout from '~/components/Logout';
@@ -34,12 +34,12 @@ const items = [
 
     {
         key: 'account',
-        label: <Link to={"/settings"}>Tài khoản</Link>,
+        label: <Link to={"/settings/personal"}>Tài khoản</Link>,
         icon: <UserOutlined />,
     },
     {
         key: 'history transaction',
-        label: <Link to={"/historyTransaction"}>Lịch sử giao dịch</Link>,
+        label: <Link to={"/finance"}>Tài chính</Link>,
         icon: <CreditCardOutlined />,
     },
     {
@@ -53,12 +53,12 @@ const items = [
 const menuItems = [
     {
         label: <Link to='/seller/statistic'>Thống kê</Link>,
-        key: 'statistic',
+        key: '/seller/statistic',
         icon: <AreaChartOutlined className={cx('menu-icon')} />,
     },
     {
         label: 'Quản lý cửa hàng',
-        key: 'seller/shop',
+        key: '/seller/shop',
         icon: <ShopOutlined className={cx('menu-icon')} />,
         children: [
             {
@@ -70,7 +70,7 @@ const menuItems = [
     },
     {
         label: 'Quản lý đơn hàng',
-        key: 'seller/order',
+        key: '/seller/order',
         icon: <ShoppingCartOutlined className={cx('menu-icon')} />,
         children: [
             {
@@ -81,7 +81,7 @@ const menuItems = [
     },
     {
         label: 'Quản lý sản phẩm',
-        key: 'seller/product',
+        key: '/seller/product',
         icon: <ShoppingOutlined className={cx('menu-icon')} />,
         children: [
             {
@@ -102,18 +102,26 @@ const menuItems = [
     },
     {
         label: <Link to='/seller/coupon/list'>Mã giảm giá</Link>,
-        key: 'coupon',
+        key: '/seller/coupon/list',
         icon: <DollarOutlined className={cx('menu-icon')} />,
     },
     {
         label: <Link to='/seller/feedback/list'>Đánh giá cửa hàng</Link>,
-        key: 'feedback',
+        key: '/seller/feedback/list',
         icon: <CommentOutlined className={cx('menu-icon')} />,
     }
 ];
 const SellerLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
-
+    const location = useLocation();
+    const getSelectedKey = () => {
+        const path = location.pathname.replace(/[0-9]+/g, "");
+        if (path[path.length - 1] === '/') {
+            return [path.slice(0, path.length - 1)]
+        } else {
+            return [path];
+        }
+    }
     // const {
     //     token: { colorBgContainer },
     // } = theme.useToken();
@@ -134,8 +142,9 @@ const SellerLayout = () => {
                 </div>
                 <Menu
                     className={cx("menu")}
-                    defaultOpenKeys={['seller/product', 'seller/order', 'seller/shop']}
-                    defaultSelectedKeys={['dashboard']}
+                    defaultOpenKeys={['/seller/product', '/seller/order', '/seller/shop']}
+                    defaultSelectedKeys={['/seller/statistic']}
+                    selectedKeys={getSelectedKey()}
                     mode="inline" items={menuItems} />
             </Sider>
             <Layout>

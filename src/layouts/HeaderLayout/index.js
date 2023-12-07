@@ -6,7 +6,7 @@ import Logout from '~/components/Logout';
 import Message from '~/components/Message';
 import Notificaion from '~/components/Notification';
 import {
-    ShoppingCartOutlined, BellFilled,
+    ShoppingCartOutlined,
     CreditCardOutlined, ShopOutlined, ShoppingOutlined, UserOutlined,
     HeartOutlined
 } from '@ant-design/icons';
@@ -35,7 +35,7 @@ const { Text } = Typography
 const itemsFixed = [
     {
         key: 'settings',
-        label: <Link to={"/settings"}><><UserOutlined /> Tài khoản</></Link>,
+        label: <Link to={"/settings/personal"}><><UserOutlined /> Tài khoản</></Link>,
         roles: [CUSTOMER_ROLE, SELLER_ROLE]
     },
     {

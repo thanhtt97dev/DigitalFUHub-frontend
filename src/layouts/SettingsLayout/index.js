@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Row, Layout, Menu, theme, Button } from 'antd';
 import {
     MenuFoldOutlined,
@@ -10,7 +10,8 @@ import {
     ShopOutlined,
     ShoppingOutlined,
     CreditCardOutlined,
-    HeartOutlined
+    HeartOutlined,
+    WalletOutlined
 } from '@ant-design/icons';
 import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import { useAuthUser } from 'react-auth-kit';
@@ -25,6 +26,12 @@ const items = [
         icon: UserOutlined,
         label: 'Thông tin của tôi',
         link: '/settings/personal',
+        role: [CUSTOMER_ROLE, SELLER_ROLE],
+    },
+    {
+        icon: WalletOutlined,
+        label: 'Ví của tôi',
+        link: '/settings/wallet',
         role: [CUSTOMER_ROLE, SELLER_ROLE],
     },
     {
@@ -77,6 +84,15 @@ function SettingsLayout({ children }) {
     const toggleCollapsed = () => {
         setCollapsed(!collapsed);
     };
+    const location = useLocation();
+    const getSelectedKey = () => {
+        const path = location.pathname.replace(/[0-9]+/g, "");
+        if (path[path.length - 1] === '/') {
+            return [path.slice(0, path.length - 1)]
+        } else {
+            return [path];
+        }
+    }
 
     return (
         <>
@@ -94,8 +110,8 @@ function SettingsLayout({ children }) {
                     style={{ minHeight: '100vh', background: 'white' }}
                 >
                     <Menu
-                        defaultSelectedKeys={['1']}
-                        defaultOpenKeys={['sub1']}
+                        defaultSelectedKeys={['/settings/personal']}
+                        selectedKeys={getSelectedKey()}
                         mode="vertical"
                         theme="light"
                         inlineCollapsed={collapsed}
@@ -103,7 +119,7 @@ function SettingsLayout({ children }) {
                         items={items.map((item, index) => {
                             if (item.role.includes(user.roleName)) {
                                 return {
-                                    key: String(index + 1),
+                                    key: item.link,
                                     icon: React.createElement(item.icon),
                                     label: <Link to={item.link}>{item.label}</Link>,
                                 }

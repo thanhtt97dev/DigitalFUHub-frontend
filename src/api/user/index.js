@@ -110,3 +110,6 @@ export const updateAccountBalance = (id, data) => {
 export const getOnlineStatusUser = (id) => {
     return apiGetAuth(`api/users/GetOnlineStatusUser/${id}`);
 };
+export const getInfoWalletUser = (id) => {
+    return apiGetAuth(`api/Users/Wallet`);
+};

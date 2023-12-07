@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Divider, notification, Modal, Button, Input } from "antd";
 
-import { ExclamationCircleFilled } from "@ant-design/icons";
+import { ExclamationCircleFilled, PlusOutlined } from "@ant-design/icons";
 
 import { createDepositTransaction } from "~/api/bank";
 
@@ -88,8 +88,9 @@ function ModalRequestDeposit({ userId, text, style }) {
 
             <Button
                 onClick={() => setOpenModal(true)}
+                icon={<PlusOutlined />}
                 type="primary"
-                style={style}
+            // style={style}
             >
                 {text === undefined ? "Nạp tiền" : text}
             </Button>
