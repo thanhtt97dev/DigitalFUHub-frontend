@@ -28,7 +28,7 @@
 
 .layout-user-chat {
     height: 75vh;
-    width: 40%;
+    width: 100%;
     padding: 10px;
     border: 1px solid rgba(140, 140, 140, 0.35);
 }
@@ -63,6 +63,14 @@
 
 .custom-wrapper {
     width: 60%;
+}
+
+.custom-wrapper-conversation {
+    width: 35%;
+}
+
+.custom-wrapper-message {
+    width: 65%;
 }
 
 .text-ellipsis {

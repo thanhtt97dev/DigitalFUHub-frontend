@@ -4,23 +4,39 @@ import ConversationFormated from './ConversationFormated';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAuthUser } from 'react-auth-kit';
-import { Layout, List, Card, Typography } from 'antd';
-import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, MESSAGE_TYPE_CONVERSATION_IMAGE, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
+import { getConversation } from '~/api/chat';
+import { Layout, List, Card, Typography, Button } from 'antd';
+import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, ADMIN_USER_ID, RESPONSE_CODE_SUCCESS, MESSAGE_TYPE_CONVERSATION_IMAGE, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
+import Spinning from '~/components/Spinning';
+import { useNavigate } from 'react-router-dom';
+import { PhoneOutlined } from '@ant-design/icons';
 
 ///
 const cx = classNames.bind(styles);
 ///
 
+/// styles
+const bodyCardHeader = { padding: 10 }
+const styleTypography = { margin: 0 }
+const styleScrollUserChat = { height: '100%', overflow: 'auto', padding: '0 16px' }
+///
+
 const LayoutUserChat = ({ propsUserChat }) => {
     /// states
     const [reloadComponentFlag, setReloadComponentFlag] = useState(false);
+    const [isLoadingButtonContactAdministrator, setIsLoadingButtonContactAdministrator] = useState(false);
+    const [conversationIdContactAdministrator, setConversationIdContactAdministrator] = useState(0);
+    const navigate = useNavigate();
     ///
+
     /// distructuring
     const { conversations,
         conversationSelected,
         updateIsReadConversation,
         setConversations,
-        setConversationSelected } = propsUserChat;
+        setConversationSelected,
+        reloadConversation,
+        isLoadingSpinningConversations } = propsUserChat;
     ///
 
     /// auth
@@ -28,19 +44,42 @@ const LayoutUserChat = ({ propsUserChat }) => {
     const user = auth();
     ///
 
-    /// styles
-    const bodyCardHeader = { padding: 15 }
-    const styleTypography = { margin: 0 }
-    const styleScrollUserChat = { height: '100%', overflow: 'auto', padding: '0 16px' }
-    ///
-
     /// useEffects
+    useEffect(() => {
+        if (conversationSelected && conversationSelected.isRead === USER_CONVERSATION_TYPE_UN_READ) {
+            // update conversations
+            const newConversation = conversations.map((item) => {
+                if (item.conversationId === conversationSelected.conversationId) {
 
-    /// useEffect
+                    return { ...item, isRead: USER_CONVERSATION_TYPE_IS_READ }
+                }
+                return item;
+            })
+            setConversations(newConversation);
+
+            updateIsReadConversation(conversationSelected.conversationId, USER_CONVERSATION_TYPE_IS_READ, user.id);
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [conversationSelected])
+
+    useEffect(() => {
+        if (conversationIdContactAdministrator !== 0) {
+            const conversationFind = conversations.find(x => x.conversationId === conversationIdContactAdministrator);
+
+            // set conversation selected
+            if (conversationFind) {
+                setConversationIdContactAdministrator(0);
+                setConversationSelected(conversationFind);
+            }
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [conversations])
+
     useEffect(() => {
         if (conversations.length === 0) return;
         const interval = setInterval(() => {
-            console.log('interval user chat');
             reloadComponent();
         }, 60000);
         return () => clearInterval(interval);
@@ -49,26 +88,28 @@ const LayoutUserChat = ({ propsUserChat }) => {
     ///
 
     /// handles
+    const handleContactTheAdministrator = () => {
+        if (user === undefined || user === null) return navigate('/login');
+
+        setIsLoadingButtonContactAdministrator(true);
+
+        const data = { shopId: ADMIN_USER_ID, userId: user.id }
+
+        getConversation(data)
+            .then((res) => {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    setConversationIdContactAdministrator(res.data.result);
+                    setIsLoadingButtonContactAdministrator(false);
+                    reloadConversation();
+                }
+            })
+            .catch(() => { })
+    }
+
     const handleClickUser = (conversation) => {
 
         //update is Read db
-        if (user === undefined || user === null) return;
-        var userId = user.id;
-
-        if (conversation.isRead === USER_CONVERSATION_TYPE_UN_READ) {
-            updateIsReadConversation(conversation.conversationId, USER_CONVERSATION_TYPE_IS_READ, userId);
-        }
-
-        //update new isRead state
-        const newConversation = conversations.map((item) => {
-            if (item.conversationId === conversation.conversationId) {
-
-                return { ...item, isRead: USER_CONVERSATION_TYPE_IS_READ }
-            }
-            return item;
-        })
-        setConversations(newConversation)
-
+        if (user === undefined || user === null) return navigate('/login');
 
         setConversationSelected(conversation);
     }
@@ -108,37 +149,41 @@ const LayoutUserChat = ({ propsUserChat }) => {
     ///
 
     return (
-        <Layout className={cx('layout-user-chat')}>
-            <Card
-                bordered
-                bodyStyle={bodyCardHeader}>
-                <Typography.Title
-                    level={4}
-                    style={styleTypography}
-                >
-                    Gần đây
-                </Typography.Title>
-            </Card>
-            <div id="scrollUserChat" style={styleScrollUserChat}>
-                <InfiniteScroll
-                    dataLength={conversations.length}
-                    scrollableTarget="scrollUserChat"
-                >
-                    <List
-                        dataSource={conversations}
-                        renderItem={(item) => (
-                            <ConversationFormated conversation={item}
-                                handleClickUser={handleClickUser}
-                                conversationSelected={conversationSelected}
-                                isYourLatestMessage={isYourLatestMessage}
-                                isLatestMessageTypeText={isLatestMessageTypeText}
-                                isLatestMessageTypeImage={isLatestMessageTypeImage}
-                                getFullNameUser={getFullNameUser} />
-                        )}
-                    />
-                </InfiniteScroll>
-            </div>
-        </Layout>
+        <Spinning spinning={isLoadingSpinningConversations} wrapperClassName={cx('custom-wrapper-conversation')}>
+            <Layout className={cx('layout-user-chat')}>
+                <Card
+                    bordered
+                    title={<Typography.Title
+                        level={4}
+                        style={styleTypography}
+                    >
+                        Gần đây
+                    </Typography.Title>}
+                    extra={<Button icon={<PhoneOutlined />} type="primary" ghost loading={isLoadingButtonContactAdministrator} onClick={handleContactTheAdministrator}>Liên hệ với quản trị viên</Button>}
+                    bodyStyle={bodyCardHeader}>
+                    <div id="scrollUserChat" style={styleScrollUserChat}>
+                        <InfiniteScroll
+                            dataLength={conversations.length}
+                            scrollableTarget="scrollUserChat"
+                        >
+                            <List
+                                dataSource={conversations}
+                                renderItem={(item) => (
+                                    <ConversationFormated conversation={item}
+                                        handleClickUser={handleClickUser}
+                                        conversationSelected={conversationSelected}
+                                        isYourLatestMessage={isYourLatestMessage}
+                                        isLatestMessageTypeText={isLatestMessageTypeText}
+                                        isLatestMessageTypeImage={isLatestMessageTypeImage}
+                                        getFullNameUser={getFullNameUser} />
+                                )}
+                            />
+                        </InfiniteScroll>
+                    </div>
+                </Card>
+
+            </Layout>
+        </Spinning>
     )
 }
 

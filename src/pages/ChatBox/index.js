@@ -5,7 +5,7 @@ import fptImage from '~/assets/images/fpt-logo.jpg';
 import LayoutUserChat from '~/components/ChatBox/LayoutUserChat';
 import LayoutMessageChat from '~/components/ChatBox/LayoutMessageChat';
 import { useAuthUser } from 'react-auth-kit';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ChatContext } from "~/context/SignalR/ChatContext";
 import { UserOnlineStatusContext } from "~/context/SignalR/UserOnlineStatusContext";
 import { GetConversations, GetMessages, updateUserConversation } from '~/api/chat';
@@ -20,6 +20,7 @@ const ChatBox = () => {
     /// router
     const location = useLocation();
     let conversationIdPath = location.state?.data || null;
+    const navigate = useNavigate();
     ///
 
     /// auth
@@ -31,6 +32,9 @@ const ChatBox = () => {
     const [messages, setMessages] = useState([]);
     const [conversations, setConversations] = useState([]);
     const [conversationSelected, setConversationSelected] = useState(null);
+    const [isLoadingSpinningConversations, setIsLoadingSpinningConversations] = useState(false);
+    const [isLoadingSpinningMessage, setIsLoadingSpinningMessage] = useState(false);
+    const [loadingConversationFlag, setLoadingConversationFlag] = useState(false);
     ///
 
     ///contexts
@@ -39,7 +43,9 @@ const ChatBox = () => {
     ///
 
     /// Handles
-
+    const reloadConversation = () => {
+        setLoadingConversationFlag(!loadingConversationFlag);
+    }
     const sortConversationByMessageCreationDate = (conversations) => {
         if (conversations.length === 0) return [];
         const currentDate = new Date();
@@ -89,7 +95,10 @@ const ChatBox = () => {
 
     //get messages
     useEffect(() => {
+        if (user === null || user === undefined) return navigate('/login');
         if (conversationSelected === null || conversationSelected === undefined) return;
+
+        setIsLoadingSpinningMessage(true);
 
         GetMessages(conversationSelected.conversationId)
             .then((response) => {
@@ -111,8 +120,11 @@ const ChatBox = () => {
                     }
                 }
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(() => { })
+            .finally(() => {
+                setTimeout(() => {
+                    setIsLoadingSpinningMessage(false);
+                }, 500);
             })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,7 +132,9 @@ const ChatBox = () => {
 
     // get conversations
     useEffect(() => {
-        if (user === null || user === undefined) return;
+        if (user === null || user === undefined) return navigate('/login');
+
+        setIsLoadingSpinningConversations(true);
 
         const loadConversations = () => {
             GetConversations(user.id)
@@ -157,15 +171,18 @@ const ChatBox = () => {
                     }
 
                 })
-                .catch((errors) => {
-                    console.log(errors)
+                .catch(() => { })
+                .finally(() => {
+                    setTimeout(() => {
+                        setIsLoadingSpinningConversations(false);
+                    }, 500);
                 });
 
         };
 
         loadConversations();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [loadingConversationFlag]);
 
 
     // get message from signR
@@ -300,7 +317,8 @@ const ChatBox = () => {
     /// data props
     const propsMessageChat = {
         conversationSelected: conversationSelected,
-        messages: messages
+        messages: messages,
+        isLoadingSpinningMessage: isLoadingSpinningMessage
     }
 
     const propsUserChat = {
@@ -308,7 +326,9 @@ const ChatBox = () => {
         setConversations: setConversations,
         conversationSelected: conversationSelected,
         setConversationSelected: setConversationSelected,
-        updateIsReadConversation: updateIsReadConversation
+        updateIsReadConversation: updateIsReadConversation,
+        isLoadingSpinningConversations: isLoadingSpinningConversations,
+        reloadConversation: reloadConversation
     }
     ///
 
