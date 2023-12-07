@@ -5,6 +5,7 @@ import InputMessageChat from '../InputMessageChat';
 import HeaderMessageChat from '../HeaderMessageChat';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
 import { Layout } from 'antd';
+import Spinning from '~/components/Spinning';
 
 ///
 const cx = classNames.bind(styles);
@@ -14,11 +15,12 @@ const LayoutMessageChat = (props) => {
     const {
         conversationSelected,
         messages,
-        lastTimeOnline
+        lastTimeOnline,
+        isLoadingSpinningMessage
     } = props.propsMessageChat
 
     return (
-        <>
+        <Spinning spinning={isLoadingSpinningMessage} wrapperClassName={cx('custom-wrapper-message')}>
             <Layout className={cx('layout-chat-message')}>
                 {
                     conversationSelected ? (<>
@@ -30,7 +32,7 @@ const LayoutMessageChat = (props) => {
                 }
             </Layout>
 
-        </>
+        </Spinning>
 
     )
 }

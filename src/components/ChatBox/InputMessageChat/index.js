@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import uploadButton from './UploadButton';
 import { sendMessage } from '~/api/chat';
 import { useAuthUser } from 'react-auth-kit';
 import { getVietnamCurrentTime } from '~/utils';
-import { Input, Button, Col, Row, Upload, Form } from 'antd';
-import { SendOutlined, FileImageOutlined } from '@ant-design/icons';
+import { Input, Button, Col, Row, Upload, Form, Modal } from 'antd';
+import { SendOutlined, FileImageOutlined, PlusOutlined } from '@ant-design/icons';
+
+///styles
+const styleFormInputMessage = {
+    position: 'absolute',
+    bottom: 0,
+    width: '95%',
+    marginBottom: 15
+}
+///
 
 const InputMessageChat = ({ conversationSelected }) => {
     /// auth
@@ -16,11 +24,34 @@ const InputMessageChat = ({ conversationSelected }) => {
     const [form] = Form.useForm();
     const [isLoadingButtonSend, setIsLoadingButtonSend] = useState(false);
     const [newMessage, setNewMessage] = useState('');
+    const [newMessageImageFile, setNewMessageImageFile] = useState([]);
     const [isUploadFile, setIsUploadFile] = useState(false);
+    const [previewImage, setPreviewImage] = useState('');
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewImageTitle, setPreviewImageTitle] = useState('');
     ///
 
     ///handles
+
+    const handleCancel = () => setPreviewOpen(false);
+
+    const handleMessageImageChange = (info) => {
+        let newFileList = [...info.fileList];
+        newFileList = newFileList.slice(-1);
+        newFileList = newFileList.map((file) => {
+            if (file.response) {
+                file.url = file.response.url;
+            }
+            file.response = '';
+            file.status = 'done';
+            return file;
+        });
+        setNewMessageImageFile(newFileList);
+    };
+
     const handleOpenUploadFile = () => {
+        setNewMessage('');
+        if (isUploadFile) resetFieldNewMessageImage();
         setIsUploadFile(!isUploadFile)
     }
 
@@ -47,41 +78,54 @@ const InputMessageChat = ({ conversationSelected }) => {
         sendMessage(bodyFormData)
             .then((res) => {
                 if (res.status === 200) {
-                    form.resetFields();
-                    setIsUploadFile(false);
-                    setNewMessage('');
+                    if (newMessageImageFile.length > 0) {
+                        setIsUploadFile(false);
+                        resetFieldNewMessageImage();
+                    }
+                    if (newMessage) setNewMessage('');
 
                     setIsLoadingButtonSend(false);
                 }
             })
-            .catch(error => {
-                console.error(error);
-            });
-
+            .catch(error => { });
     };
 
     const handleChangeNewMessage = (e) => {
         const { value } = e.target
         setNewMessage(value)
     }
+
+    const handlePreviewImage = async (file) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setPreviewImage(file.url || file.preview);
+        setPreviewOpen(true);
+        setPreviewImageTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
+    };
     ///
 
     /// functions
+    const resetFieldNewMessageImage = () => {
+        setNewMessageImageFile([]);
+        setPreviewImage('');
+        form.resetFields();
+    }
+
     const normFile = (e) => {
         if (Array.isArray(e)) {
             return e;
         }
         return e?.fileList;
     };
-    ///
 
-    ///styles
-    const styleFormInputMessage = {
-        position: 'absolute',
-        bottom: 0,
-        width: '95%',
-        marginBottom: 15
-    }
+    const getBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
     ///
 
     return (
@@ -99,13 +143,35 @@ const InputMessageChat = ({ conversationSelected }) => {
                                 <Upload
                                     beforeUpload={false}
                                     listType="picture-card"
-                                    multiple={false}
+                                    fileList={newMessageImageFile}
+                                    onPreview={handlePreviewImage}
+                                    onChange={handleMessageImageChange}
                                     maxCount={1}
                                     accept=".png, .jpeg, .jpg"
                                 >
-                                    {uploadButton}
+                                    {newMessageImageFile.length < 1 ? <div>
+                                        <PlusOutlined />
+                                        <div
+                                            style={{
+                                                marginTop: 8,
+                                            }}
+                                        >
+                                            Tải lên
+                                        </div>
+                                    </div> : null}
                                 </Upload>
                             </Form.Item>
+
+
+                            <Modal open={previewOpen} title={previewImageTitle} footer={null} onCancel={handleCancel}>
+                                <img
+                                    alt="thumbnail"
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    src={previewImage}
+                                />
+                            </Modal >
                         </Col>
                     </Row>
                 ) : (<></>)}
@@ -125,6 +191,7 @@ const InputMessageChat = ({ conversationSelected }) => {
                                 icon={<SendOutlined />}
                                 loading={isLoadingButtonSend}
                                 htmlType="submit"
+                                disabled={((newMessage === undefined || newMessage.length === 0) && newMessageImageFile.length < 1)}
                             />
                         }
                     />
