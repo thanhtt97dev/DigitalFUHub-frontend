@@ -16,7 +16,7 @@ import {
 } from 'react-chartjs-2';
 import { Card, DatePicker, Select, Space, Spin } from 'antd';
 import locale from 'antd/es/date-picker/locale/vi_VN';
-import { ORDER_COMPLAINT, ORDER_CONFIRMED, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_REFUNDED, ORDER_SELLER_VIOLATES, ORDER_WAIT_CONFIRMATION, RESPONSE_CODE_SUCCESS, STATISTIC_BY_MONTH, STATISTIC_BY_YEAR } from '../../../../constants';
+import { ORDER_COMPLAINT, ORDER_CONFIRMED, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_REFUNDED, ORDER_SELLER_VIOLATES, ORDER_STATUS_ALL, ORDER_WAIT_CONFIRMATION, RESPONSE_CODE_SUCCESS, STATISTIC_BY_MONTH, STATISTIC_BY_YEAR } from '../../../../constants';
 import { getStatisticSales } from '~/api/statistic';
 import dayjs from 'dayjs';
 import { formatPrice } from '~/utils';
@@ -52,7 +52,16 @@ export const options = {
             position: 'left',
             ticks: {
                 callback: function (value, index, ticks) {
-                    return formatPrice(value);
+                    // if (value >= 1) {
+                    //     return formatPrice(value);
+                    // } else {
+                    //     return value + ' ₫'
+                    // }
+                    if (value >= 1) {
+                        return formatPrice(value);
+                    } else {
+                        return value.toString().replace('.', ',') + ' ₫'
+                    }
                 }
             }
         },
@@ -65,7 +74,12 @@ export const options = {
             },
             ticks: {
                 callback: function (value, index, ticks) {
-                    return value + ' đơn hàng';
+                    // return value + ' đơn hàng';
+                    if (value >= 1) {
+                        return value + ' đơn hàng';
+                    } else {
+                        return value.toString().replace('.', ',') + ' đơn hàng'
+                    }
                 }
             }
         },
@@ -76,7 +90,7 @@ const labels = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Th�
 function LineChart() {
     const [typeSearch, setTypeSearch] = useState(STATISTIC_BY_YEAR);
     const [dateSelected, setDateSelected] = useState(dayjs())
-    const [typeOrders, setTypeOrders] = useState(ORDER_CONFIRMED)
+    const [statusOrder, setStatusOrder] = useState(ORDER_STATUS_ALL)
     const [dataStatistic, setDataStatistic] = useState([])
     const [loading, setLoading] = useState(false);
     const labelsChartRef = useRef([]);
@@ -94,8 +108,15 @@ function LineChart() {
             labels: labelsChartRef.current,
             datasets: [
                 {
-                    label: 'Lợi nhuận (đã trừ phí dịch vụ)',
+                    label: 'Doanh thu (chưa trừ phí dịch vụ)',
                     data: dataStatistic.map((value, index) => value.revenue),
+                    borderColor: 'rgb(50,205,50)',
+                    backgroundColor: 'rgba(50,205,50,0.5)',
+                    yAxisID: 'y',
+                },
+                {
+                    label: 'Lợi nhuận (đã trừ phí dịch vụ)',
+                    data: dataStatistic.map((value, index) => value.profit),
                     borderColor: 'rgb(255, 99, 132)',
                     backgroundColor: 'rgba(255, 99, 132, 0.5)',
                     yAxisID: 'y',
@@ -116,13 +137,13 @@ function LineChart() {
             {
                 month: 0,
                 year: dateSelected.year(),
-                typeOrders
+                statusOrder
             }
             :
             {
                 month: dateSelected.month() + 1,
                 year: dateSelected.year(),
-                typeOrders
+                statusOrder
             }
         setLoading(true);
         getStatisticSales(data)
@@ -143,20 +164,19 @@ function LineChart() {
                     clearTimeout(idTimeout);
                 }, 500)
             })
-    }, [typeSearch, dateSelected, typeOrders])
+    }, [typeSearch, dateSelected, statusOrder])
     const handleSelectTypeSearch = (value) => {
         setTypeSearch(value);
         setDateSelected(dayjs())
     }
-    const handleSelectTypeOrders = (value) => {
-        setTypeOrders(value);
-        setDateSelected(dayjs())
+    const handleSelectStatusOrder = (value) => {
+        setStatusOrder(value);
     }
     const handleSelectDate = (value, dateString) => {
         setDateSelected(value ? value : dayjs())
     }
 
-    return (<Card title="Biểu đồ phân tích">
+    return (<Card title="Biểu đồ phân tích đơn hàng">
         <Spin spinning={loading}>
             <Space >
                 <Space wrap={true}>
@@ -172,7 +192,8 @@ function LineChart() {
                     }
                     <Space style={{ marginInlineStart: '5em' }}>
                         <div style={{ marginInlineEnd: '1em' }}>Loại đơn hàng</div>
-                        <Select style={{ width: '12em' }} onChange={handleSelectTypeOrders} value={typeOrders}>
+                        <Select style={{ width: '12em' }} onChange={handleSelectStatusOrder} value={statusOrder}>
+                            <Select.Option value={ORDER_STATUS_ALL}>Tất cả</Select.Option>
                             <Select.Option value={ORDER_WAIT_CONFIRMATION}>Chờ xác nhận</Select.Option>
                             <Select.Option value={ORDER_CONFIRMED}>Đã xác nhận</Select.Option>
                             <Select.Option value={ORDER_COMPLAINT}>Khiếu nại</Select.Option>
