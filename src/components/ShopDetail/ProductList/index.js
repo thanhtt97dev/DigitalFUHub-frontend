@@ -111,18 +111,21 @@ const ProductList = ({ userId, isShopBan }) => {
         <div className={cx('container-page-detail')}>
             <Spinning spinning={isLoadingProducts}>
                 {
+                    isShopBan() ? (<></>) : (<Card bodyStyle={styleBodyCardInputSearch} style={styleCardInputSearch}>
+                        <Space size={20} align="center">
+                            <p>Tìm kiếm</p>
+                            <Search
+                                placeholder="Nhập tên sản phẩm"
+                                onSearch={onSearch}
+                                style={{ width: 300 }}
+                            />
+                        </Space>
+                    </Card>)
+                }
+
+                {
                     products.length > 0 ? (<>
                         <Space direction="vertical" style={{ width: '100%' }}>
-                            <Card bodyStyle={styleBodyCardInputSearch} style={styleCardInputSearch}>
-                                <Space size={20} align="center">
-                                    <p>Tìm kiếm</p>
-                                    <Search
-                                        placeholder="Nhập tên sản phẩm"
-                                        onSearch={onSearch}
-                                        style={{ width: 300 }}
-                                    />
-                                </Space>
-                            </Card>
                             <Space size={[9, 16]} wrap>
                                 {products.map((product, index) => (
                                     <div
