@@ -121,7 +121,8 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
 
     const calculatorRatingStarProduct = () => {
         if (!product) return 0;
-        return product.totalRatingStar / product.numberFeedback;
+        var rating = product.numberFeedback !== 0 ? product.totalRatingStar / product.numberFeedback : 0;
+        return rating !== 0 ? rating.toFixed(1) : 0;
     }
 
     const showModalNotifyQuantity = () => {
@@ -393,8 +394,8 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                         <Space align='center' style={spaceRatingStarStyle} onClick={scrollToStartFeedback}>
                                             {
                                                 calculatorRatingStarProduct() > 0 ? (<>
-                                                    <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct() ? calculatorRatingStarProduct().toFixed(1) : 0}</Text>
-                                                    <Rate disabled defaultValue={calculatorRatingStarProduct()} style={ratingStarStyle} />
+                                                    <Text style={numberRatingStarStyle}>{calculatorRatingStarProduct()}</Text>
+                                                    <Rate disabled value={calculatorRatingStarProduct()} style={ratingStarStyle} />
                                                 </>) : (<Text style={feedbackProductStyle} type="secondary">Chưa Có Đánh Giá</Text>)
                                             }
                                         </Space>
