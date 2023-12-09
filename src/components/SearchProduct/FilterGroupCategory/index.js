@@ -10,7 +10,7 @@ function FilterGroupCategory({ listCategory = [], valueSelected = ALL_CATEGORY, 
             <Radio.Group style={{ width: '100%' }} buttonStyle="solid" value={valueSelected} onChange={onChange}>
                 <Space direction="vertical" style={{ width: '100%' }}>
                     <Space.Compact direction="vertical" style={{ width: '100%' }}>
-                        <Radio.Button className={cx('radio-button', 'search-radio-button-checked')} value={ALL_CATEGORY}>
+                        <Radio.Button on className={cx('radio-button', 'search-radio-button-checked')} value={ALL_CATEGORY}>
                             <div>Tất cả</div>
                         </Radio.Button>
                         {listCategory?.map((value, index) =>

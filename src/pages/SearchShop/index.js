@@ -52,16 +52,20 @@ function SearchShop() {
                 margin: '0 9em',
                 backgroundColor: '#f4f7fe'
             }} >
-                {!loading && shops && shops.length > 0 ?
-                    <Shops
-                        listShop={shops}
-                        totalItems={totalItems}
-                        keyword={getSearchParams.keyword}
-                        page={getSearchParams.page}
-                        onSelectPage={handleSelectPage}
-                    />
-                    :
-                    <SearchNotFound />
+                {!loading
+                    ?
+                    (shops && shops.length > 0 ?
+                        <Shops
+                            listShop={shops}
+                            totalItems={totalItems}
+                            keyword={getSearchParams.keyword}
+                            page={getSearchParams.page}
+                            onSelectPage={handleSelectPage}
+                        />
+                        :
+                        <SearchNotFound />
+                    )
+                    : null
                 }
             </Layout>
         </Spin >
