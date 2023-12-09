@@ -78,7 +78,7 @@ const Products = ({ products, searchParam, totalProducts, setSearchParam }) => {
             ))}
         </Space>
         <Row className={cx('flex-item-center', 'margin-top-40')}>
-            <Pagination current={searchParam.page} defaultCurrent={1} total={totalProducts} pageSize={PAGE_SIZE_PRODUCT_HOME_PAGE} onChange={handleChangePage} />
+            <Pagination hideOnSinglePage current={searchParam.page} defaultCurrent={1} total={totalProducts} pageSize={PAGE_SIZE_PRODUCT_HOME_PAGE} onChange={handleChangePage} />
         </Row>
     </Space>)
 }

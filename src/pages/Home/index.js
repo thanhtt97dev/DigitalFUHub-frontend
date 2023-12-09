@@ -54,7 +54,7 @@ const Home = () => {
 
     return (
         <Spinning spinning={isLoadingProducts}>
-            <div className={cx('container')}>
+            <div className={cx('container')} style={{ minHeight: '60vh' }}>
                 <Sliders />
                 <Categories searchParam={searchParam}
                     setSearchParam={setSearchParam} />
