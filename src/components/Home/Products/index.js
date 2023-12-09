@@ -3,7 +3,7 @@ import classNames from 'classnames/bind';
 import styles from '~/pages/ShopDetail/ShopDetail.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { formatPrice, discountPrice, formatNumber } from '~/utils';
-import { PRODUCT_BAN, PAGE_SIZE_PRODUCT_HOME_PAGE } from '~/constants';
+import { PAGE_SIZE_PRODUCT_HOME_PAGE } from '~/constants';
 import { Row, Pagination, Typography, Space, Rate } from 'antd';
 
 ///
