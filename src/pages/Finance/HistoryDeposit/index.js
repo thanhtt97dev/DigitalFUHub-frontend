@@ -73,7 +73,7 @@ const columns = [
                 record.isPay ?
                     <Tag color="#52c41a">Thành công</Tag>
                     :
-                    <Tag color="#ec0b0b">Chưa chuyển khoản</Tag>
+                    <Tag color="#eeda49">Đang xử lý</Tag>
             )
         }
     },
@@ -238,7 +238,7 @@ function HistoryDeposit() {
                                             <Select >
                                                 <Select.Option value={0}>Tất cả</Select.Option>
                                                 <Select.Option value={1}>Thành công</Select.Option>
-                                                <Select.Option value={2}>Chưa chuyển khoản</Select.Option>
+                                                <Select.Option value={2}>Đang xử lý</Select.Option>
                                             </Select>
                                         </Form.Item>
                                     </Col>
