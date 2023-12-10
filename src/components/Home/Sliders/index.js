@@ -32,8 +32,8 @@ const Sliders = () => {
                 <Carousel autoplay style={{ marginBottom: 10, borderRadius: 2 }}>
                     {
                         sliders.map((item) => (
-                            <Link to={item.link}>
-                                <img src={item.url} alt="slider" style={{ width: '100%', height: 'auto' }} />
+                            <Link to={item.link} target="_blank">
+                                <img src={item.url} alt="slider" style={{ width: '100%', height: 400 }} />
                             </Link>
                         ))
                     }
