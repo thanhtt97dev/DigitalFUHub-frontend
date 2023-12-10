@@ -65,7 +65,7 @@ function Products({ totalItems = 0, products = [], page = 1, onSelectPage = () =
                     ))}
                 </Space>
                 <Row className={cx('flex-item-center', 'margin-top-40')}>
-                    <Pagination hideOnSinglePage current={page} defaultCurrent={1} total={totalItems} pageSize={PAGE_SIZE_SEARCH_PRODUCT} onChange={onSelectPage} />
+                    <Pagination hideOnSinglePage showSizeChanger={false} current={page} defaultCurrent={1} total={totalItems} pageSize={PAGE_SIZE_SEARCH_PRODUCT} onChange={onSelectPage} />
                 </Row>
             </Space>
         </div>

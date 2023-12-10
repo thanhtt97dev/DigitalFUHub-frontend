@@ -54,6 +54,7 @@ function Shops({ listShop = [], totalItems = 0, keyword = '', page = 1, onSelect
                 defaultCurrent={1}
                 total={totalItems}
                 pageSize={PAGE_SIZE_SEARCH_SHOP}
+                showSizeChanger={false}
                 onChange={onSelectPage}
             />
         </Row>

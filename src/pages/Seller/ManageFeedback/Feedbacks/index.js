@@ -263,7 +263,7 @@ function Feedbacks() {
                     }
                 </Row>
                 <Row justify="end" style={{ marginTop: '2em' }}>
-                    <Pagination onChange={handleSelectPage} hideOnSinglePage current={page} total={totalItems} pageSize={pageSize} />
+                    <Pagination onChange={handleSelectPage} showSizeChanger={false} hideOnSinglePage current={page} total={totalItems} pageSize={pageSize} />
                 </Row>
             </Card>
         </Spinning>

@@ -242,6 +242,7 @@ function Orders() {
                             current: page,
                             total: totalItems,
                             pageSize: 10,
+                            showSizeChanger: false,
                         }}
                         rowKey={(record) => record.orderId}
                         dataSource={orders}

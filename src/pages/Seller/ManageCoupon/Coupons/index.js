@@ -237,6 +237,7 @@ function Coupons() {
                     current: page,
                     total: totalItems,
                     pageSize: PAGE_SIZE,
+                    showSizeChanger: false,
                 }}
                 rowKey={(record) => record.couponId}
                 dataSource={data}
