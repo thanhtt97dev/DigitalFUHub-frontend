@@ -79,7 +79,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                 } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_INSUFFICIENT_BALANCE) {
                     notification("error", "Số dư không đủ!")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_REQUESTS_CREATED) {
-                    notification("error", "Xin lỗi bạn đã tạo đủ 50 yêu cầu trong ngày hôm nay! Hãy trở lại vào ngày mai nhá!")
+                    notification("error", "Xin lỗi bạn đã tạo đủ 20 yêu cầu trong ngày hôm nay! Hãy trở lại vào ngày mai nhá!")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_BANK_CUSTOMER_REQUEST_WITHDRAW_EXCEEDED_AMOUNT_A_DAY) {
                     notification("error",
                         <Space direction="vertical">
@@ -192,11 +192,9 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                     <div>
                         <b style={{ color: "red" }}>Chú ý:</b>
                         <div style={{ marginLeft: "30px" }}>
-                            <i>Số tiền bạn có thể rút trong 1 yêu cầu lớn hơn 100,000 VND</i>
+                            <i>Số tiền bạn có thể rút trong 1 yêu cầu trong khoảng 100,000 - 3,000,000 VND</i>
                             <br />
-                            <i>Số tiền bạn có thể rút trong 1 ngày nhỏ hơn 3,000,000 VND</i>
-                            <br />
-                            {user.roleName === SELLER_ROLE ? <i>Bạn là người bán hàng.Số dư của bạn sau khi rút lớn hơn 500,000 VND</i> : ""}
+                            {user.roleName === SELLER_ROLE ? <i>Bạn là người bán hàng.Số dư của bạn sau khi rút lớn hơn 300,000 VND</i> : ""}
                             <br />
                             <i>Một ngày bạn có thể tạo tối đa {NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY} yêu cầu rút tiền </i>
                         </div>
