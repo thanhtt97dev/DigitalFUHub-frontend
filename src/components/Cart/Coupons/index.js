@@ -9,21 +9,37 @@ import { Typography, Modal, List, Input, Radio, Button, Space } from 'antd';
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { RESPONSE_CODE_SUCCESS, COUPON_TYPE_SPECIFIC_PRODUCTS } from '~/constants';
 
+///
 const { Search } = Input;
 const { Text } = Typography;
 const cx = classNames.bind(styles);
+///
+
+/// styles
+const styleCouponType = {
+    marginTop: 5,
+    marginBottom: 5,
+    width: 'fit-content'
+}
+
+const styleScrollCouponList = {
+    height: 400,
+    overflow: 'auto',
+    padding: '0 16px',
+    border: '1px solid rgba(140, 140, 140, 0.35)',
+}
+///
 
 const Coupons = ({ dataPropCouponComponent }) => {
 
     /// distructuring props
-
     const {
         isOpenModalCoupons,
         closeModalCoupons,
         coupons,
         setCoupons,
-        couponCodeSelecteds,
-        setCouponCodeSelecteds,
+        couponSelecteds,
+        setCouponSelecteds,
         shopIdSelected,
         totalPrice,
         cartDetails,
@@ -34,20 +50,12 @@ const Coupons = ({ dataPropCouponComponent }) => {
     /// states
     const [inputCouponCode, setInputCouponCode] = useState('');
     const [isCouponInfoSuccess, setIsCouponInfoSuccess] = useState(false);
-    const [couponCodeSelected, setCouponCodeSelected] = useState('');
+    const [couponCodeSelected, setCouponCodeSelected] = useState({});
     ///
 
     // contexts
     const notification = useContext(NotificationContext);
     //
-
-    /// styles
-    const styleCouponType = {
-        marginTop: 5,
-        marginBottom: 5,
-        width: 'fit-content'
-    }
-    ///
 
 
     /// handles
@@ -90,9 +98,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
                     }
                 }
             })
-            .catch((error) => {
-                console.log(error)
-            })
+            .catch((error) => { })
             .finally(() => {
                 setTimeout(() => {
                     setIsCouponInfoSuccess(false)
@@ -102,11 +108,15 @@ const Coupons = ({ dataPropCouponComponent }) => {
 
     const chooseModalCoupon = () => {
         if (couponCodeSelected) {
-            const couponCodeSelectedsFil = couponCodeSelecteds.filter(x => !coupons.some(y => y.couponCode === x.couponCode));
-            setCouponCodeSelecteds([...couponCodeSelectedsFil, { shopId: shopIdSelected, couponCode: couponCodeSelected }]);
+            // filter coupon of current shop
+            const couponCodeSelectedsFil = couponSelecteds.filter(x => !coupons.some(y => y.couponCode === x.couponCode));
+
+            // find coupon and add
+            const couponFind = coupons.find(x => x.couponCode === couponCodeSelected)
+            setCouponSelecteds([...couponCodeSelectedsFil, { shopId: shopIdSelected, couponCode: couponCodeSelected, priceDiscount: couponFind.priceDiscount }]);
         } else {
-            const newCouponCodeSelecteds = couponCodeSelecteds.filter(x => x.shopId !== shopIdSelected);
-            setCouponCodeSelecteds(newCouponCodeSelecteds)
+            const newCouponCodeSelecteds = couponSelecteds.filter(x => x.shopId !== shopIdSelected);
+            setCouponSelecteds(newCouponCodeSelecteds)
         }
 
         closeModalCoupons();
@@ -114,25 +124,30 @@ const Coupons = ({ dataPropCouponComponent }) => {
     ///
 
     /// useEffect
+    // useEffect(() => {
+    //     if (!couponCodeSelected) return;
+    //     const couponFind = coupons.find(x => x.couponCode === couponCodeSelected);
+    //     if (!couponFind) return;
+    //     const minTotalOrderValue = couponFind.minTotalOrderValue;
+    //     if (totalPrice.originPrice < minTotalOrderValue) {
+    //         setCouponCodeSelected(undefined);
+    //         const newCouponCodeSelectedsFilter = couponSelecteds.filter(x => x.couponCode !== couponFind.couponCode);
+    //         setCouponSelecteds(newCouponCodeSelectedsFilter);
+    //     }
+
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [totalPrice.originPrice]);
+
     useEffect(() => {
-        if (!couponCodeSelected) return;
-        const couponFind = coupons.find(x => x.couponCode === couponCodeSelected);
-        if (!couponFind) return;
-        const minTotalOrderValue = couponFind.minTotalOrderValue;
-        if (totalPrice.originPrice < minTotalOrderValue) {
-            setCouponCodeSelected(undefined);
-            const newCouponCodeSelectedsFilter = couponCodeSelecteds.filter(x => x.couponCode !== couponFind.couponCode);
-            setCouponCodeSelecteds(newCouponCodeSelectedsFilter);
+        if (isOpenModalCoupons) {
+            const couponSelectedsFind = couponSelecteds.find(x => x.shopId === shopIdSelected);
+            if (couponSelectedsFind) setCouponCodeSelected(couponSelectedsFind.couponCode);
+        } else {
+            setCouponCodeSelected('');
         }
 
-
-
-
-
-
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [totalPrice.originPrice]);
+    }, [isOpenModalCoupons])
     ///
 
     /// functions
@@ -147,7 +162,6 @@ const Coupons = ({ dataPropCouponComponent }) => {
         return false;
     }
     ///
-
 
     return (
         <Modal
@@ -171,12 +185,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
 
                     <div
                         id="scrollableDiv"
-                        style={{
-                            height: 400,
-                            overflow: 'auto',
-                            padding: '0 16px',
-                            border: '1px solid rgba(140, 140, 140, 0.35)',
-                        }}
+                        style={styleScrollCouponList}
                     >
                         <List
                             dataSource={coupons}
@@ -204,7 +213,6 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                             </Space>)
                                         }
                                     />
-                                    { }
                                     <div>
                                         {
                                             item.quantity <= 0 || totalPrice.originPrice === 0 || ((totalPrice.originPrice - totalPrice.totalPriceProductDiscount) < item.minTotalOrderValue) ?

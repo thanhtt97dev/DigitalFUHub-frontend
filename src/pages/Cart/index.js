@@ -38,10 +38,9 @@ const Cart = () => {
     const [isUseCoin, setIsUseCoin] = useState(false);
     const [coupons, setCoupons] = useState([]);
     const [reloadCoinFlag, setReloadCoinFlag] = useState(false);
-    const [couponCodeSelecteds, setCouponCodeSelecteds] = useState([]); // object type {shopId, couponCode}
+    const [couponSelecteds, setCouponSelecteds] = useState([]); // object type {shopId, couponCode, priceDiscount}
     const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(true);
     ///
-
 
     /// handles
     const loadingCartInfo = () => {
@@ -52,18 +51,24 @@ const Cart = () => {
         setIsLoadingCartInfo(false);
     }
 
-    const reloadCoinUser = () => {
-        setReloadCoinFlag(!reloadCoinFlag);
-    }
-
     const getCouponCodeSelecteds = (shopId) => {
-        if (!couponCodeSelecteds) return;
+        if (couponSelecteds.length === 0) return;
         let couponCode = '';
-        const coupon = couponCodeSelecteds.find(x => x.shopId === shopId);
+        const coupon = couponSelecteds.find(x => x.shopId === shopId);
         if (coupon) {
             couponCode = coupon.couponCode;
         }
         return couponCode;
+    }
+
+    const getPriceDiscountCouponSelecteds = (shopId) => {
+        if (couponSelecteds.length === 0) return 0;
+        let priceDiscount = 0;
+        const coupon = couponSelecteds.find(x => x.shopId === shopId);
+        if (coupon) {
+            priceDiscount = coupon.priceDiscount;
+        }
+        return priceDiscount;
     }
     ///
 
@@ -81,18 +86,10 @@ const Cart = () => {
                     if (status.responseCode === RESPONSE_CODE_SUCCESS) {
                         const result = data.result;
                         setCarts(result);
-
-                        if (result.length > 0) {
-                            for (let i = 0; i < result.length; i++) {
-                                console.log(JSON.stringify(result[i]))
-                            }
-                        }
                     }
                 }
             })
-            .catch((errors) => {
-                console.log(errors)
-            }).finally(() => {
+            .catch(() => { }).finally(() => {
                 setTimeout(() => {
                     unLoadingCartInfo();
                 }, 500)
@@ -114,9 +111,7 @@ const Cart = () => {
                         }
                     }
                 }
-            }).catch((err) => {
-                console.log(err.message)
-            })
+            }).catch(() => { })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reloadCoinFlag])
 
@@ -133,10 +128,6 @@ const Cart = () => {
             }
 
             if (cartDetailIdSelecteds.length > 0) {
-
-                //filter coupons
-                const couponsFilter = coupons.filter(x => couponCodeSelecteds.some(y => y.couponCode === x.couponCode));
-
                 // filter cart detail
                 const cartDetailSelected = filterCartDetail(cartDetailIdSelecteds);;
 
@@ -156,8 +147,8 @@ const Cart = () => {
 
                     // total price coupons shop
                     let newTotalPriceCouponDiscount = 0;
-                    if (couponsFilter) {
-                        newTotalPriceCouponDiscount = couponsFilter.reduce((accumulator, currentValue) => {
+                    if (couponSelecteds.length > 0) {
+                        newTotalPriceCouponDiscount = couponSelecteds.reduce((accumulator, currentValue) => {
                             return accumulator + currentValue.priceDiscount;
                         }, 0);
 
@@ -195,7 +186,7 @@ const Cart = () => {
         calculatorPrice(cartDetailIdSelecteds)
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cartDetailIdSelecteds, carts, couponCodeSelecteds, isUseCoin])
+    }, [cartDetailIdSelecteds, carts, couponSelecteds, isUseCoin])
 
     // get cart details from carts
     useEffect(() => {
@@ -247,13 +238,14 @@ const Cart = () => {
         cartDetailIdSelecteds: cartDetailIdSelecteds,
         setCartDetailIdSelecteds: setCartDetailIdSelecteds,
         reloadCarts: reloadCarts,
-        couponCodeSelecteds: couponCodeSelecteds,
-        setCouponCodeSelecteds: setCouponCodeSelecteds,
+        couponSelecteds: couponSelecteds,
+        setCouponSelecteds: setCouponSelecteds,
         coupons: coupons,
         setCoupons: setCoupons,
-        getCouponCodeSelecteds: getCouponCodeSelecteds,
+        getCouponSelecteds: getCouponCodeSelecteds,
         totalPrice: totalPrice,
-        cartDetails: cartDetails
+        cartDetails: cartDetails,
+        getPriceDiscountCouponSelecteds: getPriceDiscountCouponSelecteds
     }
 
     const dataPropPriceComponent = {
@@ -261,14 +253,11 @@ const Cart = () => {
         totalPrice: totalPrice,
         userCoin: userCoin,
         setIsUseCoin: setIsUseCoin,
-        filterCartDetail: filterCartDetail,
         cartDetailIdSelecteds: cartDetailIdSelecteds,
         setCartDetailIdSelecteds: setCartDetailIdSelecteds,
         isUseCoin: isUseCoin,
         reloadCarts: reloadCarts,
-        couponCodeSelecteds,
-        getCouponCodeSelecteds: getCouponCodeSelecteds,
-        reloadCoinUser: reloadCoinUser
+        getCouponCodeSelecteds: getCouponCodeSelecteds
     }
     ///
 

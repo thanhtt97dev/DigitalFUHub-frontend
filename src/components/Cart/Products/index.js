@@ -14,7 +14,7 @@ import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/ico
 import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag, Space, Result } from 'antd';
 import {
     RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_INVALID_QUANTITY,
-    RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS
+    RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS
 } from '~/constants';
 
 ///
@@ -37,12 +37,12 @@ const Products = ({ dataPropProductComponent }) => {
         cartDetailIdSelecteds,
         setCartDetailIdSelecteds,
         reloadCarts,
-        couponCodeSelecteds,
-        setCouponCodeSelecteds,
+        couponSelecteds,
+        setCouponSelecteds,
         coupons,
         totalPrice,
         setCoupons,
-        getCouponCodeSelecteds,
+        getPriceDiscountCouponSelecteds,
         cartDetails
     } = dataPropProductComponent;
     ///
@@ -151,11 +151,18 @@ const Products = ({ dataPropProductComponent }) => {
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
-                    setCoupons(data.result);
-                    openModalCoupons();
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        setCoupons(data.result);
+                        openModalCoupons();
+                    } else if (status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
+                        notification("error", "Cửa hàng không tồn tại");
+                    } else {
+                        notification("error", "Có lỗi từ hệ thống, vui lòng thử lại sau");
+                    }
                 }
             })
-            .catch((error) => { })
+            .catch((error) => { notification("error", "Có lỗi từ hệ thống, vui lòng thử lại sau"); })
     }
 
     const handleCheckAll = (e) => {
@@ -257,11 +264,25 @@ const Products = ({ dataPropProductComponent }) => {
                 listCartIds.push(carts[i].cartId);
             }
         }
-
         setCartIdSelecteds(listCartIds);
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cartDetailIdSelecteds])
+
+    // for coupons
+    // useEffect(() => {
+    //     const listCartIds = [];
+    //     for (let i = 0; i < carts.length; i++) {
+    //         const cartDetailValid = carts[i].products.filter(x => x.quantityProductRemaining > 0 && x.productActivate && x.productVariantActivate);
+
+    //         const isAllElementsExist = cartDetailValid.every(x => cartDetailIdSelecteds.includes(x.cartDetailId));
+
+    //         if (isAllElementsExist) {
+    //             listCartIds.push(carts[i].cartId);
+    //         }
+    //     }
+    //     setCartIdSelecteds(listCartIds);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [cartDetailIdSelecteds])
     ///
 
     /// props
@@ -269,8 +290,8 @@ const Products = ({ dataPropProductComponent }) => {
         isOpenModalCoupons: isOpenModalCoupons,
         coupons: coupons,
         closeModalCoupons: closeModalCoupons,
-        couponCodeSelecteds: couponCodeSelecteds,
-        setCouponCodeSelecteds: setCouponCodeSelecteds,
+        couponSelecteds: couponSelecteds,
+        setCouponSelecteds: setCouponSelecteds,
         setCoupons: setCoupons,
         shopIdSelected: shopIdSelected,
         totalPrice: totalPrice,
@@ -300,9 +321,7 @@ const Products = ({ dataPropProductComponent }) => {
                     }
                 }
             })
-            .catch((errors) => {
-                notification("error", "Có lỗi trong quá trình xóa, vui lòng thử lại");
-            })
+            .catch((errors) => { })
     };
 
 
@@ -391,7 +410,7 @@ const Products = ({ dataPropProductComponent }) => {
                                             <Col offset={1}><Button type="link" onClick={() => { setShopIdSelected(cart.shopId); showCouponShop(cart.shopId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
                                             <Col>
                                                 {
-                                                    getCouponCodeSelecteds(cart.shopId) && (<Tag color="gold">{getCouponCodeSelecteds(cart.shopId)}</Tag>)
+                                                    getPriceDiscountCouponSelecteds(cart.shopId) !== 0 && <Tag color="gold">Giảm {formatPrice(getPriceDiscountCouponSelecteds(cart.shopId))} từ mã giảm giá</Tag>
                                                 }
                                             </Col>
                                         </Row>

@@ -42,8 +42,7 @@ const Prices = ({ dataPropPriceComponent }) => {
         reloadCarts,
         cartDetailIdSelecteds,
         setCartDetailIdSelecteds,
-        getCouponCodeSelecteds,
-        reloadCoinUser
+        getCouponCodeSelecteds
     } = dataPropPriceComponent;
     ///
 
@@ -120,9 +119,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                         }
                     }
                 }
-            }).catch((err) => {
-                console.log(err.message)
-            })
+            }).catch((err) => { })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reloadBalanceFlag])
@@ -227,9 +224,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                                     }
                                 }
                             })
-                            .catch((errors) => {
-                                console.log(errors)
-                            }).finally(() => {
+                            .catch(() => { }).finally(() => {
                                 setTimeout(() => {
                                     closeModalConfirmationBuy();
                                     reloadCarts();
@@ -303,9 +298,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                     }
                 }
             })
-            .catch((errors) => {
-                console.log(errors)
-            })
+            .catch(() => { })
     }
     ///
 
