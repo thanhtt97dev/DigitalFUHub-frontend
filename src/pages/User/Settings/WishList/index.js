@@ -5,7 +5,7 @@ import cartEmpty from '~/assets/images/cartEmpty.png';
 import ModalConfirmation from "~/components/Modals/ModalConfirmation";
 import styles from '~/pages/User/Settings/WishList/WishList.module.scss';
 import { useAuthUser } from 'react-auth-kit';
-import { RESPONSE_CODE_SUCCESS, PRODUCT_BAN, PAGE_SIZE_PRODUCT_WISH_LIST } from '~/constants';
+import { RESPONSE_CODE_SUCCESS, PAGE_SIZE_PRODUCT_WISH_LIST } from '~/constants';
 import { formatPrice, discountPrice } from '~/utils';
 import { Link, useNavigate } from 'react-router-dom';
 import { NotificationContext } from "~/context/UI/NotificationContext";
@@ -19,7 +19,7 @@ const cx = classNames.bind(styles);
 ///
 
 /// styles
-const styleImage = { width: '100%', height: 192 }
+const styleImage = { width: '100%', height: '100%' }
 const styleProductName = { fontSize: 12, color: '#000000', cursor: 'pointer' };
 const styleSpaceContainerProductItem = { padding: 8, height: 124, width: '100%' };
 const styleContainerImage = { width: '100%', height: 192, display: 'flex', alignItems: 'center', justifyContent: 'center' };
@@ -72,15 +72,13 @@ const WishList = () => {
                     const status = data.status;
                     if (status.responseCode === RESPONSE_CODE_SUCCESS) {
                         const result = data.result;
-
                         setProducts(result.products);
                         setTotalProducts(result.totalProduct);
                     }
                 }
             })
-            .catch((err) => {
-                console.log(err);
-            }).finally(() => {
+            .catch((err) => { })
+            .finally(() => {
                 setTimeout(() => {
                     setIsLoadingProducts(false);
                 }, 500)
@@ -93,6 +91,10 @@ const WishList = () => {
 
 
     /// handles
+    const handleClickOnProduct = (productId) => {
+        return navigate(`/product/${productId}`);
+    }
+
     const handleRemoveWishList = (productId) => {
         if (user === undefined || user === null) return;
         const dataRequestRemove = {
@@ -212,6 +214,16 @@ const WishList = () => {
         setIsEdit(false);
         setProductIdSlecteds([]);
     }
+
+    const isProductOutStock = (product) => {
+        if (!product) return;
+        return (!product.isProductStock);
+    }
+
+    const isProductNotActive = (product) => {
+        if (!product) return;
+        return (!product.isShopActivate || !product.isProductActivate);
+    }
     ///
 
     // checkbox all item
@@ -240,19 +252,17 @@ const WishList = () => {
                                         <Space size={[7, 10]} wrap>
                                             {products.map((product, index) => (
                                                 <div
-                                                    style={product.quantityProductRemaining === 0 || product.productStatusId === PRODUCT_BAN ? opacityDisabledStyle : {}}
+                                                    style={isProductOutStock(product) || isProductNotActive(product) ? opacityDisabledStyle : {}}
                                                     key={index}
                                                     className={cx('item-product')}
                                                 >
                                                     <div style={styleContainerImage}>
                                                         {
-                                                            product.productStatusId === PRODUCT_BAN ?
-                                                                <div className={cx('circle')}> Sản phẩm này đã bị ẩn</div>
-                                                                : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
+                                                            isProductNotActive(product) ?
+                                                                <div className={cx('circle')}> Đã ẩn</div>
+                                                                : isProductOutStock(product) ? <div className={cx('circle')}>Hết hàng</div> : <></>
                                                         }
-                                                        <Link to={`/product/${product.productId}`}>
-                                                            <img style={styleImage} src={product.thumbnail} alt="product" />
-                                                        </Link>
+                                                        <img style={styleImage} src={product.thumbnail} alt="product" onClick={() => handleClickOnProduct(product.productId)} />
                                                     </div>
                                                     <Space direction="vertical" style={styleSpaceContainerProductItem}>
                                                         <p onClick={() => handleClickToProduct(product.productId)} style={styleProductName}>{product.productName}</p>

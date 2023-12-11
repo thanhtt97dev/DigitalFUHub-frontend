@@ -62,13 +62,9 @@ const ProductDetail = () => {
                         // status of response
                         const status = data.status;
                         const responseCode = status.responseCode;
-                        if (responseCode === RESPONSE_CODE_PRODUCT_REMOVE
-                            ||
-                            responseCode === RESPONSE_CODE_PRODUCT_HIDE
-                            ||
-                            responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
+                        if (responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
                             navigate('/notFound');
-                        } else if (responseCode === RESPONSE_CODE_PRODUCT_ACTIVE || responseCode === RESPONSE_CODE_PRODUCT_BAN) {
+                        } else {
                             // result of response
                             const result = data.result;
                             setProduct(result)

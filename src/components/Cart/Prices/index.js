@@ -22,9 +22,14 @@ import {
     RESPONSE_CODE_ORDER_COUPON_INVALID_PRODUCT_APPLY, RESPONSE_MESSAGE_ORDER_COUPON_INVALID_PRODUCT_APPLY,
     RESPONSE_CODE_ORDER_SELLER_LOCK_TRANSACTION, RESPONSE_MESSAGE_ORDER_SELLER_LOCK_TRANSACTION
 } from '~/constants';
-
+///
 const { Title, Text } = Typography;
 const cx = classNames.bind(styles);
+///
+
+///styles
+const styleBalancePrice = { whiteSpace: 'nowrap', fontSize: '20px', color: '#007bff', maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis' }
+///
 
 const Prices = ({ dataPropPriceComponent }) => {
     /// distructuring props
@@ -351,14 +356,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                             <Text style={{ fontSize: '15px', fontWeight: 'bold' }}>
                                 Số dư:
                             </Text>
-                            <p style={{
-                                whiteSpace: 'nowrap',
-                                fontSize: '20px',
-                                color: '#007bff',
-                                maxWidth: '130px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                            }}
+                            <p style={styleBalancePrice}
                                 title={formatPrice(balance)}
                             >
                                 {formatPrice(balance)}
