@@ -38,7 +38,7 @@ const Cart = () => {
     const [isUseCoin, setIsUseCoin] = useState(false);
     const [coupons, setCoupons] = useState([]);
     const [reloadCoinFlag, setReloadCoinFlag] = useState(false);
-    const [couponSelecteds, setCouponSelecteds] = useState([]); // object type {shopId, couponCode, priceDiscount}
+    const [couponSelecteds, setCouponSelecteds] = useState([]); // object type {shopId,couponCode,priceDiscount,minTotalOrderValue,productIds,quantity,couponTypeId}
     const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(true);
     ///
 
@@ -97,6 +97,8 @@ const Cart = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reloadCartsFlag])
+
+    console.log('couponSelecteds[0] = ' + JSON.stringify(couponSelecteds[0]));
 
 
     useEffect(() => {
@@ -209,6 +211,14 @@ const Cart = () => {
             setIsUseCoin(false);
         }
 
+    }, [cartDetailIdSelecteds])
+
+    useEffect(() => {
+        if (couponSelecteds.length > 0) {
+
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cartDetailIdSelecteds])
     ///
 

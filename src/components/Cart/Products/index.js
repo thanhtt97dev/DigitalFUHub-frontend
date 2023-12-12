@@ -14,7 +14,8 @@ import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/ico
 import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag, Space, Result } from 'antd';
 import {
     RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_INVALID_QUANTITY,
-    RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS
+    RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS,
+    COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, COUPON_TYPE_SPECIFIC_PRODUCTS
 } from '~/constants';
 
 ///
@@ -60,6 +61,7 @@ const Products = ({ dataPropProductComponent }) => {
     const [cartDetailValids, setCartDetailValids] = useState([]);
     const [shopIdSelected, setShopIdSelected] = useState(0);
     const [cartIdSelecteds, setCartIdSelecteds] = useState([]);
+    const [cartItemSelecteds, setCartItemSelecteds] = useState([]); // object type { shopId, totalPrice, productIds[] }
     ///
 
     /// router
@@ -268,22 +270,81 @@ const Products = ({ dataPropProductComponent }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cartDetailIdSelecteds])
 
-    // for coupons
-    // useEffect(() => {
-    //     const listCartIds = [];
-    //     for (let i = 0; i < carts.length; i++) {
-    //         const cartDetailValid = carts[i].products.filter(x => x.quantityProductRemaining > 0 && x.productActivate && x.productVariantActivate);
+    useEffect(() => {
 
-    //         const isAllElementsExist = cartDetailValid.every(x => cartDetailIdSelecteds.includes(x.cartDetailId));
+        if (cartDetailIdSelecteds.length > 0) {
+            const cartItemSelecteds = [];
+            for (let i = 0; i < carts.length; i++) {
+                const products = carts[i].products;
+                if (products) {
+                    const productFil = products.filter(x => cartDetailIdSelecteds.some(y => x.cartDetailId === y));
+                    if (productFil.length > 0) {
+                        // calculator price
+                        let totalDiscountPrice = productFil.reduce((accumulator, currentValue) => {
+                            return accumulator + (discountPrice(currentValue.productVariantPrice, currentValue.productVariantDiscount) * currentValue.quantity);
+                        }, 0);
 
-    //         if (isAllElementsExist) {
-    //             listCartIds.push(carts[i].cartId);
-    //         }
-    //     }
-    //     setCartIdSelecteds(listCartIds);
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [cartDetailIdSelecteds])
+                        let totalPrice = totalDiscountPrice > 0 ? totalDiscountPrice : 0;
+                        // mapper products id
+                        const productIds = productFil.map(x => x.productId);
+                        const uniqueProductIds = [...new Set(productIds)];
+
+                        // cart item selected
+                        const newCartItemSelected = { shopId: carts[i].shopId, totalPrice, productIds: uniqueProductIds };
+
+                        // add to list
+                        cartItemSelecteds.push(newCartItemSelected);
+                    }
+                }
+            }
+
+            // update state
+            setCartItemSelecteds(cartItemSelecteds);
+        } else if (cartDetailIdSelecteds.length === 0) {
+            // update state
+            setCartItemSelecteds([]);
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cartDetailIdSelecteds]);
+
+    // check coupons selecteds
+    useEffect(() => {
+        debugger
+        if (couponSelecteds.length > 0) {
+            const newCouponSelecteds = [];
+            for (let i = 0; i < couponSelecteds.length; i++) {
+                const cartItemSelectedFind = cartItemSelecteds.find(x => x.shopId === couponSelecteds[i].shopId);
+                if (cartItemSelectedFind) {
+                    const totalPrice = cartItemSelectedFind.totalPrice;
+                    const productIds = cartItemSelectedFind.productIds;
+
+                    // check if the product is valid with the coupon 
+                    if (couponSelecteds[i].couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS) {
+                        // check productId exists
+                        const isProductIdExists = couponSelecteds[i].productIds.some(x => productIds.includes(x));
+                        if (totalPrice >= couponSelecteds[i].minTotalOrderValue && isProductIdExists) {
+                            newCouponSelecteds.push(couponSelecteds[i]);
+                        }
+                    } else if (couponSelecteds[i].couponTypeId === COUPON_TYPE_ALL_PRODUCTS_OF_SHOP) {
+                        if (totalPrice >= couponSelecteds[i].minTotalOrderValue) {
+                            newCouponSelecteds.push(couponSelecteds[i]);
+                        }
+                    }
+                }
+            }
+
+            // update coupon selecteds
+            setCouponSelecteds(newCouponSelecteds);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cartItemSelecteds])
     ///
+
+
+    console.log('cartItemSelecteds.length = ' + cartItemSelecteds.length);
+    console.log('cartItemSelecteds[0] = ' + JSON.stringify(cartItemSelecteds[0]));
+    console.log('cartItemSelecteds[1] = ' + JSON.stringify(cartItemSelecteds[1]));
 
     /// props
     const dataPropCouponComponent = {
@@ -298,7 +359,6 @@ const Products = ({ dataPropProductComponent }) => {
         cartDetails: cartDetails,
         cartDetailIdSelecteds
     }
-
     ///
 
     /// functions

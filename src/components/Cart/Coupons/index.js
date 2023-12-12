@@ -113,7 +113,16 @@ const Coupons = ({ dataPropCouponComponent }) => {
 
             // find coupon and add
             const couponFind = coupons.find(x => x.couponCode === couponCodeSelected)
-            setCouponSelecteds([...couponCodeSelectedsFil, { shopId: shopIdSelected, couponCode: couponCodeSelected, priceDiscount: couponFind.priceDiscount }]);
+            setCouponSelecteds([...couponCodeSelectedsFil
+                , {
+                shopId: shopIdSelected,
+                couponCode: couponCodeSelected,
+                priceDiscount: couponFind.priceDiscount,
+                minTotalOrderValue: couponFind.minTotalOrderValue,
+                productIds: couponFind.productIds,
+                quantity: couponFind.quantity,
+                couponTypeId: couponFind.couponTypeId
+            }]);
         } else {
             const newCouponCodeSelecteds = couponSelecteds.filter(x => x.shopId !== shopIdSelected);
             setCouponSelecteds(newCouponCodeSelecteds)
