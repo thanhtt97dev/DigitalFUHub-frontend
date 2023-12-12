@@ -349,7 +349,6 @@ const Products = ({ dataPropProductComponent }) => {
         setCouponSelecteds: setCouponSelecteds,
         setCoupons: setCoupons,
         shopIdSelected: shopIdSelected,
-        totalPrice: totalPrice,
         cartDetails: cartDetails,
         cartDetailIdSelecteds,
         cartItemSelecteds: cartItemSelecteds
@@ -418,7 +417,7 @@ const Products = ({ dataPropProductComponent }) => {
                                         {
                                             cart.products.map((product, index) => (
                                                 <Row className={product.productVariantActivate === false || product.productActivate === false || product.quantityProductRemaining === 0 ? cx('disable-item', 'margin-bottom-item') : cx('margin-bottom-item')} key={index}>
-                                                    <Col span={1}>
+                                                    <Col span={1} className={cx('flex-item-center')}>
                                                         {
                                                             cart.shopActivate && product.productVariantActivate && product.productActivate && product.quantityProductRemaining > 0 ? <Checkbox key={product.cartDetailId} value={product.cartDetailId}></Checkbox> : <></>
                                                         }

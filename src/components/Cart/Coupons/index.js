@@ -41,7 +41,6 @@ const Coupons = ({ dataPropCouponComponent }) => {
         couponSelecteds,
         setCouponSelecteds,
         shopIdSelected,
-        totalPrice,
         cartDetails,
         cartDetailIdSelecteds,
         cartItemSelecteds
@@ -122,7 +121,8 @@ const Coupons = ({ dataPropCouponComponent }) => {
                 minTotalOrderValue: couponFind.minTotalOrderValue,
                 productIds: couponFind.productIds,
                 quantity: couponFind.quantity,
-                couponTypeId: couponFind.couponTypeId
+                couponTypeId: couponFind.couponTypeId,
+                inputCouponCode: inputCouponCode
             }]);
         } else {
             const newCouponCodeSelecteds = couponSelecteds.filter(x => x.shopId !== shopIdSelected);
@@ -136,7 +136,19 @@ const Coupons = ({ dataPropCouponComponent }) => {
     useEffect(() => {
         if (isOpenModalCoupons) {
             const couponSelectedsFind = couponSelecteds.find(x => x.shopId === shopIdSelected);
-            if (couponSelectedsFind) setCouponCodeSelected(couponSelectedsFind.couponCode);
+            if (couponSelectedsFind) {
+                // set coupon code selected
+                setCouponCodeSelected(couponSelectedsFind.couponCode);
+
+                // set input coupon code
+                const inputCouponCode = couponSelectedsFind.inputCouponCode;
+                if (inputCouponCode) {
+                    setInputCouponCode(inputCouponCode);
+
+                    // search coupon
+                    onSearchCoupon();
+                }
+            }
         } else {
             setCouponCodeSelected('');
         }

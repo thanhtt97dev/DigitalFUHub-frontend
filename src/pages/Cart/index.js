@@ -38,7 +38,7 @@ const Cart = () => {
     const [isUseCoin, setIsUseCoin] = useState(false);
     const [coupons, setCoupons] = useState([]);
     const [reloadCoinFlag, setReloadCoinFlag] = useState(false);
-    const [couponSelecteds, setCouponSelecteds] = useState([]); // object type {shopId,couponCode,priceDiscount,minTotalOrderValue,productIds,quantity,couponTypeId}
+    const [couponSelecteds, setCouponSelecteds] = useState([]); // object type {shopId,couponCode,priceDiscount,minTotalOrderValue,productIds,quantity,couponTypeId, inputCouponCode}
     const [isLoadingCartInfo, setIsLoadingCartInfo] = useState(true);
     ///
 
