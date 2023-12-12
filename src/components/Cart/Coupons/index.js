@@ -200,7 +200,9 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                         description={
                                             (<Space>
                                                 <Space.Compact direction='vertical'>
-                                                    <p>Giảm {formatPrice(item.priceDiscount)} - Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}</p>
+                                                    <Space align='center'>
+                                                        <p>Giảm {formatPrice(item.priceDiscount)}</p><p>-</p><p style={{ color: 'red' }}>Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}</p>
+                                                    </Space>
                                                     {
                                                         item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ?
                                                             <Button size='small' danger style={styleCouponType}>Sản phẩm nhất định</Button> : <></>
