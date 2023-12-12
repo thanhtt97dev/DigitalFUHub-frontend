@@ -52,6 +52,7 @@ const Message = () => {
     }, [])
 
     useEffect(() => {
+        if (message === null || message === undefined) return;
         if (message.userId === user.id) return;
         setNewMessage(message)
         // eslint-disable-next-line react-hooks/exhaustive-deps
