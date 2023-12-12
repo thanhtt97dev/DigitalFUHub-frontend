@@ -98,9 +98,6 @@ const Cart = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reloadCartsFlag])
 
-    console.log('couponSelecteds[0] = ' + JSON.stringify(couponSelecteds[0]));
-
-
     useEffect(() => {
         if (user === null || user === undefined) return;
         getCoinUser(user.id)

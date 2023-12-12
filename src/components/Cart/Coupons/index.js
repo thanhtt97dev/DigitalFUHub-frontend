@@ -43,7 +43,8 @@ const Coupons = ({ dataPropCouponComponent }) => {
         shopIdSelected,
         totalPrice,
         cartDetails,
-        cartDetailIdSelecteds
+        cartDetailIdSelecteds,
+        cartItemSelecteds
     } = dataPropCouponComponent;
     ///
 
@@ -132,21 +133,6 @@ const Coupons = ({ dataPropCouponComponent }) => {
     }
     ///
 
-    /// useEffect
-    // useEffect(() => {
-    //     if (!couponCodeSelected) return;
-    //     const couponFind = coupons.find(x => x.couponCode === couponCodeSelected);
-    //     if (!couponFind) return;
-    //     const minTotalOrderValue = couponFind.minTotalOrderValue;
-    //     if (totalPrice.originPrice < minTotalOrderValue) {
-    //         setCouponCodeSelected(undefined);
-    //         const newCouponCodeSelectedsFilter = couponSelecteds.filter(x => x.couponCode !== couponFind.couponCode);
-    //         setCouponSelecteds(newCouponCodeSelectedsFilter);
-    //     }
-
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [totalPrice.originPrice]);
-
     useEffect(() => {
         if (isOpenModalCoupons) {
             const couponSelectedsFind = couponSelecteds.find(x => x.shopId === shopIdSelected);
@@ -169,6 +155,15 @@ const Coupons = ({ dataPropCouponComponent }) => {
             }
         }
         return false;
+    }
+
+    const isCartPriceLessThanMinTotalOrderValue = (minTotalOrderValue) => {
+        const cartItemSelectedFind = cartItemSelecteds.find(x => x.shopId === shopIdSelected);
+        if (cartItemSelectedFind) {
+            return cartItemSelectedFind.totalPrice < minTotalOrderValue;
+        } else {
+            return true;
+        }
     }
     ///
 
@@ -224,14 +219,14 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                     />
                                     <div>
                                         {
-                                            item.quantity <= 0 || totalPrice.originPrice === 0 || ((totalPrice.originPrice - totalPrice.totalPriceProductDiscount) < item.minTotalOrderValue) ?
+                                            item.quantity <= 0 || isCartPriceLessThanMinTotalOrderValue(item.minTotalOrderValue) ?
                                                 <Radio disabled={true}
                                                     value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
-                                                : item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ? isSatisfyCouponTypeSpecificProduct(item.productIds) ?
+                                                : item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ? (isSatisfyCouponTypeSpecificProduct(item.productIds) ?
                                                     <Radio disabled={false}
                                                         value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
                                                     : <Radio disabled={true}
-                                                        value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                                        value={item.couponCode} onClick={onClickRadioCoupon}></Radio>)
                                                     : <Radio disabled={false}
                                                         value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
                                         }

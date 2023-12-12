@@ -310,7 +310,6 @@ const Products = ({ dataPropProductComponent }) => {
 
     // check coupons selecteds
     useEffect(() => {
-        debugger
         if (couponSelecteds.length > 0) {
             const newCouponSelecteds = [];
             for (let i = 0; i < couponSelecteds.length; i++) {
@@ -341,11 +340,6 @@ const Products = ({ dataPropProductComponent }) => {
     }, [cartItemSelecteds])
     ///
 
-
-    console.log('cartItemSelecteds.length = ' + cartItemSelecteds.length);
-    console.log('cartItemSelecteds[0] = ' + JSON.stringify(cartItemSelecteds[0]));
-    console.log('cartItemSelecteds[1] = ' + JSON.stringify(cartItemSelecteds[1]));
-
     /// props
     const dataPropCouponComponent = {
         isOpenModalCoupons: isOpenModalCoupons,
@@ -357,7 +351,8 @@ const Products = ({ dataPropProductComponent }) => {
         shopIdSelected: shopIdSelected,
         totalPrice: totalPrice,
         cartDetails: cartDetails,
-        cartDetailIdSelecteds
+        cartDetailIdSelecteds,
+        cartItemSelecteds: cartItemSelecteds
     }
     ///
 
