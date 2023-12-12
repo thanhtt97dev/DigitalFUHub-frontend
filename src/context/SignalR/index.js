@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Chat } from "~/context/SignalR/ChatContext";
 import { UserOnlineStatus } from "~/context/SignalR/UserOnlineStatusContext";
@@ -11,9 +11,14 @@ function SignalR({ children }) {
 
     const [userId, setUserId] = useState(undefined);
 
-    setInterval(() => {
-        setUserId(getUserId())
-    }, 10000)
+    useEffect(() => {
+        setInterval(() => {
+            var newUserId = getUserId()
+            if (userId !== newUserId) {
+                setUserId(newUserId)
+            }
+        }, 1000)
+    }, [userId])
 
     return (
         <>
