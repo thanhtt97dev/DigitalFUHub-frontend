@@ -9,45 +9,53 @@ import { Typography, Modal, List, Input, Radio, Button, Space } from 'antd';
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { RESPONSE_CODE_SUCCESS, COUPON_TYPE_SPECIFIC_PRODUCTS } from '~/constants';
 
+///
 const { Search } = Input;
 const { Text } = Typography;
 const cx = classNames.bind(styles);
+///
+
+/// styles
+const styleCouponType = {
+    marginTop: 5,
+    marginBottom: 5,
+    width: 'fit-content'
+}
+
+const styleScrollCouponList = {
+    height: 400,
+    overflow: 'auto',
+    padding: '0 16px',
+    border: '1px solid rgba(140, 140, 140, 0.35)',
+}
+///
 
 const Coupons = ({ dataPropCouponComponent }) => {
 
     /// distructuring props
-
     const {
         isOpenModalCoupons,
         closeModalCoupons,
         coupons,
         setCoupons,
-        couponCodeSelecteds,
-        setCouponCodeSelecteds,
+        couponSelecteds,
+        setCouponSelecteds,
         shopIdSelected,
-        totalPrice,
         cartDetails,
-        cartDetailIdSelecteds
+        cartDetailIdSelecteds,
+        cartItemSelecteds
     } = dataPropCouponComponent;
     ///
 
     /// states
     const [inputCouponCode, setInputCouponCode] = useState('');
     const [isCouponInfoSuccess, setIsCouponInfoSuccess] = useState(false);
-    const [couponCodeSelected, setCouponCodeSelected] = useState('');
+    const [couponCodeSelected, setCouponCodeSelected] = useState({});
     ///
 
     // contexts
     const notification = useContext(NotificationContext);
     //
-
-    /// styles
-    const styleCouponType = {
-        marginTop: 5,
-        marginBottom: 5,
-        width: 'fit-content'
-    }
-    ///
 
 
     /// handles
@@ -90,9 +98,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
                     }
                 }
             })
-            .catch((error) => {
-                console.log(error)
-            })
+            .catch((error) => { })
             .finally(() => {
                 setTimeout(() => {
                     setIsCouponInfoSuccess(false)
@@ -102,37 +108,53 @@ const Coupons = ({ dataPropCouponComponent }) => {
 
     const chooseModalCoupon = () => {
         if (couponCodeSelected) {
-            const couponCodeSelectedsFil = couponCodeSelecteds.filter(x => !coupons.some(y => y.couponCode === x.couponCode));
-            setCouponCodeSelecteds([...couponCodeSelectedsFil, { shopId: shopIdSelected, couponCode: couponCodeSelected }]);
+            // filter coupon of current shop
+            const couponCodeSelectedsFil = couponSelecteds.filter(x => !coupons.some(y => y.couponCode === x.couponCode));
+
+            // find coupon and add
+            const couponFind = coupons.find(x => x.couponCode === couponCodeSelected)
+            setCouponSelecteds([...couponCodeSelectedsFil
+                , {
+                shopId: shopIdSelected,
+                couponCode: couponCodeSelected,
+                priceDiscount: couponFind.priceDiscount,
+                minTotalOrderValue: couponFind.minTotalOrderValue,
+                productIds: couponFind.productIds,
+                quantity: couponFind.quantity,
+                couponTypeId: couponFind.couponTypeId,
+                inputCouponCode: inputCouponCode
+            }]);
         } else {
-            const newCouponCodeSelecteds = couponCodeSelecteds.filter(x => x.shopId !== shopIdSelected);
-            setCouponCodeSelecteds(newCouponCodeSelecteds)
+            const newCouponCodeSelecteds = couponSelecteds.filter(x => x.shopId !== shopIdSelected);
+            setCouponSelecteds(newCouponCodeSelecteds)
         }
 
         closeModalCoupons();
     }
     ///
 
-    /// useEffect
     useEffect(() => {
-        if (!couponCodeSelected) return;
-        const couponFind = coupons.find(x => x.couponCode === couponCodeSelected);
-        if (!couponFind) return;
-        const minTotalOrderValue = couponFind.minTotalOrderValue;
-        if (totalPrice.originPrice < minTotalOrderValue) {
-            setCouponCodeSelected(undefined);
-            const newCouponCodeSelectedsFilter = couponCodeSelecteds.filter(x => x.couponCode !== couponFind.couponCode);
-            setCouponCodeSelecteds(newCouponCodeSelectedsFilter);
+        if (isOpenModalCoupons) {
+            const couponSelectedsFind = couponSelecteds.find(x => x.shopId === shopIdSelected);
+            if (couponSelectedsFind) {
+                // set coupon code selected
+                setCouponCodeSelected(couponSelectedsFind.couponCode);
+
+                // set input coupon code
+                const inputCouponCode = couponSelectedsFind.inputCouponCode;
+                if (inputCouponCode) {
+                    setInputCouponCode(inputCouponCode);
+
+                    // search coupon
+                    onSearchCoupon();
+                }
+            }
+        } else {
+            setCouponCodeSelected('');
         }
 
-
-
-
-
-
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [totalPrice.originPrice]);
+    }, [isOpenModalCoupons])
     ///
 
     /// functions
@@ -146,8 +168,16 @@ const Coupons = ({ dataPropCouponComponent }) => {
         }
         return false;
     }
-    ///
 
+    const isCartPriceLessThanMinTotalOrderValue = (minTotalOrderValue) => {
+        const cartItemSelectedFind = cartItemSelecteds.find(x => x.shopId === shopIdSelected);
+        if (cartItemSelectedFind) {
+            return cartItemSelectedFind.totalPrice < minTotalOrderValue;
+        } else {
+            return true;
+        }
+    }
+    ///
 
     return (
         <Modal
@@ -171,12 +201,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
 
                     <div
                         id="scrollableDiv"
-                        style={{
-                            height: 400,
-                            overflow: 'auto',
-                            padding: '0 16px',
-                            border: '1px solid rgba(140, 140, 140, 0.35)',
-                        }}
+                        style={styleScrollCouponList}
                     >
                         <List
                             dataSource={coupons}
@@ -187,7 +212,9 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                         description={
                                             (<Space>
                                                 <Space.Compact direction='vertical'>
-                                                    <p>Giảm {formatPrice(item.priceDiscount)} - Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}</p>
+                                                    <Space align='center'>
+                                                        <p>Giảm {formatPrice(item.priceDiscount)}</p><p>-</p><p style={{ color: 'red' }}>Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}</p>
+                                                    </Space>
                                                     {
                                                         item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ?
                                                             <Button size='small' danger style={styleCouponType}>Sản phẩm nhất định</Button> : <></>
@@ -204,17 +231,16 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                             </Space>)
                                         }
                                     />
-                                    { }
                                     <div>
                                         {
-                                            item.quantity <= 0 || totalPrice.originPrice === 0 || ((totalPrice.originPrice - totalPrice.totalPriceProductDiscount) < item.minTotalOrderValue) ?
+                                            item.quantity <= 0 || isCartPriceLessThanMinTotalOrderValue(item.minTotalOrderValue) ?
                                                 <Radio disabled={true}
                                                     value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
-                                                : item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ? isSatisfyCouponTypeSpecificProduct(item.productIds) ?
+                                                : item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ? (isSatisfyCouponTypeSpecificProduct(item.productIds) ?
                                                     <Radio disabled={false}
                                                         value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
                                                     : <Radio disabled={true}
-                                                        value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                                        value={item.couponCode} onClick={onClickRadioCoupon}></Radio>)
                                                     : <Radio disabled={false}
                                                         value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
                                         }

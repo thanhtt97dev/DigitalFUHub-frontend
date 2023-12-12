@@ -14,7 +14,8 @@ import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/ico
 import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag, Space, Result } from 'antd';
 import {
     RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_INVALID_QUANTITY,
-    RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS
+    RESPONSE_MESSAGE_CART_NOT_FOUND, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_CART_SUCCESS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_SUCCESS,
+    COUPON_TYPE_ALL_PRODUCTS_OF_SHOP, COUPON_TYPE_SPECIFIC_PRODUCTS
 } from '~/constants';
 
 ///
@@ -37,12 +38,12 @@ const Products = ({ dataPropProductComponent }) => {
         cartDetailIdSelecteds,
         setCartDetailIdSelecteds,
         reloadCarts,
-        couponCodeSelecteds,
-        setCouponCodeSelecteds,
+        couponSelecteds,
+        setCouponSelecteds,
         coupons,
         totalPrice,
         setCoupons,
-        getCouponCodeSelecteds,
+        getPriceDiscountCouponSelecteds,
         cartDetails
     } = dataPropProductComponent;
     ///
@@ -60,6 +61,7 @@ const Products = ({ dataPropProductComponent }) => {
     const [cartDetailValids, setCartDetailValids] = useState([]);
     const [shopIdSelected, setShopIdSelected] = useState(0);
     const [cartIdSelecteds, setCartIdSelecteds] = useState([]);
+    const [cartItemSelecteds, setCartItemSelecteds] = useState([]); // object type { shopId, totalPrice, productIds[] }
     ///
 
     /// router
@@ -151,11 +153,18 @@ const Products = ({ dataPropProductComponent }) => {
             .then((res) => {
                 if (res.status === 200) {
                     const data = res.data;
-                    setCoupons(data.result);
-                    openModalCoupons();
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        setCoupons(data.result);
+                        openModalCoupons();
+                    } else if (status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
+                        notification("error", "Cửa hàng không tồn tại");
+                    } else {
+                        notification("error", "Có lỗi từ hệ thống, vui lòng thử lại sau");
+                    }
                 }
             })
-            .catch((error) => { })
+            .catch((error) => { notification("error", "Có lỗi từ hệ thống, vui lòng thử lại sau"); })
     }
 
     const handleCheckAll = (e) => {
@@ -257,11 +266,78 @@ const Products = ({ dataPropProductComponent }) => {
                 listCartIds.push(carts[i].cartId);
             }
         }
-
         setCartIdSelecteds(listCartIds);
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cartDetailIdSelecteds])
+
+    useEffect(() => {
+
+        if (cartDetailIdSelecteds.length > 0) {
+            const cartItemSelecteds = [];
+            for (let i = 0; i < carts.length; i++) {
+                const products = carts[i].products;
+                if (products) {
+                    const productFil = products.filter(x => cartDetailIdSelecteds.some(y => x.cartDetailId === y));
+                    if (productFil.length > 0) {
+                        // calculator price
+                        let totalDiscountPrice = productFil.reduce((accumulator, currentValue) => {
+                            return accumulator + (discountPrice(currentValue.productVariantPrice, currentValue.productVariantDiscount) * currentValue.quantity);
+                        }, 0);
+
+                        let totalPrice = totalDiscountPrice > 0 ? totalDiscountPrice : 0;
+                        // mapper products id
+                        const productIds = productFil.map(x => x.productId);
+                        const uniqueProductIds = [...new Set(productIds)];
+
+                        // cart item selected
+                        const newCartItemSelected = { shopId: carts[i].shopId, totalPrice, productIds: uniqueProductIds };
+
+                        // add to list
+                        cartItemSelecteds.push(newCartItemSelected);
+                    }
+                }
+            }
+
+            // update state
+            setCartItemSelecteds(cartItemSelecteds);
+        } else if (cartDetailIdSelecteds.length === 0) {
+            // update state
+            setCartItemSelecteds([]);
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cartDetailIdSelecteds]);
+
+    // check coupons selecteds
+    useEffect(() => {
+        if (couponSelecteds.length > 0) {
+            const newCouponSelecteds = [];
+            for (let i = 0; i < couponSelecteds.length; i++) {
+                const cartItemSelectedFind = cartItemSelecteds.find(x => x.shopId === couponSelecteds[i].shopId);
+                if (cartItemSelectedFind) {
+                    const totalPrice = cartItemSelectedFind.totalPrice;
+                    const productIds = cartItemSelectedFind.productIds;
+
+                    // check if the product is valid with the coupon 
+                    if (couponSelecteds[i].couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS) {
+                        // check productId exists
+                        const isProductIdExists = couponSelecteds[i].productIds.some(x => productIds.includes(x));
+                        if (totalPrice >= couponSelecteds[i].minTotalOrderValue && isProductIdExists) {
+                            newCouponSelecteds.push(couponSelecteds[i]);
+                        }
+                    } else if (couponSelecteds[i].couponTypeId === COUPON_TYPE_ALL_PRODUCTS_OF_SHOP) {
+                        if (totalPrice >= couponSelecteds[i].minTotalOrderValue) {
+                            newCouponSelecteds.push(couponSelecteds[i]);
+                        }
+                    }
+                }
+            }
+
+            // update coupon selecteds
+            setCouponSelecteds(newCouponSelecteds);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cartItemSelecteds])
     ///
 
     /// props
@@ -269,15 +345,14 @@ const Products = ({ dataPropProductComponent }) => {
         isOpenModalCoupons: isOpenModalCoupons,
         coupons: coupons,
         closeModalCoupons: closeModalCoupons,
-        couponCodeSelecteds: couponCodeSelecteds,
-        setCouponCodeSelecteds: setCouponCodeSelecteds,
+        couponSelecteds: couponSelecteds,
+        setCouponSelecteds: setCouponSelecteds,
         setCoupons: setCoupons,
         shopIdSelected: shopIdSelected,
-        totalPrice: totalPrice,
         cartDetails: cartDetails,
-        cartDetailIdSelecteds
+        cartDetailIdSelecteds,
+        cartItemSelecteds: cartItemSelecteds
     }
-
     ///
 
     /// functions
@@ -300,9 +375,7 @@ const Products = ({ dataPropProductComponent }) => {
                     }
                 }
             })
-            .catch((errors) => {
-                notification("error", "Có lỗi trong quá trình xóa, vui lòng thử lại");
-            })
+            .catch((errors) => { })
     };
 
 
@@ -344,7 +417,7 @@ const Products = ({ dataPropProductComponent }) => {
                                         {
                                             cart.products.map((product, index) => (
                                                 <Row className={product.productVariantActivate === false || product.productActivate === false || product.quantityProductRemaining === 0 ? cx('disable-item', 'margin-bottom-item') : cx('margin-bottom-item')} key={index}>
-                                                    <Col span={1}>
+                                                    <Col span={1} className={cx('flex-item-center')}>
                                                         {
                                                             cart.shopActivate && product.productVariantActivate && product.productActivate && product.quantityProductRemaining > 0 ? <Checkbox key={product.cartDetailId} value={product.cartDetailId}></Checkbox> : <></>
                                                         }
@@ -391,7 +464,7 @@ const Products = ({ dataPropProductComponent }) => {
                                             <Col offset={1}><Button type="link" onClick={() => { setShopIdSelected(cart.shopId); showCouponShop(cart.shopId) }}><CopyrightOutlined />Thêm mã giảm giá của Shop</Button></Col>
                                             <Col>
                                                 {
-                                                    getCouponCodeSelecteds(cart.shopId) && (<Tag color="gold">{getCouponCodeSelecteds(cart.shopId)}</Tag>)
+                                                    getPriceDiscountCouponSelecteds(cart.shopId) !== 0 && <Tag color="gold">Giảm {formatPrice(getPriceDiscountCouponSelecteds(cart.shopId))} từ mã giảm giá</Tag>
                                                 }
                                             </Col>
                                         </Row>
