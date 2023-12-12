@@ -105,7 +105,7 @@ function Login() {
             }}
             >
                 <Row style={{
-                    boxShadow: '0px 0px 9px 2px rgba(0,0,0,.4)',
+                    boxShadow: '0px 0px 6px -2px #2673dd',
                     borderRadius: '10px',
                     overflow: 'hidden'
                 }}>

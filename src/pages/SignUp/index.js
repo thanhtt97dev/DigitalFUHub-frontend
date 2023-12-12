@@ -68,13 +68,14 @@ function SignUp() {
                 alignItems: 'center'
             }}>
                 <Row style={{
-                    boxShadow: '0px 0px 9px 2px rgba(0,0,0,.4)',
+                    boxShadow: '0px 0px 6px -2px #2673dd',
                     borderRadius: '10px',
+                    height: '85%',
                     overflow: 'hidden',
                     paddingRight: '1em'
                 }}>
                     <Col>
-                        <img style={{ height: '100%' }} alt="" src={'https://tuyensinhdonga.edu.vn/wp-content/uploads/2021/08/nganh-thuong-mai-dien-tu.png'} />
+                        <img style={{ height: '100%', width: '100%' }} alt="" src={'https://tuyensinhdonga.edu.vn/wp-content/uploads/2021/08/nganh-thuong-mai-dien-tu.png'} />
                     </Col>
                     <Col style={{
                         marginInlineStart: '1em'
@@ -202,7 +203,7 @@ function SignUp() {
                                 ]}>
                                 <Input.Password placeholder='Mật khẩu' size='large' />
                             </Form.Item>
-                            <Form.Item label="Mật khẩu xác nhận"
+                            <Form.Item label="Nhập lại mật khẩu"
                                 name="confirmPassword"
                                 dependencies={['password']}
                                 required
@@ -215,19 +216,19 @@ function SignUp() {
                                                 if (getFieldValue('password') === value) {
                                                     return Promise.resolve();
                                                 } else {
-                                                    return Promise.reject(new Error('Mật khẩu xác nhận đã nhập không khớp'));
+                                                    return Promise.reject(new Error('Mật khẩu không không khớp'));
                                                 }
                                             } else {
-                                                return Promise.reject(new Error('Mật khẩu xác nhận không để trống'));
+                                                return Promise.reject(new Error('Mật khẩu không để trống'));
                                             }
                                         },
                                     }),
                                 ]}>
-                                <Input.Password placeholder='Mật khẩu xác nhận' size='large' />
+                                <Input.Password placeholder='Nhập lại mật khẩu' size='large' />
                             </Form.Item>
-                            <Form.Item style={{ textAlign: 'end' }}>
+                            <div style={{ textAlign: 'end' }}>
                                 <Link to="/login">Đã có tài khoản?</Link>
-                            </Form.Item>
+                            </div>
                             <Form.Item
                                 // {...tailFormItemLayout}
                                 style={{ textAlign: 'center' }}

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { Button, Col, Form, Input, Row, Spin } from 'antd';
@@ -12,7 +13,6 @@ function ConfirmEmail() {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         const tokenParam = searchParams.get("token");
         if (tokenParam) {
@@ -29,25 +29,25 @@ function ConfirmEmail() {
                     notification('error', 'Đã có lỗi xảy ra.')
                 })
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const onFinish = (values) => {
         setLoading(true);
         generateTokenConfirmEmail(values.email)
             .then((res) => {
-                setLoading(false);
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    notification('success', `Vui lòng đi đến ${values.email} để xác thực tài khoản.`,)
+                    notification('success', `Vui lòng đi đến ${values.email} để xác thực tài khoản.`)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
-                    notification('error', `Vui lòng kiểm tra lại.`,)
+                    notification('error', `Email không tồn tại.`)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_CONFIRM_PASSWORD_IS_CONFIRMED) {
-                    notification('error', `Tài khoản đã được xác thực.`,)
+                    notification('error', `Tài khoản đã được xác thực.`)
                 }
             })
             .catch((err) => {
+                notification('error', 'Đã có lỗi xảy ra.');
+            })
+            .finally(() => {
                 setLoading(false);
-                notification('error', 'Lỗi', 'Đã có lỗi xảy ra.')
             })
 
     }
@@ -60,7 +60,7 @@ function ConfirmEmail() {
             alignItems: 'center'
         }}>
             <Row style={{
-                boxShadow: '0px 0px 9px 2px rgba(0,0,0,.4)',
+                boxShadow: '0px 0px 6px -2px #2673dd',
                 borderRadius: '10px',
                 overflow: 'hidden',
             }}>

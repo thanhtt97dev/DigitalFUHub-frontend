@@ -7,6 +7,7 @@ import locale from 'antd/es/date-picker/locale/vi_VN';
 import { getListFeedbackSeller } from "~/api/feedback";
 import { RESPONSE_CODE_SUCCESS } from "~/constants";
 import { SearchOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 const { RangePicker } = DatePicker;
 const { Title, Text, Paragraph } = Typography
 function Feedbacks() {
@@ -185,7 +186,7 @@ function Feedbacks() {
                                         <Col span={24}>
                                             <Row gutter={[0, 8]} style={{ marginBottom: '0.5em' }}>
                                                 <Col span={8}>
-                                                    <Text>Mã đơn hàng: {v.orderId}</Text>
+                                                    <Text>Mã đơn hàng: <Link to={`/seller/order/${v.orderId}`}>{v.orderId}</Link></Text>
                                                 </Col>
                                                 <Col span={16}>
                                                     <Text>Người mua: {v.customerUsername}</Text>
@@ -196,27 +197,31 @@ function Feedbacks() {
                                                     <Col span={24}>
                                                         <Row wrap key={index}>
                                                             <Col span={2}>
-                                                                <Image
-                                                                    width={80}
-                                                                    height={80}
-                                                                    src={value.thumbnail}
-                                                                    preview={false}
-                                                                // preview={{
-                                                                //     movable: false,
-                                                                // }}
-                                                                />
+                                                                <Link to={`/product/${value.productId}`}>
+                                                                    <Image
+                                                                        width={80}
+                                                                        height={80}
+                                                                        src={value.thumbnail}
+                                                                        preview={false}
+                                                                    // preview={{
+                                                                    //     movable: false,
+                                                                    // }}
+                                                                    />
+                                                                </Link>
                                                             </Col>
                                                             <Col span={6}>
                                                                 <Row gutter={8}>
                                                                     <Col span={24}>
-                                                                        {
-                                                                            value.productName.length > 38 ?
-                                                                                <Tooltip title={value.productName}>
-                                                                                    <Text style={{ fontWeight: 600 }}>{value.productName.slice(0, 38)}...</Text>
-                                                                                </Tooltip>
-                                                                                :
-                                                                                <Text style={{ fontWeight: 600 }}>{value.productName}</Text>
-                                                                        }
+                                                                        <Link to={`/product/${value.productId}`}>
+                                                                            {
+                                                                                value.productName.length > 38 ?
+                                                                                    <Tooltip title={value.productName}>
+                                                                                        <Text style={{ fontWeight: 600 }}>{value.productName.slice(0, 38)}...</Text>
+                                                                                    </Tooltip>
+                                                                                    :
+                                                                                    <Text style={{ fontWeight: 600 }}>{value.productName}</Text>
+                                                                            }
+                                                                        </Link>
                                                                     </Col>
                                                                     <Col span={24}>
                                                                         <Text>Phân loại: {value.productVariantName}</Text>

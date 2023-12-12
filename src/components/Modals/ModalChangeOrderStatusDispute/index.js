@@ -26,6 +26,7 @@ function ModalChangeOrderStatusDispute({ orderId, customerId, shopId, style, cal
     const [openModal, setOpenModal] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [btnLoading, setBtnLoading] = useState(false)
+    const [note, setNote] = useState('')
 
 
     useEffect(() => {
@@ -37,18 +38,20 @@ function ModalChangeOrderStatusDispute({ orderId, customerId, shopId, style, cal
         setConfirmLoading(true)
         form.submit();
         var data = form.getFieldsValue()
+        setNote(data.note ? data.note : '')
         if (data.note === "") {
             setConfirmLoading(false)
             return;
         }
 
-        // // call api
+        // call api
         const bodyDataRequest = {
             customerId: customerId,
             sellerId: shopId,
             orderId: orderId,
             note: data.note
         }
+
         updateDisputeOrder(bodyDataRequest)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -78,7 +81,7 @@ function ModalChangeOrderStatusDispute({ orderId, customerId, shopId, style, cal
     const initFormValues = [
         {
             name: 'note',
-            value: ''
+            value: note
         },
     ];
 

@@ -285,9 +285,9 @@ function Orders() {
                         <Column
                             width="15%"
                             title="Mã giảm giá sử dụng"
-                            key="totalAmount"
+                            key="totalCouponDiscount"
                             render={(_, record) => (
-                                <p>{record.couponCode ? record.couponCode : "Không sử dụng"}</p>
+                                <p>- {formatPrice(record.totalCouponDiscount)}</p>
                             )}
                         />
                         <Column

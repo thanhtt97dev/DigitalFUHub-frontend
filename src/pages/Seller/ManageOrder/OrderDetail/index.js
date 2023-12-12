@@ -31,6 +31,7 @@ function OrderDetailSeller() {
     const navigate = useNavigate()
     const { orderId } = useParams()
     const [order, setOrder] = useState({})
+    const [noteRefundOrder, setNoteRefundOrder] = useState('');
 
     const getOrderDetail = useCallback(() => {
         setLoading(true);
@@ -219,6 +220,7 @@ function OrderDetailSeller() {
         setIsModalOpen(false);
     }
     const handleSubmitRefundOrder = ({ note }) => {
+        setNoteRefundOrder(note);
         const data = {
             note: note,
             orderId: order.orderId,
@@ -324,7 +326,7 @@ function OrderDetailSeller() {
                 fields={[
                     {
                         name: 'note',
-                        value: ''
+                        value: noteRefundOrder
                     }
                 ]}
             >

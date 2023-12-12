@@ -264,16 +264,8 @@ function OrderDetail() {
             })
     }
     const handleOpenChatGroupForDepositeOrder = () => {
-        var data = { shopId: order.shopId, userId: user.id, isGroup: true }
-        getConversation(data)
-            .then((res) => {
-                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
-                    navigate('/chatBox', { state: { data: res.data.result } })
-                }
-            })
-            .catch(() => {
-
-            })
+        if (order.conversationId === null) return;
+        navigate('/chatBox', { state: { data: order.conversationId } })
     }
     return (<>
         <ModalViewFeedbackOrder

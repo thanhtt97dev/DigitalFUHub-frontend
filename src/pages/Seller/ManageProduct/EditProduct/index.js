@@ -256,6 +256,11 @@ function EditProduct() {
     // submit form
     const onFinish = (values) => {
         setLoading(true);
+        // set fields form
+        setIsActiveProduct(values.isActiveProduct);
+        setProductName(values.nameProduct);
+        setProductCategory(values.category)
+        //
         let formData = new FormData();
         formData.append('productId', productId);
         formData.append('userId', getUserId());

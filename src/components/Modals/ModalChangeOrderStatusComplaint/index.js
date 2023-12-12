@@ -26,7 +26,7 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
     const [form] = Form.useForm();
     const [openModal, setOpenModal] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
-
+    const [note, setNote] = useState("");
     useEffect(() => {
         if (user === null) return;
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,6 +36,9 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
         setConfirmLoading(true)
         form.submit();
         var data = form.getFieldsValue()
+        // init fields form
+        setNote(data.note ? data.note : '')
+        //
         if (data.note === "") {
             setConfirmLoading(false)
             return;
@@ -78,7 +81,7 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
     const initFormValues = [
         {
             name: 'note',
-            value: ''
+            value: note
         },
     ];
 
