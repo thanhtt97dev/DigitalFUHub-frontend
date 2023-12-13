@@ -235,7 +235,7 @@ function HeaderLayout() {
                 <Space className={cx("item3")}>
                     {user === null ? (
                         <>
-                            <Link to={'/Login'}>
+                            <Link to={'/login'}>
                                 <Button type="primary" className={cx("button")}>Đăng nhập</Button>
                             </Link>
                             <Link to={'/signup'}>

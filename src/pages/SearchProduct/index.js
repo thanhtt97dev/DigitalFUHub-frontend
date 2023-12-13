@@ -17,7 +17,7 @@ const { Sider, Content } = Layout;
 function ConvertSearchParamObjectToString(searchParam = {}) {
     let result = '';
     for (const property in searchParam) {
-        if (searchParam[property]) {
+        if (searchParam[property] !== undefined && searchParam[property] !== null) {
             result += `${property}=${searchParam[property]}&`;
         }
     }
@@ -130,8 +130,8 @@ function SearchProduct() {
                             />
                             <Divider />
                             <InputRangePrice
-                                minValue={parseInt(getSearchParams.minPrice) ? parseInt(getSearchParams.minPrice) : null}
-                                maxValue={parseInt(getSearchParams.maxPrice) ? parseInt(getSearchParams.maxPrice) : null}
+                                minValue={!isNaN(parseInt(getSearchParams.minPrice)) ? parseInt(getSearchParams.minPrice) : null}
+                                maxValue={!isNaN(parseInt(getSearchParams.maxPrice)) ? parseInt(getSearchParams.maxPrice) : null}
                                 onChange={handleInputRangePrice} />
                             <Divider />
                             <FilterGroupRating
@@ -139,7 +139,7 @@ function SearchProduct() {
                                 onChange={handleChangeSelectRating}
                             />
                         </Sider>
-                        <Layout className={cx('wrapper-content')}>
+                        <Layout className={cx('wrapper-content')} style={{ background: '#F4F7FE' }}>
                             {products && products.length > 0 ?
                                 <Content className={cx('content')}>
                                     <MostPopularShop mostPopularShop={mostPopularShop} keyword={getSearchParams.keyword} />

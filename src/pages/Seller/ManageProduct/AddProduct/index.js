@@ -495,7 +495,6 @@ function AddProduct() {
                                                         (getFieldValue) => ({
                                                             validator(_, value) {
                                                                 const data = value === undefined ? '' : value.trim();
-                                                                console.log(value);
                                                                 if (data.trim()) {
                                                                     return Promise.resolve();
                                                                 }

@@ -29,7 +29,6 @@ const Message = () => {
     const [hideUI, setHideUI] = useState(false)
 
     useEffect(() => {
-        console.log(location)
         if (location.pathname === "/chatBox") {
             setHideUI(true)
         } else {
