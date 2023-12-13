@@ -132,13 +132,13 @@ function OrderDetailSeller() {
         if (order?.statusId === ORDER_WAIT_CONFIRMATION) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="green" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Chờ xác nhận</Tag>
+                    <Tag style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Chờ xác nhận</Tag>
                 </Col>
             </Row>
         } else if (order?.statusId === ORDER_CONFIRMED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn thành</Tag>
+                    <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đã xác nhận</Tag>
                 </Col>
                 {order.orderDetails.some((v, i) => v.isFeedback === true) ?
                     <Col>
@@ -150,7 +150,8 @@ function OrderDetailSeller() {
         } else if (order?.statusId === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} style={{ fontSize: 14, height: 32, lineHeight: 2.2 }} color="warning">Đang khiếu nại</Tag>
+                    <Tag icon={<SyncOutlined size={16} spin />} style={{ fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656' }}
+                        color="#FFF2CC">Đang khiếu nại</Tag>
                 </Col>
                 <Col>
                     <Button type="primary" onClick={() => setIsModalOpen(true)}>Hoàn trả tiền</Button>
@@ -167,7 +168,8 @@ function OrderDetailSeller() {
         } else if (order?.statusId === ORDER_DISPUTE) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} color="processing" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Đang tranh chấp</Tag>
+                    <Tag icon={<SyncOutlined size={16} spin />} color="#FAD7AC"
+                        style={{ fontSize: 14, height: 32, lineHeight: 2.2, color: '#B46504', border: '1px solid #B46504' }}>Đang tranh chấp</Tag>
                 </Col>
                 <Col>
                     <Button type="primary" onClick={() => setIsModalOpen(true)}>Hoàn trả tiền</Button>
@@ -186,14 +188,22 @@ function OrderDetailSeller() {
         } else if (order?.statusId === ORDER_REJECT_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="red" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Từ chối khiếu nại</Tag>
+                    <Tag color="#E1D5E7"
+                        style={{ fontSize: 14, height: 32, lineHeight: 2.2, color: '#9673A6', border: '1px solid #9673A6' }}>Từ chối khiếu nại</Tag>
                 </Col>
 
             </Row>
-        } else if (order?.statusId === ORDER_SELLER_REFUNDED || order?.statusId === ORDER_SELLER_VIOLATES) {
+        } else if (order?.statusId === ORDER_SELLER_REFUNDED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
                     <Tag color="cyan" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
+                </Col>
+            </Row>
+        } else if (order?.statusId === ORDER_SELLER_VIOLATES) {
+            return <Row justify="end" gutter={[8]}>
+                <Col>
+                    <Tag color="#FAD9D5"
+                        style={{ fontSize: 14, height: 32, lineHeight: 2.2, color: '#AE4132', border: '1px solid #AE4132' }}>Người bán vi phạm</Tag>
                 </Col>
             </Row>
         }
