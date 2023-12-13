@@ -306,7 +306,7 @@ const Products = ({ dataPropProductComponent }) => {
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cartDetailIdSelecteds]);
+    }, [cartDetailIdSelecteds, carts]);
 
     // check coupons selecteds
     useEffect(() => {
