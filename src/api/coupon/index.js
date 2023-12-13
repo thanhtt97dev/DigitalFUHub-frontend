@@ -3,7 +3,9 @@ import { apiGetAuth, apiPostAuth } from '../defaultApi';
 export const getCouponPublic = (shopId) => {
     return apiGetAuth(`api/Coupons/GetCouponPublic?shopId=${shopId}`);
 };
-
+export const getCouponDetailCustomerById = (couponId) => {
+    return apiGetAuth(`api/Coupons/getDetailById/${couponId}`);
+};
 export const getCouponPrivate = (couponCode, shopId) => {
     return apiGetAuth(`api/Coupons/GetCouponPrivate?couponCode=${couponCode}&shopId=${shopId}`);
 };
