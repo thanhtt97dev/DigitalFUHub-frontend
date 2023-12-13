@@ -43,6 +43,8 @@ import { CUSTOMER_ROLE, SELLER_ROLE } from '~/constants';
 import SearchShop from '../pages/SearchShop';
 import Statistics from '~/pages/Seller/Statistics';
 import Wallet from '~/pages/User/Settings/Wallet';
+import CouponDetailCustomer from '~/components/Cart/CouponDetailCustomer';
+import ErrorPage from '~/pages/ErrorPage';
 
 const routesConfig = [
     {
@@ -61,6 +63,11 @@ const routesConfig = [
         path: '/notFound',
         layout: <NormalLayout />,
         component: <NotFound />,
+    },
+    {
+        title: 'error page',
+        path: '/errorPage',
+        component: <ErrorPage />,
     },
     {
         title: 'home',
@@ -192,6 +199,11 @@ const routesConfig = [
         layout: <SellerLayout />,
         component: <EditCoupon />,
         role: [SELLER_ROLE],
+    },
+    {
+        title: 'Coupon Detail Customer',
+        path: '/coupon/:couponId',
+        component: <CouponDetailCustomer />,
     },
     {
         title: 'Seller order detail',

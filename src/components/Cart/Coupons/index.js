@@ -4,6 +4,7 @@ import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
 import Spinning from "~/components/Spinning";
 import { formatPrice, getVietnamCurrentTime } from '~/utils';
+import { useNavigate, Link } from "react-router-dom";
 import { getCouponPrivate } from '~/api/coupon';
 import { Typography, Modal, List, Input, Radio, Button, Space } from 'antd';
 import { NotificationContext } from "~/context/UI/NotificationContext";
@@ -51,6 +52,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
     const [inputCouponCode, setInputCouponCode] = useState('');
     const [isCouponInfoSuccess, setIsCouponInfoSuccess] = useState(false);
     const [couponCodeSelected, setCouponCodeSelected] = useState({});
+    const navigate = useNavigate();
     ///
 
     // contexts
@@ -59,7 +61,6 @@ const Coupons = ({ dataPropCouponComponent }) => {
 
 
     /// handles
-
     const handleChangeInputCode = (e) => {
         setInputCouponCode(e.target.value)
     }
@@ -206,7 +207,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
                         <List
                             dataSource={coupons}
                             renderItem={(item) => (
-                                <List.Item key={item.couponId}>
+                                <List.Item key={item.couponId} style={{}}>
                                     <List.Item.Meta
                                         title={<Space><p>{item.couponName}</p><Button size='small' type="primary" ghost style={styleCouponType}>{item.couponCode}</Button></Space>}
                                         description={
@@ -231,7 +232,8 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                             </Space>)
                                         }
                                     />
-                                    <div>
+
+                                    <Space direction='vertical' size={15}>
                                         {
                                             item.quantity <= 0 || isCartPriceLessThanMinTotalOrderValue(item.minTotalOrderValue) ?
                                                 <Radio disabled={true}
@@ -244,7 +246,9 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                                     : <Radio disabled={false}
                                                         value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
                                         }
-                                    </div>
+
+                                        <Link to={`/coupon/${item.couponId}`} target='_blank'><p style={{ fontSize: 13 }}>Điều kiện</p></Link>
+                                    </Space>
                                 </List.Item>
                             )}
                         />

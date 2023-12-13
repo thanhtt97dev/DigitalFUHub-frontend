@@ -41,7 +41,6 @@ const Products = ({ dataPropProductComponent }) => {
         couponSelecteds,
         setCouponSelecteds,
         coupons,
-        totalPrice,
         setCoupons,
         getPriceDiscountCouponSelecteds,
         cartDetails
