@@ -374,6 +374,7 @@ function AddCouponForProduct({ coupon, onEditCoupon = () => { } }) {
                 <Col span={15}>
 
                     <Form.Item name="applicableProducts"
+                        validateTrigger={["onBlur", "onFocus", "onInput", "onChange", "onMouseEnter", "onMouseLeave", "onMouseOver"]}
                         rules={[
                             ({ getFieldValue }) => ({
                                 validator(_, value) {

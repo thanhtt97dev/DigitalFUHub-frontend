@@ -42,7 +42,6 @@ function base64ToBlob(base64String, contentType) {
 function Orders() {
     const notification = useContext(NotificationContext);
     const location = useLocation();
-    console.log(location)
     const [loading, setLoading] = useState(true)
     const [form] = Form.useForm();
     const [orders, setOrders] = useState([]);

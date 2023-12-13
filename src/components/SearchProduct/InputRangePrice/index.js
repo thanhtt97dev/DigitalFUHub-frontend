@@ -23,7 +23,7 @@ function InputRangePrice({ minValue = null, maxValue = null, onChange = () => { 
     const handleSubmitForm = ({ min, max }) => {
         setMinPrice(min);
         setMaxPrice(max);
-        if (min && max && min >= max) {
+        if (min !== null && max !== null && min >= max) {
             setMsgError('Vui lòng điền khoảng giá phù hợp')
         } else {
             setMsgError('');
