@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from "re
 import { Space, Modal, Upload, Input, Tag, Tooltip, theme, Form, Button, InputNumber, Table } from "antd";
 import { PlusOutlined, MinusCircleOutlined, UploadOutlined } from "@ant-design/icons";
 import { readDataFileExcelImportProduct } from "~/utils";
+import { PAGE_SIZE } from "~/constants";
 
 
 const getBase64 = (file) =>
@@ -452,6 +453,10 @@ function UploadProductType({ handleGetDataFileChange }, ref) {
                     height: '200px'
                 }} open={openModal} title='Xem trước dữ liệu' footer={null} onCancel={() => setOpenModel(false)}>
                     <Table
+                        pagination={{
+                            pageSize: PAGE_SIZE,
+                            showSizeChanger: false
+                        }}
                         rowKey={(record) => record.uid}
                         scroll={{
                             y: 200,

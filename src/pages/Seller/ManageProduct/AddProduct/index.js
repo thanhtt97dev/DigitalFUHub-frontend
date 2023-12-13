@@ -9,7 +9,7 @@ import { getUserId, readDataFileExcelImportProduct } from '~/utils';
 import { getAllCategory } from '~/api/category';
 import { useNavigate } from 'react-router-dom';
 import { addProductSeller } from '~/api/product';
-import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, UPLOAD_FILE_SIZE_LIMIT } from '~/constants';
+import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PAGE_SIZE, UPLOAD_FILE_SIZE_LIMIT } from '~/constants';
 
 const columns = [
     {
@@ -596,6 +596,10 @@ function AddProduct() {
                                     }} open={openModal} title='Xem trước dữ liệu' footer={null} onCancel={() => setOpenModel(false)}>
                                         <Table
                                             rowKey={(record) => record.index}
+                                            pagination={{
+                                                pageSize: PAGE_SIZE,
+                                                showSizeChanger: false
+                                            }}
                                             scroll={{
                                                 y: 200,
                                             }} columns={columns} dataSource={previewDataFileExcel} />

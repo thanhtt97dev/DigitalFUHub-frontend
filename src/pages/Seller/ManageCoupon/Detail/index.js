@@ -271,7 +271,11 @@ function CouponDetail() {
 
                                     <Table
                                         scroll={{ y: 400 }}
-                                        pagination={false}
+                                        // pagination={false}
+                                        pagination={{
+                                            pageSize: PAGE_SIZE,
+                                            showSizeChanger: false,
+                                        }}
                                         rowKey={(record) => record.productId}
                                         dataSource={coupon.productsApplied}
                                     >
@@ -317,6 +321,7 @@ function CouponDetail() {
                                                             pagination={{
                                                                 pageSize: PAGE_SIZE,
                                                                 current: page,
+                                                                showSizeChanger: false,
                                                                 onChange: (page) => setPage(page)
                                                             }}
                                                             dataSource={orders}

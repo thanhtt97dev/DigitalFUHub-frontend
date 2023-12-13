@@ -2,7 +2,7 @@
 import { Button, Col, Form, Image, Input, Modal, Row, Space, Table } from "antd";
 import { memo, useEffect, useState } from "react";
 import { getListProductOfSeller } from "~/api/product";
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { PAGE_SIZE, RESPONSE_CODE_SUCCESS } from "~/constants";
 
 const columns = [
     {
@@ -198,7 +198,8 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
             pagination={{
                 current: page,
                 total: totalItems,
-                pageSize: 10,
+                pageSize: PAGE_SIZE,
+                showSizeChanger: false
             }}
             onChange={handleTableChange}
             rowKey={(record) => record.productId}

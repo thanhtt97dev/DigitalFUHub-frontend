@@ -18,7 +18,8 @@ import {
     ORDER_REJECT_COMPLAINT,
     ORDER_SELLER_VIOLATES,
     ORDER_SELLER_REFUNDED,
-    ORDER_STATUS_ALL
+    ORDER_STATUS_ALL,
+    PAGE_SIZE
 } from "~/constants";
 import Column from "antd/es/table/Column";
 import { FileExcelOutlined, SearchOutlined } from "@ant-design/icons";
@@ -241,7 +242,7 @@ function Orders() {
                         pagination={{
                             current: page,
                             total: totalItems,
-                            pageSize: 10,
+                            pageSize: PAGE_SIZE,
                             showSizeChanger: false,
                         }}
                         rowKey={(record) => record.orderId}
