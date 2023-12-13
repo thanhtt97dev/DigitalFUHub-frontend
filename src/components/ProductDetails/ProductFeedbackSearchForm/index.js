@@ -35,8 +35,6 @@ function ProductFeedbackSearchForm({
 
     const feedBackGeneralInfo = product.feedBackGeneralInfo;
 
-    console.log(selectedType)
-
     return (
         <>
             {product ?

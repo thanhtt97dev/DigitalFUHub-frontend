@@ -298,7 +298,6 @@ function AddProduct() {
                     </div>
                 </Modal>
                 <Card
-                    onScroll={(e) => { console.log(e.y) }}
                     style={{
                         width: '100%',
                         minHeight: "690px",
