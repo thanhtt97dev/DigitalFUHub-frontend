@@ -32,3 +32,6 @@ export const getProductByUserId = (data) => {
 export const getListProductSearch = (data) => {
     return apiPost(`api/Products/Search`, data);
 };
+export const getProductSpecificOfCoupon = (data) => {
+    return apiPostAuth(`api/Products/GetProductSpecificOfCoupon`, data);
+};
