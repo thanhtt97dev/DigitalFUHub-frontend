@@ -248,12 +248,12 @@ function EditCouponForShop({ coupon, onEditCoupon = () => { } }) {
                             validator(_, value) {
                                 const priceDiscount = getFieldValue("priceDiscount")
                                 if (value === undefined || value === null) {
-                                    return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không được để trống'));
+                                    return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không được để trống.'));
                                 }
                                 else if (value < MIN_PRICE_OF_MIN_ORDER_TOTAL_VALUE) {
-                                    return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không nhỏ hơn 1.000đ'));
+                                    return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không nhỏ hơn 1.000đ.'));
                                 } else if (value > MAX_PRICE_OF_MIN_ORDER_TOTAL_VALUE) {
-                                    return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không vượt quá 100.000.000đ'));
+                                    return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không vượt quá 100.000.000đ.'));
                                 } else {
                                     if (value === 0) {
                                         return Promise.resolve();
@@ -262,7 +262,7 @@ function EditCouponForShop({ coupon, onEditCoupon = () => { } }) {
                                             return Promise.resolve();
                                         } else {
                                             if (priceDiscount > value) {
-                                                return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không nhỏ hơn số tiền giảm giá'));
+                                                return Promise.reject(new Error('Giá trị đơn hàng tối thiểu không nhỏ hơn số tiền giảm giá.'));
                                             } else {
                                                 return Promise.resolve();
                                             }
@@ -287,17 +287,17 @@ function EditCouponForShop({ coupon, onEditCoupon = () => { } }) {
                             validator(_, value) {
                                 const minTotalOrderValue = getFieldValue("minTotalOrderValue");
                                 if (value === undefined || value === null) {
-                                    return Promise.reject(new Error('Số tiền giảm giá không được để trống'));
+                                    return Promise.reject(new Error('Số tiền giảm giá không được để trống.'));
                                 } else if (value < MIN_PRICE_DISCOUNT_COUPON) {
-                                    return Promise.reject(new Error('Số tiền giảm giá không nhỏ hơn 1.000đ'));
+                                    return Promise.reject(new Error('Số tiền giảm giá không nhỏ hơn 1.000đ.'));
                                 } else if (value > MAX_PRICE_DISCOUNT_COUPON) {
-                                    return Promise.reject(new Error('Số tiền giảm giá không vượt quá 100.000.000đ'));
+                                    return Promise.reject(new Error('Số tiền giảm giá không vượt quá 100.000.000đ.'));
                                 } else {
                                     if (!minTotalOrderValue) {
                                         return Promise.resolve();
                                     } else {
                                         if (value > (parseInt(minTotalOrderValue * MAX_PERCENTAGE_PRICE_DISCOUNT_COUPON))) {
-                                            return Promise.reject(new Error('Số tiền giảm giá không được lớn hơn 70% Giá trị đơn hàng tối thiểu'));
+                                            return Promise.reject(new Error('Số tiền giảm giá không được lớn hơn 70% Giá trị đơn hàng tối thiểu.'));
                                         } else {
                                             return Promise.resolve();
                                         }

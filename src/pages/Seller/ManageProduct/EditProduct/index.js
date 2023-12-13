@@ -11,7 +11,7 @@ import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 import { editProductSeller, getProductSellerById } from "~/api/product";
-import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PRODUCT_ACTIVE, RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
+import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PAGE_SIZE, PRODUCT_ACTIVE, RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
 const columns = [
     {
         title: 'Số thứ tự',
@@ -729,6 +729,10 @@ function EditProduct() {
                                     }} open={openModal} title={productVariants[indexBtnViewOldDataRef.current]?.data && typeButtonViewOldOrNewRef.current === 1 ? <div>Dữ liệu cũ <a onClick={handleDownloadDataOld}>tải xuống</a></div> : 'Xem trước dữ liệu'} footer={null} onCancel={() => setOpenModel(false)}>
                                         <Table
                                             rowKey={(record) => record.index}
+                                            pagination={{
+                                                pageSize: PAGE_SIZE,
+                                                showSizeChanger: false
+                                            }}
                                             scroll={{
                                                 y: 200,
                                             }} columns={columns} dataSource={previewDataFileExcel} />

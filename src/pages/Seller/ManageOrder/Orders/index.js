@@ -18,7 +18,8 @@ import {
     ORDER_REJECT_COMPLAINT,
     ORDER_SELLER_VIOLATES,
     ORDER_SELLER_REFUNDED,
-    ORDER_STATUS_ALL
+    ORDER_STATUS_ALL,
+    PAGE_SIZE
 } from "~/constants";
 import Column from "antd/es/table/Column";
 import { FileExcelOutlined, SearchOutlined } from "@ant-design/icons";
@@ -241,7 +242,7 @@ function Orders() {
                         pagination={{
                             current: page,
                             total: totalItems,
-                            pageSize: 10,
+                            pageSize: PAGE_SIZE,
                             showSizeChanger: false,
                         }}
                         rowKey={(record) => record.orderId}
@@ -329,19 +330,23 @@ function Orders() {
                             key="orderStatusId"
                             render={(_, record) => {
                                 if (record.orderStatusId === ORDER_WAIT_CONFIRMATION) {
-                                    return <Tag color="#108ee9">Chờ xác nhận</Tag>
+                                    return <Tag>Chờ xác nhận</Tag>
                                 } else if (record.orderStatusId === ORDER_CONFIRMED) {
-                                    return <Tag color="#87d068">Đã xác nhận</Tag>
+                                    return <Tag color="blue">Đã xác nhận</Tag>
                                 } else if (record.orderStatusId === ORDER_COMPLAINT) {
-                                    return <Tag color="#c6e329">Khiếu nại</Tag>
+                                    return <Tag color="#FFF2CC"
+                                        style={{ color: '#D6B656', border: '1px solid #D6B656' }}>Khiếu nại</Tag>
                                 } else if (record.orderStatusId === ORDER_DISPUTE) {
-                                    return <Tag color="#ffaa01">Tranh chấp</Tag>
+                                    return <Tag color="#FAD7AC"
+                                        style={{ color: '#B46504', border: '1px solid #B46504' }}>Tranh chấp</Tag>
                                 } else if (record.orderStatusId === ORDER_SELLER_REFUNDED) {
                                     return <Tag color="cyan">Hoàn lại tiền</Tag>
                                 } else if (record.orderStatusId === ORDER_REJECT_COMPLAINT) {
-                                    return <Tag color="#ca01ff">Từ chối khiếu nại</Tag>
+                                    return <Tag color="#E1D5E7"
+                                        style={{ color: '#9673A6', border: '1px solid #9673A6' }}>Từ chối khiếu nại</Tag>
                                 } else if (record.orderStatusId === ORDER_SELLER_VIOLATES) {
-                                    return <Tag color="#f50">Người bán vi phạm</Tag>
+                                    return <Tag color="#FAD9D5"
+                                        style={{ color: '#AE4132', border: '1px solid #AE4132' }}>Người bán vi phạm</Tag>
                                 }
                             }}
                         />
