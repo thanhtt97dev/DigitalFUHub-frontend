@@ -49,7 +49,7 @@ function Deposit() {
             </div >
             <div className={cx("deposit-container-2")}>
                 <div className={cx("part")}>
-                    <h2 className={cx("section-title")}>Chuyển khoảng thủ công</h2>
+                    <h2 className={cx("section-title")}>Chuyển khoản thủ công</h2>
                     <div className={cx("info")}>
                         <ul className={cx("grid-container")}>
                             <li className={cx("grid-item")}>
