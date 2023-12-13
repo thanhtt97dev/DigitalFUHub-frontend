@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useRef, useLayoutEffect, useContext } from "react";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -100,20 +101,23 @@ function EditProduct() {
             })
             .catch((err) => {
             })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // get list categories
     useLayoutEffect(() => {
         getAllCategory()
             .then((res) => {
-                setLoading(false);
                 if (res.data.status.responseCode === "00") {
                     setCategories(res.data.result)
                 }
             })
             .catch((err) => {
-                setLoading(false);
+            })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setLoading(false);
+                    clearTimeout(idTimeout);
+                }, 500)
             })
     }, [])
     // init item product variant old when visit page

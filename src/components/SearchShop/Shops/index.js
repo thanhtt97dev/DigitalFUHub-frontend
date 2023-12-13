@@ -30,7 +30,7 @@ function Shops({ listShop = [], totalItems = 0, keyword = '', page = 1, onSelect
                                 <Avatar size={60} src={value.avatar} />
                                 <div>
                                     <div className={cx('three-dot-overflow-one-line-wrapper')} style={{ fontSize: '18px' }}>{value.shopName}</div>
-                                    <div className={cx('three-dot-overflow-one-line-wrapper')} style={{ fontSize: '14px' }}>{value.username}</div>
+                                    <div className={cx('three-dot-overflow-one-line-wrapper')} style={{ fontSize: '14px' }}>{value.user.username}</div>
                                 </div>
                             </Space>
                         </Col>

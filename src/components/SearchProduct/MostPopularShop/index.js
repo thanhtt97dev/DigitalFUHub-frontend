@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Avatar, Card, Col, Row, Space } from 'antd';
 import classNames from "classnames/bind";
-import { ClockCircleOutlined, ShoppingOutlined, StarOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, RightOutlined, ShoppingOutlined, StarOutlined } from "@ant-design/icons";
 import styles from "../SearchProduct.module.scss"
 import moment from "moment";
 import { formatNumber } from "~/utils";
@@ -14,14 +14,17 @@ function MostPopularShop({ mostPopularShop, keyword }) {
                     direction="vertical"
                     style={{ marginBottom: '1em', width: '100%' }}
                 >
-                    <div style={{ marginBottom: '1em' }}>
-                        <span
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div
                             style={{
                                 fontSize: 16
                             }}>
                             Cửa hàng liên quan đến
                             '<span style={{ color: '#1677ff' }}>{keyword}</span>'
-                        </span>
+                        </div>
+                        <div>
+                            <Link to={`/searchShop?keyword=${keyword}`}>Thêm kết quả <RightOutlined /></Link>
+                        </div>
                     </div>
                     <Link to={`/shop/${mostPopularShop.userId}`}>
                         <Card hoverable>
@@ -31,7 +34,7 @@ function MostPopularShop({ mostPopularShop, keyword }) {
                                         <Avatar size={60} src={mostPopularShop.avatar} />
                                         <div>
                                             <div className={cx('three-dot-overflow-one-line-wrapper')} style={{ fontSize: '18px' }}>{mostPopularShop.shopName}</div>
-                                            <div className={cx('three-dot-overflow-one-line-wrapper')} style={{ fontSize: '14px' }}>{mostPopularShop.username}</div>
+                                            <div className={cx('three-dot-overflow-one-line-wrapper')} style={{ fontSize: '14px' }}>{mostPopularShop.user.username}</div>
                                         </div>
                                     </Space>
                                 </Col>

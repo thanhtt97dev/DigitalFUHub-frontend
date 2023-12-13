@@ -11,6 +11,10 @@ function FilterGroupRating({ valueSelected, onChange = () => { } }) {
             <Radio.Group style={{ width: '100%' }} buttonStyle="solid" value={valueSelected} onChange={onChange}>
                 <Space direction="vertical" style={{ width: '100%' }}>
                     <Space.Compact direction="vertical" style={{ width: '100%' }}>
+                        <Radio.Button className={cx('radio-button', 'search-radio-button-checked')} value={FEEDBACK_TYPE_ALL}>
+                            {/* <Rate className={cx('rate')} value={0} disabled /> <span >trở lên</span> */}
+                            <span>Tất cả</span>
+                        </Radio.Button>
                         <Radio.Button className={cx('radio-button', 'search-radio-button-checked')} value={FEEDBACK_TYPE_5_STAR}>
                             <Rate className={cx('rate')} value={5} disabled />
                         </Radio.Button>
@@ -26,9 +30,7 @@ function FilterGroupRating({ valueSelected, onChange = () => { } }) {
                         <Radio.Button className={cx('radio-button', 'search-radio-button-checked')} value={FEEDBACK_TYPE_1_STAR}>
                             <Rate className={cx('rate')} value={1} disabled /> <span >trở lên</span>
                         </Radio.Button>
-                        <Radio.Button className={cx('radio-button', 'search-radio-button-checked')} value={FEEDBACK_TYPE_ALL}>
-                            <Rate className={cx('rate')} value={0} disabled /> <span >trở lên</span>
-                        </Radio.Button>
+
                     </Space.Compact>
                 </Space>
             </Radio.Group>
