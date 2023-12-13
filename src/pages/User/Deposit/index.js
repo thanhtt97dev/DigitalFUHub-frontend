@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import styles from './Deposit.module.scss';
 import { BANK_ACCOUNT_IMAGE_SRC } from '~/constants'
+import { formatPrice } from "~/utils";
 
 const cx = classNames.bind(styles);
 
@@ -10,6 +11,7 @@ function Deposit() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const [amount, setAmount] = useState(0);
     const [code, setCode] = useState("");
     const [qrCode, setQrCode] = useState("");
 
@@ -18,6 +20,7 @@ function Deposit() {
             alert("Xảy ra sự cố! Hãy thử lại sau!");
             return navigate("/home");
         }
+        setAmount(location.state.amount)
         setCode(location.state.code);
         const bankCodeInfo = `&amount=${location.state.amount}&addInfo=${location.state.code}`;
         setQrCode(BANK_ACCOUNT_IMAGE_SRC + bankCodeInfo);
@@ -46,9 +49,13 @@ function Deposit() {
             </div >
             <div className={cx("deposit-container-2")}>
                 <div className={cx("part")}>
-                    <h2 className={cx("section-title")}>Chuyển khoảng thủ công</h2>
+                    <h2 className={cx("section-title")}>Chuyển khoản thủ công</h2>
                     <div className={cx("info")}>
                         <ul className={cx("grid-container")}>
+                            <li className={cx("grid-item")}>
+                                <span className={cx("head-grid")}>Số tiền:</span> <br />
+                                <b className={cx("code")}>{formatPrice(amount)}</b>
+                            </li>
                             <li className={cx("grid-item")}>
                                 <span className={cx("head-grid")}>Nội dung chuyển khoản:</span> <br />
                                 <b className={cx("code")}>{code}</b>
@@ -59,11 +66,7 @@ function Deposit() {
                             </li>
                             <li className={cx("grid-item")}>
                                 <span className={cx("head-grid")}>Số tài khoản:</span> <br />
-                                <b>0336687454</b>
-                            </li>
-                            <li className={cx("grid-item")}>
-                                <span className={cx("head-grid")}>Ngân hàng:</span> <br />
-                                <b>Ngân hàng Quân đội</b>
+                                <b>0336687454 - Ngân hàng Quân đội</b>
                             </li>
                         </ul>
                     </div>

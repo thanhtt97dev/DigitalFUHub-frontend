@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useSignIn } from 'react-auth-kit';
-import { Button, Form, Input, Space, message } from 'antd';
+import { Button, Card, Form, Input, Space } from 'antd';
 
 import { generateAccessToken } from '~/api/user'
+
+import { NotificationContext } from '~/context/UI/NotificationContext';
 
 import { NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 import { saveDataAuthToCookies, getUser } from '~/utils';
@@ -11,23 +13,24 @@ import ModalSend2FaQrCode from '~/components/Modals/ModalSend2FaQrCode';
 
 const layout = {
     labelCol: {
-        span: 8,
+        span: 9,
     },
     wrapperCol: {
-        span: 16,
+        span: 6,
     },
 };
 const tailLayout = {
     wrapperCol: {
-        offset: 8,
-        span: 16,
+        offset: 9,
+        span: 12,
     },
 };
 
 function Verification2FA() {
 
     const signIn = useSignIn();
-    const [messageApi, contextHolder] = message.useMessage();
+
+    const notification = useContext(NotificationContext);
 
     const path = window.location.pathname;
     const userId = path.split("/")[2];
@@ -36,7 +39,6 @@ function Verification2FA() {
     useEffect(() => { // use for prevent user was logined but still want to verify Two Factor Authentication
         const user = getUser();
         if (user != null) {
-            alert("You not have permission to view this site!")
             return window.location.replace("/home")
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,34 +66,33 @@ function Verification2FA() {
 
                 return window.location.replace("/home")
             }).catch((err) => {
-                error();
+                notification("error", "Mã PIN không đúng! Vui lòng thử lại!")
             })
-    };
-
-    const error = () => {
-        messageApi.open({
-            type: 'error',
-            content: 'Code invalid! Try again!',
-        });
     };
 
     return (
         <>
-            {contextHolder}
+            <h2
+                style={{
+                    textAlign: "center",
+                    marginBottom: "50px",
+                    marginTop: "100px"
+                }}
+            >
+                Nhập mã PIN xác thực 2 bước
+            </h2>
+
             <Form
                 {...layout}
-                name="control-ref"
                 onFinish={onFinish}
-                style={{
-                    maxWidth: 600,
-                }}
             >
                 <Form.Item
                     name="code"
-                    label="Code"
+                    label="PIN"
                     rules={[
                         {
                             required: true,
+                            message: "Mã PIN không được trống"
                         },
                     ]}
                 >
@@ -99,11 +100,11 @@ function Verification2FA() {
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <Space>
+                    <Space style={{ marginLeft: "40px", marginTop: "20px" }}>
                         <Button type="primary" htmlType="submit">
-                            Submit
+                            Xác nhận
                         </Button>
-                        <ModalSend2FaQrCode />
+                        <ModalSend2FaQrCode userId={userId} />
                     </Space>
                 </Form.Item>
             </Form>

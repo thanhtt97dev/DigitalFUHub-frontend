@@ -5,6 +5,9 @@ import classNames from 'classnames/bind';
 import styles from './TableProduct.module.scss';
 import { Link } from "react-router-dom";
 import { formatPrice } from "~/utils";
+import {
+    PRODUCT_BAN
+} from "~/constants";
 
 const cx = classNames.bind(styles);
 
@@ -100,12 +103,17 @@ const columns = [
         title: '',
         dataIndex: 'productId',
         fixed: 'right',
-        render: (productId) => {
+        render: (productId, record) => {
             return (
-                <Space direction="vertical">
-                    <Link to={`/seller/product/${productId}`}>Chỉnh sửa</Link>
-                    <Link to={`/product/${productId}`}>Xem trước</Link>
-                </Space>
+                <>
+                    {record.productStatusId === PRODUCT_BAN ?
+                        <></> :
+                        <Space direction="vertical">
+                            <Link to={`/seller/product/${productId}`}>Chỉnh sửa</Link>
+                            <Link to={`/product/${productId}`}>Xem trước</Link>
+                        </Space>
+                    }
+                </>
             )
         },
         width: '10%',

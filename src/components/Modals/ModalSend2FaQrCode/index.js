@@ -43,7 +43,7 @@ function ModalSend2FaQrCode({ userId }) {
                 onClick={() => setOpenMoodal(true)}
                 type="primary"
             >
-                Yêu cầu gửi lại mã QR kích hoạt
+                Yêu cầu gửi lại mã xác thực
             </Button>
 
 
@@ -56,18 +56,18 @@ function ModalSend2FaQrCode({ userId }) {
                 confirmLoading={confirmLoading}
                 okText={"Đồng ý"}
                 cancelText={"Đóng"}
-                width={400}
+                width={500}
             >
                 <Divider />
                 <p style={{ textAlign: "center", margin: "0 auto", marginBottom: "10px" }}>
-                    Bạn có chắc cần gửi lại QR Code này không?
+                    Bạn có chắc cần gửi lại mã xác thực này không?
                 </p>
                 <p>
                     <b style={{ color: "red" }}>Chú ý:</b>
                     <div style={{ marginLeft: "30px" }}>
-                        <i>Chúng tôi sẽ gửi QR Code đến email của bạn!</i>
+                        <i>Chúng tôi sẽ gửi thông tin mã pin đến email của bạn!</i>
                         <br />
-                        <i>Xin đùng gửi QR Code này cho ai!</i>
+                        <i>Xin đùng gửi mã xác thực này cho ai!</i>
                     </div>
                 </p>
             </Modal>

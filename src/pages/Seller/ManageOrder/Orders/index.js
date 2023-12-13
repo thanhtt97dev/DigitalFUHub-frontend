@@ -246,7 +246,7 @@ function Orders() {
                         }}
                         rowKey={(record) => record.orderId}
                         dataSource={orders}
-                        size='small'
+                        size='middle'
                         onChange={handleTableChange}
                         scroll={
                             {
@@ -325,6 +325,7 @@ function Orders() {
                         <Column
                             width="13%"
                             title="Trạng thái"
+                            fixed="right"
                             key="orderStatusId"
                             render={(_, record) => {
                                 if (record.orderStatusId === ORDER_WAIT_CONFIRMATION) {
