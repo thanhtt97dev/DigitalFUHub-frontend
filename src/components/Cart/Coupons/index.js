@@ -208,7 +208,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
                             renderItem={(item) => (
                                 <List.Item key={item.couponId}>
                                     <List.Item.Meta
-                                        title={item.couponName}
+                                        title={<Space><p>{item.couponName}</p><Button size='small' type="primary" ghost style={styleCouponType}>{item.couponCode}</Button></Space>}
                                         description={
                                             (<Space>
                                                 <Space.Compact direction='vertical'>

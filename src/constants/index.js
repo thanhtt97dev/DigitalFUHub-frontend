@@ -19,7 +19,7 @@ export const ADMIN_ROLE = 'Admin';
 export const CUSTOMER_ROLE = 'Customer';
 export const SELLER_ROLE = 'Seller';
 export const NOT_HAVE_MEANING_FOR_TOKEN = 'not have meaning';
-export const NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES = 100;
+export const NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES = 1000;
 export const BANK_ACCOUNT_IMAGE_SRC = "https://img.vietqr.io/image/MB-0336687454-compact.png?accountName=LE%20DUC%20HIEU"
 
 export const BANKS_INFO = [
