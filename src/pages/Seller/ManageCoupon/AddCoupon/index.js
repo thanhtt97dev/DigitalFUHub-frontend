@@ -8,6 +8,8 @@ import { NotificationContext } from "~/context/UI/NotificationContext";
 import { getUserId } from "~/utils";
 import { AddCouponForShop, AddCouponForProduct } from "~/components/Seller/Coupon";
 import { ExclamationCircleFilled, LeftOutlined } from "@ant-design/icons";
+import { RESPONSE_CODE_SHOP_BANNED } from "../../../../constants";
+import { getShopOfSeller } from "~/api/shop";
 const { Link } = Typography;
 const { confirm } = Modal;
 // import NotFound from "~/pages/NotFound";
@@ -28,6 +30,7 @@ function AddCoupon() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [loading, setLoading] = useState(false);
+
     useLayoutEffect(() => {
         if (searchParams.get("case") !== COUPON_TYPE_ALL_PRODUCTS_OF_SHOP + '' && searchParams.get("case") !== COUPON_TYPE_SPECIFIC_PRODUCTS + '') {
             return navigate("/notfound");
@@ -55,7 +58,11 @@ function AddCoupon() {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     notification("success", "Tạo mã giảm giá thành công.")
                     return navigate('/seller/coupon/list');
-                } else {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
+                }
+                else {
                     notification("error", "Tạo mã giảm giá thất bại.")
                 }
             })

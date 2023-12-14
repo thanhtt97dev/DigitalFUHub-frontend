@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, Form, Row, Col, Space, Select, Input, Button, InputNumber, Tooltip, Image, Table } from 'antd';
 
 import { NotificationContext } from "~/context/UI/NotificationContext";
@@ -11,7 +11,8 @@ import { getAllCategory } from "~/api/category"
 import {
     RESPONSE_CODE_SUCCESS,
     RESPONSE_CODE_NOT_ACCEPT,
-    PRODUCT_BAN
+    PRODUCT_BAN,
+    RESPONSE_CODE_SHOP_BANNED
 } from "~/constants";
 import { getUserId } from "~/utils"
 
@@ -160,6 +161,7 @@ function ProductsBan() {
 
     const [loading, setLoading] = useState(false);
     const notification = useContext(NotificationContext);
+    const navigate = useNavigate();
     const [form] = Form.useForm();
     const userId = getUserId()
 
@@ -210,6 +212,9 @@ function ProductsBan() {
                     setTimeout(() => {
                         setLoading(false)
                     }, 500)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
                 } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
                     notification('error', "Tham số tìm kiếm không hợp lệ!");
                     setLoading(false)

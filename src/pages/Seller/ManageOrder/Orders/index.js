@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import classNames from "classnames/bind";
 import styles from './Order.module.scss'
 import { exportOrdersToExcel, getOrdersSeller } from '~/api/order'
@@ -19,7 +19,8 @@ import {
     ORDER_SELLER_VIOLATES,
     ORDER_SELLER_REFUNDED,
     ORDER_STATUS_ALL,
-    PAGE_SIZE
+    PAGE_SIZE,
+    RESPONSE_CODE_SHOP_BANNED
 } from "~/constants";
 import Column from "antd/es/table/Column";
 import { FileExcelOutlined, SearchOutlined } from "@ant-design/icons";
@@ -41,6 +42,7 @@ function base64ToBlob(base64String, contentType) {
 }
 function Orders() {
     const notification = useContext(NotificationContext);
+    const navigate = useNavigate();
     const location = useLocation();
     const [loading, setLoading] = useState(true)
     const [form] = Form.useForm();
@@ -65,6 +67,9 @@ function Orders() {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrders(res.data.result.orders);
                     setTotalItems(res.data.result.totalItems);
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
                 } else {
                     notification("error", "Vui lòng kiểm tra lại.")
                 }

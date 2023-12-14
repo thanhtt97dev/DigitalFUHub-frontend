@@ -1,16 +1,20 @@
-import { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useEffect, useState } from "react";
 import dayjs from 'dayjs';
 import { Button, Card, Col, DatePicker, Form, Input, Typography, Row, Select, Rate, Image, Pagination, Empty, Tooltip } from "antd";
 import Spinning from "~/components/Spinning";
 import { ParseDateTime, getUserId } from "~/utils";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { getListFeedbackSeller } from "~/api/feedback";
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { RESPONSE_CODE_SHOP_BANNED, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { SearchOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 const { RangePicker } = DatePicker;
 const { Title, Text, Paragraph } = Typography
 function Feedbacks() {
+    const notification = useContext(NotificationContext);
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -51,6 +55,9 @@ function Feedbacks() {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setListFeedback(res.data.result.feedbacks);
                     setTotalItems(res.data.result.totalItems);
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
                 }
                 setLoading(false);
             })

@@ -13,9 +13,11 @@ import {
     RESPONSE_CODE_NOT_ACCEPT,
     PRODUCT_ACTIVE,
     PRODUCT_HIDE,
-    PRODUCT_BAN
+    PRODUCT_BAN,
+    RESPONSE_CODE_SHOP_BANNED
 } from "~/constants";
 import { getUserId } from "~/utils"
+import { useNavigate } from "react-router-dom";
 
 
 const tabList = [
@@ -69,6 +71,7 @@ function Products() {
 
     const [loading, setLoading] = useState(false);
     const notification = useContext(NotificationContext);
+    const navigate = useNavigate();
     const [form] = Form.useForm();
     const userId = getUserId()
 
@@ -119,6 +122,9 @@ function Products() {
                     setTimeout(() => {
                         setLoading(false)
                     }, 500)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
                 } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
                     notification('error', "Tham số tìm kiếm không hợp lệ!");
                     setLoading(false)

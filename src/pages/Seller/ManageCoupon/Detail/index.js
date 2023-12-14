@@ -1,20 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { EditOutlined, LeftOutlined, PlusOutlined, QuestionCircleOutlined, ShopOutlined, ShoppingOutlined } from "@ant-design/icons";
 import { Button, Card, Col, DatePicker, Form, Image, Input, InputNumber, Row, Space, Switch, Table, Tag, Tooltip } from "antd";
 import dayjs from "dayjs";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { ParseDateTime, formatPrice, getUserId } from "~/utils";
-import { COUPON_TYPE_SPECIFIC_PRODUCTS, PAGE_SIZE, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { COUPON_TYPE_SPECIFIC_PRODUCTS, PAGE_SIZE, RESPONSE_CODE_SHOP_BANNED, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { getCouponSellerById } from "~/api/coupon";
 import Column from "antd/es/table/Column";
 import { Link, useNavigate, useParams } from "react-router-dom";
 // import { NotificationContext } from "~/context/UI/NotificationContext";
 import { getListOrdersByCoupon } from "~/api/order";
 import Spinning from "~/components/Spinning";
+import { NotificationContext } from "~/context/UI/NotificationContext";
+import { getShopOfSeller } from "~/api/shop";
 
 
 function CouponDetail() {
+    const notification = useContext(NotificationContext);
     const navigate = useNavigate();
     // const notification = useContext(NotificationContext);
     const { couponId } = useParams();
@@ -23,7 +26,6 @@ function CouponDetail() {
     const [totalItems, setTotalItems] = useState(0);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
-
     useEffect(() => {
         setLoading(true);
         getCouponSellerById(getUserId(), couponId)
@@ -50,7 +52,12 @@ function CouponDetail() {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrders(res.data.result.orders);
                     setTotalItems(res.data.result.totalItems);
-                } else {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
+                }
+                else {
+                    notification("error", "Vui lòng kiểm tra lại.")
                     return navigate("/seller/coupon/list")
                 }
             })
