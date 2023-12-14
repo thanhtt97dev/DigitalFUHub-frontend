@@ -1,18 +1,23 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { getCouponDetailCustomerById } from "~/api/coupon";
-import { RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_SUCCESS, COUPON_TYPE_SPECIFIC_PRODUCTS, COUPON_TYPE_ALL_PRODUCTS_OF_SHOP } from "~/constants";
-import { Card, Space, Row, Button, Avatar } from "antd";
 import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
-import { formatPrice, ParseDateTime } from "~/utils";
 import ProductSpecifics from "../ProductSpecifics";
-import { getProductSpecificOfCoupon } from "~/api/product";
-import { NotificationContext } from "~/context/UI/NotificationContext";
 import { useAuthUser } from 'react-auth-kit';
+import { formatPrice, ParseDateTime } from "~/utils";
+import { Card, Space, Row, Button, Avatar } from "antd";
+import { getProductSpecificOfCoupon } from "~/api/product";
+import { getCouponDetailCustomerById } from "~/api/coupon";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { NotificationContext } from "~/context/UI/NotificationContext";
+import { RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_SUCCESS, COUPON_TYPE_SPECIFIC_PRODUCTS, COUPON_TYPE_ALL_PRODUCTS_OF_SHOP } from "~/constants";
 
 ///
 const cx = classNames.bind(styles);
+///
+
+/// styles
+const styleContainer = { width: '100%', height: '100vh', backgroundColor: '#f5f5f5' };
+const styleCardContainer = { width: '25%', height: 'fit-content' };
 ///
 
 const CouponDetailCustomer = () => {
@@ -108,9 +113,9 @@ const CouponDetailCustomer = () => {
     ///
 
 
-    return (<div style={{ width: '100%', height: '100vh', backgroundColor: '#f5f5f5' }} className={cx('flex-item-center')}>
+    return (<div style={styleContainer} className={cx('flex-item-center')}>
         {
-            coupon ? (<Card style={{ width: '25%', height: 'fit-content' }} bodyStyle={{ padding: 10 }}>
+            coupon ? (<Card style={styleCardContainer} bodyStyle={{ padding: 10 }}>
                 <Row className={cx('cardWrap')}>
                     <div className={cx('card', 'cardLeft')}>
                         <h1>Mã giảm giá của shop</h1>
@@ -147,7 +152,7 @@ const CouponDetailCustomer = () => {
                     </Row>
                     <Row className={cx('title')}>
                         <Space direction="vertical">
-                            <h2>Ưu đãi</h2>
+                            <h2>ƯU ĐÃI</h2>
                             <p>Lượt sử dụng có hạn. Nhanh tay kẻo lỡ bạn nhé! Giảm {formatPrice(coupon.priceDiscount)} Đơn Tối Thiểu {formatPrice(coupon.minTotalOrderValue)}</p>
                         </Space>
                     </Row>
@@ -185,7 +190,6 @@ const CouponDetailCustomer = () => {
                 <div style={{ width: '100%', marginTop: 10 }} className={cx('flex-item-center')}>
                     <Button type="primary" style={{ width: '40%' }} onClick={() => { window.close(); }}>Đồng ý</Button>
                 </div>
-
 
                 <ProductSpecifics isOpenModalProductSpecifics={isOpenModalProductSpecifics}
                     setIsOpenModalProductSpecifics={setIsOpenModalProductSpecifics}
