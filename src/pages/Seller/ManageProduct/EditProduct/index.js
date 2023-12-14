@@ -8,7 +8,7 @@ import { NotificationContext } from '~/context/UI/NotificationContext';
 import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Spin, Switch, Row, Col } from 'antd';
 import { PlusOutlined, UploadOutlined, CloseOutlined, QuestionCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
-import { getAllCategory, getAllCategoryForSeller } from "~/api/category";
+import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 import { editProductSeller, getProductSellerById } from "~/api/product";
@@ -108,7 +108,7 @@ function EditProduct() {
 
     // get list categories
     useLayoutEffect(() => {
-        getAllCategoryForSeller()
+        getAllCategory()
             .then((res) => {
                 if (res.data.status.responseCode === "00") {
                     setCategories(res.data.result)

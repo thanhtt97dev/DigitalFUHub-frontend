@@ -7,7 +7,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { NotificationContext } from '~/context/UI/NotificationContext';
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 import { getUserId, readDataFileExcelImportProduct } from '~/utils';
-import { getAllCategoryForSeller } from '~/api/category';
+import { getAllCategory } from '~/api/category';
 import { useNavigate } from 'react-router-dom';
 import { addProductSeller } from '~/api/product';
 import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PAGE_SIZE, RESPONSE_CODE_SHOP_BANNED, UPLOAD_FILE_SIZE_LIMIT } from '~/constants';
@@ -86,7 +86,7 @@ function AddProduct() {
     const [msgNotificationFileExceedLimit, setMsgNotificationFileExceedLimit] = useState([]);
     // get list categories
     useEffect(() => {
-        getAllCategoryForSeller()
+        getAllCategory()
             .then((res) => {
                 if (res.data.status.responseCode === "00") {
                     setCategories(res.data.result)
