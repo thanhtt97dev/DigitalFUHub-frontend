@@ -181,7 +181,7 @@ const InputMessageChat = ({ conversationSelected }) => {
                 </Col>
                 <Col span={22}>
                     <Input
-                        placeholder="Type a message..."
+                        placeholder="Nhập tin nhắn..."
                         value={newMessage}
                         onChange={handleChangeNewMessage}
                         disabled={isUploadFile}

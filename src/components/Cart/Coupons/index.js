@@ -1,18 +1,17 @@
-import moment from 'moment';
 import React, { useState, useContext, useEffect } from 'react';
+import moment from 'moment';
 import classNames from 'classnames/bind';
-import styles from '~/pages/Cart/Cart.module.scss';
 import Spinning from "~/components/Spinning";
-import { formatPrice, getVietnamCurrentTime } from '~/utils';
+import styles from '~/pages/Cart/Cart.module.scss';
+import { formatPrice } from '~/utils';
 import { useNavigate, Link } from "react-router-dom";
 import { getCouponPrivate } from '~/api/coupon';
-import { Typography, Modal, List, Input, Radio, Button, Space } from 'antd';
+import { Modal, List, Input, Radio, Button, Space } from 'antd';
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { RESPONSE_CODE_SUCCESS, COUPON_TYPE_SPECIFIC_PRODUCTS } from '~/constants';
+import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 
 ///
-const { Search } = Input;
-const { Text } = Typography;
 const cx = classNames.bind(styles);
 ///
 
@@ -50,6 +49,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
 
     /// states
     const [inputCouponCode, setInputCouponCode] = useState('');
+    const [isSearchCoupon, setIsSearchCoupon] = useState(false);
     const [isCouponInfoSuccess, setIsCouponInfoSuccess] = useState(false);
     const [couponCodeSelected, setCouponCodeSelected] = useState({});
     const navigate = useNavigate();
@@ -61,6 +61,10 @@ const Coupons = ({ dataPropCouponComponent }) => {
 
 
     /// handles
+    const handleSearchCoupon = () => {
+        setIsSearchCoupon(!isSearchCoupon);
+    }
+
     const handleChangeInputCode = (e) => {
         setInputCouponCode(e.target.value)
     }
@@ -77,12 +81,8 @@ const Coupons = ({ dataPropCouponComponent }) => {
     }
 
     const onSearchCoupon = () => {
-        if (!inputCouponCode) {
-            notification("error", "Vui lòng nhập Code để tìm kiếm mã giảm giá.")
-            return;
-        }
-
         setIsCouponInfoSuccess(true);
+
         getCouponPrivate(inputCouponCode, shopIdSelected)
             .then((res) => {
                 if (res.status === 200) {
@@ -93,7 +93,7 @@ const Coupons = ({ dataPropCouponComponent }) => {
                             const couponFind = coupons.find(x => x.couponCode === coupon.couponCode);
                             // add coupon private
                             if (!couponFind) {
-                                setCoupons((prev) => [...prev, coupon]);
+                                setCoupons((prev) => [coupon, ...prev]);
                             }
                         }
                     }
@@ -116,14 +116,15 @@ const Coupons = ({ dataPropCouponComponent }) => {
             const couponFind = coupons.find(x => x.couponCode === couponCodeSelected)
             setCouponSelecteds([...couponCodeSelectedsFil
                 , {
-                shopId: shopIdSelected,
-                couponCode: couponCodeSelected,
+                shopId: couponFind.shopId,
+                couponCode: couponFind.couponCode,
                 priceDiscount: couponFind.priceDiscount,
                 minTotalOrderValue: couponFind.minTotalOrderValue,
                 productIds: couponFind.productIds,
                 quantity: couponFind.quantity,
                 couponTypeId: couponFind.couponTypeId,
-                inputCouponCode: inputCouponCode
+                isPublic: couponFind.isPublic
+                // inputCouponCode: couponFind.isPublic ? '' : inputCouponCode
             }]);
         } else {
             const newCouponCodeSelecteds = couponSelecteds.filter(x => x.shopId !== shopIdSelected);
@@ -141,21 +142,29 @@ const Coupons = ({ dataPropCouponComponent }) => {
                 // set coupon code selected
                 setCouponCodeSelected(couponSelectedsFind.couponCode);
 
-                // set input coupon code
-                const inputCouponCode = couponSelectedsFind.inputCouponCode;
-                if (inputCouponCode) {
-                    setInputCouponCode(inputCouponCode);
+                if (!couponSelectedsFind.isPublic) {
+                    setInputCouponCode(couponSelectedsFind.couponCode);
 
                     // search coupon
-                    onSearchCoupon();
+                    handleSearchCoupon();
+                } else {
+                    setInputCouponCode('');
                 }
             }
         } else {
             setCouponCodeSelected('');
+            setInputCouponCode('');
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpenModalCoupons])
+
+    useEffect(() => {
+        // search coupon
+        onSearchCoupon();
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isSearchCoupon])
     ///
 
     /// functions
@@ -178,6 +187,15 @@ const Coupons = ({ dataPropCouponComponent }) => {
             return true;
         }
     }
+
+    const isCartItemSelectedNotFound = () => {
+        const cartItemSelectedFind = cartItemSelecteds.find(x => x.shopId === shopIdSelected);
+        if (!cartItemSelectedFind) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     ///
 
     return (
@@ -188,15 +206,22 @@ const Coupons = ({ dataPropCouponComponent }) => {
             onCancel={closeModalCoupons}
         >
             <Spinning spinning={isCouponInfoSuccess}>
-                <Search
+                <Input
                     placeholder="Nhập mã Code"
-                    allowClear
-                    enterButton="Tìm kiếm"
                     size="large"
-                    onSearch={onSearchCoupon}
                     value={inputCouponCode}
                     onChange={handleChangeInputCode}
                     className={cx('margin-bottom-item')}
+                    disabled={isCartItemSelectedNotFound() ? true : false}
+                    suffix={
+                        <Button
+                            type="primary"
+                            icon={<SearchOutlined />}
+                            htmlType="submit"
+                            onClick={onSearchCoupon}
+                            disabled={(inputCouponCode === undefined || inputCouponCode.length === 0)}
+                        />
+                    }
                 />
                 <Radio.Group onChange={onChangeCoupon} value={couponCodeSelected} style={{ display: 'block' }} >
 
@@ -207,49 +232,54 @@ const Coupons = ({ dataPropCouponComponent }) => {
                         <List
                             dataSource={coupons}
                             renderItem={(item) => (
-                                <List.Item key={item.couponId} style={{}}>
-                                    <List.Item.Meta
-                                        title={<Space><p>{item.couponName}</p><Button size='small' type="primary" ghost style={styleCouponType}>{item.couponCode}</Button></Space>}
-                                        description={
-                                            (<Space>
-                                                <Space.Compact direction='vertical'>
-                                                    <Space align='center'>
-                                                        <p>Giảm {formatPrice(item.priceDiscount)}</p><p>-</p><p style={{ color: 'red' }}>Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}</p>
-                                                    </Space>
-                                                    {
-                                                        item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ?
-                                                            <Button size='small' danger style={styleCouponType}>Sản phẩm nhất định</Button> : <></>
-                                                    }
-                                                    <p>
-                                                        {
-                                                            item.quantity > 0 ? (
-                                                                moment(item.endDate).diff(moment(getVietnamCurrentTime()), 'days') <= 2 ?
-                                                                    (<Text type="danger"> HSD: {moment(item.endDate).format('DD.MM.YYYY')} (Sắp hết hạn)</Text>)
-                                                                    : (<> HSD: {moment(item.endDate).format('DD.MM.YYYY')}</>)) : (<Text type="danger"> Đã hết</Text>)
-                                                        }
-                                                    </p>
-                                                </Space.Compact>
-                                            </Space>)
-                                        }
-                                    />
+                                <>
+                                    <List.Item style={{ borderBottom: '1px solid #ddd' }} key={item.couponId} className={isCartItemSelectedNotFound() ? cx('opacity-disabled') : {}}>
+                                        <List.Item.Meta
+                                            title={<Space><p>{item.couponName}</p><Button size='small' type="primary" ghost style={styleCouponType}>{item.couponCode}</Button></Space>}
+                                            description={
+                                                (<Space>
+                                                    <Space.Compact direction='vertical'>
+                                                        <Space align='center'>
+                                                            <p>Giảm {formatPrice(item.priceDiscount)}</p><p>-</p><p style={{ color: 'red' }}>Đơn tối thiểu {formatPrice(item.minTotalOrderValue)}</p>
+                                                        </Space>
+                                                        <Space align='center' size={40}>
+                                                            {
+                                                                item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ?
+                                                                    <Button size='small' danger style={styleCouponType}>Sản phẩm nhất định</Button> : <></>
+                                                            }
+                                                            {
+                                                                item.quantity > 0 ? (<p>HSD: {moment(item.endDate).format('DD.MM.YYYY')}</p>) : (<Button size='small' danger style={styleCouponType}> Đã hết</Button>)
+                                                            }
+                                                        </Space>
 
-                                    <Space direction='vertical' size={15}>
-                                        {
-                                            item.quantity <= 0 || isCartPriceLessThanMinTotalOrderValue(item.minTotalOrderValue) ?
-                                                <Radio disabled={true}
-                                                    value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
-                                                : item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ? (isSatisfyCouponTypeSpecificProduct(item.productIds) ?
-                                                    <Radio disabled={false}
+                                                    </Space.Compact>
+                                                </Space>)
+                                            }
+                                        >
+                                        </List.Item.Meta>
+                                        <Space direction='vertical' size={20} style={{ textAlign: 'center' }}>
+                                            {
+                                                item.quantity <= 0 || isCartPriceLessThanMinTotalOrderValue(item.minTotalOrderValue) ?
+                                                    <Radio disabled={true}
                                                         value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
-                                                    : <Radio disabled={true}
-                                                        value={item.couponCode} onClick={onClickRadioCoupon}></Radio>)
-                                                    : <Radio disabled={false}
-                                                        value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
-                                        }
+                                                    : item.couponTypeId === COUPON_TYPE_SPECIFIC_PRODUCTS ? (isSatisfyCouponTypeSpecificProduct(item.productIds) ?
+                                                        <Radio disabled={false}
+                                                            value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                                        : <Radio disabled={true}
+                                                            value={item.couponCode} onClick={onClickRadioCoupon}></Radio>)
+                                                        : <Radio disabled={false}
+                                                            value={item.couponCode} onClick={onClickRadioCoupon}></Radio>
+                                            }
+                                            <Link to={`/coupon/${item.couponId}`} target='_blank'><p style={{ fontSize: 13 }}>Điều kiện</p></Link>
+                                        </Space>
 
-                                        <Link to={`/coupon/${item.couponId}`} target='_blank'><p style={{ fontSize: 13 }}>Điều kiện</p></Link>
-                                    </Space>
-                                </List.Item>
+                                    </List.Item>
+                                    {
+                                        isCartItemSelectedNotFound() ?
+                                            (<Space className={cx('warning-coupon')}><ExclamationCircleOutlined /><p>Vui lòng chọn sản phẩm từ shop để áp dụng mã giảm giá này</p></Space>)
+                                            : (<></>)
+                                    }
+                                </>
                             )}
                         />
                     </div>

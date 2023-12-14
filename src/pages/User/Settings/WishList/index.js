@@ -265,7 +265,7 @@ const WishList = () => {
                                                         <img style={styleImage} src={product.thumbnail} alt="product" onClick={() => handleClickOnProduct(product.productId)} />
                                                     </div>
                                                     <Space direction="vertical" style={styleSpaceContainerProductItem}>
-                                                        <p onClick={() => handleClickToProduct(product.productId)} style={styleProductName}>{product.productName}</p>
+                                                        <p className={cx('three-dot-overflow-two-line-wrapper')} onClick={() => handleClickToProduct(product.productId)} style={styleProductName}>{product.productName}</p>
                                                         {
                                                             product.productVariant?.discount !== 0 ? (<>
                                                                 <div className={cx('discount-style')}><p style={{ fontSize: 10 }}>{product.productVariant.discount}% giảm</p></div>
@@ -278,7 +278,7 @@ const WishList = () => {
                                                         }
 
                                                         {isEdit ? (<div className={cx('flex-item-center')} style={unDisableCardStyle}><Checkbox key={product.productId} value={product.productId} /></div>) : (
-                                                            <Space style={unDisableCardStyle} align="center" size={30} className={cx('flex-item-center', 'margin-bottom')}>
+                                                            <Space style={unDisableCardStyle} align="center" size={30} className={cx('flex-item-center')}>
                                                                 <Button type="primary" shape="circle" icon={<ShoppingCartOutlined />} onClick={() => handleAddProductToCart(product.productId)} />
                                                                 <Button type="primary" danger shape="circle" icon={<DeleteOutlined />} onClick={() => handleRemoveWishList(product.productId)} />
                                                             </Space>
