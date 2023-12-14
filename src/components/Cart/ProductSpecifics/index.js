@@ -1,5 +1,5 @@
-import moment from 'moment';
-import React, { useState, useContext, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/Cart/Cart.module.scss';
 import Spinning from "~/components/Spinning";
