@@ -12,7 +12,7 @@ import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
 import maunhapsanpham from "~/assets/files/maunhapsanpham.xlsx"
 import { editProductSeller, getProductSellerById } from "~/api/product";
-import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PAGE_SIZE, PRODUCT_ACTIVE, RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
+import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PAGE_SIZE, PRODUCT_ACTIVE, RESPONSE_CODE_SHOP_BANNED, RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
 const columns = [
     {
         title: 'Số thứ tự',
@@ -97,6 +97,9 @@ function EditProduct() {
                     setTags(tags.map((value) => value.tagName));
                     setIsActiveProduct(productStatusId === PRODUCT_ACTIVE ? true : false)
                     setProductVariants(productVariants.map((value) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, discount: value.discount, data: value.assetInformations, file: undefined })));
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
                 }
             })
             .catch((err) => {
@@ -305,9 +308,13 @@ function EditProduct() {
         editProductSeller(formData)
             .then(res => {
                 setLoading(false);
-                if (res.data.status.responseCode === '00') {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     notification('success', 'Cập nhật sản phẩm thành công.');
-                } else {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
+                }
+                else {
                     notification('error', 'Cập nhật sản phẩm thất bại.');
                 }
                 return navigate('/seller/product/list')

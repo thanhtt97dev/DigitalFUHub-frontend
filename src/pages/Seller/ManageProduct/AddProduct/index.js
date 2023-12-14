@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { PlusOutlined, UploadOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, InputNumber, Upload, Modal, Table, Space, theme, Tag, Tooltip, Card, Spin, Row, Col } from 'antd';
@@ -9,7 +10,7 @@ import { getUserId, readDataFileExcelImportProduct } from '~/utils';
 import { getAllCategory } from '~/api/category';
 import { useNavigate } from 'react-router-dom';
 import { addProductSeller } from '~/api/product';
-import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PAGE_SIZE, UPLOAD_FILE_SIZE_LIMIT } from '~/constants';
+import { MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT, MAX_PRICE_PRODUCT_VARIANT, MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT, MIN_PRICE_PRODUCT_VARIANT, PAGE_SIZE, RESPONSE_CODE_SHOP_BANNED, UPLOAD_FILE_SIZE_LIMIT } from '~/constants';
 
 const columns = [
     {
@@ -92,7 +93,6 @@ function AddProduct() {
                 }
             })
             .catch((err) => {
-
             })
     }, [])
 
@@ -263,7 +263,11 @@ function AddProduct() {
                     // setFileImgProdList([]);
                     // setExcelFileList([]);
                     // btnAddRef.current.click();
-                } else {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
+                }
+                else {
                     notification('error', "Thêm sản phẩm mới thất bại.");
                 }
                 return navigate('/seller/product/list')
@@ -272,6 +276,7 @@ function AddProduct() {
                 setLoading(false);
                 notification('error', "Đã có lỗi xảy ra.");
                 return navigate('/seller/product/list')
+
             })
     }
     const handleCloseNotificationFileExceedLimit = () => {

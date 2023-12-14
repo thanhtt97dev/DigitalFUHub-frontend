@@ -3,7 +3,9 @@ import { apiGetAuth, apiPostAuthForm, apiGet } from '../defaultApi';
 export const getShopOfSeller = () => {
     return apiGetAuth(`api/Shops/Seller/Get`);
 }
-
+export const checkShopUser = () => {
+    return apiGetAuth(`api/Shops/Exist`);
+}
 export const editShop = (data) => {
     return apiPostAuthForm('api/Shops/Seller/Edit', data);
 }

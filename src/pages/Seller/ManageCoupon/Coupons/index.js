@@ -1,4 +1,5 @@
-import { useContext, useEffect, useRef, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Card, Table, Modal, Button, Form, Input, Space, DatePicker, Select, Row, Col, Typography, Tag } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 
@@ -14,6 +15,7 @@ import {
     COUPON_TYPE_ALL_PRODUCTS_OF_SHOP,
     COUPON_TYPE_SPECIFIC_PRODUCTS,
     PAGE_SIZE,
+    RESPONSE_CODE_SHOP_BANNED,
     RESPONSE_CODE_SUCCESS,
 } from "~/constants";
 import Column from "antd/es/table/Column";
@@ -21,7 +23,8 @@ import { PlusOutlined, SearchOutlined, ShopOutlined, ShoppingOutlined } from "@a
 import { removeCouponSeller, getCouponsSeller, updateCouponFinish } from "~/api/coupon";
 import styles from "./Coupon.module.scss"
 import classNames from "classnames/bind";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getShopOfSeller } from "~/api/shop";
 const { Title } = Typography;
 
 const cx = classNames.bind(styles)
@@ -52,6 +55,7 @@ const tabList = [
 
 function Coupons() {
     const notification = useContext(NotificationContext)
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [formSearch] = Form.useForm();
     const [listCoupons, setListCoupons] = useState([]);
@@ -85,7 +89,6 @@ function Coupons() {
         //     value: searchData.status,
         // },
     ];
-
     useEffect(() => {
         const data = {
             ...searchData,
@@ -97,7 +100,11 @@ function Coupons() {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setListCoupons(res.data.result.coupons);
                     setTotalItems(res.data.result.totalItems)
-                } else {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
+                }
+                else {
                     notification('error', 'Đã có lỗi xảy ra.')
                 }
             })
@@ -173,7 +180,11 @@ function Coupons() {
                         userId: getUserId(),
                     });
                     notification("success", "Xóa mã giảm giá thành công.")
-                } else {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
+                }
+                else {
                     notification("error", "Xóa mã giảm giá thất bại.")
                 }
             })
@@ -200,7 +211,11 @@ function Coupons() {
                         userId: getUserId(),
                     });
                     notification("success", "Kết thúc chương trình giảm giá thành công.")
-                } else {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
+                }
+                else {
                     notification("error", "Kết thúc chương trình giảm giá thất bại.")
                 }
             })

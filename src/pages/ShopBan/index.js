@@ -1,10 +1,10 @@
 import { Button, Result } from "antd";
 import { Link } from "react-router-dom";
 
-function AccessDenied() {
+function ShopBan() {
     return (<><Result
         status="warning"
-        title="Không có quyền truy cập"
+        title="Cửa hàng đang bị khóa"
         extra={
             <Link to={"/home"}>
                 <Button type="primary" >
@@ -15,4 +15,4 @@ function AccessDenied() {
     /></>);
 }
 
-export default AccessDenied;
+export default ShopBan;

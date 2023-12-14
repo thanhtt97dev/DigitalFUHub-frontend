@@ -45,6 +45,9 @@ import Statistics from '~/pages/Seller/Statistics';
 import Wallet from '~/pages/User/Settings/Wallet';
 import CouponDetailCustomer from '~/components/Cart/CouponDetailCustomer';
 import ErrorPage from '~/pages/ErrorPage';
+import ShopBan from '~/pages/ShopBan';
+import CheckShopBan from '~/components/CheckAccess/CheckShopBan';
+import CheckUserBan from '~/components/CheckAccess/CheckUserBan';
 
 const routesConfig = [
     {
@@ -53,9 +56,8 @@ const routesConfig = [
         component: <Login />,
     },
     {
-        title: 'accessDenied',
+        title: 'Accessdenied',
         path: '/accessDenied',
-        layout: <NormalLayout />,
         component: <AccessDenied />,
     },
     {
@@ -153,6 +155,11 @@ const routesConfig = [
         component: <SignUp />
     },
     {
+        title: 'Shop Banned',
+        path: '/shopBanned',
+        component: <ShopBan />
+    },
+    {
         title: 'Deposit',
         path: '/deposit',
         layout: <NormalLayout />,
@@ -183,75 +190,75 @@ const routesConfig = [
         title: 'Coupon',
         path: '/seller/coupon/add',
         layout: <SellerLayout />,
-        component: <AddCoupon />,
+        component: <CheckShopBan><AddCoupon /></CheckShopBan>,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon',
         path: '/seller/coupon/detail/:couponId',
         layout: <SellerLayout />,
-        component: <CouponDetail />,
+        component: <CheckUserBan><CouponDetail /></CheckUserBan>,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon',
         path: '/seller/coupon/edit/:couponId',
         layout: <SellerLayout />,
-        component: <EditCoupon />,
+        component: <CheckShopBan><EditCoupon /></CheckShopBan>,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon Detail Customer',
         path: '/coupon/:couponId',
-        component: <CouponDetailCustomer />,
+        component: <CheckUserBan><CouponDetailCustomer /></CheckUserBan>,
     },
     {
         title: 'Seller order detail',
         path: '/seller/order/:orderId',
         layout: <SellerLayout />,
-        component: <OrderDetailSeller />,
+        component: <CheckUserBan><OrderDetailSeller /></CheckUserBan>,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller All Products',
         path: '/seller/product/list',
         layout: <SellerLayout />,
-        component: <Products />,
+        component: <CheckUserBan><Products /></CheckUserBan>,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller add new product',
         path: '/seller/product/new',
         layout: <SellerLayout />,
-        component: <AddProduct />,
+        component: <CheckShopBan><AddProduct /></CheckShopBan>,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller product detail (Edit)',
         path: '/seller/product/:productId',
         layout: <SellerLayout />,
-        component: <EditProduct />,
+        component: <CheckShopBan><EditProduct /></CheckShopBan>,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller products banned',
         path: '/seller/product/banned',
         layout: <SellerLayout />,
-        component: <ProductsBan />,
+        component: <CheckUserBan><ProductsBan /></CheckUserBan>,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller orders',
         path: '/seller/order/list',
         layout: <SellerLayout />,
-        component: <Orders />,
+        component: <CheckUserBan><Orders /></CheckUserBan>,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller All Feedback',
         path: '/seller/feedback/list',
         layout: <SellerLayout />,
-        component: <Feedbacks />,
+        component: <CheckUserBan><Feedbacks /></CheckUserBan>,
         role: [SELLER_ROLE],
     },
     {
@@ -272,7 +279,7 @@ const routesConfig = [
         title: 'Seller edit shop',
         path: '/seller/shop/edit',
         layout: <SellerLayout />,
-        component: <EditShop />,
+        component: <CheckShopBan><EditShop /></CheckShopBan>,
         role: [SELLER_ROLE],
     },
     {

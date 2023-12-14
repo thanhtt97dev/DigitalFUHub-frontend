@@ -154,6 +154,9 @@ export const RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE = "ORDER_STATUS_01";
 //feedback
 export const RESPONSE_CODE_FEEDBACK_ORDER_UN_COMFIRM = "FEEDBACK_01";
 
+// shop
+export const RESPONSE_CODE_SHOP_BANNED = "SHOP_01";
+
 // product status
 export const PRODUCT_ACTIVE = 1;
 export const PRODUCT_BAN = 2;

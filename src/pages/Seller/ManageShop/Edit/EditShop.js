@@ -7,10 +7,10 @@ import Spinning from "~/components/Spinning";
 import { getUserId } from '~/utils';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
+import { RESPONSE_CODE_SHOP_BANNED, RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { UploadOutlined, UserOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -21,6 +21,7 @@ const getBase64 = (file) =>
     });
 function EditShop() {
     const notification = useContext(NotificationContext);
+    const navigate = useNavigate();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [shop, setShop] = useState();
@@ -65,11 +66,16 @@ function EditShop() {
                     setShop(res.data.result);
                     setImgPreview(res.data.result.avatar)
                     setShopDescription(res.data.result.description)
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
                 } else {
                     notification("error", "Vui lòng kiểm tra lại.")
                 }
             })
-            .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
+            .catch(err => {
+                notification("error", "Đã có lỗi xảy ra.")
+            })
             .finally(() => {
                 const idTimeout = setTimeout(() => {
                     setLoading(false);
@@ -89,7 +95,11 @@ function EditShop() {
             .then(res => {
                 if (res.data.status.responseCode === "00") {
                     notification('success', "Cập nhật thông tin cửa hàng thành công.");
-                } else {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
+                }
+                else {
                     notification('error', "Vui lòng kiểm tra lại.");
                 }
             })

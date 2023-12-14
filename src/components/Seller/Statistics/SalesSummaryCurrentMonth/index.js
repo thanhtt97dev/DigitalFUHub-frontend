@@ -1,22 +1,29 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Card, Col, Row, Statistic, Tooltip } from "antd";
-import { memo, useEffect, useState } from "react";
+import { memo, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getStatisticSalesCurrentMonth } from "~/api/statistic";
-import { RESPONSE_CODE_SUCCESS } from "~/constants";
+import { RESPONSE_CODE_SHOP_BANNED, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { NotificationContext } from "~/context/UI/NotificationContext";
 import { formatPrice } from "~/utils";
 
 const stylesCard = { width: '100%' };
 function SalesSummaryCurrentMonth() {
+    const navigate = useNavigate();
+    const notification = useContext(NotificationContext);
     const [data, setData] = useState();
     useEffect(() => {
         getStatisticSalesCurrentMonth()
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setData(res.data.result);
+                } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    return navigate('/shopBanned')
                 }
             })
             .catch(err => {
-
             })
     }, [])
     return (<>
