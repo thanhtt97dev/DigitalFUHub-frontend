@@ -163,8 +163,9 @@ const Coupons = ({ dataPropCouponComponent }) => {
 
     useEffect(() => {
         // search coupon
-        onSearchCoupon();
-
+        if (isOpenModalCoupons) {
+            onSearchCoupon();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSearchCoupon])
     ///
