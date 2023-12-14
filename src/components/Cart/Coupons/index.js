@@ -8,7 +8,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { getCouponPrivate } from '~/api/coupon';
 import { Modal, List, Input, Radio, Button, Space } from 'antd';
 import { NotificationContext } from "~/context/UI/NotificationContext";
-import { RESPONSE_CODE_SUCCESS, COUPON_TYPE_SPECIFIC_PRODUCTS } from '~/constants';
+import { RESPONSE_CODE_SUCCESS, COUPON_TYPE_SPECIFIC_PRODUCTS, RESPONSE_CODE_DATA_NOT_FOUND } from '~/constants';
 import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 
 ///
@@ -96,6 +96,8 @@ const Coupons = ({ dataPropCouponComponent }) => {
                                 setCoupons((prev) => [coupon, ...prev]);
                             }
                         }
+                    } else if (data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
+                        notification("error", "Mã giảm giá không tồn tại");
                     }
                 }
             })
