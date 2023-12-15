@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     MenuUnfoldOutlined,
     MenuFoldOutlined,
@@ -26,6 +26,7 @@ import logoFPT from '~/assets/images/fpt-logo.jpg';
 import logo from '~/assets/images/DIGITALFUHUB.png';
 import Logout from '~/components/Logout';
 import Notification from '~/components/Notification';
+import { CheckUserBanContext } from '~/components/CheckAccess/CheckUserBan';
 
 const cx = classNames.bind(styles);
 const { Content, Sider, Header } = Layout;
@@ -47,9 +48,51 @@ const items = [
         label: <Logout />,
     },
 ];
+const menuItemsShopBan = [
+    {
+        label: <Link to='/seller/statistic'>Thống kê</Link>,
+        key: '/seller/statistic',
+        icon: <AreaChartOutlined className={cx('menu-icon')} />,
+    },
+    {
+        label: 'Quản lý đơn hàng',
+        key: '/seller/order',
+        icon: <ShoppingCartOutlined className={cx('menu-icon')} />,
+        children: [
+            {
+                key: '/seller/order/list',
+                label: <Link to={"/seller/order/list"}>Lịch sử đơn hàng</Link>,
+            },
+        ],
+    },
+    {
+        label: 'Quản lý sản phẩm',
+        key: '/seller/product',
+        icon: <ShoppingOutlined className={cx('menu-icon')} />,
+        children: [
+            {
+                key: '/seller/product/list',
+                label: <Link to={"/seller/product/list"}>Tất cả sản phẩm</Link>,
+            },
+            {
+                key: '/seller/product/banned',
+                label: <Link to={"/seller/product/banned"}>Sản phẩm vi phạm</Link>,
+            },
 
+        ],
 
-
+    },
+    {
+        label: <Link to='/seller/coupon/list'>Mã giảm giá</Link>,
+        key: '/seller/coupon/list',
+        icon: <DollarOutlined className={cx('menu-icon')} />,
+    },
+    {
+        label: <Link to='/seller/feedback/list'>Đánh giá cửa hàng</Link>,
+        key: '/seller/feedback/list',
+        icon: <CommentOutlined className={cx('menu-icon')} />,
+    }
+];
 const menuItems = [
     {
         label: <Link to='/seller/statistic'>Thống kê</Link>,
@@ -111,9 +154,11 @@ const menuItems = [
         icon: <CommentOutlined className={cx('menu-icon')} />,
     }
 ];
+
 const SellerLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
     const location = useLocation();
+    const isShopBan = useContext(CheckUserBanContext);
     const getSelectedKey = () => {
         const path = location.pathname.replace(/[0-9]+/g, "");
         if (path[path.length - 1] === '/') {
@@ -145,7 +190,7 @@ const SellerLayout = () => {
                     defaultOpenKeys={['/seller/product', '/seller/order', '/seller/shop']}
                     defaultSelectedKeys={['/seller/statistic']}
                     selectedKeys={getSelectedKey()}
-                    mode="inline" items={menuItems} />
+                    mode="inline" items={isShopBan === false ? menuItems : menuItemsShopBan} />
             </Sider>
             <Layout>
                 <Header id='header' className={cx('header')}>

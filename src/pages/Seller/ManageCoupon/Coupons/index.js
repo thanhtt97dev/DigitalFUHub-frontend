@@ -25,6 +25,7 @@ import styles from "./Coupon.module.scss"
 import classNames from "classnames/bind";
 import { Link, useNavigate } from "react-router-dom";
 import { getShopOfSeller } from "~/api/shop";
+import { CheckUserBanContext } from "~/components/CheckAccess/CheckUserBan";
 const { Title } = Typography;
 
 const cx = classNames.bind(styles)
@@ -55,6 +56,7 @@ const tabList = [
 
 function Coupons() {
     const notification = useContext(NotificationContext)
+    const isShopBan = useContext(CheckUserBanContext);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [formSearch] = Form.useForm();
@@ -244,7 +246,7 @@ function Coupons() {
         }
     };
     const couponIdRef = useRef(0);
-    const table = (data) => {
+    const table = (data, isShopBan = false) => {
         return <>
             <Table
                 onChange={handleTableChange}
@@ -373,14 +375,18 @@ function Coupons() {
                                         <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
                                     </Link>
                                 </Col>
-                                <Col>
-                                    <Link to={`/seller/coupon/edit/${record.couponId}`} >
-                                        <Button type="link" style={{ width: '80px' }}>Chỉnh sửa</Button>
-                                    </Link>
-                                </Col>
-                                <Col>
-                                    <Button type="link" style={{ width: '80px' }} onClick={() => { handleOpenDeleteCouponModal(); couponIdRef.current = record.couponId }}>Xóa</Button>
-                                </Col>
+                                {!isShopBan &&
+                                    <Col>
+                                        <Link to={`/seller/coupon/edit/${record.couponId}`} >
+                                            <Button type="link" style={{ width: '80px' }}>Chỉnh sửa</Button>
+                                        </Link>
+                                    </Col>
+                                }
+                                {!isShopBan &&
+                                    <Col>
+                                        <Button type="link" style={{ width: '80px' }} onClick={() => { handleOpenDeleteCouponModal(); couponIdRef.current = record.couponId }}>Xóa</Button>
+                                    </Col>
+                                }
                             </Row>
                         } else if (startDate.isBefore(now) && now.isBefore(endDate)) {
                             return <Row gutter={[8, 0]}>
@@ -411,10 +417,10 @@ function Coupons() {
     const [activeTabKey, setActiveTabKey] = useState('tab1');
 
     const contentList = {
-        tab1: table(listCoupons),
-        tab2: table(listCoupons),
-        tab3: table(listCoupons),
-        tab4: table(listCoupons),
+        tab1: table(listCoupons, isShopBan),
+        tab2: table(listCoupons, isShopBan),
+        tab3: table(listCoupons, isShopBan),
+        tab4: table(listCoupons, isShopBan),
     };
 
     const onTabChange = (key) => {
@@ -590,7 +596,9 @@ function Coupons() {
                         </Row>
                         <Row>
                             <Col offset={1}>
-                                <Button type="primary" icon={<PlusOutlined />} ghost onClick={() => setIsOpenOptionAddCouponModal(true)}>Tạo mã giảm giá</Button>
+                                {!isShopBan &&
+                                    <Button type="primary" icon={<PlusOutlined />} ghost onClick={() => setIsOpenOptionAddCouponModal(true)}>Tạo mã giảm giá</Button>
+                                }
                             </Col>
                             <Col flex={5} style={{ marginRight: '4em' }}>
                                 <Row gutter={[16, 16]} justify="end">

@@ -33,10 +33,10 @@ const tabList = [
         label: "Đã ẩn",
         key: "tab3",
     },
-    {
-        label: "Vi phạm",
-        key: "tab4",
-    },
+    // {
+    //     label: "Vi phạm",
+    //     key: "tab4",
+    // },
 ]
 
 const initFormValues = [
@@ -200,7 +200,7 @@ function Products() {
         tab1: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
         tab2: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
         tab3: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
-        tab4: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
+        // tab4: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
     };
 
 
