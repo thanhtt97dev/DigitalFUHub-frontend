@@ -325,6 +325,9 @@ function OrderDetail() {
 
         {order &&
             <Card
+                style={{
+                    backgroundColor: "#f5f5f5"
+                }}
                 title={
                     <Row>
                         <Col span={2}>
