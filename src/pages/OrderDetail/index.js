@@ -28,6 +28,17 @@ import HistoryOrderStatus from "~/components/OrderDetail/HistoryOrderStatus";
 import OrderDetailItem from "~/components/OrderDetail/OrderDetailItem";
 
 const { Text, Title } = Typography;
+const getTextNoteFrom = (orderStatusId) => {
+    if (orderStatusId === ORDER_COMPLAINT) {
+        return "Lý do (Phản hồi từ người mua)";
+    } else if (orderStatusId === ORDER_DISPUTE || orderStatusId === ORDER_SELLER_REFUNDED) {
+        return "Lý do (Phản hồi từ người bán)";
+    } else if (orderStatusId === ORDER_REJECT_COMPLAINT || orderStatusId === ORDER_SELLER_VIOLATES) {
+        return "Lý do (Phản hồi từ quản trị viên)";
+    } else {
+        return "";
+    }
+}
 
 function OrderDetail() {
     const auth = useAuthUser()
@@ -37,6 +48,7 @@ function OrderDetail() {
     const navigate = useNavigate()
     const { orderId } = useParams()
     const [order, setOrder] = useState({})
+    const [hideAssetInformationOrder, setHideAssetInformationOrder] = useState([]);
 
     const getOrderDetail = useCallback(() => {
         setLoading(true);
@@ -44,6 +56,11 @@ function OrderDetail() {
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrder(res.data.result);
+                    let lsIndexOrderDetail = [];
+                    for (var i = 0; i < res.data.result.orderDetails.length; i++) {
+                        lsIndexOrderDetail.push(true);
+                    }
+                    setHideAssetInformationOrder(lsIndexOrderDetail);
                 } else {
                     notification("error", "Đã có lỗi xảy ra.")
                     return navigate("/history/order");
@@ -274,6 +291,21 @@ function OrderDetail() {
         if (order.conversationId === null) return;
         navigate('/chatBox', { state: { data: order.conversationId } })
     }
+    const handleDisplayAssetInformation = (index) => {
+        setHideAssetInformationOrder(prev => {
+            let newValue = [prev];
+            newValue[index] = false;
+            return newValue;
+        })
+    }
+    const handleHideAssetInformation = (index) => {
+        setHideAssetInformationOrder(prev => {
+            let newValue = [...prev];
+            newValue[index] = true;
+            return newValue;
+        })
+    }
+
     return (<>
         <ModalViewFeedbackOrder
             isModalViewFeedbackOpen={isModalViewFeedbackOpen}
@@ -314,10 +346,72 @@ function OrderDetail() {
                     {!loading &&
                         <>
                             <HistoryOrderStatus historyOrderStatus={order.historyOrderStatus} current={order.statusId} />
+
+                            <Card
+                                style={{ marginTop: '2em' }}
+                                title={<Row gutter={[8, 0]} align="bottom">
+                                    <Col>
+                                        <Title level={5}><ShopOutlined style={{ fontSize: '18px' }} /></Title>
+                                    </Col>
+                                    <Col>
+                                        <Title level={5}>{order.shopName}</Title>
+                                    </Col>
+                                    <Col>
+                                        <Title level={5}>
+                                            <Link to={`/shop/${order.shopId}`}>
+                                                <Button
+                                                    type="primary"
+                                                    size="small"
+                                                    icon={<ShopOutlined />}
+                                                >
+                                                    Xem cửa hàng
+                                                </Button>
+                                            </Link>
+                                        </Title>
+                                    </Col>
+                                    <Col>
+                                        <Title level={5}>
+                                            <Button
+                                                size="small"
+                                                icon={<MessageOutlined />}
+                                                onClick={handleOpenChat}
+                                                danger
+                                            >
+                                                Nhắn tin
+                                            </Button>
+                                        </Title>
+                                    </Col>
+                                </Row>}
+                                bordered={true}
+                            >
+                                <Row gutter={[0, 32]}>
+                                    {order?.orderDetails?.map((v, i) => {
+                                        return (
+                                            <OrderDetailItem
+                                                key={i}
+                                                orderDetail={v}
+                                                hideAssetInformation={hideAssetInformationOrder[i] === undefined ? true : hideAssetInformationOrder[i]}
+                                                statusId={order.statusId}
+                                                handleHideAssetInformation={() => handleHideAssetInformation(i)}
+                                                handleDisplayAssetInformation={() => handleDisplayAssetInformation(i)}
+                                                handleFeedbackOrder={() => { orderDetailRef.current = v.orderDetailId; showModalAddFeedback(); }}
+                                            />
+                                        )
+                                    })}
+                                </Row>
+                                {/* {order.note &&
+                                    <Row>
+                                        <Col span={24}><Divider><Title level={5}>Lời nhắn</Title></Divider></Col>
+                                        <Col span={23}>
+                                            <Text>{order.note}</Text>
+                                        </Col>
+                                    </Row>
+                                } */}
+                            </Card>
                             {order?.note &&
                                 <>
                                     <Descriptions bordered style={{ marginTop: '1em' }}>
-                                        <Descriptions.Item label="Lý do" labelStyle={{ width: '10%', fontWeight: '600', color: 'red' }}>{order?.note}</Descriptions.Item>
+                                        <Descriptions.Item label={getTextNoteFrom(order?.statusId)} labelStyle={{ width: '20%', fontWeight: '600', color: 'red' }}>{order?.note}</Descriptions.Item>
                                     </Descriptions>
                                 </>
                             }
@@ -367,64 +461,6 @@ function OrderDetail() {
                                     {getButtonsStatus()}
                                 </Col>
                             </Row>
-                            <Card
-                                style={{ marginTop: '2em' }}
-                                title={<Row gutter={[8, 0]} align="bottom">
-                                    <Col>
-                                        <Title level={5}><ShopOutlined style={{ fontSize: '18px' }} /></Title>
-                                    </Col>
-                                    <Col>
-                                        <Title level={5}>{order.shopName}</Title>
-                                    </Col>
-                                    <Col>
-                                        <Title level={5}>
-                                            <Link to={`/shop/${order.shopId}`}>
-                                                <Button
-                                                    type="default"
-                                                    size="small"
-                                                    icon={<ShopOutlined />}
-                                                >
-                                                    Xem cửa hàng
-                                                </Button>
-                                            </Link>
-                                        </Title>
-                                    </Col>
-                                    <Col>
-                                        <Title level={5}>
-                                            <Button
-                                                type="default"
-                                                size="small"
-                                                icon={<MessageOutlined />}
-                                                onClick={handleOpenChat}
-                                            >
-                                                Nhắn tin
-                                            </Button>
-                                        </Title>
-                                    </Col>
-                                </Row>}
-                                bordered={true}
-                            >
-                                <Row gutter={[0, 32]}>
-                                    {order?.orderDetails?.map((v, i) => {
-                                        return (
-                                            <OrderDetailItem
-                                                key={i}
-                                                orderDetail={v}
-                                                statusId={order.statusId}
-                                                handleFeedbackOrder={() => { orderDetailRef.current = v.orderDetailId; showModalAddFeedback(); }}
-                                            />
-                                        )
-                                    })}
-                                </Row>
-                                {/* {order.note &&
-                                    <Row>
-                                        <Col span={24}><Divider><Title level={5}>Lời nhắn</Title></Divider></Col>
-                                        <Col span={23}>
-                                            <Text>{order.note}</Text>
-                                        </Col>
-                                    </Row>
-                                } */}
-                            </Card>
                         </>
                     }
                 </Spin >

@@ -1,10 +1,12 @@
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { Button, Col, Descriptions, Image, Rate, Row, Space, Tooltip, Typography } from "antd";
 import { memo } from "react";
 import { Link } from "react-router-dom";
 import { ORDER_CONFIRMED } from "~/constants";
 import { formatPrice } from "~/utils";
 const { Text, Title } = Typography;
-function OrderDetailItem({ orderDetail, statusId, handleFeedbackOrder = () => { } }) {
+function OrderDetailItem({ orderDetail, statusId, hideAssetInformation, handleDisplayAssetInformation = () => { },
+    handleHideAssetInformation = () => { }, handleFeedbackOrder = () => { } }) {
     return (<>
         <Col span={24}>
             <Row gutter={[8, 8]}>
@@ -77,10 +79,10 @@ function OrderDetailItem({ orderDetail, statusId, handleFeedbackOrder = () => { 
                             <Descriptions bordered items={[
                                 {
                                     key: '1',
-                                    label: 'Thông tin tài khoản',
+                                    label: <label>Thông tin tài khoản <Tooltip title={hideAssetInformation === true ? "Hiển thị" : "Ẩn"}>{hideAssetInformation === true ? <EyeOutlined style={{ cursor: 'pointer' }} onClick={handleDisplayAssetInformation} /> : <EyeInvisibleOutlined style={{ cursor: 'pointer' }} onClick={handleHideAssetInformation} />}</Tooltip></label>,
                                     labelStyle: { 'text-align': 'right', width: '30%', fontWeight: 'bold' },
                                     span: '3',
-                                    children: orderDetail?.assetInformations?.map((v, i) => (<><Text key={i}>{v}</Text><br /></>))
+                                    children: orderDetail?.assetInformations?.map((v, i) => (<><Text key={i}>{hideAssetInformation === true ? "******" : v}</Text><br /></>))
                                 },
                             ]} />
                         </Col>

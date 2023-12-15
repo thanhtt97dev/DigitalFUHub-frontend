@@ -5,7 +5,6 @@ import { getOrderDetailSeller, updateRefundOrder } from "~/api/order";
 import { ParseDateTime, formatPrice, getUserId } from "~/utils";
 import {
     CheckCircleOutlined,
-    SyncOutlined,
     LeftOutlined,
     MessageOutlined,
     ExclamationCircleFilled
@@ -23,6 +22,17 @@ import { getFeedbackDetailOrderOfSeller } from "~/api/feedback";
 
 const { Text, Title, Paragraph } = Typography;
 
+const getTextNoteFrom = (orderStatusId) => {
+    if (orderStatusId === ORDER_COMPLAINT) {
+        return "Lý do (Phản hồi từ người mua)";
+    } else if (orderStatusId === ORDER_DISPUTE || orderStatusId === ORDER_SELLER_REFUNDED) {
+        return "Lý do (Phản hồi từ người bán)";
+    } else if (orderStatusId === ORDER_REJECT_COMPLAINT || orderStatusId === ORDER_SELLER_VIOLATES) {
+        return "Lý do (Phản hồi từ quản trị viên)";
+    } else {
+        return "";
+    }
+}
 function OrderDetailSeller() {
     const auth = useAuthUser()
     const user = auth();
@@ -153,7 +163,7 @@ function OrderDetailSeller() {
         } else if (order?.statusId === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} style={{ fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656' }}
+                    <Tag style={{ fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656' }}
                         color="#FFF2CC">Đang khiếu nại</Tag>
                 </Col>
                 <Col>
@@ -171,7 +181,7 @@ function OrderDetailSeller() {
         } else if (order?.statusId === ORDER_DISPUTE) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} color="#FAD7AC"
+                    <Tag color="#FAD7AC"
                         style={{ fontSize: 14, height: 32, lineHeight: 2.2, color: '#B46504', border: '1px solid #B46504' }}>Đang tranh chấp</Tag>
                 </Col>
                 <Col>
@@ -212,7 +222,7 @@ function OrderDetailSeller() {
         }
     }
     const handleOpenChat = () => {
-        var data = { shopId: order.shopId, userId: user.id }
+        var data = { shopId: getUserId(), userId: order.customerId };
         getConversation(data)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -399,74 +409,6 @@ function OrderDetailSeller() {
                 {!loading &&
                     <>
                         <HistoryOrderStatus historyOrderStatus={order?.historyOrderStatus} current={order?.statusId} />
-                        {order?.note &&
-                            <>
-                                <Descriptions bordered style={{ marginTop: '1em' }}>
-                                    <Descriptions.Item label="Lý do" labelStyle={{ width: '10%', fontWeight: '600', color: 'red' }}>{order?.note}</Descriptions.Item>
-                                </Descriptions>
-                            </>
-                        }
-                        <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
-                            <Col span={24}>
-                                <Row justify="end">
-                                    {(() => {
-                                        let infoPayment = [];
-
-                                        infoPayment.push({
-                                            key: '1',
-                                            label: 'Tổng tiền sản phẩm',
-                                            labelStyle: { 'text-align': 'right' },
-                                            span: '3',
-                                            children: <Text>{formatPrice(order?.totalAmount)}</Text>
-                                        })
-
-
-                                        infoPayment.push({
-                                            key: '2',
-                                            // label: `Mã giảm giá${order?.couponCode ? `\n(${order?.couponCode})` : ''}`,
-                                            label: <>
-                                                <div>Mã giảm giá</div>
-                                                {order?.couponCode ? <div>({order?.couponCode})</div> : ''}
-                                            </>,
-                                            labelStyle: { 'text-align': 'right' },
-                                            span: '3',
-                                            children: <Text>{order?.totalCouponDiscount !== 0 ?
-                                                `-${formatPrice(order?.totalCouponDiscount)}`
-                                                :
-                                                'Không áp dụng'
-                                            }</Text>
-                                        })
-
-                                        infoPayment.push({
-                                            key: '4',
-                                            label: <Text style={{ fontWeight: 'bold' }}>Tổng giá trị đơn hàng</Text>,
-                                            labelStyle: { 'text-align': 'right' },
-                                            span: '3',
-                                            children: <Text>{`${formatPrice(order.totalAmount - order?.totalCouponDiscount)}`}</Text>
-                                        })
-                                        infoPayment.push({
-                                            key: '4',
-                                            label: <Text style={{ fontWeight: 'bold' }}>Phí dịch vụ ({order.percentBusinessFee}% tổng giá trị đơn hàng)</Text>,
-                                            labelStyle: { 'text-align': 'right' },
-                                            span: '3',
-                                            children: <Text>{`-${formatPrice(order.businessFeePrice)}`}</Text>
-                                        })
-                                        infoPayment.push({
-                                            key: '4',
-                                            label: <Text style={{ fontWeight: 'bold' }}>Lợi nhuận</Text>,
-                                            labelStyle: { 'text-align': 'right' },
-                                            span: '3',
-                                            children: <Text>{`${formatPrice(order.amountSellerReceive)}`}</Text>
-                                        })
-                                        return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
-                                    })()}
-                                </Row>
-
-                            </Col>
-                            <Col span={24}>
-                                {getButtonsStatus()}
-                            </Col>
-                        </Row>
                         <Card
                             style={{ margin: '3em 0em 3em 0em' }}
                             title={<Row gutter={[8, 0]} align="bottom">
@@ -480,10 +422,10 @@ function OrderDetailSeller() {
                                 <Col>
                                     <Title level={5}>
                                         <Button
-                                            type="default"
                                             size="small"
                                             icon={<MessageOutlined />}
                                             onClick={handleOpenChat}
+                                            danger
                                         >
                                             Nhắn tin
                                         </Button>
@@ -569,6 +511,74 @@ function OrderDetailSeller() {
                                 </Row>
                             } */}
                         </Card>
+                        {order?.note &&
+                            <>
+                                <Descriptions bordered style={{ marginTop: '1em' }}>
+                                    <Descriptions.Item label={getTextNoteFrom(order?.statusId)} labelStyle={{ width: '20%', fontWeight: '600', color: 'red' }}>{order?.note}</Descriptions.Item>
+                                </Descriptions>
+                            </>
+                        }
+                        <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
+                            <Col span={24}>
+                                <Row justify="end">
+                                    {(() => {
+                                        let infoPayment = [];
+
+                                        infoPayment.push({
+                                            key: '1',
+                                            label: 'Tổng tiền sản phẩm',
+                                            labelStyle: { 'text-align': 'right' },
+                                            span: '3',
+                                            children: <Text>{formatPrice(order?.totalAmount)}</Text>
+                                        })
+
+
+                                        infoPayment.push({
+                                            key: '2',
+                                            // label: `Mã giảm giá${order?.couponCode ? `\n(${order?.couponCode})` : ''}`,
+                                            label: <>
+                                                <div>Mã giảm giá</div>
+                                                {order?.couponCode ? <div>({order?.couponCode})</div> : ''}
+                                            </>,
+                                            labelStyle: { 'text-align': 'right' },
+                                            span: '3',
+                                            children: <Text>{order?.totalCouponDiscount !== 0 ?
+                                                `-${formatPrice(order?.totalCouponDiscount)}`
+                                                :
+                                                'Không áp dụng'
+                                            }</Text>
+                                        })
+
+                                        infoPayment.push({
+                                            key: '4',
+                                            label: <Text style={{ fontWeight: 'bold' }}>Tổng giá trị đơn hàng</Text>,
+                                            labelStyle: { 'text-align': 'right' },
+                                            span: '3',
+                                            children: <Text>{`${formatPrice(order.totalAmount - order?.totalCouponDiscount)}`}</Text>
+                                        })
+                                        infoPayment.push({
+                                            key: '4',
+                                            label: <Text style={{ fontWeight: 'bold' }}>Phí dịch vụ ({order.percentBusinessFee}% tổng giá trị đơn hàng)</Text>,
+                                            labelStyle: { 'text-align': 'right' },
+                                            span: '3',
+                                            children: <Text>{`-${formatPrice(order.businessFeePrice)}`}</Text>
+                                        })
+                                        infoPayment.push({
+                                            key: '4',
+                                            label: <Text style={{ fontWeight: 'bold' }}>Lợi nhuận</Text>,
+                                            labelStyle: { 'text-align': 'right' },
+                                            span: '3',
+                                            children: <Text>{`${formatPrice(order.amountSellerReceive)}`}</Text>
+                                        })
+                                        return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
+                                    })()}
+                                </Row>
+
+                            </Col>
+                            <Col span={24}>
+                                {getButtonsStatus()}
+                            </Col>
+                        </Row>
                     </>
                 }
             </Spin>

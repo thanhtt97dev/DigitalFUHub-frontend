@@ -122,7 +122,7 @@ function CardOrderItem({
         } else if (statusId === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656' }} color="#FFF2CC">Đang khiếu nại</Tag>
+                    <Tag style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656' }} color="#FFF2CC">Đang khiếu nại</Tag>
                 </Col>
                 <Col>
                     <Button loading={orderIdChoosen === orderId && buttonLoading} type="primary" onClick={() => {
@@ -149,7 +149,7 @@ function CardOrderItem({
                     </Button>
                 </Col>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} color="#FAD7AC" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#B46504', border: '1px solid #B46504' }}>Đang tranh chấp</Tag>
+                    <Tag color="#FAD7AC" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#B46504', border: '1px solid #B46504' }}>Đang tranh chấp</Tag>
                 </Col>
                 <Col>
                     <Button loading={orderIdChoosen === orderId && buttonLoading} type="primary" onClick={() => {
@@ -269,18 +269,19 @@ function CardOrderItem({
                 <Col>
                     <Title level={5}>
                         <Button
-                            type="default"
+                            type="primary"
                             size="small"
                             icon={<ShopOutlined />}
                             onClick={handleRedirectToShop}
                         >
                             Xem cửa hàng
-                        </Button></Title>
+                        </Button>
+                    </Title>
                 </Col>
                 <Col>
                     <Title level={5}>
                         <Button
-                            type="default"
+                            danger
                             size="small"
                             icon={<MessageOutlined />}
                             onClick={handleOpenChatWithSeller}
