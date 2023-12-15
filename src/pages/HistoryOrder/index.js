@@ -39,7 +39,7 @@ const tabList = [
     },
 
     {
-        label: "Trả hàng/Hoàn tiền",
+        label: "Hoàn tiền/Người bán vi phạm",
         key: "tab7",
     }
 ]

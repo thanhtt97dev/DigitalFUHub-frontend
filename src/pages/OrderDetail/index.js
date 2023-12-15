@@ -192,15 +192,17 @@ function OrderDetail() {
         if (order?.statusId === ORDER_WAIT_CONFIRMATION) {
             return <Text>Chờ xác nhận</Text>
         } else if (order?.statusId === ORDER_CONFIRMED) {
-            return <Text>Đã xác nhận</Text>
+            return <Text style={{ color: '#0958d9' }}>Đã xác nhận</Text>
         } else if (order?.statusId === ORDER_COMPLAINT) {
-            return <Text>Đang khiếu nại</Text>
+            return <Text style={{ color: '#D6B656' }}>Đang khiếu nại</Text>
         } else if (order?.statusId === ORDER_DISPUTE) {
-            return <Text>Đang tranh chấp</Text>
+            return <Text style={{ color: '#B46504' }}>Đang tranh chấp</Text>
         } else if (order?.statusId === ORDER_REJECT_COMPLAINT) {
-            return <Text>Từ chối khiếu nại</Text>
-        } else if (order?.statusId === ORDER_SELLER_REFUNDED || order?.statusId === ORDER_SELLER_VIOLATES) {
-            return <Text>Hoàn trả tiền</Text>
+            return <Text style={{ color: '#9673A6' }}>Từ chối khiếu nại</Text>
+        } else if (order?.statusId === ORDER_SELLER_REFUNDED) {
+            return <Text style={{ color: '#08979c' }}>Hoàn trả tiền</Text>
+        } else if (order?.statusId === ORDER_SELLER_VIOLATES) {
+            return <Text style={{ color: '#AE4132' }}>Người bán vi phạm</Text>
         }
     }
     const getButtonsStatus = () => {
@@ -260,20 +262,20 @@ function OrderDetail() {
                     <Tag color="#E1D5E7" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#9673A6', border: '1px solid #9673A6' }}>Từ chối khiếu nại</Tag>
                 </Col>
             </Row>
-        } else if (order?.statusId === ORDER_SELLER_REFUNDED || order?.statusId === ORDER_SELLER_VIOLATES) {
+        } else if (order?.statusId === ORDER_SELLER_REFUNDED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="cyan" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
+                    <Tag color="cyan" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn trả tiền</Tag>
                 </Col>
             </Row>
         }
-        // else if (order?.statusId === ORDER_SELLER_VIOLATES) {
-        //     return <Row justify="end" gutter={[8]}>
-        //         <Col>
-        //             <Tag color="#FAD9D5" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#AE4132', border: '1px solid #AE4132' }}>Người bán vi phạm</Tag>
-        //         </Col>
-        //     </Row>
-        // }
+        else if (order?.statusId === ORDER_SELLER_VIOLATES) {
+            return <Row justify="end" gutter={[8]}>
+                <Col>
+                    <Tag color="#FAD9D5" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#AE4132', border: '1px solid #AE4132' }}>Người bán vi phạm</Tag>
+                </Col>
+            </Row>
+        }
     }
     const handleOpenChat = () => {
         var data = { shopId: order.shopId, userId: user.id }
@@ -331,7 +333,7 @@ function OrderDetail() {
                         {!loading &&
                             <Col span={22}>
                                 <Row justify="end" gutter={[16, 0]}>
-                                    <Col><Text>Mã đơn hàng: #{order?.orderId}</Text></Col>
+                                    <Col><Text>Mã đơn hàng: {order?.orderId}</Text></Col>
                                     <Col>|</Col>
                                     <Col><Text>Ngày đặt hàng: {ParseDateTime(order?.orderDate)}</Text></Col>
                                     <Col>|</Col>
@@ -422,36 +424,38 @@ function OrderDetail() {
                                             let infoPayment = [];
                                             infoPayment.push({
                                                 key: '1',
-                                                label: 'Tổng tiền sản phẩm',
+                                                label: 'Tổng giá trị đơn hàng',
                                                 labelStyle: { 'text-align': 'right' },
                                                 span: '3',
                                                 children: <Text>{formatPrice(order?.totalAmount)}</Text>
                                             })
-                                            if (order?.totalCouponDiscount !== 0) {
-                                                infoPayment.push({
-                                                    key: '2',
-                                                    label: 'Mã giảm giá',
-                                                    labelStyle: { 'text-align': 'right' },
-                                                    span: '3',
-                                                    children: <Text>-{formatPrice(order?.totalCouponDiscount)}</Text>
-                                                })
-                                            }
+                                            // if (order?.totalCouponDiscount !== 0) {
+                                            infoPayment.push({
+                                                key: '2',
+                                                label: 'Mã giảm giá',
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{order?.totalCouponDiscount === 0 ? "Không áp dụng" : `-${formatPrice(order?.totalCouponDiscount)}`}</Text>
+                                            })
+                                            // }
                                             infoPayment.push({
                                                 key: '3',
                                                 label: <div>
-                                                    <span>Số xu sử dụng </span>
-                                                    <span>({order?.totalCoinDiscount} xu)</span>
+                                                    <span>Sử dụng xu </span>
+                                                    {order?.totalCoinDiscount !== 0 &&
+                                                        <span>({order?.totalCoinDiscount} xu)</span>
+                                                    }
                                                 </div>,
                                                 labelStyle: { 'text-align': 'right' },
                                                 span: '3',
-                                                children: <Text>-{formatPrice(order?.totalCoinDiscount)}</Text>
+                                                children: <Text>{order?.totalCoinDiscount === 0 ? "Không áp dụng" : `-${formatPrice(order?.totalCoinDiscount)}`}</Text>
                                             })
                                             infoPayment.push({
                                                 key: '4',
                                                 label: <Text style={{ fontWeight: 'bold' }}>Thành tiền</Text>,
                                                 labelStyle: { 'text-align': 'right' },
                                                 span: '3',
-                                                children: <Text>{`${formatPrice(order.totalPayment)}`}</Text>
+                                                children: <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600', fontSize: '20px' }}>{`${formatPrice(order.totalPayment)}`}</Text>
                                             })
                                             return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
                                         })()}

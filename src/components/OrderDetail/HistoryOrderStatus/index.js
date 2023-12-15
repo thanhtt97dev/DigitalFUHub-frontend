@@ -18,9 +18,9 @@ const getNameStatusOrder = (statusId) => {
         case ORDER_REJECT_COMPLAINT:
             return 'Từ chối khiếu nại';
         case ORDER_SELLER_REFUNDED:
-            return 'Hoàn lại tiền';
+            return 'Hoàn trả tiền';
         case ORDER_SELLER_VIOLATES:
-            return 'Hoàn lại tiền';
+            return 'Người bán vi phạm';
         default: return ''
     }
 }

@@ -16,7 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthUser } from 'react-auth-kit'
 
 import { getConversation } from '~/api/chat'
-import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_SUCCESS, LIMIT_TIME_TO_FEEDBACK } from "~/constants";
 import { formatPrice, getDistanceDayTwoDate, getUserId } from "~/utils";
 import ModalChangeOrderStatusComplaint from "~/components/Modals/ModalChangeOrderStatusComplaint";
 import ModalAddFeedbackOrder from "~/components/Modals/ModalAddFeedbackOrder";
@@ -174,10 +174,10 @@ function CardOrderItem({
                     </Link>
                 </Col>
             </Row>
-        } else if (statusId === ORDER_SELLER_REFUNDED || statusId === ORDER_SELLER_VIOLATES) {
+        } else if (statusId === ORDER_SELLER_REFUNDED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="cyan" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
+                    <Tag color="cyan" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn trả tiền</Tag>
                 </Col>
                 <Col>
                     <Link to={`/history/order/${orderId}`}>
@@ -186,18 +186,18 @@ function CardOrderItem({
                 </Col>
             </Row>
         }
-        // else if (statusId === ORDER_SELLER_VIOLATES) {
-        //     return <Row justify="end" gutter={[8]}>
-        //         <Col>
-        //             <Tag color="#FAD9D5" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#AE4132', border: '1px solid #AE4132' }}>Người bán vi phạm</Tag>
-        //         </Col>
-        //         <Col>
-        //             <Link to={`/history/order/${orderId}`}>
-        //                 <Button type="default">Chi tiết</Button>
-        //             </Link>
-        //         </Col>
-        //     </Row>
-        // }
+        else if (statusId === ORDER_SELLER_VIOLATES) {
+            return <Row justify="end" gutter={[8]}>
+                <Col>
+                    <Tag color="#FAD9D5" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#AE4132', border: '1px solid #AE4132' }}>Người bán vi phạm</Tag>
+                </Col>
+                <Col>
+                    <Link to={`/history/order/${orderId}`}>
+                        <Button type="default">Chi tiết</Button>
+                    </Link>
+                </Col>
+            </Row>
+        }
     }
     const [isModalOpen, setIsModalOpen] = useState(false);
     const orderDetailRef = useRef();
@@ -291,7 +291,7 @@ function CardOrderItem({
                 </Col>
                 <Col flex={5}>
                     <Row justify="end">
-                        <div style={{ color: 'rgba(0, 0, 0, 0.88)' }}>Mã đơn hàng: {orderId}</div>
+                        <div style={{ color: '#1677ff' }}>Mã đơn hàng: {orderId}</div>
                     </Row>
                 </Col>
             </Row>}
@@ -322,7 +322,7 @@ function CardOrderItem({
                                                     </Title>
                                                 </Link>
                                             </Col>
-                                            {!v.isFeedback && statusId === ORDER_CONFIRMED && getDistanceDayTwoDate(orderDate, new Date()) <= 7 && <Col offset={1} span={6}>
+                                            {!v.isFeedback && statusId === ORDER_CONFIRMED && getDistanceDayTwoDate(orderDate, new Date()) <= LIMIT_TIME_TO_FEEDBACK && <Col offset={1} span={6}>
                                                 <Row justify="end">
                                                     <Button type="primary" size="small" onClick={() => { orderDetailRef.current = v.orderDetailId; showModalFeedback(); }}>Đánh giá</Button>
                                                 </Row>
@@ -339,11 +339,11 @@ function CardOrderItem({
                                             <Col span={23}>
                                                 <Row justify="end">
                                                     {v.discount === 0 ?
-                                                        <Text>{formatPrice(v.price)}</Text>
+                                                        <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(v.price)}</Text>
                                                         :
                                                         <Space size={[8, 0]}>
-                                                            <Text delete>{formatPrice(v.price)}</Text>
-                                                            <Text>{formatPrice(v.price - (v.price * v.discount / 100))}</Text>
+                                                            <Text delete style={{ color: 'rgba(0, 0, 0, .4)' }}>{formatPrice(v.price)}</Text>
+                                                            <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(v.price - (v.price * v.discount / 100))}</Text>
                                                         </Space>
                                                     }
                                                 </Row>
@@ -364,9 +364,9 @@ function CardOrderItem({
                     <Row justify="end">
                         <Col span={24}>
                             <Row justify="end">
-                                <Col style={{ textAlign: 'right' }}><Title level={5}>Thành tiền:</Title></Col>
+                                <Col style={{ textAlign: 'right' }}><Title level={5} >Thành tiền:</Title></Col>
                                 <Col span={3} offset={0.5} style={{ textAlign: 'right' }}>
-                                    <Text>{`${formatPrice(totalPayment)}`}</Text>
+                                    <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600', fontSize: '20px' }}>{`${formatPrice(totalPayment)}`}</Text>
                                 </Col>
                             </Row>
                         </Col>

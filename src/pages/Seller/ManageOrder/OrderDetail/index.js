@@ -130,15 +130,17 @@ function OrderDetailSeller() {
         if (order?.statusId === ORDER_WAIT_CONFIRMATION) {
             return <Text>Chờ xác nhận</Text>
         } else if (order?.statusId === ORDER_CONFIRMED) {
-            return <Text>Đã xác nhận</Text>
+            return <Text style={{ color: '#0958d9' }}>Đã xác nhận</Text>
         } else if (order?.statusId === ORDER_COMPLAINT) {
-            return <Text>Đang khiếu nại</Text>
+            return <Text style={{ color: '#D6B656' }}>Đang khiếu nại</Text>
         } else if (order?.statusId === ORDER_DISPUTE) {
-            return <Text>Đang tranh chấp</Text>
+            return <Text style={{ color: '#B46504' }}>Đang tranh chấp</Text>
         } else if (order?.statusId === ORDER_REJECT_COMPLAINT) {
-            return <Text>Từ chối khiếu nại</Text>
-        } else if (order?.statusId === ORDER_SELLER_REFUNDED || order?.statusId === ORDER_SELLER_VIOLATES) {
-            return <Text>Hoàn trả tiền</Text>
+            return <Text style={{ color: '#9673A6' }}>Từ chối khiếu nại</Text>
+        } else if (order?.statusId === ORDER_SELLER_REFUNDED) {
+            return <Text style={{ color: '#08979c' }}>Hoàn trả tiền</Text>
+        } else if (order?.statusId === ORDER_SELLER_VIOLATES) {
+            return <Text style={{ color: '#AE4132' }}>Người bán vi phạm</Text>
         }
     }
     const getButtonsStatus = () => {
@@ -209,7 +211,7 @@ function OrderDetailSeller() {
         } else if (order?.statusId === ORDER_SELLER_REFUNDED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="cyan" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
+                    <Tag color="cyan" style={{ fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn trả tiền</Tag>
                 </Col>
             </Row>
         } else if (order?.statusId === ORDER_SELLER_VIOLATES) {
@@ -394,7 +396,7 @@ function OrderDetailSeller() {
                     {!loading &&
                         <Col span={23}>
                             <Row justify="end" gutter={[16, 0]}>
-                                <Col><Text>Mã đơn hàng: #{order?.orderId}</Text></Col>
+                                <Col><Text>Mã đơn hàng: {order?.orderId}</Text></Col>
                                 <Col>|</Col>
                                 <Col><Text>Ngày đặt hàng: {ParseDateTime(order?.orderDate)}</Text></Col>
                                 <Col>|</Col>
@@ -482,11 +484,11 @@ function OrderDetailSeller() {
                                                                 <Col span={23}>
                                                                     <Row justify="end">
                                                                         {v.discount === 0 ?
-                                                                            <Text>{formatPrice(v.price)}</Text>
+                                                                            <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(v.price)}</Text>
                                                                             :
                                                                             <Space size={[8, 0]}>
-                                                                                <Text delete>{formatPrice(v.price)}</Text>
-                                                                                <Text>{formatPrice(v.price - (v.price * v.discount / 100))}</Text>
+                                                                                <Text delete style={{ color: 'rgba(0, 0, 0, .4)' }}>{formatPrice(v.price)}</Text>
+                                                                                <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(v.price - (v.price * v.discount / 100))}</Text>
                                                                             </Space>
                                                                         }
                                                                     </Row>
@@ -526,7 +528,7 @@ function OrderDetailSeller() {
 
                                         infoPayment.push({
                                             key: '1',
-                                            label: 'Tổng tiền sản phẩm',
+                                            label: 'Tổng giá trị đơn hàng',
                                             labelStyle: { 'text-align': 'right' },
                                             span: '3',
                                             children: <Text>{formatPrice(order?.totalAmount)}</Text>
@@ -551,7 +553,7 @@ function OrderDetailSeller() {
 
                                         infoPayment.push({
                                             key: '4',
-                                            label: <Text style={{ fontWeight: 'bold' }}>Tổng giá trị đơn hàng</Text>,
+                                            label: <Text style={{ fontWeight: 'bold' }}>Thành tiền</Text>,
                                             labelStyle: { 'text-align': 'right' },
                                             span: '3',
                                             children: <Text>{`${formatPrice(order.totalAmount - order?.totalCouponDiscount)}`}</Text>
@@ -568,7 +570,7 @@ function OrderDetailSeller() {
                                             label: <Text style={{ fontWeight: 'bold' }}>Lợi nhuận</Text>,
                                             labelStyle: { 'text-align': 'right' },
                                             span: '3',
-                                            children: <Text>{`${formatPrice(order.amountSellerReceive)}`}</Text>
+                                            children: <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600', fontSize: '20px' }}>{`${formatPrice(order.amountSellerReceive)}`}</Text>
                                         })
                                         return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
                                     })()}
