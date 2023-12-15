@@ -190,7 +190,7 @@ const SellerLayout = () => {
                     defaultOpenKeys={['/seller/product', '/seller/order', '/seller/shop']}
                     defaultSelectedKeys={['/seller/statistic']}
                     selectedKeys={getSelectedKey()}
-                    mode="inline" items={isShopBan === false ? menuItems : menuItemsShopBan} />
+                    mode="inline" items={isShopBan === true ? menuItemsShopBan : menuItems} />
             </Sider>
             <Layout>
                 <Header id='header' className={cx('header')}>

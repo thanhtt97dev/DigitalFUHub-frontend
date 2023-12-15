@@ -18,6 +18,7 @@ import {
 } from "~/constants";
 import { getUserId } from "~/utils"
 import { useNavigate } from "react-router-dom";
+import { CheckUserBanContext } from "~/components/CheckAccess/CheckUserBan";
 
 
 const tabList = [
@@ -71,6 +72,7 @@ function Products() {
 
     const [loading, setLoading] = useState(false);
     const notification = useContext(NotificationContext);
+    const isShopBan = useContext(CheckUserBanContext);
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const userId = getUserId()
@@ -197,9 +199,9 @@ function Products() {
         setActiveTabKey(key);
     };
     const contentList = {
-        tab1: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
-        tab2: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
-        tab3: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
+        tab1: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} isShopBan={isShopBan === undefined ? false : isShopBan} />,
+        tab2: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} isShopBan={isShopBan === undefined ? false : isShopBan} />,
+        tab3: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} isShopBan={isShopBan === undefined ? false : isShopBan} />,
         // tab4: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
     };
 

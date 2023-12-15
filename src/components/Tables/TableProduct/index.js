@@ -11,7 +11,7 @@ import {
 
 const cx = classNames.bind(styles);
 
-const getColumns = (isShopBan) => {
+const getColumns = (isShopBan = false) => {
     const columns = [
         {
             title: 'ID',
@@ -128,7 +128,6 @@ const getColumns = (isShopBan) => {
 
 
 function TableProduct({ data, tableParams, handleTableChange, isShopBan = false }) {
-
     return (
         <>
             <Table
