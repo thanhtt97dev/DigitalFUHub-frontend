@@ -241,7 +241,7 @@ function Orders() {
                         </Row>
                     </Form>
                 </Card>
-                <Card style={{ marginTop: "20px", height: '75vh' }}>
+                <Card style={{ marginTop: "20px", height: '90vh' }}>
                     <Table
                         pagination={{
                             current: page,
@@ -251,11 +251,11 @@ function Orders() {
                         }}
                         rowKey={(record) => record.orderId}
                         dataSource={orders}
-                        size='middle'
+                        size='small'
                         onChange={handleTableChange}
                         scroll={
                             {
-                                y: 600,
+                                y: 500,
                                 x: 1300
                             }
                         }
@@ -270,7 +270,7 @@ function Orders() {
                             )}
                         />
                         <Column
-                            width="10%"
+                            width="15%"
                             fixed="left"
                             title="Người mua"
                             key="username"
@@ -288,7 +288,7 @@ function Orders() {
                             )}
                         />
                         <Column
-                            width="15%"
+                            width="20%"
                             title="Tổng giá trị đơn hàng"
                             key="totalAmount"
                             render={(_, record) => (
@@ -296,15 +296,15 @@ function Orders() {
                             )}
                         />
                         <Column
-                            width="15%"
+                            width="20%"
                             title="Mã giảm giá sử dụng"
                             key="totalCouponDiscount"
                             render={(_, record) => (
-                                <p>{record.totalCouponDiscount === 0 ? "Không sử dụng" : `- ${formatPrice(record.totalCouponDiscount)}`}</p>
+                                <p>{record.totalCouponDiscount === 0 ? "Không sử dụng" : `${formatPrice(record.totalCouponDiscount)}`}</p>
                             )}
                         />
                         <Column
-                            width="15%"
+                            width="20%"
                             title="Thành tiền"
                             key="total"
                             render={(_, record) => (
@@ -312,7 +312,7 @@ function Orders() {
                             )}
                         />
                         <Column
-                            width="10%"
+                            width="12%"
                             title="Phí dịch vụ"
                             key="businessFee"
                             render={(_, record) => (
@@ -320,7 +320,7 @@ function Orders() {
                             )}
                         />
                         <Column
-                            width="15%"
+                            width="20%"
                             title="Lợi nhuận"
                             key="profit"
                             render={(_, record) => (
