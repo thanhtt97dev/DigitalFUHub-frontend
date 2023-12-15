@@ -161,26 +161,26 @@ const LayoutUserChat = ({ propsUserChat }) => {
                     </Typography.Title>}
                     extra={<Button icon={<PhoneOutlined />} type="primary" ghost loading={isLoadingButtonContactAdministrator} onClick={handleContactTheAdministrator}>Liên hệ với quản trị viên</Button>}
                     bodyStyle={bodyCardHeader}>
-                    <div id="scrollUserChat" style={styleScrollUserChat}>
-                        <InfiniteScroll
-                            dataLength={conversations.length}
-                            scrollableTarget="scrollUserChat"
-                        >
-                            <List
-                                dataSource={conversations}
-                                renderItem={(item) => (
-                                    <ConversationFormated conversation={item}
-                                        handleClickUser={handleClickUser}
-                                        conversationSelected={conversationSelected}
-                                        isYourLatestMessage={isYourLatestMessage}
-                                        isLatestMessageTypeText={isLatestMessageTypeText}
-                                        isLatestMessageTypeImage={isLatestMessageTypeImage}
-                                        getFullNameUser={getFullNameUser} />
-                                )}
-                            />
-                        </InfiniteScroll>
-                    </div>
                 </Card>
+                <div id="scrollUserChat" style={styleScrollUserChat}>
+                    <InfiniteScroll
+                        dataLength={conversations.length}
+                        scrollableTarget="scrollUserChat"
+                    >
+                        <List
+                            dataSource={conversations}
+                            renderItem={(item) => (
+                                <ConversationFormated conversation={item}
+                                    handleClickUser={handleClickUser}
+                                    conversationSelected={conversationSelected}
+                                    isYourLatestMessage={isYourLatestMessage}
+                                    isLatestMessageTypeText={isLatestMessageTypeText}
+                                    isLatestMessageTypeImage={isLatestMessageTypeImage}
+                                    getFullNameUser={getFullNameUser} />
+                            )}
+                        />
+                    </InfiniteScroll>
+                </div>
 
             </Layout>
         </Spinning>

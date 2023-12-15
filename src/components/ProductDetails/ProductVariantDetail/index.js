@@ -414,9 +414,11 @@ const ProductVariantDetail = ({ productVariants, handleSelectProductVariant, pro
                                             <Text style={feedbackProductStyle} type="secondary">Đã Bán</Text>
                                         </Space>
                                     </Col>
-                                    <Col style={{ marginLeft: 'auto' }}>
-                                        <Button type="text" onClick={handleClickReportProduct}><Text style={feedbackProductStyle} type="secondary">Tố cáo</Text></Button>
-                                    </Col>
+                                    {
+                                        user?.id !== product.shop.shopId ? <Col style={{ marginLeft: 'auto' }}>
+                                            <Button type="text" onClick={handleClickReportProduct}><Text style={feedbackProductStyle} type="secondary">Tố cáo</Text></Button>
+                                        </Col> : <></>
+                                    }
                                 </Row>
                                 {
                                     productVariantsSelected ? (
