@@ -19,6 +19,7 @@ import {
 import { getUserId } from "~/utils"
 import { useNavigate } from "react-router-dom";
 import { CheckUserBanContext } from "~/components/CheckAccess/CheckUserBan";
+import { SearchOutlined } from "@ant-design/icons";
 
 
 const tabList = [
@@ -293,11 +294,11 @@ function Products() {
                                 </Col>
                                 <Col span={6} offset={2}>
                                     <Space>
-                                        <Button type="primary" htmlType="submit">
-                                            Tìm kiếm
-                                        </Button>
                                         <Button htmlType="button" onClick={onReset}>
                                             Xóa
+                                        </Button>
+                                        <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                                            Tìm kiếm
                                         </Button>
                                     </Space>
                                 </Col>

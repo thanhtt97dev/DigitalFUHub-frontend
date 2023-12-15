@@ -314,6 +314,59 @@ function OrderDetail() {
                     {!loading &&
                         <>
                             <HistoryOrderStatus historyOrderStatus={order.historyOrderStatus} current={order.statusId} />
+                            {order?.note &&
+                                <>
+                                    <Descriptions bordered style={{ marginTop: '1em' }}>
+                                        <Descriptions.Item label="Lý do" labelStyle={{ width: '10%', fontWeight: '600', color: 'red' }}>{order?.note}</Descriptions.Item>
+                                    </Descriptions>
+                                </>
+                            }
+                            <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
+                                <Col span={24}>
+                                    <Row justify='end'>
+                                        {(() => {
+                                            let infoPayment = [];
+                                            infoPayment.push({
+                                                key: '1',
+                                                label: 'Tổng tiền sản phẩm',
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{formatPrice(order?.totalAmount)}</Text>
+                                            })
+                                            if (order?.totalCouponDiscount !== 0) {
+                                                infoPayment.push({
+                                                    key: '2',
+                                                    label: 'Mã giảm giá',
+                                                    labelStyle: { 'text-align': 'right' },
+                                                    span: '3',
+                                                    children: <Text>-{formatPrice(order?.totalCouponDiscount)}</Text>
+                                                })
+                                            }
+                                            infoPayment.push({
+                                                key: '3',
+                                                label: <div>
+                                                    <span>Số xu sử dụng </span>
+                                                    <span>({order?.totalCoinDiscount} xu)</span>
+                                                </div>,
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>-{formatPrice(order?.totalCoinDiscount)}</Text>
+                                            })
+                                            infoPayment.push({
+                                                key: '4',
+                                                label: <Text style={{ fontWeight: 'bold' }}>Thành tiền</Text>,
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{`${formatPrice(order.totalPayment)}`}</Text>
+                                            })
+                                            return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
+                                        })()}
+                                    </Row>
+                                </Col>
+                                <Col span={24}>
+                                    {getButtonsStatus()}
+                                </Col>
+                            </Row>
                             <Card
                                 style={{ marginTop: '2em' }}
                                 title={<Row gutter={[8, 0]} align="bottom">
@@ -363,54 +416,6 @@ function OrderDetail() {
                                         )
                                     })}
                                 </Row>
-                                <Divider />
-                                <Row gutter={[0, 16]}>
-                                    <Col span={24}>
-                                        <Row justify='end'>
-                                            {(() => {
-                                                let infoPayment = [];
-                                                infoPayment.push({
-                                                    key: '1',
-                                                    label: 'Tổng tiền sản phẩm',
-                                                    labelStyle: { 'text-align': 'right' },
-                                                    span: '3',
-                                                    children: <Text>{formatPrice(order?.totalAmount)}</Text>
-                                                })
-                                                if (order?.totalCouponDiscount !== 0) {
-                                                    infoPayment.push({
-                                                        key: '2',
-                                                        label: 'Mã giảm giá',
-                                                        labelStyle: { 'text-align': 'right' },
-                                                        span: '3',
-                                                        children: <Text>-{formatPrice(order?.totalCouponDiscount)}</Text>
-                                                    })
-                                                }
-                                                infoPayment.push({
-                                                    key: '3',
-                                                    label: <div>
-                                                        <span>Số xu sử dụng </span>
-                                                        <span>({order?.totalCoinDiscount} xu)</span>
-                                                    </div>,
-                                                    labelStyle: { 'text-align': 'right' },
-                                                    span: '3',
-                                                    children: <Text>-{formatPrice(order?.totalCoinDiscount)}</Text>
-                                                })
-                                                infoPayment.push({
-                                                    key: '4',
-                                                    label: <Text style={{ fontWeight: 'bold' }}>Thành tiền</Text>,
-                                                    labelStyle: { 'text-align': 'right' },
-                                                    span: '3',
-                                                    children: <Text>{`${formatPrice(order.totalPayment)}`}</Text>
-                                                })
-                                                return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
-                                            })()}
-                                        </Row>
-                                    </Col>
-                                    <Col span={24}>
-                                        {getButtonsStatus()}
-                                    </Col>
-                                </Row>
-
                                 {/* {order.note &&
                                     <Row>
                                         <Col span={24}><Divider><Title level={5}>Lời nhắn</Title></Divider></Col>

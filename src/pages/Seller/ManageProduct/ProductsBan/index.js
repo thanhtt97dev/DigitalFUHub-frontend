@@ -21,6 +21,7 @@ import { formatPrice } from "~/utils";
 import classNames from 'classnames/bind';
 import styles from './ProductBan.module.scss';
 import ModalViewReasonBanProduct from "~/components/Modals/ModalViewReasonBanProduct";
+import { SearchOutlined } from "@ant-design/icons";
 const cx = classNames.bind(styles);
 
 
@@ -331,11 +332,11 @@ function ProductsBan() {
                                 </Col>
                                 <Col span={6} offset={2}>
                                     <Space>
-                                        <Button type="primary" htmlType="submit">
-                                            Tìm kiếm
-                                        </Button>
-                                        <Button htmlType="button" onClick={onReset}>
+                                        <Button htmlType="button" onClick={onReset} >
                                             Xóa
+                                        </Button>
+                                        <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                                            Tìm kiếm
                                         </Button>
                                     </Space>
                                 </Col>
