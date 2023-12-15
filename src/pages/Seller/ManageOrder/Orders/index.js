@@ -201,7 +201,7 @@ function Orders() {
                                         <Select.Option value={ORDER_CONFIRMED}>Đã xác nhận</Select.Option>
                                         <Select.Option value={ORDER_COMPLAINT}>Khiếu nại</Select.Option>
                                         <Select.Option value={ORDER_DISPUTE}>Tranh chấp</Select.Option>
-                                        <Select.Option value={ORDER_SELLER_REFUNDED}>Hoàn lại tiền</Select.Option>
+                                        <Select.Option value={ORDER_SELLER_REFUNDED}>Hoàn trả tiền</Select.Option>
                                         <Select.Option value={ORDER_REJECT_COMPLAINT}>Từ chối khiếu nại</Select.Option>
                                         <Select.Option value={ORDER_SELLER_VIOLATES}>Người bán vi phạm</Select.Option>
                                     </Select>
@@ -289,16 +289,24 @@ function Orders() {
                         />
                         <Column
                             width="15%"
-                            title="Mã giảm giá sử dụng"
-                            key="totalCouponDiscount"
+                            title="Tổng giá trị đơn hàng"
+                            key="totalAmount"
                             render={(_, record) => (
-                                <p>- {formatPrice(record.totalCouponDiscount)}</p>
+                                <p>{formatPrice(record.totalAmount)}</p>
                             )}
                         />
                         <Column
                             width="15%"
-                            title="Tổng giá trị đơn hàng"
-                            key="totalAmount"
+                            title="Mã giảm giá sử dụng"
+                            key="totalCouponDiscount"
+                            render={(_, record) => (
+                                <p>{record.totalCouponDiscount === 0 ? "Không sử dụng" : `- ${formatPrice(record.totalCouponDiscount)}`}</p>
+                            )}
+                        />
+                        <Column
+                            width="15%"
+                            title="Thành tiền"
+                            key="total"
                             render={(_, record) => (
                                 <p>{formatPrice(record.totalAmount - record.totalCouponDiscount)}</p>
                             )}
@@ -344,7 +352,7 @@ function Orders() {
                                     return <Tag color="#FAD7AC"
                                         style={{ color: '#B46504', border: '1px solid #B46504' }}>Tranh chấp</Tag>
                                 } else if (record.orderStatusId === ORDER_SELLER_REFUNDED) {
-                                    return <Tag color="cyan">Hoàn lại tiền</Tag>
+                                    return <Tag color="cyan">Hoàn trả tiền</Tag>
                                 } else if (record.orderStatusId === ORDER_REJECT_COMPLAINT) {
                                     return <Tag color="#E1D5E7"
                                         style={{ color: '#9673A6', border: '1px solid #9673A6' }}>Từ chối khiếu nại</Tag>

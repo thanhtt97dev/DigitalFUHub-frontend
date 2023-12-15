@@ -28,6 +28,17 @@ import HistoryOrderStatus from "~/components/OrderDetail/HistoryOrderStatus";
 import OrderDetailItem from "~/components/OrderDetail/OrderDetailItem";
 
 const { Text, Title } = Typography;
+const getTextNoteFrom = (orderStatusId) => {
+    if (orderStatusId === ORDER_COMPLAINT) {
+        return "Lý do (Phản hồi từ người mua)";
+    } else if (orderStatusId === ORDER_DISPUTE || orderStatusId === ORDER_SELLER_REFUNDED) {
+        return "Lý do (Phản hồi từ người bán)";
+    } else if (orderStatusId === ORDER_REJECT_COMPLAINT || orderStatusId === ORDER_SELLER_VIOLATES) {
+        return "Lý do (Phản hồi từ quản trị viên)";
+    } else {
+        return "";
+    }
+}
 
 function OrderDetail() {
     const auth = useAuthUser()
@@ -37,6 +48,7 @@ function OrderDetail() {
     const navigate = useNavigate()
     const { orderId } = useParams()
     const [order, setOrder] = useState({})
+    const [hideAssetInformationOrder, setHideAssetInformationOrder] = useState([]);
 
     const getOrderDetail = useCallback(() => {
         setLoading(true);
@@ -44,6 +56,11 @@ function OrderDetail() {
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrder(res.data.result);
+                    let lsIndexOrderDetail = [];
+                    for (var i = 0; i < res.data.result.orderDetails.length; i++) {
+                        lsIndexOrderDetail.push(true);
+                    }
+                    setHideAssetInformationOrder(lsIndexOrderDetail);
                 } else {
                     notification("error", "Đã có lỗi xảy ra.")
                     return navigate("/history/order");
@@ -175,15 +192,17 @@ function OrderDetail() {
         if (order?.statusId === ORDER_WAIT_CONFIRMATION) {
             return <Text>Chờ xác nhận</Text>
         } else if (order?.statusId === ORDER_CONFIRMED) {
-            return <Text>Đã xác nhận</Text>
+            return <Text style={{ color: '#0958d9' }}>Đã xác nhận</Text>
         } else if (order?.statusId === ORDER_COMPLAINT) {
-            return <Text>Đang khiếu nại</Text>
+            return <Text style={{ color: '#D6B656' }}>Đang khiếu nại</Text>
         } else if (order?.statusId === ORDER_DISPUTE) {
-            return <Text>Đang tranh chấp</Text>
+            return <Text style={{ color: '#B46504' }}>Đang tranh chấp</Text>
         } else if (order?.statusId === ORDER_REJECT_COMPLAINT) {
-            return <Text>Từ chối khiếu nại</Text>
-        } else if (order?.statusId === ORDER_SELLER_REFUNDED || order?.statusId === ORDER_SELLER_VIOLATES) {
-            return <Text>Hoàn trả tiền</Text>
+            return <Text style={{ color: '#9673A6' }}>Từ chối khiếu nại</Text>
+        } else if (order?.statusId === ORDER_SELLER_REFUNDED) {
+            return <Text style={{ color: '#08979c' }}>Hoàn trả tiền</Text>
+        } else if (order?.statusId === ORDER_SELLER_VIOLATES) {
+            return <Text style={{ color: '#AE4132' }}>Người bán vi phạm</Text>
         }
     }
     const getButtonsStatus = () => {
@@ -243,20 +262,20 @@ function OrderDetail() {
                     <Tag color="#E1D5E7" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#9673A6', border: '1px solid #9673A6' }}>Từ chối khiếu nại</Tag>
                 </Col>
             </Row>
-        } else if (order?.statusId === ORDER_SELLER_REFUNDED || order?.statusId === ORDER_SELLER_VIOLATES) {
+        } else if (order?.statusId === ORDER_SELLER_REFUNDED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="cyan" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn lại tiền</Tag>
+                    <Tag color="cyan" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn trả tiền</Tag>
                 </Col>
             </Row>
         }
-        // else if (order?.statusId === ORDER_SELLER_VIOLATES) {
-        //     return <Row justify="end" gutter={[8]}>
-        //         <Col>
-        //             <Tag color="#FAD9D5" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#AE4132', border: '1px solid #AE4132' }}>Người bán vi phạm</Tag>
-        //         </Col>
-        //     </Row>
-        // }
+        else if (order?.statusId === ORDER_SELLER_VIOLATES) {
+            return <Row justify="end" gutter={[8]}>
+                <Col>
+                    <Tag color="#FAD9D5" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#AE4132', border: '1px solid #AE4132' }}>Người bán vi phạm</Tag>
+                </Col>
+            </Row>
+        }
     }
     const handleOpenChat = () => {
         var data = { shopId: order.shopId, userId: user.id }
@@ -274,6 +293,21 @@ function OrderDetail() {
         if (order.conversationId === null) return;
         navigate('/chatBox', { state: { data: order.conversationId } })
     }
+    const handleDisplayAssetInformation = (index) => {
+        setHideAssetInformationOrder(prev => {
+            let newValue = [prev];
+            newValue[index] = false;
+            return newValue;
+        })
+    }
+    const handleHideAssetInformation = (index) => {
+        setHideAssetInformationOrder(prev => {
+            let newValue = [...prev];
+            newValue[index] = true;
+            return newValue;
+        })
+    }
+
     return (<>
         <ModalViewFeedbackOrder
             isModalViewFeedbackOpen={isModalViewFeedbackOpen}
@@ -299,7 +333,7 @@ function OrderDetail() {
                         {!loading &&
                             <Col span={22}>
                                 <Row justify="end" gutter={[16, 0]}>
-                                    <Col><Text>Mã đơn hàng: #{order?.orderId}</Text></Col>
+                                    <Col><Text>Mã đơn hàng: {order?.orderId}</Text></Col>
                                     <Col>|</Col>
                                     <Col><Text>Ngày đặt hàng: {ParseDateTime(order?.orderDate)}</Text></Col>
                                     <Col>|</Col>
@@ -314,59 +348,7 @@ function OrderDetail() {
                     {!loading &&
                         <>
                             <HistoryOrderStatus historyOrderStatus={order.historyOrderStatus} current={order.statusId} />
-                            {order?.note &&
-                                <>
-                                    <Descriptions bordered style={{ marginTop: '1em' }}>
-                                        <Descriptions.Item label="Lý do" labelStyle={{ width: '10%', fontWeight: '600', color: 'red' }}>{order?.note}</Descriptions.Item>
-                                    </Descriptions>
-                                </>
-                            }
-                            <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
-                                <Col span={24}>
-                                    <Row justify='end'>
-                                        {(() => {
-                                            let infoPayment = [];
-                                            infoPayment.push({
-                                                key: '1',
-                                                label: 'Tổng tiền sản phẩm',
-                                                labelStyle: { 'text-align': 'right' },
-                                                span: '3',
-                                                children: <Text>{formatPrice(order?.totalAmount)}</Text>
-                                            })
-                                            if (order?.totalCouponDiscount !== 0) {
-                                                infoPayment.push({
-                                                    key: '2',
-                                                    label: 'Mã giảm giá',
-                                                    labelStyle: { 'text-align': 'right' },
-                                                    span: '3',
-                                                    children: <Text>-{formatPrice(order?.totalCouponDiscount)}</Text>
-                                                })
-                                            }
-                                            infoPayment.push({
-                                                key: '3',
-                                                label: <div>
-                                                    <span>Số xu sử dụng </span>
-                                                    <span>({order?.totalCoinDiscount} xu)</span>
-                                                </div>,
-                                                labelStyle: { 'text-align': 'right' },
-                                                span: '3',
-                                                children: <Text>-{formatPrice(order?.totalCoinDiscount)}</Text>
-                                            })
-                                            infoPayment.push({
-                                                key: '4',
-                                                label: <Text style={{ fontWeight: 'bold' }}>Thành tiền</Text>,
-                                                labelStyle: { 'text-align': 'right' },
-                                                span: '3',
-                                                children: <Text>{`${formatPrice(order.totalPayment)}`}</Text>
-                                            })
-                                            return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
-                                        })()}
-                                    </Row>
-                                </Col>
-                                <Col span={24}>
-                                    {getButtonsStatus()}
-                                </Col>
-                            </Row>
+
                             <Card
                                 style={{ marginTop: '2em' }}
                                 title={<Row gutter={[8, 0]} align="bottom">
@@ -380,7 +362,7 @@ function OrderDetail() {
                                         <Title level={5}>
                                             <Link to={`/shop/${order.shopId}`}>
                                                 <Button
-                                                    type="default"
+                                                    type="primary"
                                                     size="small"
                                                     icon={<ShopOutlined />}
                                                 >
@@ -392,10 +374,10 @@ function OrderDetail() {
                                     <Col>
                                         <Title level={5}>
                                             <Button
-                                                type="default"
                                                 size="small"
                                                 icon={<MessageOutlined />}
                                                 onClick={handleOpenChat}
+                                                danger
                                             >
                                                 Nhắn tin
                                             </Button>
@@ -410,7 +392,10 @@ function OrderDetail() {
                                             <OrderDetailItem
                                                 key={i}
                                                 orderDetail={v}
+                                                hideAssetInformation={hideAssetInformationOrder[i] === undefined ? true : hideAssetInformationOrder[i]}
                                                 statusId={order.statusId}
+                                                handleHideAssetInformation={() => handleHideAssetInformation(i)}
+                                                handleDisplayAssetInformation={() => handleDisplayAssetInformation(i)}
                                                 handleFeedbackOrder={() => { orderDetailRef.current = v.orderDetailId; showModalAddFeedback(); }}
                                             />
                                         )
@@ -425,6 +410,61 @@ function OrderDetail() {
                                     </Row>
                                 } */}
                             </Card>
+                            {order?.note &&
+                                <>
+                                    <Descriptions bordered style={{ marginTop: '1em' }}>
+                                        <Descriptions.Item label={getTextNoteFrom(order?.statusId)} labelStyle={{ width: '20%', fontWeight: '600', color: 'red' }}>{order?.note}</Descriptions.Item>
+                                    </Descriptions>
+                                </>
+                            }
+                            <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
+                                <Col span={24}>
+                                    <Row justify='end'>
+                                        {(() => {
+                                            let infoPayment = [];
+                                            infoPayment.push({
+                                                key: '1',
+                                                label: 'Tổng giá trị đơn hàng',
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{formatPrice(order?.totalAmount)}</Text>
+                                            })
+                                            // if (order?.totalCouponDiscount !== 0) {
+                                            infoPayment.push({
+                                                key: '2',
+                                                label: 'Mã giảm giá',
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{order?.totalCouponDiscount === 0 ? "Không áp dụng" : `-${formatPrice(order?.totalCouponDiscount)}`}</Text>
+                                            })
+                                            // }
+                                            infoPayment.push({
+                                                key: '3',
+                                                label: <div>
+                                                    <span>Sử dụng xu </span>
+                                                    {order?.totalCoinDiscount !== 0 &&
+                                                        <span>({order?.totalCoinDiscount} xu)</span>
+                                                    }
+                                                </div>,
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text>{order?.totalCoinDiscount === 0 ? "Không áp dụng" : `-${formatPrice(order?.totalCoinDiscount)}`}</Text>
+                                            })
+                                            infoPayment.push({
+                                                key: '4',
+                                                label: <Text style={{ fontWeight: 'bold' }}>Thành tiền</Text>,
+                                                labelStyle: { 'text-align': 'right' },
+                                                span: '3',
+                                                children: <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600', fontSize: '20px' }}>{`${formatPrice(order.totalPayment)}`}</Text>
+                                            })
+                                            return <Col span={24}><Descriptions bordered items={infoPayment} /></Col>
+                                        })()}
+                                    </Row>
+                                </Col>
+                                <Col span={24}>
+                                    {getButtonsStatus()}
+                                </Col>
+                            </Row>
                         </>
                     }
                 </Spin >

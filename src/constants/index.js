@@ -272,3 +272,4 @@ export const STATISTIC_BY_YEAR = 1;
 export const UPLOAD_FILE_SIZE_LIMIT = 2 * 1024 * 1024;
 
 export const RESPONSE_CODE_NOT_FEEDBACK_AGAIN = "FB_01";
+export const LIMIT_TIME_TO_FEEDBACK = 7;

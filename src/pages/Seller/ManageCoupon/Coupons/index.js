@@ -258,7 +258,7 @@ function Coupons() {
                 }}
                 rowKey={(record) => record.couponId}
                 dataSource={data}
-                size='small'
+                size='medium'
                 scroll={
                     {
                         y: 290,

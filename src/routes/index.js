@@ -48,6 +48,7 @@ import ErrorPage from '~/pages/ErrorPage';
 import ShopBan from '~/pages/ShopBan';
 import CheckShopBan from '~/components/CheckAccess/CheckShopBan';
 import CheckUserBan from '~/components/CheckAccess/CheckUserBan';
+import SalesPolicy from '~/pages/Policy/SalesPolicy';
 
 const routesConfig = [
     {
@@ -327,6 +328,12 @@ const routesConfig = [
         path: '/faq',
         layout: <NormalLayout />,
         component: <FAQ />,
+    },
+    {
+        title: 'Sales Policy',
+        path: '/salesPolicy',
+        layout: <NormalLayout />,
+        component: <SalesPolicy />,
     },
 ];
 export default routesConfig;
