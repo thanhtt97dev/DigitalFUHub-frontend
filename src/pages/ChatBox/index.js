@@ -192,13 +192,12 @@ const ChatBox = () => {
             if (message) {
                 if ('messageId' in message) {
                     const currentDate = new Date();
-
                     if (user === null || user === undefined) return;
 
                     const userId = user.id;
 
                     //set default avatar
-                    if (message.avatar === null) {
+                    if (message.avatar === null || message.avatar === "") {
                         message.avatar = fptImage;
                     }
 
