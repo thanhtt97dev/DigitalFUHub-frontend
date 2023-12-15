@@ -3,7 +3,7 @@ import validator from 'validator';
 import { Button, Input, Form } from "antd";
 import { REGEX_PASSWORD_SIGN_UP } from '~/constants';
 
-const ChangePassword = ({ onChangePasswordFinish, formChangePassword, }) => {
+const ChangePassword = ({ onChangePasswordFinish, formChangePassword, handleOpenModalChangePassword }) => {
 
     /// validators
     const newPasswordValidator = (value) => {
@@ -89,7 +89,7 @@ const ChangePassword = ({ onChangePasswordFinish, formChangePassword, }) => {
                         span: 13,
                     }}
                 >
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" onClick={handleOpenModalChangePassword}>
                         Thay đổi
                     </Button>
                 </Form.Item>

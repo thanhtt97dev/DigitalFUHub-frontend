@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import Spinning from "~/components/Spinning";
 import ChangePassword from "~/components/Security";
+import ModelConfirmation from "~/components/Modals/ModalConfirmation";
 import ModalSend2FaQrCode from "~/components/Modals/ModalSend2FaQrCode";
 import { getUserId } from '~/utils';
 import { useAuthUser } from 'react-auth-kit';
@@ -10,14 +11,20 @@ import { Button, Divider, Modal, Input, Space, Card, Typography, Col, Row, Form 
 import { ExclamationCircleFilled, GooglePlusOutlined, FacebookOutlined } from "@ant-design/icons";
 import { generate2FaKey, activate2Fa, deactivate2Fa, getUserById, activeUserNameAndPassword, changePassword } from '~/api/user';
 import { RESPONSE_CODE_SUCCESS, RESPONSE_CODE_NOT_ACCEPT, RESPONSE_CODE_USER_USERNAME_ALREADY_EXISTS, REGEX_USERNAME_SIGN_UP, REGEX_PASSWORD_SIGN_UP, RESPONSE_CODE_USER_USERNAME_PASSWORD_NOT_ACTIVE, RESPONSE_CODE_USER_PASSWORD_OLD_INCORRECT } from '~/constants';
-
 import classNames from 'classnames/bind';
 import styles from './Security.module.scss';
 import validator from 'validator';
 import { encryptPassword } from '~/utils';
 
+///
 const cx = classNames.bind(styles)
 const { Title, Text } = Typography;
+///
+
+/// styles
+const styleContainerActiveUserNamePassword = { width: '100%', height: '100%', display: 'flex', justifyContent: 'center' }
+const styleFormActiveUserNamePassword = { width: '40%', margin: '0 auto', marginTop: 30 }
+///
 
 function Security() {
     /// variables
@@ -58,6 +65,9 @@ function Security() {
 
     const [form] = Form.useForm();
     const [formChangePassword] = Form.useForm();
+
+    const [isOpenModalActiveUserNamePassword, setIsOpenModalActiveUserNamePassword] = useState(false);
+    const [isOpenModalChangePassword, setIsOpenModalChangePassword] = useState(false);
 
     /// contexts
     const notification = useContext(NotificationContext)
@@ -266,6 +276,41 @@ function Security() {
 
 
     /// handles
+    const handleOpenModalActiveUsernamePassword = () => {
+        form.validateFields()
+            .then(() => {
+                setIsOpenModalActiveUserNamePassword(true);
+            })
+            .catch((errorInfo) => { });
+    }
+
+    const handleOpenModalChangePassword = () => {
+        formChangePassword.validateFields()
+            .then(() => {
+                setIsOpenModalChangePassword(true);
+            })
+            .catch((errorInfo) => { });
+    }
+
+    const handleOkActiveUsernamePassword = () => {
+        form.submit();
+        setIsOpenModalActiveUserNamePassword(false);
+    }
+
+    const handleOkChangePassword = () => {
+        formChangePassword.submit();
+        setIsOpenModalChangePassword(false);
+    }
+
+    const handleCancelActiveUsernamePassword = () => {
+        setIsOpenModalActiveUserNamePassword(false);
+    }
+
+    const handleCancelChangePassword = () => {
+        setIsOpenModalChangePassword(false);
+    }
+
+
     const onChangePasswordFinish = (values) => {
         if (user === undefined || user === null) return navigate('/login');
 
@@ -390,7 +435,7 @@ function Security() {
         let username = form.getFieldValue(value.field);
 
         if (username === undefined || username === '' || !validator.matches(username, REGEX_USERNAME_SIGN_UP)) {
-            return Promise.reject('Tên tài khoản chỉ chứa các kí tự chữ thường và có độ dài 6 - 12 ký tự');
+            return Promise.reject('Tên tài khoản chỉ chứa các kí tự là chữ thường, có thể bao gồm số và có độ dài 6 - 12 ký tự');
         } else {
             return Promise.resolve();
         }
@@ -399,15 +444,11 @@ function Security() {
     ///
 
     const ActiveUsernamePassword = () => (
-        <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center' }}>
+        <div style={styleContainerActiveUserNamePassword}>
             <Form
                 name="validateOnly"
                 layout="vertical"
-                style={{
-                    width: '40%',
-                    margin: '0 auto',
-                    marginTop: 30
-                }}
+                style={styleFormActiveUserNamePassword}
                 initialValues={{
                     remember: true,
                 }}
@@ -460,7 +501,7 @@ function Security() {
                         span: 13,
                     }}
                 >
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" onClick={handleOpenModalActiveUsernamePassword}>
                         Kích hoạt
                     </Button>
                 </Form.Item>
@@ -475,7 +516,8 @@ function Security() {
         tab2: (<TwoFactorAuthentication />),
         tab3: (<ActiveUsernamePassword />),
         tab4: (<ChangePassword onChangePasswordFinish={onChangePasswordFinish}
-            formChangePassword={formChangePassword} />)
+            formChangePassword={formChangePassword}
+            handleOpenModalChangePassword={handleOpenModalChangePassword} />)
     };
 
     return (<>
@@ -539,6 +581,22 @@ function Security() {
                     <i className={cx('text-message-err')}>{mesage2FA}</i>
                 </div>
             </Modal>
+
+            <ModelConfirmation title="Kích hoạt tài khoản và mật khẩu"
+                isOpen={isOpenModalActiveUserNamePassword}
+                onOk={handleOkActiveUsernamePassword}
+                onCancel={handleCancelActiveUsernamePassword}
+                contentModal="Bạn có muốn kích hoạt sử dụng tài khoản và mật khẩu để đăng nhập không?"
+                contentButtonCancel="Không"
+                contentButtonOk="Có" />
+
+            <ModelConfirmation title="Thay đổi mật khẩu"
+                isOpen={isOpenModalChangePassword}
+                onOk={handleOkChangePassword}
+                onCancel={handleCancelChangePassword}
+                contentModal="Bạn có muốn thay đổi mật khẩu không?"
+                contentButtonCancel="Không"
+                contentButtonOk="Có" />
         </Spinning>
     </>
     );

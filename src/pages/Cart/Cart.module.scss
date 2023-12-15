@@ -228,3 +228,11 @@ h1 {
     padding-right: var(--vc-warning-banner-padding-left-right, 0.625rem);
     padding-top: var(--vc-warning-banner-padding-top, 0);
 }
+
+.three-dot-overflow-two-line-wrapper {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+}
