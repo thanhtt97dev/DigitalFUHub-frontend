@@ -366,18 +366,19 @@ function Security() {
         let newPassword = form.getFieldValue('password');
         let confirmPassword = form.getFieldValue(value.field);
 
-        if (!validator.equals(newPassword, confirmPassword)) {
+        if (confirmPassword === undefined || confirmPassword === '') {
+            return Promise.reject('Vui lòng nhập lại mật khẩu mới');
+        } else if (!validator.equals(newPassword, confirmPassword)) {
             return Promise.reject('Mật khẩu không trùng khớp');
         } else {
-            return Promise.resolve()
-
+            return Promise.resolve();
         }
     }
 
     const passwordValidator = (value) => {
         let password = form.getFieldValue(value.field);
 
-        if (!validator.matches(password, REGEX_PASSWORD_SIGN_UP)) {
+        if (password === undefined || password === '' || !validator.matches(password, REGEX_PASSWORD_SIGN_UP)) {
             return Promise.reject('Mật khẩu chứa ít nhất một kí tự hoa, 1 kí tự thường, 1 kí tự số và có độ dài 8 - 16 kí tự và không chứa các kí tự đặc biệt');
         } else {
             return Promise.resolve();
@@ -388,8 +389,8 @@ function Security() {
     const usernameValidator = (value) => {
         let username = form.getFieldValue(value.field);
 
-        if (!validator.matches(username, REGEX_USERNAME_SIGN_UP)) {
-            return Promise.reject('Tên tài khoản phải bắt đầu với kí tự chữ thường và có độ dài 6 - 12 ký tự');
+        if (username === undefined || username === '' || !validator.matches(username, REGEX_USERNAME_SIGN_UP)) {
+            return Promise.reject('Tên tài khoản chỉ chứa các kí tự chữ thường và có độ dài 6 - 12 ký tự');
         } else {
             return Promise.resolve();
         }
@@ -398,73 +399,73 @@ function Security() {
     ///
 
     const ActiveUsernamePassword = () => (
-        <Form
-            name="basic"
-            labelCol={{
-                span: 6,
-            }}
-            wrapperCol={{
-                span: 14,
-            }}
-            style={{
-                maxWidth: '100vh',
-                margin: '0 auto',
-                marginTop: 30
-            }}
-            initialValues={{
-                remember: true,
-            }}
-            onFinish={onFinish}
-            form={form}
-            onFinishFailed={onFinishFailed}
-            autoComplete="off"
-        >
-            <Form.Item
-                label="Tài khoản"
-                name="username"
-                rules={[
-                    {
-                        validator: usernameValidator
-                    }
-                ]}
-            >
-                <Input />
-            </Form.Item>
-
-            <Form.Item
-                label="Mật khẩu mới"
-                name="password"
-                rules={[
-                    {
-                        validator: passwordValidator
-                    }
-                ]}
-            >
-                <Input.Password />
-            </Form.Item>
-
-            <Form.Item
-                label="Nhập lại mật khẩu mới"
-                name="confirmPassword"
-                rules={[
-                    {
-                        validator: confirmPasswordValidator
-                    }
-                ]}
-            >
-                <Input.Password />
-            </Form.Item>
-            <Form.Item
-                wrapperCol={{
-                    offset: 11,
-                    span: 13,
+        <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center' }}>
+            <Form
+                name="validateOnly"
+                layout="vertical"
+                style={{
+                    width: '40%',
+                    margin: '0 auto',
+                    marginTop: 30
                 }}
+                initialValues={{
+                    remember: true,
+                }}
+                onFinish={onFinish}
+                form={form}
+                onFinishFailed={onFinishFailed}
+                autoComplete="off"
             >
-                <Button type="primary" htmlType="submit">
-                    Kích hoạt
-                </Button>
-            </Form.Item>
-        </Form>
+                <Form.Item
+                    label="Tài khoản"
+                    name="username"
+                    required
+                    rules={[
+                        {
+                            validator: usernameValidator
+                        }
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item
+                    label="Mật khẩu mới"
+                    name="password"
+                    required
+                    rules={[
+                        {
+                            validator: passwordValidator
+                        }
+                    ]}
+                >
+                    <Input.Password />
+                </Form.Item>
+
+                <Form.Item
+                    label="Nhập lại mật khẩu mới"
+                    name="confirmPassword"
+                    required
+                    rules={[
+                        {
+                            validator: confirmPasswordValidator
+                        }
+                    ]}
+                >
+                    <Input.Password />
+                </Form.Item>
+                <Form.Item
+                    wrapperCol={{
+                        offset: 11,
+                        span: 13,
+                    }}
+                >
+                    <Button type="primary" htmlType="submit">
+                        Kích hoạt
+                    </Button>
+                </Form.Item>
+            </Form>
+        </div>
     )
 
 

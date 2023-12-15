@@ -10,7 +10,7 @@ import { useAuthUser } from 'react-auth-kit';
 import { getCouponPublic } from '~/api/coupon';
 import { formatPrice, discountPrice } from '~/utils';
 import { updateCart, deleteCartDetail } from '~/api/cart';
-import { CopyrightOutlined, DeleteOutlined, ShopOutlined } from '@ant-design/icons';
+import { CopyrightOutlined, ShopOutlined } from '@ant-design/icons';
 import { Button, Row, Col, Image, Checkbox, Card, Typography, notification, Input, Tag, Space, Result } from 'antd';
 import {
     RESPONSE_CODE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_CODE_CART_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY, RESPONSE_MESSAGE_CART_INVALID_QUANTITY,
@@ -390,11 +390,12 @@ const Products = ({ dataPropProductComponent }) => {
                         <Card bodyStyle={styleCardBodyHeader} style={styleCardHeader}>
                             <Row>
                                 <Col span={1}><Checkbox onChange={handleCheckAll} checked={checkAllCart}></Checkbox></Col>
-                                <Col span={7} className={cx('flex-item-center')}>Sản phẩm</Col>
-                                <Col span={5} className={cx('flex-item-center')}>Đơn giá</Col>
-                                <Col span={4} className={cx('flex-item-center')}>Số Lượng</Col>
-                                <Col span={4} className={cx('flex-item-center')}>Số Tiền</Col>
-                                <Col span={3} className={cx('flex-item-center')}>Thao Tác</Col>
+                                <Col span={6} className={cx('flex-item-center')}>Sản phẩm</Col>
+                                <Col span={3} className={cx('flex-item-center')}>Loại</Col>
+                                <Col span={4} className={cx('flex-item-center')}>Đơn giá</Col>
+                                <Col span={5} className={cx('flex-item-center')}>Số Lượng</Col>
+                                <Col span={3} className={cx('flex-item-center')}>Số Tiền</Col>
+                                <Col span={2} className={cx('flex-item-center')}>Thao tác</Col>
                             </Row>
                         </Card>
                         <Checkbox.Group value={cartDetailIdSelecteds} onChange={handleOnChangeCheckbox} style={{ display: 'block' }} >
@@ -409,7 +410,7 @@ const Products = ({ dataPropProductComponent }) => {
                                                     {
                                                         cart.shopActivate ? <Checkbox key={cart.cartId} value={cart.cartId} onChange={(e) => { handleOnChangeCheckboxCartItem(cart.cartId, e) }} /> : <></>
                                                     }
-                                                    <ShopOutlined className={cx('margin-left-40')} /> {cart.shopName}
+                                                    <Link to={`/shop/${cart.shopId}`}><Space align='center'><ShopOutlined className={cx('margin-left-40')} /> {cart.shopName}</Space></Link>
                                                 </Space>
                                             </Checkbox.Group>}
                                         key={index} bodyStyle={styleCardBodyCartItem} headStyle={styleCardHeadCartItem} style={styleCardCartItem}>
@@ -422,7 +423,7 @@ const Products = ({ dataPropProductComponent }) => {
                                                         }
                                                     </Col>
 
-                                                    <Col span={7} className={cx('flex-item-center')}>
+                                                    <Col span={6} className={cx('flex-item-center')}>
                                                         <Space align="center" size={30}>
                                                             <div style={{ padding: 15, position: 'relative' }}>
                                                                 <Image
@@ -436,26 +437,27 @@ const Products = ({ dataPropProductComponent }) => {
                                                                         : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
                                                                 }
                                                             </div>
-
                                                             <Link to={'/product/' + product.productId} >{product.productName}</Link>
-                                                            <Text type="secondary">Loại: {product.productVariantName}</Text>
                                                         </Space>
                                                     </Col>
-                                                    <Col span={5} className={cx('flex-item-center')}>
+                                                    <Col span={3} className={cx('flex-item-center')}>
+                                                        <Text type="secondary">{product.productVariantName}</Text>
+                                                    </Col>
+                                                    <Col span={4} className={cx('flex-item-center')}>
                                                         <Space align="center" size={15}>
                                                             <Text type="secondary" delete>{formatPrice(product.productVariantPrice)}</Text>
                                                             <Text>{formatPrice(discountPrice(product.productVariantPrice, product.productVariantDiscount))}</Text>
                                                         </Space>
                                                     </Col>
-                                                    <Col span={4} className={cx('flex-item-center')}>
+                                                    <Col span={5} className={cx('flex-item-center')}>
                                                         <div>
                                                             <Button disabled={product.quantity === 1 ? true : false} onClick={() => handleMinusOne(product.quantity, product.cartDetailId, product.productVariantId)}>-</Button>
                                                             <NumericInput value={product.quantity} onBlur={(e) => onBlurQuantity(e, product.cartDetailId, product.productVariantId)} />
                                                             <Button disabled={product.quantity === product.productVariantQuantity ? true : false} onClick={() => handleAddOne(product.quantity, product.cartDetailId, product.productVariantId)}>+</Button>
                                                         </div>
                                                     </Col>
-                                                    <Col span={4} className={cx('flex-item-center')}><Text>{formatPrice(discountPrice(product.productVariantPrice, product.productVariantDiscount) * product.quantity)}</Text></Col>
-                                                    <Col span={3} className={cx('flex-item-center')}><Button style={{ pointerEvents: 'all' }} className={cx('button-delete')} icon={<DeleteOutlined />} danger onClick={() => funcDeleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
+                                                    <Col span={3} className={cx('flex-item-center')}><Text>{formatPrice(discountPrice(product.productVariantPrice, product.productVariantDiscount) * product.quantity)}</Text></Col>
+                                                    <Col span={2} className={cx('flex-item-center')}><Button style={{ pointerEvents: 'all' }} className={cx('button-delete')} type='link' danger onClick={() => funcDeleteCartDetail(product.cartDetailId)}>Xóa</Button></Col>
                                                 </Row>
                                             ))
                                         }

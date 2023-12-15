@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import classNames from 'classnames/bind';
+import Spinning from "~/components/Spinning";
 import styles from '~/pages/Cart/Cart.module.scss';
 import ProductSpecifics from "../ProductSpecifics";
 import { useAuthUser } from 'react-auth-kit';
@@ -13,16 +14,20 @@ import { RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_SUCCESS, COUPON_TYPE_SPECIF
 
 ///
 const cx = classNames.bind(styles);
+require('moment/locale/vi');
+const moment = require('moment');
 ///
 
 /// styles
 const styleContainer = { width: '100%', height: '100vh', backgroundColor: '#f5f5f5' };
 const styleCardContainer = { width: '25%', height: 'fit-content' };
+const styleAreCouponsAvailable = { marginTop: 5, marginBottom: 5, width: '80%', }
 ///
 
 const CouponDetailCustomer = () => {
     /// states
     const [coupon, setCoupon] = useState({});
+    const [isSpinningPage, setIsSpinningPage] = useState(false);
     const [productSpecifics, setProductSpecifics] = useState([]);
     const [isSpinningProductSpecifics, setIsSpinningProductSpecifics] = useState(false);
     const [isOpenModalProductSpecifics, setIsOpenModalProductSpecifics] = useState(false);
@@ -93,6 +98,8 @@ const CouponDetailCustomer = () => {
     }, [searchParam])
 
     useEffect(() => {
+        setIsSpinningPage(true);
+
         getCouponDetailCustomerById(couponId)
             .then((res) => {
                 if (res.status === 200) {
@@ -107,15 +114,18 @@ const CouponDetailCustomer = () => {
                     }
                 }
             })
+            .catch((err) => { })
+            .finally(() => {
+                setTimeout(() => { setIsSpinningPage(false); }, 500)
+            })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     ///
 
-
-    return (<div style={styleContainer} className={cx('flex-item-center')}>
-        {
-            coupon ? (<Card style={styleCardContainer} bodyStyle={{ padding: 10 }}>
+    return (<Spinning spinning={isSpinningPage}>
+        <div style={styleContainer} className={cx('flex-item-center')}>
+            <Card style={styleCardContainer} bodyStyle={{ padding: 10 }}>
                 <Row className={cx('cardWrap')}>
                     <div className={cx('card', 'cardLeft')}>
                         <h1>Mã giảm giá của shop</h1>
@@ -126,7 +136,9 @@ const CouponDetailCustomer = () => {
                         <div className={cx('time')}>
                             <Space align="center">
                                 <span className={cx('text-span')}>HSD:</span>
-                                <h2>{ParseDateTime(coupon.endDate)}</h2>
+                                {
+                                    moment() > moment(coupon.endDate) ? <p style={{ color: 'red' }}>Đã hết hạn</p> : <h2>{ParseDateTime(coupon.endDate)}</h2>
+                                }
                             </Space>
                         </div>
                     </div>
@@ -144,10 +156,19 @@ const CouponDetailCustomer = () => {
                     </div>
                 </Row>
                 <div style={{ overflowY: 'auto', maxHeight: '50vh' }}>
+                    {
+                        !coupon.areCouponsAvailable ?
+                            <Row className={cx('flex-item-center')}>
+                                <Button size='middle' danger style={styleAreCouponsAvailable}>Đã hết</Button>
+                            </Row>
+                            : <></>
+                    }
                     <Row className={cx('title')}>
                         <Space direction="vertical">
                             <h2>HẠN SỬ DỤNG MÃ</h2>
-                            <p>{ParseDateTime(coupon.startDate)} - {ParseDateTime(coupon.endDate)}</p>
+                            {
+                                moment() > moment(coupon.endDate) ? <p style={{ color: 'red' }}>Đã hết hạn</p> : <p>{ParseDateTime(coupon.startDate)} - {ParseDateTime(coupon.endDate)}</p>
+                            }
                         </Space>
                     </Row>
                     <Row className={cx('title')}>
@@ -197,9 +218,10 @@ const CouponDetailCustomer = () => {
                     isSpinningProductSpecifics={isSpinningProductSpecifics}
                     searchParam={searchParam}
                     setSearchParam={setSearchParam} />
-            </Card>) : (<></>)
-        }
-    </div>)
+            </Card>
+        </div>
+    </Spinning>
+    )
 }
 
 export default CouponDetailCustomer;

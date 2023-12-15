@@ -215,3 +215,16 @@ h1 {
         51px 0 0 1px $black, 56px 0 0 1px $black, 59px 0 0 1px $black, 64px 0 0 1px $black, 68px 0 0 1px $black,
         72px 0 0 1px $black, 74px 0 0 1px $black, 77px 0 0 1px $black, 81px 0 0 1px $black;
 }
+
+.warning-coupon {
+    align-items: center;
+    background-color: #fff8e4;
+    color: #ee4d2d;
+    display: flex;
+    font-size: var(--vc-warning-banner-font-size, 0.875rem);
+    height: var(--vc-warning-banner-height, 2.375rem);
+    margin-top: var(--vc-warning-banner-margin-top, 0);
+    padding-left: var(--vc-warning-banner-padding-left-right, 0.625rem);
+    padding-right: var(--vc-warning-banner-padding-left-right, 0.625rem);
+    padding-top: var(--vc-warning-banner-padding-top, 0);
+}
