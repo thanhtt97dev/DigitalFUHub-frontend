@@ -1,6 +1,6 @@
 import { Card, Row, Col, Form, Input, Button, Upload, Avatar, Space, Modal } from "antd";
 import { registerShop } from "~/api/shop";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import Spinning from "~/components/Spinning";
 import { useSignOut } from "react-auth-kit";
@@ -239,6 +239,10 @@ function RegisterSeller() {
                         </Col>
                     </Row>
                 </Form>
+                <div style={{ color: 'red', fontSize: '16px', fontWeight: '600' }}>
+                    Lưu ý: Vui lòng tuân thủ các chính sách sau <Link to={'/salesPolicy'} target="_blank">tại đây</Link>
+                </div>
+
             </Card>
         </Spinning>)
 }
