@@ -1,4 +1,4 @@
-import { Card, Row, Col, Form, Input, Button, Upload, Avatar, Space, Modal } from "antd";
+import { Card, Row, Col, Form, Input, Button, Upload, Avatar, Space, Modal, Checkbox } from "antd";
 import { registerShop } from "~/api/shop";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
@@ -36,6 +36,9 @@ function RegisterSeller() {
     const [openNotificationFileExceedLimit, setOpenNotificationFileExceedLimit] = useState(false);
     const [msgNotificationFileExceedLimit, setMsgNotificationFileExceedLimit] = useState([]);
     const [imgBase64, setImgBase64] = useState('');
+    const [acceptPolicy, setAcceptPolicy] = useState(false)
+
+
     const handlePreview = async (file) => {
         const imgBase64 = await getBase64(file.originFileObj);
         setImgBase64(imgBase64);
@@ -90,6 +93,11 @@ function RegisterSeller() {
         setMsgNotificationFileExceedLimit([]);
         setOpenNotificationFileExceedLimit(false);
     }
+
+    const checkboxPolicyChange = (e) => {
+        setAcceptPolicy(e.target.checked)
+    }
+
     return (
         <Spinning spinning={loading}>
             <Modal
@@ -120,6 +128,36 @@ function RegisterSeller() {
                     onFinish={onFinish}
                     form={form}
                 >
+                    <Row justify="center">
+                        <Col span={5}>
+                            <Space align="center" direction="vertical" >
+                                {fileList.length > 0 ?
+                                    <Avatar size={100} src={imgBase64} />
+                                    :
+                                    <Avatar size={100} icon={<UserOutlined />} />
+                                }
+                                <Form.Item name='avatarFile' required style={{ width: '100%', textAlign: 'center' }}
+                                    rules={[
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                if (fileList.length > 0) {
+                                                    return Promise.resolve();
+                                                }
+                                                return Promise.reject(new Error('Ảnh đại diện không để trống.'));
+                                            },
+                                        }),
+                                    ]}
+                                >
+                                    <Upload showUploadList={false} fileList={fileList} maxCount={1} onChange={handleChange}
+                                        accept=".png, .jpeg, .jpg"
+                                    >
+                                        <Button icon={<UploadOutlined />}>Tải lên</Button>
+                                        <div style={{ textAlign: 'center', marginTop: "5px" }}> Ảnh đại diện</div>
+                                    </Upload>
+                                </Form.Item>
+                            </Space>
+                        </Col>
+                    </Row>
                     <Row justify="center">
                         <Col span={14} style={{ borderRight: '1px solid rgb(232, 232, 232)' }}>
                             <Row>
@@ -190,61 +228,27 @@ function RegisterSeller() {
                                         />
                                     </Form.Item>
                                 </Col>
+                                <Col offset={4}>
+                                    <Checkbox onChange={checkboxPolicyChange}>
+                                        Tôi đồng ý với <Link to={"/salesPolicy"} target="_blank">chính sách và điều khoản dịch vụ</Link> của nền tảng
+                                    </Checkbox>
+                                </Col>
 
                             </Row>
-                        </Col>
-                        <Col span={4} offset={2} >
-                            <Row >
-                                <Col span={20}>
-                                    <Space align="center" direction="vertical" style={{ width: '100%' }}>
-                                        {fileList.length > 0 ?
-                                            <Avatar size={100} src={imgBase64} />
-                                            :
-                                            <Avatar size={100} icon={<UserOutlined />} />
-                                        }
-                                        <Form.Item name='avatarFile' required style={{ width: '100%', textAlign: 'center' }}
-                                            rules={[
-                                                ({ getFieldValue }) => ({
-                                                    validator(_, value) {
-                                                        if (fileList.length > 0) {
-                                                            return Promise.resolve();
-                                                        }
-                                                        return Promise.reject(new Error('Ảnh đại diện không để trống.'));
-                                                    },
-                                                }),
-                                            ]}
-                                        >
-                                            <Upload showUploadList={false} fileList={fileList} maxCount={1} onChange={handleChange}
-                                                accept=".png, .jpeg, .jpg"
-                                            >
-                                                <Button icon={<UploadOutlined />}>Tải lên</Button>
-                                                <div style={{ textAlign: 'center' }}> (PNG, JPG hoặc JPEG)</div>
-                                            </Upload>
-                                        </Form.Item>
-                                    </Space>
+
+                            <Row style={{ marginTop: "20px" }}>
+                                <Col offset={11}>
+                                    <Form.Item>
+                                        <Button type="primary" htmlType="submit" disabled={acceptPolicy === false}>Đăng ký</Button>
+                                    </Form.Item>
                                 </Col>
                             </Row>
                         </Col>
                     </Row>
-                    <Row justify="center">
-                        <Col>
-                            <Form.Item
-                                wrapperCol={{
-                                    span: 14,
-                                    offset: 6
-                                }}
-                                style={{ textAlign: 'center' }}>
-                                <Button type="primary" htmlType="submit">Đăng ký</Button>
-                            </Form.Item>
-                        </Col>
-                    </Row>
                 </Form>
-                <div style={{ color: 'red', fontSize: '16px', fontWeight: '600' }}>
-                    Lưu ý: Vui lòng tuân thủ các chính sách sau <Link to={'/salesPolicy'} target="_blank">tại đây</Link>
-                </div>
 
-            </Card>
-        </Spinning>)
+            </Card >
+        </Spinning >)
 }
 
 export default RegisterSeller;

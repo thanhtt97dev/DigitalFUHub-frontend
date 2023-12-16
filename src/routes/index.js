@@ -332,7 +332,6 @@ const routesConfig = [
     {
         title: 'Sales Policy',
         path: '/salesPolicy',
-        layout: <NormalLayout />,
         component: <SalesPolicy />,
     },
 ];
