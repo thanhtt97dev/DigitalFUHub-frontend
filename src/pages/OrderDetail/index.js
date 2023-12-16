@@ -10,7 +10,6 @@ import {
     //CloseCircleOutlined,
     //ExclamationCircleOutlined,
     //MinusCircleOutlined,
-    SyncOutlined,
     LeftOutlined,
     // PlusOutlined,
     MessageOutlined
@@ -28,16 +27,45 @@ import HistoryOrderStatus from "~/components/OrderDetail/HistoryOrderStatus";
 import OrderDetailItem from "~/components/OrderDetail/OrderDetailItem";
 
 const { Text, Title } = Typography;
-const getTextNoteFrom = (orderStatusId) => {
-    if (orderStatusId === ORDER_COMPLAINT) {
-        return "Lý do (Phản hồi từ người mua)";
-    } else if (orderStatusId === ORDER_DISPUTE || orderStatusId === ORDER_SELLER_REFUNDED) {
-        return "Lý do (Phản hồi từ người bán)";
-    } else if (orderStatusId === ORDER_REJECT_COMPLAINT || orderStatusId === ORDER_SELLER_VIOLATES) {
-        return "Lý do (Phản hồi từ quản trị viên)";
-    } else {
-        return "";
-    }
+// const getTextNoteFrom = (orderStatusId) => {
+//     if (orderStatusId === ORDER_COMPLAINT) {
+//         return "Lý do (Phản hồi từ người mua)";
+//     } else if (orderStatusId === ORDER_DISPUTE || orderStatusId === ORDER_SELLER_REFUNDED) {
+//         return "Lý do (Phản hồi từ người bán)";
+//     } else if (orderStatusId === ORDER_REJECT_COMPLAINT || orderStatusId === ORDER_SELLER_VIOLATES) {
+//         return "Lý do (Phản hồi từ quản trị viên)";
+//     } else {
+//         return "";
+//     }
+// }
+
+const getNote = (historyOrderStatus) => {
+    if (!historyOrderStatus) return null;
+    let notes = [];
+    notes = historyOrderStatus.map((v, i) => {
+        if (v.orderStatusId === ORDER_COMPLAINT && v.note) {
+            return <Descriptions bordered>
+                <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi người mua (Khiếu nại)`}>
+                    {v.note}
+                </Descriptions.Item>
+            </Descriptions>
+        } else if ((v.orderStatusId === ORDER_DISPUTE || v.orderStatusId === ORDER_SELLER_REFUNDED) && v.note) {
+            return <Descriptions bordered>
+                <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi người bán (${v.orderStatusId === ORDER_DISPUTE ? 'Tranh chấp' : 'Hoàn trả tiền'})`}>
+                    {v.note}
+                </Descriptions.Item>
+            </Descriptions>
+        } else if ((v.orderStatusId === ORDER_REJECT_COMPLAINT || v.orderStatusId === ORDER_SELLER_VIOLATES) && v.note) {
+            return <Descriptions bordered>
+                <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi quản trị viên (${v.orderStatusId === ORDER_REJECT_COMPLAINT ? 'Từ chối khiếu nại' : 'Người bán vi phạm'})`}>
+                    {v.note}
+                </Descriptions.Item>
+            </Descriptions>
+        } else {
+            return null;
+        }
+    })
+    return notes;
 }
 
 function OrderDetail() {
@@ -230,7 +258,7 @@ function OrderDetail() {
         } else if (order?.statusId === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656' }} color="#FFF2CC">Đang khiếu nại</Tag>
+                    <Tag style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656' }} color="#FFF2CC">Đang khiếu nại</Tag>
                 </Col>
                 <Col>
                     <Button loading={buttonLoading} type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
@@ -250,7 +278,7 @@ function OrderDetail() {
                     </Button>
                 </Col>
                 <Col>
-                    <Tag icon={<SyncOutlined size={16} spin />} color="#FAD7AC" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#B46504', border: '1px solid #B46504' }}>Đang tranh chấp</Tag>
+                    <Tag color="#FAD7AC" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#B46504', border: '1px solid #B46504' }}>Đang tranh chấp</Tag>
                 </Col>
                 <Col>
                     <Button loading={buttonLoading} type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
@@ -410,13 +438,16 @@ function OrderDetail() {
                                     </Row>
                                 } */}
                             </Card>
-                            {order?.note &&
+                            {/* {order?.note &&
                                 <>
                                     <Descriptions bordered style={{ marginTop: '1em' }}>
                                         <Descriptions.Item label={getTextNoteFrom(order?.statusId)} labelStyle={{ width: '20%', fontWeight: '600', color: 'red' }}>{order?.note}</Descriptions.Item>
                                     </Descriptions>
                                 </>
-                            }
+                            } */}
+                            <div style={{ marginTop: '1em' }}>
+                                {getNote(order?.historyOrderStatus)}
+                            </div>
                             <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
                                 <Col span={24}>
                                     <Row justify='end'>

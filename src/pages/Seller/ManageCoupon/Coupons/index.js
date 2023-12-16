@@ -305,7 +305,7 @@ function Coupons() {
                     title="Sản phẩm áp dụng"
                     key="productApplied"
                     render={(_, record) => (
-                        <p>{record.couponTypeId === COUPON_TYPE_ALL_PRODUCTS_OF_SHOP ? 'Tất cả sản phẩm' : `Tổng cộng ${record.productsApplied.length} sản phẩm`}</p>
+                        <p>{record.couponTypeId === COUPON_TYPE_ALL_PRODUCTS_OF_SHOP ? 'Tất cả sản phẩm' : `${record.productsApplied.length} sản phẩm`}</p>
                     )}
                 />
                 <Column

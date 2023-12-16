@@ -7,7 +7,9 @@ import {
     CheckCircleOutlined,
     LeftOutlined,
     MessageOutlined,
-    ExclamationCircleFilled
+    ExclamationCircleFilled,
+    EyeOutlined,
+    EyeInvisibleOutlined
 } from "@ant-design/icons";
 import logoFPT from '~/assets/images/fpt-logo.jpg'
 import { Button, Card, Col, Divider, Image, Row, Space, Typography, Tag, Tooltip, Form, Modal, Avatar, Spin, Descriptions, Rate } from "antd";
@@ -22,33 +24,64 @@ import { getFeedbackDetailOrderOfSeller } from "~/api/feedback";
 
 const { Text, Title, Paragraph } = Typography;
 
-const getTextNoteFrom = (orderStatusId) => {
-    if (orderStatusId === ORDER_COMPLAINT) {
-        return "Lý do (Phản hồi từ người mua)";
-    } else if (orderStatusId === ORDER_DISPUTE || orderStatusId === ORDER_SELLER_REFUNDED) {
-        return "Lý do (Phản hồi từ người bán)";
-    } else if (orderStatusId === ORDER_REJECT_COMPLAINT || orderStatusId === ORDER_SELLER_VIOLATES) {
-        return "Lý do (Phản hồi từ quản trị viên)";
-    } else {
-        return "";
-    }
+// const getTextNoteFrom = (orderStatusId) => {
+//     if (orderStatusId === ORDER_COMPLAINT) {
+//         return "Lý do (Phản hồi từ người mua)";
+//     } else if (orderStatusId === ORDER_DISPUTE || orderStatusId === ORDER_SELLER_REFUNDED) {
+//         return "Lý do (Phản hồi từ người bán)";
+//     } else if (orderStatusId === ORDER_REJECT_COMPLAINT || orderStatusId === ORDER_SELLER_VIOLATES) {
+//         return "Lý do (Phản hồi từ quản trị viên)";
+//     } else {
+//         return "";
+//     }
+// }
+const getNote = (historyOrderStatus) => {
+    if (!historyOrderStatus) return null;
+    let notes = [];
+    notes = historyOrderStatus.map((v, i) => {
+        if (v.orderStatusId === ORDER_COMPLAINT && v.note) {
+            return <Descriptions bordered>
+                <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi người mua (Khiếu nại)`}>
+                    {v.note}
+                </Descriptions.Item>
+            </Descriptions>
+        } else if ((v.orderStatusId === ORDER_DISPUTE || v.orderStatusId === ORDER_SELLER_REFUNDED) && v.note) {
+            return <Descriptions bordered>
+                <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi người bán (${v.orderStatusId === ORDER_DISPUTE ? 'Tranh chấp' : 'Hoàn trả tiền'})`}>
+                    {v.note}
+                </Descriptions.Item>
+            </Descriptions>
+        } else if ((v.orderStatusId === ORDER_REJECT_COMPLAINT || v.orderStatusId === ORDER_SELLER_VIOLATES) && v.note) {
+            return <Descriptions bordered>
+                <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi quản trị viên (${v.orderStatusId === ORDER_REJECT_COMPLAINT ? 'Từ chối khiếu nại' : 'Người bán vi phạm'})`}>
+                    {v.note}
+                </Descriptions.Item>
+            </Descriptions>
+        } else {
+            return null;
+        }
+    })
+    return notes;
 }
 function OrderDetailSeller() {
-    const auth = useAuthUser()
-    const user = auth();
     const notification = useContext(NotificationContext);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
     const { orderId } = useParams()
     const [order, setOrder] = useState({})
     const [noteRefundOrder, setNoteRefundOrder] = useState('');
-
+    const [hideAssetInformationOrder, setHideAssetInformationOrder] = useState([]);
     const getOrderDetail = useCallback(() => {
         setLoading(true);
         getOrderDetailSeller(getUserId(), orderId)
             .then((res) => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrder(res.data.result);
+                    let lsIndexOrderDetail = [];
+                    for (var i = 0; i < res.data.result.orderDetails.length; i++) {
+                        lsIndexOrderDetail.push(true);
+                    }
+                    setHideAssetInformationOrder(lsIndexOrderDetail);
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đã bị khóa.")
                     return navigate('/shopBanned')
@@ -277,6 +310,20 @@ function OrderDetailSeller() {
     const handleDisputeOrder = () => {
         getOrderDetail();
     };
+    const handleDisplayAssetInformation = (index) => {
+        setHideAssetInformationOrder(prev => {
+            let newValue = [prev];
+            newValue[index] = false;
+            return newValue;
+        })
+    }
+    const handleHideAssetInformation = (index) => {
+        setHideAssetInformationOrder(prev => {
+            let newValue = [...prev];
+            newValue[index] = true;
+            return newValue;
+        })
+    }
     return (<>
         <Modal title="Đánh giá cửa hàng" open={isModalViewFeedbackOpen} onOk={handleViewFeedbackOk} onCancel={handleViewFeedbackCancel}
             footer={[
@@ -493,6 +540,21 @@ function OrderDetailSeller() {
                                                                         }
                                                                     </Row>
                                                                 </Col>
+                                                                <Col span={24}>
+                                                                    <Row justify='end'>
+                                                                        <Col span={24}>
+                                                                            <Descriptions bordered items={[
+                                                                                {
+                                                                                    key: '1',
+                                                                                    label: <label>Thông tin tài khoản <Tooltip title={hideAssetInformationOrder[i] === true ? "Hiển thị" : "Ẩn"}>{hideAssetInformationOrder[i] === true ? <EyeOutlined style={{ cursor: 'pointer' }} onClick={() => handleDisplayAssetInformation(i)} /> : <EyeInvisibleOutlined style={{ cursor: 'pointer' }} onClick={() => handleHideAssetInformation(i)} />}</Tooltip></label>,
+                                                                                    labelStyle: { 'text-align': 'right', width: '30%', fontWeight: 'bold' },
+                                                                                    span: '3',
+                                                                                    children: v?.assetInformations?.map((v, i) => (<><Text key={i}>{hideAssetInformationOrder[i] === true ? "******" : v}</Text><br /></>))
+                                                                                },
+                                                                            ]} />
+                                                                        </Col>
+                                                                    </Row>
+                                                                </Col>
                                                             </Row>
                                                         </Col>
                                                     </Row>
@@ -513,13 +575,16 @@ function OrderDetailSeller() {
                                 </Row>
                             } */}
                         </Card>
-                        {order?.note &&
+                        {/* {order?.note &&
                             <>
                                 <Descriptions bordered style={{ marginTop: '1em' }}>
                                     <Descriptions.Item label={getTextNoteFrom(order?.statusId)} labelStyle={{ width: '20%', fontWeight: '600', color: 'red' }}>{order?.note}</Descriptions.Item>
                                 </Descriptions>
                             </>
-                        }
+                        } */}
+                        <div style={{ marginTop: '1em' }}>
+                            {getNote(order?.historyOrderStatus)}
+                        </div>
                         <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
                             <Col span={24}>
                                 <Row justify="end">
