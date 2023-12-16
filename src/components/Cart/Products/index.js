@@ -29,6 +29,8 @@ const styleCardBodyHeader = { padding: 20 }
 const styleCardCartItem = { marginBottom: 10 }
 const styleCardHeadCartItem = { paddingLeft: 20 }
 const styleCardBodyCartItem = { padding: 20 }
+const styleProductName = { whiteSpace: 'nowrap', fontSize: '15px', color: '#007bff', maxWidth: '14vh', overflow: 'hidden', textOverflow: 'ellipsis' }
+const styleProductVariantName = { whiteSpace: 'nowrap', fontSize: '15px', maxWidth: '25vh', overflow: 'hidden', textOverflow: 'ellipsis' }
 ///
 
 const Products = ({ dataPropProductComponent }) => {
@@ -424,7 +426,7 @@ const Products = ({ dataPropProductComponent }) => {
                                                     </Col>
 
                                                     <Col span={6} className={cx('flex-item-center')}>
-                                                        <Space align="center" size={30}>
+                                                        <Space align="center" size={15} style={{ width: '100%' }}>
                                                             <div style={{ padding: 15, position: 'relative' }}>
                                                                 <Image
                                                                     width={100}
@@ -437,11 +439,11 @@ const Products = ({ dataPropProductComponent }) => {
                                                                         : product.quantityProductRemaining === 0 ? <div className={cx('circle')}>Hết hàng</div> : <></>
                                                                 }
                                                             </div>
-                                                            <Link to={'/product/' + product.productId} >{product.productName}</Link>
+                                                            <Link to={'/product/' + product.productId}><p style={styleProductName} title={product.productName}>{product.productName}</p></Link>
                                                         </Space>
                                                     </Col>
                                                     <Col span={3} className={cx('flex-item-center')}>
-                                                        <Text type="secondary">{product.productVariantName}</Text>
+                                                        <Text type="secondary" style={styleProductVariantName}>{product.productVariantName}</Text>
                                                     </Col>
                                                     <Col span={4} className={cx('flex-item-center')}>
                                                         <Space align="center" size={15}>

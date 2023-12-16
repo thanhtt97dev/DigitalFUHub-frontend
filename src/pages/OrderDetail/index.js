@@ -353,6 +353,9 @@ function OrderDetail() {
 
         {order &&
             <Card
+                style={{
+                    backgroundColor: "#f5f5f5"
+                }}
                 title={
                     <Row>
                         <Col span={2}>
@@ -375,8 +378,9 @@ function OrderDetail() {
                 <Spin spinning={loading}>
                     {!loading &&
                         <>
-                            <HistoryOrderStatus historyOrderStatus={order.historyOrderStatus} current={order.statusId} />
-
+                            <Card>
+                                <HistoryOrderStatus historyOrderStatus={order.historyOrderStatus} current={order.statusId} />
+                            </Card>
                             <Card
                                 style={{ marginTop: '2em' }}
                                 title={<Row gutter={[8, 0]} align="bottom">

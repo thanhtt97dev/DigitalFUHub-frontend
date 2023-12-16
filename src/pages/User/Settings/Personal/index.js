@@ -3,6 +3,7 @@ import validator from 'validator';
 import classNames from 'classnames/bind';
 import styles from './Personal.module.scss';
 import Spinning from "~/components/Spinning";
+import fptImage from '~/assets/images/fpt-logo.jpg';
 import { useAuthUser } from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
 import { UserOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';
@@ -275,7 +276,7 @@ function Personal() {
                                 {imgPreview ?
                                     <Avatar size={100} src={imgPreview} />
                                     :
-                                    userInfo ? <Avatar size={100} src={userInfo.avatar} /> : <Avatar size={100} icon={<UserOutlined />} />
+                                    userInfo ? <Avatar size={100} src={userInfo.avatar ? userInfo.avatar : fptImage} /> : <Avatar size={100} icon={<UserOutlined />} />
 
                                 }
 

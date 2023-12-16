@@ -177,15 +177,15 @@ export const RESPONSE_CODE_RESET_PASSWORD_SIGNIN_GOOGLE = "RS_02";
 export const RESPONSE_CODE_CONFIRM_PASSWORD_IS_CONFIRMED = "CF_01";
 
 // order message
-export const RESPONSE_MESSAGE_ORDER_COUPON_NOT_EXISTED = 'Mã giảm giá không tồn tại';
-export const RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE = 'Số dư không đủ, vui lòng nạp thêm tiền vào tài khoản';
-export const RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY = 'Không thể mua nhiều hơn số lượng có sẵn';
-export const RESPONSE_MESSAGE_ORDER_NOT_ELIGIBLE = 'Đơn hàng không đủ điều kiện để áp dụng mã giảm giá';
-export const RESPONSE_MESSAGE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP = 'Loại sản phẩm này không tồn tại trong cửa hàng';
-export const RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED = 'Sản phẩm đã bị cấm';
-export const RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT = 'Không thể mua sản phẩm của chính mình';
-export const RESPONSE_MESSAGE_ORDER_COUPON_INVALID_PRODUCT_APPLY = 'Đơn hàng không đủ điều kiện để áp dụng mã giảm giá';
-export const RESPONSE_MESSAGE_ORDER_SELLER_LOCK_TRANSACTION = 'Giao dịch hiện không khả dụng do tạm thời bị chặn bởi người bán. Để giải quyết vấn đề này, vui lòng liên hệ trực tiếp với người bán để được hỗ trợ';
+export const RESPONSE_MESSAGE_ORDER_COUPON_NOT_EXISTED = 'Rất tiếc, chúng tôi không thể xử lý đơn đặt hàng của bạn vì mã giảm giá này không tồn tại hoặc đã hết hạn.';
+export const RESPONSE_MESSAGE_ORDER_INSUFFICIENT_BALANCE = 'Xin lỗi, số dư trong tài khoản của bạn không đủ để hoàn thành đơn đặt hàng.';
+export const RESPONSE_MESSAGE_ORDER_NOT_ENOUGH_QUANTITY = 'Xin lỗi, số lượng sản phẩm hiện không đủ để đáp ứng đơn đặt hàng của bạn.';
+export const RESPONSE_MESSAGE_ORDER_NOT_ELIGIBLE = 'Đơn đặt hàng không đủ điều kiện để xử lý hoặc hoàn tất. Vui lòng kiểm tra lại hoặc liên hệ với chúng tôi nếu bạn cần hỗ trợ.';
+export const RESPONSE_MESSAGE_ORDER_PRODUCT_VARIANT_NOT_IN_SHOP = 'Xin lỗi, Loại sản phẩm bạn chọn không có sẵn trong cửa hàng.';
+export const RESPONSE_MESSAGE_ORDER_PRODUCT_HAS_BEEN_BANED = 'Rất tiếc, đơn hàng của bạn không thể được xử lý do sản phẩm đã bị cấm.';
+export const RESPONSE_MESSAGE_ORDER_CUSTOMER_BUY_THEIR_OWN_PRODUCT = 'Xin lỗi, bạn không thể đặt mua sản phẩm của chính bạn.';
+export const RESPONSE_MESSAGE_ORDER_COUPON_INVALID_PRODUCT_APPLY = 'Rất tiếc, đơn đặt hàng của bạn không đủ điều kiện để áp dụng mã giảm giá.';
+export const RESPONSE_MESSAGE_ORDER_SELLER_LOCK_TRANSACTION = 'Giao dịch hiện không khả dụng do tạm thời bị chặn bởi người bán. Để giải quyết vấn đề này, vui lòng liên hệ trực tiếp với người bán để được hỗ trợ.';
 
 // cart message
 export const RESPONSE_MESSAGE_CART_PRODUCT_INVALID_QUANTITY = 'Không thể cập nhật vì số lượng sản phẩm không đủ';

@@ -20,7 +20,7 @@ const cx = classNames.bind(styles);
 
 /// styles
 const styleImage = { width: '100%', height: '100%' }
-const styleProductName = { fontSize: 12, color: '#000000', cursor: 'pointer' };
+const styleProductName = { fontSize: 12, color: '#000000', cursor: 'pointer', whiteSpace: 'nowrap', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis' };
 const styleSpaceContainerProductItem = { padding: 8, height: 124, width: '100%' };
 const styleContainerImage = { width: '100%', height: 192, display: 'flex', alignItems: 'center', justifyContent: 'center' };
 const styleContainer = { width: '100%', minHeight: '70vh' };
@@ -265,7 +265,7 @@ const WishList = () => {
                                                         <img style={styleImage} src={product.thumbnail} alt="product" onClick={() => handleClickOnProduct(product.productId)} />
                                                     </div>
                                                     <Space direction="vertical" style={styleSpaceContainerProductItem}>
-                                                        <p className={cx('three-dot-overflow-two-line-wrapper')} onClick={() => handleClickToProduct(product.productId)} style={styleProductName}>{product.productName}</p>
+                                                        <p onClick={() => handleClickToProduct(product.productId)} style={styleProductName} title={product.productName} >{product.productName}</p>
                                                         {
                                                             product.productVariant?.discount !== 0 ? (<>
                                                                 <div className={cx('discount-style')}><p style={{ fontSize: 10 }}>{product.productVariant.discount}% giảm</p></div>

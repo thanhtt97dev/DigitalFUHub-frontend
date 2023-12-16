@@ -269,7 +269,7 @@ function CardOrderItem({
                 <Col>
                     <Title level={5}>
                         <Button
-                            type="primary"
+                            type="default"
                             size="small"
                             icon={<ShopOutlined />}
                             onClick={handleRedirectToShop}

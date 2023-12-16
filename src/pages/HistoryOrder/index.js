@@ -68,7 +68,8 @@ function HistoryOrder() {
     return (<Card
         style={{
             width: '100%',
-            minHeight: '100vh'
+            minHeight: '100vh',
+            backgroundColor: "#f5f5f5"
         }}
         tabList={tabList}
         activeTabKey={activeTabKey}
