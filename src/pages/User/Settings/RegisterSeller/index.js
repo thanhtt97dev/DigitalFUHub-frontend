@@ -129,7 +129,7 @@ function RegisterSeller() {
                     form={form}
                 >
                     <Row justify="center">
-                        <Col span={5}>
+                        <Col offset={3} span={5}>
                             <Space align="center" direction="vertical" >
                                 {fileList.length > 0 ?
                                     <Avatar size={100} src={imgBase64} />
