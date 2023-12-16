@@ -564,16 +564,9 @@ function OrderDetailSeller() {
                                     )
                                 })}
                             </Row>
-
-
-                            {/* {order.note &&
-                                <Row>
-                                    <Col span={24}><Divider><Title level={5}>Lời nhắn</Title></Divider></Col>
-                                    <Col span={23}>
-                                        <Text>{order.note}</Text>
-                                    </Col>
-                                </Row>
-                            } */}
+                            <div style={{ marginTop: '1em' }}>
+                                {getNote(order?.historyOrderStatus)}
+                            </div>
                         </Card>
                         {/* {order?.note &&
                             <>
@@ -582,9 +575,7 @@ function OrderDetailSeller() {
                                 </Descriptions>
                             </>
                         } */}
-                        <div style={{ marginTop: '1em' }}>
-                            {getNote(order?.historyOrderStatus)}
-                        </div>
+
                         <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
                             <Col span={24}>
                                 <Row justify="end">
