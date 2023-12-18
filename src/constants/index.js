@@ -156,6 +156,7 @@ export const RESPONSE_CODE_FEEDBACK_ORDER_UN_COMFIRM = "FEEDBACK_01";
 
 // shop
 export const RESPONSE_CODE_SHOP_BANNED = "SHOP_01";
+export const RESPONSE_CODE_BALANCE_NOT_ENOUGH = "SHOP_02";
 
 // product status
 export const PRODUCT_ACTIVE = 1;

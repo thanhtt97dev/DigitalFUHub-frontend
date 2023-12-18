@@ -4,11 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import Spinning from "~/components/Spinning";
 import { useSignOut } from "react-auth-kit";
-import { getUserId, removeDataAuthInCookies } from '~/utils';
+import { formatPrice, getUserId, removeDataAuthInCookies } from '~/utils';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { checkExistShopName } from "~/api/shop";
-import { RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
+import { RESPONSE_CODE_BALANCE_NOT_ENOUGH, RESPONSE_CODE_SUCCESS, UPLOAD_FILE_SIZE_LIMIT } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import debounce from "debounce-promise";
 import { UploadOutlined, UserOutlined } from "@ant-design/icons";
@@ -74,13 +74,15 @@ function RegisterSeller() {
         registerShop(formData)
             .then(res => {
                 setLoading(false);
-                if (res.data.status.responseCode === "00") {
+                if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     notification('success', "Đăng ký thành công vui lòng đăng nhập lại.");
                     removeDataAuthInCookies();
                     signOut();
                     return navigate('/login');
-
-                } else {
+                } else if (res.data.status.responseCode === RESPONSE_CODE_BALANCE_NOT_ENOUGH) {
+                    notification('error', `Số dư tài khoản không đủ, phí đăng ký bán hàng là ${formatPrice(res.data.result)}.`);
+                }
+                else {
                     notification('error', "Vui lòng kiểm tra lại.");
                 }
             })
