@@ -222,9 +222,9 @@ function OrderDetail() {
         } else if (order?.statusId === ORDER_CONFIRMED) {
             return <Text style={{ color: '#0958d9' }}>Đã xác nhận</Text>
         } else if (order?.statusId === ORDER_COMPLAINT) {
-            return <Text style={{ color: '#D6B656' }}>Đang khiếu nại</Text>
+            return <Text style={{ color: '#D6B656' }}>Khiếu nại</Text>
         } else if (order?.statusId === ORDER_DISPUTE) {
-            return <Text style={{ color: '#B46504' }}>Đang tranh chấp</Text>
+            return <Text style={{ color: '#B46504' }}>Tranh chấp</Text>
         } else if (order?.statusId === ORDER_REJECT_COMPLAINT) {
             return <Text style={{ color: '#9673A6' }}>Từ chối khiếu nại</Text>
         } else if (order?.statusId === ORDER_SELLER_REFUNDED) {
@@ -258,7 +258,7 @@ function OrderDetail() {
         } else if (order?.statusId === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656' }} color="#FFF2CC">Đang khiếu nại</Tag>
+                    <Tag style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656' }} color="#FFF2CC">Khiếu nại</Tag>
                 </Col>
                 <Col>
                     <Button loading={buttonLoading} type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
@@ -278,7 +278,7 @@ function OrderDetail() {
                     </Button>
                 </Col>
                 <Col>
-                    <Tag color="#FAD7AC" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#B46504', border: '1px solid #B46504' }}>Đang tranh chấp</Tag>
+                    <Tag color="#FAD7AC" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#B46504', border: '1px solid #B46504' }}>Tranh chấp</Tag>
                 </Col>
                 <Col>
                     <Button loading={buttonLoading} type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>

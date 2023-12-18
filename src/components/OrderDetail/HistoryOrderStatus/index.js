@@ -12,9 +12,9 @@ const getNameStatusOrder = (statusId) => {
         case ORDER_CONFIRMED:
             return 'Đã xác nhận';
         case ORDER_COMPLAINT:
-            return 'Đang khiếu nại';
+            return 'Khiếu nại';
         case ORDER_DISPUTE:
-            return 'Đang tranh chấp';
+            return 'Tranh chấp';
         case ORDER_REJECT_COMPLAINT:
             return 'Từ chối khiếu nại';
         case ORDER_SELLER_REFUNDED:

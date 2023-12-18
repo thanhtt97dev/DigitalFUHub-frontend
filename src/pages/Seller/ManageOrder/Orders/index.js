@@ -199,8 +199,8 @@ function Orders() {
                                         <Select.Option value={ORDER_STATUS_ALL}>Tất cả</Select.Option>
                                         <Select.Option value={ORDER_WAIT_CONFIRMATION}>Chờ xác nhận</Select.Option>
                                         <Select.Option value={ORDER_CONFIRMED}>Đã xác nhận</Select.Option>
-                                        <Select.Option value={ORDER_COMPLAINT}>Đang khiếu nại</Select.Option>
-                                        <Select.Option value={ORDER_DISPUTE}>Đang tranh chấp</Select.Option>
+                                        <Select.Option value={ORDER_COMPLAINT}>Khiếu nại</Select.Option>
+                                        <Select.Option value={ORDER_DISPUTE}>Tranh chấp</Select.Option>
                                         <Select.Option value={ORDER_SELLER_REFUNDED}>Hoàn trả tiền</Select.Option>
                                         <Select.Option value={ORDER_REJECT_COMPLAINT}>Từ chối khiếu nại</Select.Option>
                                         <Select.Option value={ORDER_SELLER_VIOLATES}>Người bán vi phạm</Select.Option>
@@ -347,10 +347,10 @@ function Orders() {
                                     return <Tag color="blue">Đã xác nhận</Tag>
                                 } else if (record.orderStatusId === ORDER_COMPLAINT) {
                                     return <Tag color="#FFF2CC"
-                                        style={{ color: '#D6B656', border: '1px solid #D6B656' }}>Đang khiếu nại</Tag>
+                                        style={{ color: '#D6B656', border: '1px solid #D6B656' }}>Khiếu nại</Tag>
                                 } else if (record.orderStatusId === ORDER_DISPUTE) {
                                     return <Tag color="#FAD7AC"
-                                        style={{ color: '#B46504', border: '1px solid #B46504' }}>Đang tranh chấp</Tag>
+                                        style={{ color: '#B46504', border: '1px solid #B46504' }}>Tranh chấp</Tag>
                                 } else if (record.orderStatusId === ORDER_SELLER_REFUNDED) {
                                     return <Tag color="cyan">Hoàn trả tiền</Tag>
                                 } else if (record.orderStatusId === ORDER_REJECT_COMPLAINT) {

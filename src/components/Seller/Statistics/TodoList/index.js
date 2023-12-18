@@ -41,7 +41,7 @@ function TodoList() {
                             hoverable
                         >
                             <div style={{ fontSize: '24px', color: 'rgb(63, 134, 0)', height: '100%' }}>{!data?.totalOrdersComplaint ? 0 : data?.totalOrdersComplaint}</div>
-                            <div>Đang khiếu nại</div>
+                            <div>Đơn hàng khiếu nại</div>
                         </Card>
                     </Link>
                 </Col>
@@ -54,7 +54,7 @@ function TodoList() {
                             hoverable
                         >
                             <div style={{ fontSize: '24px', color: 'rgb(63, 134, 0)', height: '100%' }}>{!data?.totalOrdersDispute ? 0 : data?.totalOrdersDispute}</div>
-                            <div>Đang tranh chấp</div>
+                            <div>Đơn hàng tranh chấp</div>
                         </Card>
                     </Link>
                 </Col>
