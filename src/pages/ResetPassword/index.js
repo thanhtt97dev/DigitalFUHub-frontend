@@ -3,7 +3,7 @@ import { Button, Col, Form, Input, Row, Spin } from 'antd';
 import { resetPassword } from "~/api/user";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { useContext } from "react";
-import { RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_RESET_PASSWORD_NOT_CONFIRM, RESPONSE_CODE_RESET_PASSWORD_SIGNIN_GOOGLE, RESPONSE_CODE_SUCCESS } from "~/constants";
+import { RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_RESET_PASSWORD_ACCOUNT_BANNED, RESPONSE_CODE_RESET_PASSWORD_NOT_CONFIRM, RESPONSE_CODE_RESET_PASSWORD_SIGNIN_GOOGLE, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { Link } from "react-router-dom";
 function ResetPassword() {
     const notification = useContext(NotificationContext);
@@ -23,6 +23,8 @@ function ResetPassword() {
                     notification('error', `Tài khoản của bạn chưa từng đặt mật khẩu vui lòng đăng nhập tài khoản bằng Google và đặt mật khẩu cho tài khoản trước khi quên mật khẩu.`);
                 } else if (res.data.status.responseCode === RESPONSE_CODE_DATA_NOT_FOUND) {
                     notification('error', `Tài khoản không tồn tại.`);
+                } else if (res.data.status.responseCode === RESPONSE_CODE_RESET_PASSWORD_ACCOUNT_BANNED) {
+                    notification('error', `Tài khoản đang bị khóa không thể đặt lại mật khẩu.`);
                 } else {
                     notification('error', `Vui lòng kiểm tra lại.`);
                 }
