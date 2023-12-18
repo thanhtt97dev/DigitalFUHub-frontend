@@ -39,7 +39,7 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
         // init fields form
         setNote(data.note ? data.note : '')
         //
-        if (data.note === "") {
+        if (data.note === undefined || data.note.trim() === "") {
             setConfirmLoading(false)
             return;
         }
@@ -56,6 +56,7 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     callBack()
+                    notification("success", "Đơn hàng được chuyển sang khiếu nại.")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
                     notification("error", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
                 } else {
@@ -104,7 +105,7 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
             </Button>
 
             <Modal
-                title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Bạn có chắc chắn muốn khiếu nại đơn hàng không?</>}
+                title={<div><ExclamationCircleFilled style={{ color: "#faad14" }} /> Bạn có chắc chắn muốn khiếu nại đơn hàng không?</div>}
                 open={openModal}
                 onOk={handleSubmit}
                 onCancel={() => setOpenModal(false)}
@@ -125,12 +126,18 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
                     >
                         <Row>
                             <Col offset={1} span={23}>
-                                <Form.Item name="note" label={"Lý do"}
+                                <Form.Item name="note" label={"Lý do"} required
                                     rules={[
-                                        {
-                                            required: true,
-                                            message: 'Lý do không được để trống'
-                                        }
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                const data = !value ? "" : value.trim();
+                                                if (!data) {
+                                                    return Promise.reject(new Error('Lý do không được để trống.'));
+                                                } else {
+                                                    return Promise.resolve();
+                                                }
+                                            },
+                                        }),
                                     ]}
                                 >
                                     <TextArea rows={4} placeholder="Nhập thông tin lý do chỉnh sửa trạng thái đơn hàng" maxLength={200} />

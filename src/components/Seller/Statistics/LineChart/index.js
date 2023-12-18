@@ -196,9 +196,9 @@ function LineChart() {
                             <Select.Option value={ORDER_STATUS_ALL}>Tất cả</Select.Option>
                             <Select.Option value={ORDER_WAIT_CONFIRMATION}>Chờ xác nhận</Select.Option>
                             <Select.Option value={ORDER_CONFIRMED}>Đã xác nhận</Select.Option>
-                            <Select.Option value={ORDER_COMPLAINT}>Khiếu nại</Select.Option>
+                            <Select.Option value={ORDER_COMPLAINT}>Đang khiếu nại</Select.Option>
                             <Select.Option value={ORDER_REJECT_COMPLAINT}>Từ chối khiếu nại</Select.Option>
-                            <Select.Option value={ORDER_DISPUTE}>Tranh chấp</Select.Option>
+                            <Select.Option value={ORDER_DISPUTE}>Đang tranh chấp</Select.Option>
                             <Select.Option value={ORDER_SELLER_REFUNDED}>Hoàn trả tiền</Select.Option>
                             <Select.Option value={ORDER_SELLER_VIOLATES}>Người bán vi phạm</Select.Option>
                         </Select>

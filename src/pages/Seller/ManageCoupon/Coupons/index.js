@@ -107,7 +107,7 @@ function Coupons() {
                     return navigate('/shopBanned')
                 }
                 else {
-                    notification('error', 'Đã có lỗi xảy ra.')
+                    notification('error', 'Vui lòng kiểm tra lại.')
                 }
             })
             .catch((err) => {

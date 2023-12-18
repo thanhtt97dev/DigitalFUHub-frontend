@@ -17,7 +17,7 @@ function OrdersDispute({ status, loading, setLoading, onActiveTabKey = () => { }
     const [orders, setOrders] = useState([]);
     const nextOffset = useRef(0)
     const [loadingMoreData, setLoadingMoreData] = useState(false);
-    const [loadingButton, setLoadingButton] = useState(false);
+    const [buttonLoading, setButtonLoading] = useState(false);
     useEffect(() => {
         if (nextOffset.current !== -1) {
             if (nextOffset.current !== 0) {
@@ -64,7 +64,7 @@ function OrdersDispute({ status, loading, setLoading, onActiveTabKey = () => { }
             orderId: orderId,
             statusId: ORDER_CONFIRMED
         }
-        setLoadingButton(true);
+        setButtonLoading(true);
         customerUpdateStatusOrder(dataBody)
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -84,7 +84,7 @@ function OrdersDispute({ status, loading, setLoading, onActiveTabKey = () => { }
             .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
             .finally(() => {
                 const idTimeout = setTimeout(() => {
-                    setLoadingButton(false);
+                    setButtonLoading(false);
                     clearTimeout(idTimeout);
                 }, 500)
             })
@@ -108,7 +108,7 @@ function OrdersDispute({ status, loading, setLoading, onActiveTabKey = () => { }
                                 totalCouponDiscount={v.totalCouponDiscount}
                                 totalPayment={v.totalPayment}
                                 orderDetails={v.orderDetails}
-                                loadingButton={loadingButton}
+                                buttonLoading={buttonLoading}
                                 onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
                             />
                         </Col>

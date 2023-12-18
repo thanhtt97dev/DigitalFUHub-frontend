@@ -207,7 +207,7 @@ const Prices = ({ dataPropPriceComponent }) => {
                     const data = res.data;
                     if (data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         unLoadingButtonBuy();
-                        notification("success", "Thành công");
+                        notification("success", "Mua hàng thành công");
                         navigate('/history/order');
                         // delete cart selecteds
                         deleteCart(dataRemoveCart)

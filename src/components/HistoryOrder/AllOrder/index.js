@@ -12,7 +12,7 @@ import logoFPT from '~/assets/images/fpt-logo.jpg'
 
 const { Text, Title, Paragraph } = Typography;
 
-function AllOrder({ status = 0, loading, setLoading }) {
+function AllOrder({ status = 0, loading, setLoading, onActiveTabKey = () => { } }) {
     const notification = useContext(NotificationContext);
     const [paramSearch, setParamSearch] = useState({
         userId: getUserId(),
@@ -73,6 +73,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
             order.statusId = ORDER_COMPLAINT
             return [...prev]
         })
+        onActiveTabKey("tab4");
     }
 
     const handleOrderComplete = (orderId, shopId) => {
@@ -89,9 +90,11 @@ function AllOrder({ status = 0, loading, setLoading }) {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     setOrders(prev => {
                         const order = prev.find((value) => value.orderId === orderId);
-                        order.statusId = dataBody.statusId
+                        order.statusId = dataBody.statusId;
+                        order.dateConfirmed = new Date();
                         return [...prev]
                     })
+                    onActiveTabKey("tab2")
                     notification("success", "Xác nhận đơn hàng thành công.")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
                     notification("error", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
@@ -183,6 +186,7 @@ function AllOrder({ status = 0, loading, setLoading }) {
                                     orderId={v.orderId}
                                     note={v.note}
                                     orderDate={v.orderDate}
+                                    dateConfirmed={v.dateConfirmed}
                                     shopId={v.shopId}
                                     shopName={v.shopName}
                                     statusId={v.statusId}

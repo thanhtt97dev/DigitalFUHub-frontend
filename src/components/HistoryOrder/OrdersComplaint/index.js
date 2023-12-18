@@ -8,6 +8,7 @@ import { getUserId } from "~/utils";
 
 function OrdersComplaint({ status, loading, setLoading, onActiveTabKey = () => { } }) {
     const notification = useContext(NotificationContext);
+    const [buttonLoading, setButtonLoading] = useState(false);
     const [paramSearch, setParamSearch] = useState({
         userId: getUserId(),
         limit: 5,
@@ -63,6 +64,7 @@ function OrdersComplaint({ status, loading, setLoading, onActiveTabKey = () => {
             orderId: orderId,
             statusId: 2
         }
+        setButtonLoading(true);
         customerUpdateStatusOrder(dataBody)
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -80,6 +82,12 @@ function OrdersComplaint({ status, loading, setLoading, onActiveTabKey = () => {
                 }
             })
             .catch(err => { notification("error", "Đã có lỗi xảy ra.") })
+            .finally(() => {
+                const idTimeout = setTimeout(() => {
+                    setButtonLoading(false);
+                    clearTimeout(idTimeout);
+                }, 500)
+            })
     }
     return (<div>
         {!loading ?
@@ -100,6 +108,7 @@ function OrdersComplaint({ status, loading, setLoading, onActiveTabKey = () => {
                                 totalCouponDiscount={v.totalCouponDiscount}
                                 totalPayment={v.totalPayment}
                                 orderDetails={v.orderDetails}
+                                buttonLoading={buttonLoading}
                                 onOrderComplete={() => handleOrderComplete(v.orderId, v.shopId)}
                             />
                         </Col>

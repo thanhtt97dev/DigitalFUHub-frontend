@@ -35,6 +35,7 @@ function CardOrderItem({
     orderId,
     note,
     orderDate,
+    dateConfirmed,
     shopId,
     shopName,
     conversationId,
@@ -322,7 +323,7 @@ function CardOrderItem({
                                                     </Title>
                                                 </Link>
                                             </Col>
-                                            {!v.isFeedback && statusId === ORDER_CONFIRMED && getDistanceDayTwoDate(orderDate, new Date()) <= LIMIT_TIME_TO_FEEDBACK && <Col offset={1} span={6}>
+                                            {!v.isFeedback && statusId === ORDER_CONFIRMED && dateConfirmed && getDistanceDayTwoDate(dateConfirmed, new Date()) <= LIMIT_TIME_TO_FEEDBACK && <Col offset={1} span={6}>
                                                 <Row justify="end">
                                                     <Button type="primary" size="small" onClick={() => { orderDetailRef.current = v.orderDetailId; showModalFeedback(); }}>Đánh giá</Button>
                                                 </Row>

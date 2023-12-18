@@ -135,6 +135,7 @@ function OrdersConfirmed({ status, loading, setLoading }) {
                                     orderId={v.orderId}
                                     note={v.note}
                                     orderDate={v.orderDate}
+                                    dateConfirmed={v.dateConfirmed}
                                     shopId={v.shopId}
                                     shopName={v.shopName}
                                     conversationId={v.conversationId}

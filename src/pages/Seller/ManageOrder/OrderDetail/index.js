@@ -293,7 +293,7 @@ function OrderDetailSeller() {
                 } else if (res.data.status.responseCode === RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE) {
                     notification("error", "Trạng thái đơn hàng đã được thay đổi trước đó! Vui lòng tải lại trang!")
                 } else {
-                    notification("error", "Đã có lỗi xảy ra.")
+                    notification("error", "Vui lòng kiểm tra lại.")
                 }
             })
             .catch((err) => {
@@ -388,7 +388,7 @@ function OrderDetailSeller() {
             </Spin>
         </Modal>
         <Modal
-            title={<><ExclamationCircleFilled style={{ color: "#faad14" }} />Bạn có chắc chắn muốn hoàn trả tiền người mua</>}
+            title={<div><ExclamationCircleFilled style={{ color: "#faad14" }} /> Bạn có chắc chắn muốn hoàn trả tiền người mua</div>}
             footer={null}
             open={isModalOpen}
             onOk={handleCancelModal}
@@ -419,7 +419,7 @@ function OrderDetailSeller() {
                                 }),
                             ]}
                         >
-                            <TextArea placeholder="Nhập lý do hoàn trả tiền đơn hàng" />
+                            <TextArea rows={4} placeholder="Nhập lý do hoàn trả tiền đơn hàng" />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -540,22 +540,23 @@ function OrderDetailSeller() {
                                                                         }
                                                                     </Row>
                                                                 </Col>
-                                                                <Col span={24}>
-                                                                    <Row justify='end'>
-                                                                        <Col span={24}>
-                                                                            <Descriptions bordered items={[
-                                                                                {
-                                                                                    key: '1',
-                                                                                    label: <label>Thông tin tài khoản <Tooltip title={hideAssetInformationOrder[i] === true ? "Hiển thị" : "Ẩn"}>{hideAssetInformationOrder[i] === true ? <EyeOutlined style={{ cursor: 'pointer' }} onClick={() => handleDisplayAssetInformation(i)} /> : <EyeInvisibleOutlined style={{ cursor: 'pointer' }} onClick={() => handleHideAssetInformation(i)} />}</Tooltip></label>,
-                                                                                    labelStyle: { 'text-align': 'right', width: '30%', fontWeight: 'bold' },
-                                                                                    span: '3',
-                                                                                    children: v?.assetInformations?.map((v, i) => (<><Text key={i}>{hideAssetInformationOrder[i] === true ? "******" : v}</Text><br /></>))
-                                                                                },
-                                                                            ]} />
-                                                                        </Col>
-                                                                    </Row>
-                                                                </Col>
+
                                                             </Row>
+                                                        </Col>
+                                                    </Row>
+                                                </Col>
+                                                <Col span={24}>
+                                                    <Row justify='end'>
+                                                        <Col span={24}>
+                                                            <Descriptions bordered items={[
+                                                                {
+                                                                    key: '1',
+                                                                    label: <label>Thông tin tài khoản <Tooltip title={hideAssetInformationOrder[i] === true ? "Hiển thị" : "Ẩn"}>{hideAssetInformationOrder[i] === true ? <EyeOutlined style={{ cursor: 'pointer' }} onClick={() => handleDisplayAssetInformation(i)} /> : <EyeInvisibleOutlined style={{ cursor: 'pointer' }} onClick={() => handleHideAssetInformation(i)} />}</Tooltip></label>,
+                                                                    labelStyle: { 'text-align': 'right', width: '30%', fontWeight: 'bold' },
+                                                                    span: '3',
+                                                                    children: v?.assetInformations?.map((v, i) => (<><Text key={i}>{hideAssetInformationOrder[i] === true ? "******" : v}</Text><br /></>))
+                                                                },
+                                                            ]} />
                                                         </Col>
                                                     </Row>
                                                 </Col>

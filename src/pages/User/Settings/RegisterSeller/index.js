@@ -80,7 +80,7 @@ function RegisterSeller() {
                     signOut();
                     return navigate('/login');
                 } else if (res.data.status.responseCode === RESPONSE_CODE_BALANCE_NOT_ENOUGH) {
-                    notification('error', `Số dư tài khoản không đủ, phí đăng ký bán hàng là ${formatPrice(res.data.result)}.`);
+                    notification('error', `Số dư tài khoản không đủ, phí đăng ký bán hàng là ${formatPrice(parseInt(res.data.result))}.`);
                 }
                 else {
                     notification('error', "Vui lòng kiểm tra lại.");
@@ -131,7 +131,7 @@ function RegisterSeller() {
                     form={form}
                 >
                     <Row justify="center">
-                        <Col offset={3} span={5}>
+                        <Col >
                             <Space align="center" direction="vertical" >
                                 {fileList.length > 0 ?
                                     <Avatar size={100} src={imgBase64} />
@@ -154,16 +154,16 @@ function RegisterSeller() {
                                         accept=".png, .jpeg, .jpg"
                                     >
                                         <Button icon={<UploadOutlined />}>Tải lên</Button>
-                                        <div style={{ textAlign: 'center', marginTop: "5px" }}> Ảnh đại diện</div>
+                                        <div style={{ textAlign: 'center', marginTop: "5px" }}><span style={{ color: 'red' }}>*</span> Ảnh đại diện</div>
                                     </Upload>
                                 </Form.Item>
                             </Space>
                         </Col>
                     </Row>
                     <Row justify="center">
-                        <Col span={14} style={{ borderRight: '1px solid rgb(232, 232, 232)' }}>
+                        <Col span={14} >
                             <Row>
-                                <Col span={4}><div>Tên cửa hàng</div></Col>
+                                <Col span={4}><div><span style={{ color: 'red' }}>*</span> Tên cửa hàng</div></Col>
                                 <Col span={16}>
                                     <Form.Item name='shopName'
                                         rules={[
@@ -197,7 +197,7 @@ function RegisterSeller() {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col span={4} ><div>Mô tả</div></Col>
+                                <Col span={4} ><div><span style={{ color: 'red' }}>*</span> Mô tả</div></Col>
                                 <Col span={16}>
                                     <Form.Item name='shopDescription' required
                                         rules={[
@@ -238,8 +238,8 @@ function RegisterSeller() {
 
                             </Row>
 
-                            <Row style={{ marginTop: "20px" }}>
-                                <Col offset={11}>
+                            <Row style={{ marginTop: "20px" }} justify="center">
+                                <Col>
                                     <Form.Item>
                                         <Button type="primary" htmlType="submit" disabled={acceptPolicy === false}>Đăng ký</Button>
                                     </Form.Item>

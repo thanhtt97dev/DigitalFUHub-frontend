@@ -90,7 +90,7 @@ function OrderDetail() {
                     }
                     setHideAssetInformationOrder(lsIndexOrderDetail);
                 } else {
-                    notification("error", "Đã có lỗi xảy ra.")
+                    notification("error", "Vui lòng kiểm tra lại.")
                     return navigate("/history/order");
                 }
             })
@@ -323,7 +323,7 @@ function OrderDetail() {
     }
     const handleDisplayAssetInformation = (index) => {
         setHideAssetInformationOrder(prev => {
-            let newValue = [prev];
+            let newValue = [...prev];
             newValue[index] = false;
             return newValue;
         })
@@ -423,6 +423,7 @@ function OrderDetail() {
                                         return (
                                             <OrderDetailItem
                                                 key={i}
+                                                dateConfirmed={order?.dateConfirmed}
                                                 orderDetail={v}
                                                 hideAssetInformation={hideAssetInformationOrder[i] === undefined ? true : hideAssetInformationOrder[i]}
                                                 statusId={order.statusId}

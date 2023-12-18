@@ -49,7 +49,7 @@ function SignUp() {
                 return navigate('/login')
             })
             .catch(err => {
-                notification("error", "Đã có lỗi xảy ra, vui lòng thử lại.")
+                notification("error", "Đã có lỗi xảy ra vui lòng thử lại sau.")
             })
             .finally(() => {
                 const idTimeout = setTimeout(() => {

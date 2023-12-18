@@ -2,10 +2,10 @@ import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { Button, Col, Descriptions, Image, Rate, Row, Space, Tooltip, Typography } from "antd";
 import { memo } from "react";
 import { Link } from "react-router-dom";
-import { ORDER_CONFIRMED } from "~/constants";
-import { formatPrice } from "~/utils";
+import { LIMIT_TIME_TO_FEEDBACK, ORDER_CONFIRMED } from "~/constants";
+import { formatPrice, getDistanceDayTwoDate } from "~/utils";
 const { Text, Title } = Typography;
-function OrderDetailItem({ orderDetail, statusId, hideAssetInformation, handleDisplayAssetInformation = () => { },
+function OrderDetailItem({ dateConfirmed, orderDetail, statusId, hideAssetInformation, handleDisplayAssetInformation = () => { },
     handleHideAssetInformation = () => { }, handleFeedbackOrder = () => { } }) {
     return (<>
         <Col span={24}>
@@ -31,7 +31,7 @@ function OrderDetailItem({ orderDetail, statusId, hideAssetInformation, handleDi
                                         </Title>
                                     </Link>
                                 </Col>
-                                {!orderDetail.isFeedback && statusId === ORDER_CONFIRMED && <Col offset={1} span={6}>
+                                {!orderDetail.isFeedback && statusId === ORDER_CONFIRMED && dateConfirmed && getDistanceDayTwoDate(dateConfirmed, new Date()) <= LIMIT_TIME_TO_FEEDBACK && <Col offset={1} span={6}>
                                     <Row justify="end">
                                         <Button type="primary" size="small" onClick={handleFeedbackOrder}>Đánh giá</Button>
                                     </Row>
