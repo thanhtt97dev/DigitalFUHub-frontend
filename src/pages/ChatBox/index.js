@@ -147,6 +147,7 @@ const ChatBox = () => {
                             // Set avt default for empty avt
                             const newConversation = conversations.map((conversation) => {
                                 const newUsers = conversation.users.map((user) => {
+
                                     if (user.avatar.length === 0) {
                                         return { ...user, avatar: fptImage }
                                     }

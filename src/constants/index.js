@@ -15,6 +15,10 @@ import LPB from '~/assets/images/bank/LPB.png'
 
 export const ADMIN_USER_ID = 1;
 
+export const ADMIN_ROLE_NUMBER = 1;
+export const CUSTOMER_ROLE_NUMBER = 2;
+export const SELLER_ROLE_NUMBER = 3;
+
 export const ADMIN_ROLE = 'Admin';
 export const CUSTOMER_ROLE = 'Customer';
 export const SELLER_ROLE = 'Seller';
@@ -274,3 +278,10 @@ export const UPLOAD_FILE_SIZE_LIMIT = 2 * 1024 * 1024;
 
 export const RESPONSE_CODE_NOT_FEEDBACK_AGAIN = "FB_01";
 export const LIMIT_TIME_TO_FEEDBACK = 7;
+
+//transaction internal status
+export const TRANSACTION_TYPE_INTERNAL_PAYMENT = 1
+export const TRANSACTION_TYPE_INTERNAL_RECEIVE_PAYMENT = 2
+export const TRANSACTION_TYPE_INTERNAL_RECEIVE_REFUND = 3
+export const TRANSACTION_TYPE_INTERNAL_RECEIVE_PROFIT = 4
+export const TRANSACTION_INTERNAL_TYPE_SELLER_REGISTRATION_FEE = 5

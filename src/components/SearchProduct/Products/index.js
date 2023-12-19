@@ -15,7 +15,7 @@ const styleOriginPrice = { fontSize: 14 };
 const styleDiscountPrice = { color: '#ee4d2d', fontSize: '1rem', marginTop: 25 };
 const opacityDisabledStyle = { opacity: 0.5 };
 const styleSpaceContainerProductItem = { padding: 8, height: 124, width: '100%' };
-const styleProductName = { fontSize: 12, color: '#000000', cursor: 'pointer' };
+const styleProductName = { fontSize: 12, color: '#000000', cursor: 'pointer', whiteSpace: 'nowrap', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis' };
 ///
 function Products({ totalItems = 0, products = [], page = 1, onSelectPage = () => { } }) {
     const navigate = useNavigate();
@@ -43,7 +43,7 @@ function Products({ totalItems = 0, products = [], page = 1, onSelectPage = () =
                                 <img style={styleImage} src={product.thumbnail} alt="product" />
                             </div>
                             <Space direction="vertical" style={styleSpaceContainerProductItem}>
-                                <p className={cx('three-dot-overflow-two-line-wrapper')} style={styleProductName}>{product.productName}</p>
+                                <p style={styleProductName} title={product.productName}>{product.productName}</p>
                                 {
                                     product.productVariant?.discount !== 0 ? (<>
                                         <div className={cx('discount-style')}><p style={{ fontSize: 10 }}>{product.productVariant.discount}% giảm</p></div>
