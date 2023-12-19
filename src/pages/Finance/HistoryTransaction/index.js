@@ -28,12 +28,17 @@ const { RangePicker } = DatePicker;
 const columns = [
     {
         title: 'Mã đơn hàng',
-        dataIndex: 'orderId',
-        width: '9%',
-        render: (orderId,) => {
-            return (
-                <Link to={`/history/order/${orderId}`}>{orderId}</Link>
-            )
+        dataIndex: 'transactionInternalTypeId',
+        width: '6%',
+        render: (transactionInternalTypeId, record) => {
+            if (transactionInternalTypeId === TRANSACTION_TYPE_INTERNAL_PAYMENT) {
+                return <Link to={`/history/order/${record.orderId}`}>{record.orderId}</Link>
+            } else if (transactionInternalTypeId === TRANSACTION_TYPE_INTERNAL_RECEIVE_PAYMENT) {
+                return <Link to={`/seller/order/${record.orderId}`}>{record.orderId}</Link>
+            } else if (transactionInternalTypeId === TRANSACTION_TYPE_INTERNAL_RECEIVE_REFUND) {
+                return <Link to={`/history/order/${record.orderId}`}>{record.orderId}</Link>
+            } else if (transactionInternalTypeId === TRANSACTION_INTERNAL_TYPE_SELLER_REGISTRATION_FEE) {
+            }
         }
     },
     {
