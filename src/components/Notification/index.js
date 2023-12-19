@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useAuthUser } from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
 import { BellOutlined } from '@ant-design/icons';
-import { Badge, Dropdown, Menu, Alert, Button, Space, notification } from 'antd';
+import { Badge, Dropdown, Menu, Alert, Button, Space, notification, List, Divider } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -150,52 +150,61 @@ function Notification() {
                 <Dropdown
                     overlay={
                         <>
-                            <Space style={{ backgroundColor: 'white', width: '400px', padding: '10px 0' }}>
+                            <Space style={{ backgroundColor: '#ffffff', width: '400px', padding: '10px 0px' }}>
                                 <h2 style={{ marginLeft: '10px' }}>Thông báo</h2>
                                 <Button onClick={handleReadAllNotifications} type="link" style={{ position: "absolute", left: "260px", top: "10px" }}>Đánh dấu đã đọc</Button>
                             </Space>
                             {notifications.length > 0 ?
-                                <Menu style={{ width: '400px' }}>
-                                    <div style={{ minHeight: '200px', maxHeight: "500px", overflowY: 'auto' }}>
+                                <Menu
+                                    style={{
+                                        backgroundColor: "#ffffff",
+                                        borderRadius: "0px 0px 10px 10px",
+                                        boxShadow: "0 8px 8px -4px lightblue",
+                                        border: "1px gray",
+                                        minHeight: "500px",
+                                    }}
+                                >
+                                    <div style={{
+                                        minHeight: '200px',
+                                        maxHeight: "500px",
+                                        overflowY: 'auto',
+                                    }}>
                                         {notifications.map((item, index) => {
                                             return (
-                                                <Menu.Item key={index}>
-                                                    <Alert
-                                                        style={{ backgroundColor: 'white', width: '100%', height: '20', border: 'none' }}
-                                                        message={
-                                                            item.isReaded ? (
-                                                                <div onClick={() => handleOpenNotification(item)}>
-                                                                    <Alert
-                                                                        style={{ backgroundColor: 'white', width: '100%', height: '20', border: 'none' }}
-                                                                        message={
-                                                                            <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                                                <b style={{ flex: 1, margin: 0 }}>{item.title}</b>
-                                                                                <span style={{ fontSize: 10, margin: '0 4px', color: 'blue' }}>{moment(item.dateCreated).fromNow()}</span>
-                                                                            </p>
-                                                                        }
-                                                                        description={<p>{item.content}</p>}
-                                                                        type="info"
-                                                                    />
-                                                                </div>
-                                                            ) : (
-                                                                <div onClick={() => handleOpenNotification(item)}>
-                                                                    <Alert
-                                                                        style={{ backgroundColor: 'white', width: '100%', minHeight: '100px', border: 'none' }}
-                                                                        message={
-                                                                            <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                                                <b style={{ flex: 1, margin: 0 }}>{item.title}</b>
-                                                                                <p style={{ fontSize: 10, margin: '0 4px', color: 'blue' }}>{moment(item.dateCreated).fromNow()}</p>
-                                                                                <FontAwesomeIcon icon={faCircle} style={{ color: "#0866ff", position: "absolute", top: "55px", left: "320px" }} />
-                                                                            </p>
-                                                                        }
-                                                                        description={<b>{item.content}</b>}
-                                                                        type="info"
-                                                                    />
-                                                                </div>
-                                                            )
-                                                        }
-                                                    />
-                                                </Menu.Item>
+                                                <>
+                                                    {
+                                                        item.isReaded ? (
+                                                            <div onClick={() => handleOpenNotification(item)}>
+                                                                <Alert
+                                                                    style={{ backgroundColor: 'white', width: '95%', height: '20', margin: "0 auto", marginBottom: "5px", marginTop: "5px", border: "1px solid whiteSmoke" }}
+                                                                    message={
+                                                                        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: "0 auto" }}>
+                                                                            <p style={{ flex: 1, margin: 0, }}>{item.title}</p>
+                                                                            <span style={{ fontSize: 10, margin: '0 4px', color: 'blue' }}>{moment(item.dateCreated).fromNow()}</span>
+                                                                        </p>
+                                                                    }
+                                                                    description={<p>{item.content}</p>}
+                                                                    type="info"
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <div onClick={() => handleOpenNotification(item)}>
+                                                                <Alert
+                                                                    style={{ backgroundColor: '#2389f017', width: '95%', minHeight: '100px', border: 'none', margin: "0 auto", marginBottom: "5px", marginTop: "5px" }}
+                                                                    message={
+                                                                        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                            <b style={{ flex: 1, margin: 0 }}>{item.title}</b>
+                                                                            <p style={{ fontSize: 10, margin: '0 4px', color: 'blue' }}>{moment(item.dateCreated).fromNow()}</p>
+                                                                            <FontAwesomeIcon icon={faCircle} style={{ color: "#0866ff", position: "absolute", top: "55px", left: "320px" }} />
+                                                                        </p>
+                                                                    }
+                                                                    description={<b>{item.content}</b>}
+                                                                    type="info"
+                                                                />
+                                                            </div>
+                                                        )
+                                                    }
+                                                </>
                                             )
                                         })}
                                     </div>
@@ -213,7 +222,17 @@ function Notification() {
                                     </Menu.Item>
                                 </Menu>
                                 :
-                                <></>
+                                <List
+                                    style={{
+                                        backgroundColor: "#ffffff",
+                                        borderRadius: "0px 10px",
+                                        boxShadow: "0 8px 8px -4px lightblue",
+                                        border: "1px gray",
+                                        minHeight: "500px"
+                                    }}
+                                >
+
+                                </List>
                             }
                         </>
                     }

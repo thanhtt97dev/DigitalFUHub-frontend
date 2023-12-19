@@ -3,15 +3,20 @@ import React, { useState } from "react";
 import { Card } from "antd";
 import HistoryDeposit from "./HistoryDeposit";
 import HistoryWithdraw from "./HistoryWithdraw";
+import HistoryTransaction from "./HistoryTransaction";
 
 function Finance() {
     const initialTabList = [
         {
             key: 'tab1',
-            tab: 'Lịch sử nạp tiền',
+            tab: 'Lịch sử giao dịch',
         },
         {
             key: 'tab2',
+            tab: 'Lịch sử nạp tiền',
+        },
+        {
+            key: 'tab3',
             tab: 'Lịch sử rút tiền',
         }
     ];
@@ -20,8 +25,9 @@ function Finance() {
         setTabKey(key);
     };
     const contentList = {
-        tab1: (<HistoryDeposit />),
-        tab2: (<HistoryWithdraw />),
+        tab1: (<HistoryTransaction />),
+        tab2: (<HistoryDeposit />),
+        tab3: (<HistoryWithdraw />),
     };
 
 
