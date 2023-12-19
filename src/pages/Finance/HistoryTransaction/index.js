@@ -3,9 +3,6 @@ import React, { useEffect, useState, useContext } from "react";
 import { Card, Table, Select, Button, Form, Input, DatePicker, Tag, Row, Col, Space } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWallet, faUserShield } from "@fortawesome/free-solid-svg-icons"
-
 
 import { NotificationContext } from "~/context/UI/NotificationContext";
 
@@ -21,7 +18,6 @@ import {
     TRANSACTION_TYPE_INTERNAL_PAYMENT,
     TRANSACTION_TYPE_INTERNAL_RECEIVE_PAYMENT,
     TRANSACTION_TYPE_INTERNAL_RECEIVE_REFUND,
-    TRANSACTION_TYPE_INTERNAL_RECEIVE_PROFIT,
     TRANSACTION_INTERNAL_TYPE_SELLER_REGISTRATION_FEE
 } from "~/constants";
 
@@ -46,15 +42,13 @@ const columns = [
         width: '15%',
         render: (paymentAmount, record) => {
             if (record.transactionInternalTypeId === TRANSACTION_TYPE_INTERNAL_PAYMENT) {
-                return <span style={{ color: "#3b7be2" }}>{formatPrice(paymentAmount)}</span>
+                return <span style={{ color: "#3b7be2" }}> - {formatPrice(paymentAmount)}</span>
             } else if (record.transactionInternalTypeId === TRANSACTION_TYPE_INTERNAL_RECEIVE_PAYMENT) {
-                return <span style={{ color: "#cf1322" }}>{formatPrice(paymentAmount)}</span>
+                return <span style={{ color: "#cf1322" }}> + {formatPrice(paymentAmount)}</span>
             } else if (record.transactionInternalTypeId === TRANSACTION_TYPE_INTERNAL_RECEIVE_REFUND) {
-                return <span style={{ color: "#8c66c8" }}>{formatPrice(paymentAmount)}</span>
-            } else if (record.transactionInternalTypeId === TRANSACTION_TYPE_INTERNAL_RECEIVE_PROFIT) {
-                return <span style={{ color: "#4ea927" }}> <FontAwesomeIcon icon={faWallet} /> {formatPrice(paymentAmount)}</span>
+                return <span style={{ color: "green" }}> + {formatPrice(paymentAmount)}</span>
             } else if (record.transactionInternalTypeId === TRANSACTION_INTERNAL_TYPE_SELLER_REGISTRATION_FEE) {
-                return <span style={{ color: "orange" }}>{formatPrice(paymentAmount)}</span>
+                return <span style={{ color: "orange" }}> - {formatPrice(paymentAmount)}</span>
             }
         }
     },
@@ -78,9 +72,7 @@ const columns = [
             } else if (transactionInternalTypeId === TRANSACTION_TYPE_INTERNAL_RECEIVE_PAYMENT) {
                 return <Tag color="#cf1322">Nhận tiền hàng</Tag>
             } else if (transactionInternalTypeId === TRANSACTION_TYPE_INTERNAL_RECEIVE_REFUND) {
-                return <Tag color="#8c66c8">Nhận tiền hoàn khiếu nại</Tag>
-            } else if (transactionInternalTypeId === TRANSACTION_TYPE_INTERNAL_RECEIVE_PROFIT) {
-                return <Tag color="#4ea927">Lợi nhuận</Tag>
+                return <Tag color="#228B22">Nhận tiền hoàn khiếu nại</Tag>
             } else if (transactionInternalTypeId === TRANSACTION_INTERNAL_TYPE_SELLER_REGISTRATION_FEE) {
                 return <Tag color="orange">Phí đăng kí bán hàng</Tag>
             }
