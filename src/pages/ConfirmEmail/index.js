@@ -6,6 +6,8 @@ import { confirmEmail, generateTokenConfirmEmail } from "~/api/user";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { useContext } from "react";
 import { RESPONSE_CODE_CONFIRM_PASSWORD_IS_CONFIRMED, RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_SUCCESS } from "~/constants";
+import bannerLogin from '~/assets/images/banner_login.jpg'
+
 function ConfirmEmail() {
     const notification = useContext(NotificationContext);
     const [form] = Form.useForm();
@@ -65,7 +67,7 @@ function ConfirmEmail() {
                 overflow: 'hidden',
             }}>
                 <Col>
-                    <img style={{ height: '100%' }} alt="" src={'https://bcp.cdnchinhphu.vn/Uploaded/phungthithuhuyen/2020_05_21/5542_1604_thuong_mai_dt.jpg'} />
+                    <img style={{ height: '100%' }} alt="" src={bannerLogin} />
                 </Col>
                 <Col>
                     <Form

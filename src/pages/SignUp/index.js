@@ -14,7 +14,7 @@ import { encryptPassword, regexPattern } from '~/utils';
 import { REGEX_PASSWORD_SIGN_UP, REGEX_USERNAME_SIGN_UP, RESPONSE_CODE_SUCCESS } from '~/constants';
 import { NotificationContext } from '~/context/UI/NotificationContext';
 import debounce from "debounce-promise";
-
+import bannerSignup from "~/assets/images/banner_signup.png"
 const debounceCheckExistUsername = debounce((data) => {
     const res = checkExistUsername(data);
     return Promise.resolve({ res: res });
@@ -75,7 +75,7 @@ function SignUp() {
                     paddingRight: '1em'
                 }}>
                     <Col>
-                        <img style={{ height: '100%', width: '100%' }} alt="" src={'https://tuyensinhdonga.edu.vn/wp-content/uploads/2021/08/nganh-thuong-mai-dien-tu.png'} />
+                        <img style={{ height: '100%', width: '100%' }} alt="" src={bannerSignup} />
                     </Col>
                     <Col style={{
                         marginInlineStart: '1em'

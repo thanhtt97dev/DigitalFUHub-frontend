@@ -5,6 +5,8 @@ import { NotificationContext } from "~/context/UI/NotificationContext";
 import { useContext } from "react";
 import { RESPONSE_CODE_DATA_NOT_FOUND, RESPONSE_CODE_RESET_PASSWORD_ACCOUNT_BANNED, RESPONSE_CODE_RESET_PASSWORD_NOT_CONFIRM, RESPONSE_CODE_RESET_PASSWORD_SIGNIN_GOOGLE, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { Link } from "react-router-dom";
+import bannerLogin from '~/assets/images/banner_login.jpg'
+
 function ResetPassword() {
     const notification = useContext(NotificationContext);
     const [form] = Form.useForm();
@@ -50,7 +52,7 @@ function ResetPassword() {
                 overflow: 'hidden',
             }}>
                 <Col>
-                    <img style={{ height: '100%' }} alt="" src={'https://bcp.cdnchinhphu.vn/Uploaded/phungthithuhuyen/2020_05_21/5542_1604_thuong_mai_dt.jpg'} />
+                    <img style={{ height: '100%' }} alt="" src={bannerLogin} />
                 </Col>
                 <Col style={{ padding: '20px ' }}>
                     <Form

@@ -9,6 +9,7 @@ import { login } from '~/api/user';
 import { saveDataAuthToCookies, removeDataAuthInCookies, getUser, encryptPassword } from '~/utils';
 import { ADMIN_ROLE, NOT_HAVE_MEANING_FOR_TOKEN, NOT_HAVE_MEANING_FOR_TOKEN_EXPRIES } from '~/constants';
 import GoogleSignIn from '~/components/GoogleSignIn';
+import bannerLogin from '~/assets/images/banner_login.jpg'
 // import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 //import { ADMIN_ROLE, User_ROLE } from "~/constants"
 
@@ -110,7 +111,7 @@ function Login() {
                     overflow: 'hidden'
                 }}>
                     <Col>
-                        <img style={{ height: '100%' }} alt="" src={'https://bcp.cdnchinhphu.vn/Uploaded/phungthithuhuyen/2020_05_21/5542_1604_thuong_mai_dt.jpg'} />
+                        <img style={{ height: '100%' }} alt="" src={bannerLogin} />
                     </Col>
                     <Col>
                         <Modal
