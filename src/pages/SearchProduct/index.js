@@ -30,7 +30,8 @@ function SearchProduct() {
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
     const [totalItems, setTotalItems] = useState(0);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [productsLoading, setProductsLoading] = useState(false);
     const [mostPopularShop, setMostPopularShop] = useState();
     const getSearchParams = useMemo(() => {
         return {
@@ -44,7 +45,7 @@ function SearchProduct() {
         }
     }, [searchParams])
     useEffect(() => {
-        setLoading(true);
+        setProductsLoading(true);
         getListProductSearch(getSearchParams)
             .then(res => {
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
@@ -62,6 +63,7 @@ function SearchProduct() {
             .finally(() => {
                 const idTimeout = setTimeout(() => {
                     setLoading(false);
+                    setProductsLoading(false);
                     clearTimeout(idTimeout)
                 }, 500)
             })
@@ -153,7 +155,11 @@ function SearchProduct() {
                                         valueSelected={parseInt(getSearchParams.sort)}
                                         onChange={handleChangeSelectSort}
                                     />
-                                    <Products products={products} totalItems={totalItems} page={parseInt(getSearchParams.page) ? parseInt(getSearchParams.page) : 1} onSelectPage={handleSelectPage} />
+                                    <Spin spinning={productsLoading} style={{ marginTop: '80px' }}>
+                                        {!productsLoading &&
+                                            <Products products={products} totalItems={totalItems} page={parseInt(getSearchParams.page) ? parseInt(getSearchParams.page) : 1} onSelectPage={handleSelectPage} />
+                                        }
+                                    </Spin>
                                 </Content>
                                 :
                                 <SearchNotFound />

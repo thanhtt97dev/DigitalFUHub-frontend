@@ -24,8 +24,7 @@ import { removeCouponSeller, getCouponsSeller, updateCouponFinish } from "~/api/
 import styles from "./Coupon.module.scss"
 import classNames from "classnames/bind";
 import { Link, useNavigate } from "react-router-dom";
-import { getShopOfSeller } from "~/api/shop";
-import { CheckUserBanContext } from "~/components/CheckAccess/CheckUserBan";
+import { CheckAccessContext } from "~/components/CheckAccess";
 const { Title } = Typography;
 
 const cx = classNames.bind(styles)
@@ -56,7 +55,7 @@ const tabList = [
 
 function Coupons() {
     const notification = useContext(NotificationContext)
-    const isShopBan = useContext(CheckUserBanContext);
+    const { isShopBan } = useContext(CheckAccessContext);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [formSearch] = Form.useForm();

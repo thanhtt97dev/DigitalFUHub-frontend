@@ -18,7 +18,7 @@ import {
 } from "~/constants";
 import { getUserId } from "~/utils"
 import { useNavigate } from "react-router-dom";
-import { CheckUserBanContext } from "~/components/CheckAccess/CheckUserBan";
+import { CheckAccessContext } from "~/components/CheckAccess";
 import { SearchOutlined } from "@ant-design/icons";
 
 
@@ -73,7 +73,7 @@ function Products() {
 
     const [loading, setLoading] = useState(false);
     const notification = useContext(NotificationContext);
-    const isShopBan = useContext(CheckUserBanContext);
+    const { isShopBan } = useContext(CheckAccessContext);
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const userId = getUserId()

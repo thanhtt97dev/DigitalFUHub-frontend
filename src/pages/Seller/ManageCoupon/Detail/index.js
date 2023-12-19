@@ -13,12 +13,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { getListOrdersByCoupon } from "~/api/order";
 import Spinning from "~/components/Spinning";
 import { NotificationContext } from "~/context/UI/NotificationContext";
-import { CheckUserBanContext } from "~/components/CheckAccess/CheckUserBan";
+import { CheckAccessContext } from "~/components/CheckAccess";
 
 
 function CouponDetail() {
     const notification = useContext(NotificationContext);
-    const isShopBan = useContext(CheckUserBanContext);
+    const { isShopBan } = useContext(CheckAccessContext);
 
     const navigate = useNavigate();
     // const notification = useContext(NotificationContext);

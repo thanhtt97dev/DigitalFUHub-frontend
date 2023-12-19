@@ -26,7 +26,7 @@ import logoFPT from '~/assets/images/fpt-logo.jpg';
 import logo from '~/assets/images/DIGITALFUHUB.png';
 import Logout from '~/components/Logout';
 import Notification from '~/components/Notification';
-import { CheckUserBanContext } from '~/components/CheckAccess/CheckUserBan';
+import { CheckAccessContext } from '~/components/CheckAccess';
 
 const cx = classNames.bind(styles);
 const { Content, Sider, Header } = Layout;
@@ -158,7 +158,7 @@ const menuItems = [
 const SellerLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
     const location = useLocation();
-    const isShopBan = useContext(CheckUserBanContext);
+    const { isShopBan } = useContext(CheckAccessContext);
     const getSelectedKey = () => {
         const path = location.pathname.replace(/[0-9]+/g, "");
         if (path[path.length - 1] === '/') {

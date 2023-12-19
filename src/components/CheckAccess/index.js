@@ -1,19 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useLayoutEffect, useState } from "react";
+import { createContext, useLayoutEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { checkShopUser } from "~/api/shop";
-import { RESPONSE_CODE_SHOP_BANNED, RESPONSE_CODE_SUCCESS } from "~/constants";
-import { NotificationContext } from "~/context/UI/NotificationContext";
-import { removeDataAuthInCookies } from "~/utils";
 import { useAuthUser, useSignOut } from "react-auth-kit";
+import { removeDataAuthInCookies } from "~/utils";
+import { RESPONSE_CODE_SHOP_BANNED } from "~/constants";
 
-function CheckShopBan({ children }) {
+export const CheckAccessContext = createContext();
+
+function CheckAccess({ children }) {
+    const [isActive, setIsActive] = useState(false);
+    const [isShopBan, setIsShopBan] = useState(false);
+    const location = useLocation();
     const signOut = useSignOut();
     const auth = useAuthUser();
     const user = auth();
-    const [isActive, setIsActive] = useState(false);
-    const notification = useContext(NotificationContext);
-    const location = useLocation();
+    // const notification = useContext(NotificationContext);
     const navigate = useNavigate();
     useLayoutEffect(() => {
         if (user === undefined || user === null) {
@@ -21,29 +23,29 @@ function CheckShopBan({ children }) {
         } else {
             checkShopUser()
                 .then(res => {
-                    if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
+                    if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
+                        setIsShopBan(true);
                         setIsActive(true);
-                    } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                        notification("error", "Cửa hàng của bạn đang bị khóa.")
-                        setIsActive(false);
-                        return navigate('/shopBanned')
                     } else {
                         setIsActive(true);
+                        setIsShopBan(false);
                     }
                 })
                 .catch(err => {
                     if (err.response.status === 401) {
                         setIsActive(false);
+                        setIsShopBan(false);
                         removeDataAuthInCookies();
                         signOut();
                         return navigate('/accessDenied')
                     } else {
                         setIsActive(true);
+                        setIsShopBan(false);
                     }
                 })
         }
     }, [location])
-    return (<>{isActive === true ? children : null}</>);
+    return (<><CheckAccessContext.Provider value={{ isShopBan, isActive }}>{children}</CheckAccessContext.Provider></>);
 }
 
-export default CheckShopBan;
+export default CheckAccess;

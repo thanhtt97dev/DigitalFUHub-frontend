@@ -46,9 +46,8 @@ import Wallet from '~/pages/User/Settings/Wallet';
 import CouponDetailCustomer from '~/components/Cart/CouponDetailCustomer';
 import ErrorPage from '~/pages/ErrorPage';
 import ShopBan from '~/pages/ShopBan';
-import CheckShopBan from '~/components/CheckAccess/CheckShopBan';
-import CheckUserBan from '~/components/CheckAccess/CheckUserBan';
 import SalesPolicy from '~/pages/Policy/SalesPolicy';
+import CheckAccess from '~/components/CheckAccess';
 
 const routesConfig = [
     {
@@ -176,35 +175,35 @@ const routesConfig = [
     {
         title: 'Seller statistic',
         path: '/seller/statistic',
-        layout: <CheckUserBan><SellerLayout /></CheckUserBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <Statistics />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon',
         path: '/seller/coupon/list',
-        layout: <CheckUserBan><SellerLayout /></CheckUserBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <Coupons />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon',
         path: '/seller/coupon/add',
-        layout: <CheckShopBan><SellerLayout /></CheckShopBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <AddCoupon />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon',
         path: '/seller/coupon/detail/:couponId',
-        layout: <CheckUserBan><SellerLayout /></CheckUserBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <CouponDetail />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon',
         path: '/seller/coupon/edit/:couponId',
-        layout: <CheckShopBan><SellerLayout /></CheckShopBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <EditCoupon />,
         role: [SELLER_ROLE],
     },
@@ -216,49 +215,49 @@ const routesConfig = [
     {
         title: 'Seller order detail',
         path: '/seller/order/:orderId',
-        layout: <CheckUserBan><SellerLayout /></CheckUserBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <OrderDetailSeller />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller All Products',
         path: '/seller/product/list',
-        layout: <CheckUserBan><SellerLayout /></CheckUserBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <Products />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller add new product',
         path: '/seller/product/new',
-        layout: <CheckShopBan><SellerLayout /></CheckShopBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <AddProduct />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller product detail (Edit)',
         path: '/seller/product/:productId',
-        layout: <CheckShopBan><SellerLayout /></CheckShopBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <EditProduct />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller products banned',
         path: '/seller/product/banned',
-        layout: <CheckUserBan><SellerLayout /></CheckUserBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <ProductsBan />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller orders',
         path: '/seller/order/list',
-        layout: <CheckUserBan><SellerLayout /></CheckUserBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <Orders />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller All Feedback',
         path: '/seller/feedback/list',
-        layout: <CheckUserBan><SellerLayout /></CheckUserBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <Feedbacks />,
         role: [SELLER_ROLE],
     },
@@ -279,7 +278,7 @@ const routesConfig = [
     {
         title: 'Seller edit shop',
         path: '/seller/shop/edit',
-        layout: <CheckShopBan><SellerLayout /></CheckShopBan>,
+        layout: <CheckAccess><SellerLayout /></CheckAccess>,
         component: <EditShop />,
         role: [SELLER_ROLE],
     },
