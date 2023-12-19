@@ -221,7 +221,6 @@ function HistoryTransaction() {
                                                 <Select.Option value={1}>Thanh toán</Select.Option>
                                                 <Select.Option value={2}>Nhận tiền hàng</Select.Option>
                                                 <Select.Option value={3}>Nhận tiền hoàn khiếu nại</Select.Option>
-                                                <Select.Option value={4}>Lợi nhuận</Select.Option>
                                                 <Select.Option value={TRANSACTION_INTERNAL_TYPE_SELLER_REGISTRATION_FEE}>Phí đăng kí bán hàng</Select.Option>
                                             </Select>
                                         </Form.Item>
