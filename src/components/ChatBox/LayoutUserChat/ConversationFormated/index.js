@@ -4,7 +4,8 @@ import SmallUserAvatar from '../../SmallUserAvatar';
 import fptImage from '~/assets/images/fpt-logo.jpg';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
 import { List, Card, Space } from 'antd';
-import { USER_CONVERSATION_TYPE_UN_READ } from '~/constants';
+import { USER_CONVERSATION_TYPE_UN_READ, ADMIN_ROLE_NUMBER } from '~/constants';
+import { FlatUiRetina } from '~/components/Icons/FlatUiRetina';
 
 ///
 const cx = classNames.bind(styles);
@@ -20,7 +21,7 @@ const ConversationFormated = ({ conversation, handleClickUser, conversationSelec
 
     const TitleFormated = ({ isGroup }) => (<>
         {
-            isGroup ? conversation.conversationName : conversation.users[0].fullname
+            isGroup ? conversation.conversationName : <Space align='center' size={3}><p>{conversation.users[0].fullname}</p> {conversation.users[0].roleId === ADMIN_ROLE_NUMBER ? <div style={{ height: '100%' }} className={cx('fex-align-item-center')}><FlatUiRetina /></div> : <></>}</Space>
         }
     </>);
 

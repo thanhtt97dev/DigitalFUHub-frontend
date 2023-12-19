@@ -179,6 +179,7 @@ const LayoutUserChat = ({ propsUserChat }) => {
                                     getFullNameUser={getFullNameUser} />
                             )}
                         />
+
                     </InfiniteScroll>
                 </div>
 
