@@ -134,7 +134,7 @@ function SignUp() {
                                                             })
                                                     })
                                                 } else {
-                                                    return Promise.reject(new Error('Tên tài khoản phải bắt đầu với kí tự chữ thường và có độ dài 6 - 12 ký tự'));
+                                                    return Promise.reject(new Error('Tên tài khoản phải bắt đầu với chữ thường, không chứa chữ hoa và có độ dài 6 - 12 ký tự'));
                                                 }
                                             } else {
                                                 return Promise.reject(new Error('Tên tài khoản không để trống'));
