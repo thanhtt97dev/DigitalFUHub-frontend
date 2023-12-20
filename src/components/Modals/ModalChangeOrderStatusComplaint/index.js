@@ -93,15 +93,7 @@ function ModalChangeOrderStatusComplaint({ orderId, shopId, style, callBack }) {
                 type="primary"
                 style={style}
                 loading={confirmLoading}>
-                {(() => {
-                    if (user.roleName === CUSTOMER_ROLE) {
-                        return "Khiếu nại"
-                    } else if (user.roleName === SELLER_ROLE) {
-                        return "Tranh chấp"
-                    } else {
-                        return;
-                    }
-                })()}
+                Khiếu nại
             </Button>
 
             <Modal

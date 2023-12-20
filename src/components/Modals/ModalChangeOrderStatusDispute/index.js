@@ -92,15 +92,7 @@ function ModalChangeOrderStatusDispute({ orderId, customerId, shopId, style, cal
                 type="primary"
                 style={style}
                 loading={btnLoading}>
-                {(() => {
-                    if (user.roleName === CUSTOMER_ROLE) {
-                        return "Khiếu nại"
-                    } else if (user.roleName === SELLER_ROLE) {
-                        return "Tranh chấp"
-                    } else {
-                        return;
-                    }
-                })()}
+                Tranh chấp
             </Button>
 
             <Modal
