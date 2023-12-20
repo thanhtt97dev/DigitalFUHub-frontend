@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import BigUserAvatar from '../BigUserAvatar';
 import classNames from 'classnames/bind';
-import fptImage from '~/assets/images/fpt-logo.jpg';
-import { Card, Space } from 'antd';
+import BigUserAvatar from '../BigUserAvatar';
+import groupDefaultImage from '~/assets/images/groupDefaultImage.jpg';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
-import { ADMIN_ROLE_NUMBER } from '~/constants';
-import { FlatUiRetina } from '~/components/Icons/FlatUiRetina';
+import { Card, Space } from 'antd';
+import { ADMIN_ROLE_ID } from '~/constants';
+import { EpCircleCheckFilled } from '../Icons';
 
 ///
 const { Meta } = Card;
@@ -47,13 +47,15 @@ const HeaderMessageChat = ({ conversationSelected }) => {
                 conversationSelected.isGroup === false ? (
                     <Meta
                         avatar={<BigUserAvatar srcAvatar={conversationSelected.users[0].avatar} isActive={conversationSelected.isOnline} />}
-                        title={<Space size={8}><p>{conversationSelected.users[0].fullname}</p>{conversationSelected.users[0].roleId === ADMIN_ROLE_NUMBER ? <div style={{ height: '100%' }} className={cx('fex-align-item-center')}><FlatUiRetina /></div> : <></>}</Space>}
+                        title={<Space size={8}>
+                            <p className={conversationSelected.users[0].roleId === ADMIN_ROLE_ID ? cx('admin-name') : {}}>{conversationSelected.users[0].fullname}</p>
+                            {conversationSelected.users[0].roleId === ADMIN_ROLE_ID ? <div style={{ height: '100%' }} className={cx('fex-align-item-center')}><EpCircleCheckFilled /></div> : <></>}</Space>}
                         description={conversationSelected.isOnline ? <p>Đang hoạt động</p> : <p>Hoạt động {lastTimeOnline}</p>}
                     />
                 ) : (
                     <Meta
-                        avatar={<BigUserAvatar srcAvatar={fptImage} isActive={conversationSelected.isOnline} />}
-                        title={conversationSelected.conversationName}
+                        avatar={<BigUserAvatar srcAvatar={groupDefaultImage} isActive={conversationSelected.isOnline} />}
+                        title={<p style={{ marginTop: 10 }}>{conversationSelected.conversationName}</p>}
                     />
                 )
             }

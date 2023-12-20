@@ -15,9 +15,10 @@ import LPB from '~/assets/images/bank/LPB.png'
 
 export const ADMIN_USER_ID = 1;
 
-export const ADMIN_ROLE_NUMBER = 1;
-export const CUSTOMER_ROLE_NUMBER = 2;
-export const SELLER_ROLE_NUMBER = 3;
+export const ADMIN_NAME_DISPLAY = 'Quản trị viên';
+export const ADMIN_ROLE_ID = 1;
+export const CUSTOMER_ROLE_ID = 2;
+export const SELLER_ROLE_ID = 3;
 
 export const ADMIN_ROLE = 'Admin';
 export const CUSTOMER_ROLE = 'Customer';

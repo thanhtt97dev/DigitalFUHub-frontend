@@ -2,8 +2,9 @@ import React, { useRef, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
 import { useAuthUser } from 'react-auth-kit';
-import { MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
+import { EpCircleCheckFilled } from '../Icons';
 import { Avatar, Card, Typography, Image, Space } from 'antd';
+import { MESSAGE_TYPE_CONVERSATION_TEXT, ADMIN_ROLE_ID } from '~/constants';
 
 ///
 const { Text } = Typography;
@@ -48,6 +49,15 @@ const BodyMessageChat = ({ messages, conversationSelected }) => {
         return userFind.fullname;
     }
 
+    const getAvatarUserFromConversationSelected = (userId) => {
+        if (!conversationSelected) return;
+        const users = conversationSelected.users;
+        if (!users) return;
+        const userFind = users.find(x => x.userId === userId);
+        if (!userFind) return;
+        return userFind.avatar;
+    }
+
     const scrollToBottom = () => {
         if (bodyMessageRef.current && messagesEndRef.current) {
             const bodyMessageElement = bodyMessageRef.current;
@@ -67,18 +77,25 @@ const BodyMessageChat = ({ messages, conversationSelected }) => {
                             item.userId !== user?.id ?
                                 (<div style={{ marginBottom: 25 }} key={index}>
                                     <Space align="center">
-                                        <Avatar src={item.avatar} />
-                                        <Space.Compact direction="vertical">
-                                            <div style={styleTitleMessage}>
-                                                {conversationSelected.isGroup ? <Text type="secondary" style={{ marginBottom: 5 }}>{getFullNameUserFromConversationSelected(item.userId)}</Text> : <></>}
+                                        <Avatar src={getAvatarUserFromConversationSelected(item.userId)} />
+                                        <Space direction="vertical">
+                                            <div>
+                                                {conversationSelected.isGroup ?
+                                                    <Space align='center' size={4}>
+                                                        <p className={item.roleId === ADMIN_ROLE_ID ? cx('admin-name') : cx('not-admin-name')} style={{ marginBottom: 5 }}>{getFullNameUserFromConversationSelected(item.userId)}</p>
+                                                        {
+                                                            item.roleId === ADMIN_ROLE_ID ? <EpCircleCheckFilled /> : <></>
+                                                        }
+                                                    </Space>
+                                                    : <></>}
                                             </div>
                                             <Card className={cx('card-message')} bodyStyle={styleBodyCardMessage}>
                                                 {item.messageType === MESSAGE_TYPE_CONVERSATION_TEXT ? <p>{item.content}</p> : <Image style={styleMessageImage} width={150} src={item.content} />}
                                             </Card>
-                                            <div style={styleTitleMessage}>
+                                            <div>
                                                 <Text type="secondary">{moment(item.dateCreate).format('HH:mm - DD/MM')}</Text>
                                             </div>
-                                        </Space.Compact>
+                                        </Space>
                                     </Space>
                                 </div>)
                                 :

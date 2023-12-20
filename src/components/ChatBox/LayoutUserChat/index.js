@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames/bind';
-import ConversationFormated from './ConversationFormated';
+import Spinning from '~/components/Spinning';
 import styles from '~/pages/ChatBox/Chatbox.module.scss';
+import ConversationFormated from './ConversationFormated';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAuthUser } from 'react-auth-kit';
 import { getConversation } from '~/api/chat';
 import { Layout, List, Card, Typography, Button } from 'antd';
 import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, ADMIN_USER_ID, RESPONSE_CODE_SUCCESS, MESSAGE_TYPE_CONVERSATION_IMAGE, MESSAGE_TYPE_CONVERSATION_TEXT } from '~/constants';
-import Spinning from '~/components/Spinning';
 import { useNavigate } from 'react-router-dom';
 import { PhoneOutlined } from '@ant-design/icons';
 
