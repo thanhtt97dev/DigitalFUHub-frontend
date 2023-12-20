@@ -287,7 +287,6 @@ function EditProduct() {
         tags.forEach((tag, index) => {
             formData.append('tags', tag);
         })
-
         productVariants.forEach((variant, index) => {
             // add new variant
             if (variant.data === undefined && variant.file !== undefined) {
@@ -303,6 +302,9 @@ function EditProduct() {
                 formData.append('productVariantPricesUpdate', values.productVariants[index].price);
                 formData.append('productVariantDiscountsUpdate', values.productVariants[index].discount);
                 formData.append('assetInformationFilesUpdate', variant.file ? variant.file.originFileObj : null);
+                if (variant.file) {
+                    formData.append('productVariantIdUpdateAssetInformation', variant.id);
+                }
             }
         })
         editProductSeller(formData)
@@ -644,7 +646,7 @@ function EditProduct() {
                                                     rules={[
                                                         (getFieldValue) => ({
                                                             validator(_, value) {
-                                                                if (value !== null || value !== undefined) {
+                                                                if (value !== null && value !== undefined) {
                                                                     if (value < MIN_PRICE_PRODUCT_VARIANT) {
                                                                         return Promise.reject(new Error('Giá loại sản phẩm tối thiểu là 1.000đ.'));
                                                                     } else if (value > MAX_PRICE_PRODUCT_VARIANT) {
@@ -653,8 +655,9 @@ function EditProduct() {
                                                                     else {
                                                                         return Promise.resolve();
                                                                     }
+                                                                } else {
+                                                                    return Promise.reject(new Error('Giá loại sản phẩm không để trống.'));
                                                                 }
-                                                                return Promise.reject(new Error('Giá loại sản phẩm không để trống.'));
                                                             },
                                                         }),
                                                     ]}
@@ -669,7 +672,7 @@ function EditProduct() {
                                                     rules={[
                                                         (getFieldValue) => ({
                                                             validator(_, value) {
-                                                                if (value !== null || value !== undefined) {
+                                                                if (value !== null && value !== undefined) {
                                                                     if (value < MIN_PERCENT_PRODUCT_VARIANT_DISCOUNT) {
                                                                         return Promise.reject(new Error('Phần trăm giảm giá tối thiểu là 0%.'));
                                                                     } else if (value > MAX_PERCENT_PRODUCT_VARIANT_DISCOUNT) {
@@ -677,8 +680,9 @@ function EditProduct() {
                                                                     } else {
                                                                         return Promise.resolve();
                                                                     }
+                                                                } else {
+                                                                    return Promise.reject(new Error('Phần trăm giảm giá sản phẩm không để trống.'));
                                                                 }
-                                                                return Promise.reject(new Error('Phần trăm giảm giá sản phẩm không để trống.'));
                                                             },
                                                         }),
                                                     ]}
