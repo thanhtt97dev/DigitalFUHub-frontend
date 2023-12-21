@@ -22,7 +22,7 @@ import { Layout, Menu, Space, Avatar, Button, Row, Col, Dropdown, Badge } from '
 import styles from './SellerLayout.module.scss'
 import classNames from 'classnames/bind';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import logoFPT from '~/assets/images/fpt-logo.jpg';
+import userDefaultImage from '~/assets/images/user.jpg';
 import logo from '~/assets/images/DIGITALFUHUB.png';
 import Logout from '~/components/Logout';
 import Notification from '~/components/Notification';
@@ -233,7 +233,7 @@ const SellerLayout = () => {
                                             pointAtCenter: true,
                                         }}
                                     >
-                                        <Avatar src={logoFPT} size="large" />
+                                        <Avatar src={userDefaultImage} size="large" />
                                     </Dropdown>
                                 </Col>
                             </Row>

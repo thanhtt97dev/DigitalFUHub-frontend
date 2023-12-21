@@ -3,7 +3,7 @@ import validator from 'validator';
 import classNames from 'classnames/bind';
 import styles from './Personal.module.scss';
 import Spinning from "~/components/Spinning";
-import fptImage from '~/assets/images/fpt-logo.jpg';
+import fptImage from '~/assets/images/user.jpg';
 import { useAuthUser } from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
 import { UserOutlined, UploadOutlined, EditOutlined } from '@ant-design/icons';

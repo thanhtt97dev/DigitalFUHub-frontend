@@ -21,6 +21,7 @@ import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 import ProductFeedbackMedia from "../ProductFeedbackMedia";
 import ProductFeedbackSearchForm from "../ProductFeedbackSearchForm";
 import Spinning from "~/components/Spinning";
+import userDefaultImage from '~/assets/images/user.jpg'
 
 const { Title } = Typography;
 require('moment/locale/vi');
@@ -187,7 +188,12 @@ const ProductFeedback = ({ product }) => {
                                     >
                                         <Row>
                                             <List.Item.Meta
-                                                avatar={<Avatar size="large" src={item.userAvatar} />}
+                                                avatar={
+                                                    item.userAvatar !== "" ?
+                                                        <Avatar size="large" src={item.userAvatar} />
+                                                        :
+                                                        <Avatar src={userDefaultImage} />
+                                                }
                                                 description={<>
                                                     <Row>
                                                         <span style={{ fontSize: 14 }}>

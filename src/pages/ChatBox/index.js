@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss';
-import userDefaultImage from '~/assets/images/userDefaultImage.png';
+import userDefaultImage from '~/assets/images/user.jpg';
 import adminDefaultImage from '~/assets/images/adminDefaultImage.jpg';
 import LayoutUserChat from '~/components/ChatBox/LayoutUserChat';
 import LayoutMessageChat from '~/components/ChatBox/LayoutMessageChat';
