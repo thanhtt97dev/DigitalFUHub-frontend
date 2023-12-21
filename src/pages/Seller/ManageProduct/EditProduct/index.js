@@ -99,7 +99,7 @@ function EditProduct() {
                     setIsActiveProduct(productStatusId === PRODUCT_ACTIVE ? true : false)
                     setProductVariants(productVariants.map((value) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, discount: value.discount, data: value.assetInformations, file: undefined })));
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                     return navigate('/shopBanned')
                 }
             })
@@ -316,7 +316,7 @@ function EditProduct() {
                     notification('success', 'Cập nhật sản phẩm thành công.');
                     return navigate('/seller/product/list')
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                 }
                 else {
                     notification('error', 'Cập nhật sản phẩm thất bại.');

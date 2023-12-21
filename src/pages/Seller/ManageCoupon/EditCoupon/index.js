@@ -53,7 +53,7 @@ function EditCoupon() {
                     notification("success", "Cập nhật mã giảm giá thành công")
                     return navigate("/seller/coupon/list")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                 } else {
                     notification("error", "Vui lòng kiểm tra lại dữ liệu")
                 }

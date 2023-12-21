@@ -99,7 +99,7 @@ function Coupons() {
                     setListCoupons(res.data.result.coupons);
                     setTotalItems(res.data.result.totalItems)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                 }
                 else {
                     notification('error', 'Vui lòng kiểm tra lại.')
@@ -178,7 +178,7 @@ function Coupons() {
                     });
                     notification("success", "Xóa mã giảm giá thành công.")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                 }
                 else {
                     notification("error", "Xóa mã giảm giá thất bại.")
@@ -208,7 +208,7 @@ function Coupons() {
                     });
                     notification("success", "Kết thúc chương trình giảm giá thành công.")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                 }
                 else {
                     notification("error", "Kết thúc chương trình giảm giá thất bại.")

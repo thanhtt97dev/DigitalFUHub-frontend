@@ -267,7 +267,7 @@ function AddProduct() {
                     // btnAddRef.current.click();
                     return navigate('/seller/product/list')
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                 }
                 else {
                     notification('error', "Thêm sản phẩm mới thất bại.");

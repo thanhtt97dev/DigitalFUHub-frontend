@@ -82,7 +82,7 @@ function OrderDetailSeller() {
                     }
                     setHideAssetInformationOrder(lsIndexOrderDetail);
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                     return navigate('/shopBanned')
                 } else {
                     notification("error", "Vui lòng kiểm tra lại.")
