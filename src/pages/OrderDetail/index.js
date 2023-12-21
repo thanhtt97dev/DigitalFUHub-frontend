@@ -14,7 +14,7 @@ import {
     // PlusOutlined,
     MessageOutlined
 } from "@ant-design/icons";
-import { Button, Card, Col, Divider, Row, Typography, Tag, Spin, Descriptions } from "antd";
+import { Button, Card, Col, Row, Typography, Tag, Spin, Descriptions } from "antd";
 import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_NOT_FEEDBACK_AGAIN, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
@@ -42,22 +42,26 @@ const { Text, Title } = Typography;
 const getNote = (historyOrderStatus) => {
     if (!historyOrderStatus) return null;
     let notes = [];
+    let isOrderHistoryHaveNote = false;
     notes = historyOrderStatus.map((v, i) => {
         if (v.orderStatusId === ORDER_COMPLAINT && v.note) {
+            isOrderHistoryHaveNote = true;
             return <Descriptions bordered>
-                <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi người mua (Khiếu nại)`}>
+                <Descriptions.Item labelStyle={{ width: '30%', color: 'red', fontWeight: '600' }} label={`Khiếu nại từ khách hàng`}>
                     {v.note}
                 </Descriptions.Item>
             </Descriptions>
         } else if ((v.orderStatusId === ORDER_DISPUTE || v.orderStatusId === ORDER_SELLER_REFUNDED) && v.note) {
+            isOrderHistoryHaveNote = true;
             return <Descriptions bordered>
-                <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi người bán (${v.orderStatusId === ORDER_DISPUTE ? 'Tranh chấp' : 'Hoàn trả tiền'})`}>
+                <Descriptions.Item labelStyle={{ width: '30%', color: 'red', fontWeight: '600' }} label={`Phản hồi người bán (${v.orderStatusId === ORDER_DISPUTE ? 'Tranh chấp' : 'Hoàn trả tiền'})`}>
                     {v.note}
                 </Descriptions.Item>
             </Descriptions>
         } else if ((v.orderStatusId === ORDER_REJECT_COMPLAINT || v.orderStatusId === ORDER_SELLER_VIOLATES) && v.note) {
+            isOrderHistoryHaveNote = true;
             return <Descriptions bordered>
-                <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi quản trị viên (${v.orderStatusId === ORDER_REJECT_COMPLAINT ? 'Từ chối khiếu nại' : 'Người bán vi phạm'})`}>
+                <Descriptions.Item labelStyle={{ width: '30%', color: 'red', fontWeight: '600' }} label={`Phản hồi quản trị viên (${v.orderStatusId === ORDER_REJECT_COMPLAINT ? 'Từ chối khiếu nại' : 'Người bán vi phạm'})`}>
                     {v.note}
                 </Descriptions.Item>
             </Descriptions>
@@ -65,7 +69,24 @@ const getNote = (historyOrderStatus) => {
             return null;
         }
     })
-    return notes;
+    if (isOrderHistoryHaveNote === false) return null;
+    return (
+        <Card
+            title="Thông tin xử lý đơn hàng"
+            style={{ marginTop: '20px' }}
+        >
+            <div
+                style={{
+                    width: "100%",
+                    boxShadow: "0 3px 10px rgb(0 0 0 / 0.2)",
+                    borderRadius: "10px"
+                }}
+            >
+                {notes}
+
+            </div>
+        </Card>
+    )
 }
 
 function OrderDetail() {
@@ -246,7 +267,7 @@ function OrderDetail() {
         } else if (order?.statusId === ORDER_CONFIRMED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Đã xác nhận</Tag>
+                    <Tag icon={<CheckCircleOutlined size={16} />} color="blue" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, textAlign: "center" }}>Đã xác nhận</Tag>
                 </Col>
                 {order.orderDetails.some((v, i) => v.isFeedback === true) ?
                     <Col>
@@ -258,7 +279,7 @@ function OrderDetail() {
         } else if (order?.statusId === ORDER_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656' }} color="#FFF2CC">Khiếu nại</Tag>
+                    <Tag style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#D6B656', border: '1px solid #D6B656', textAlign: "center" }} color="#FFF2CC">Khiếu nại</Tag>
                 </Col>
                 <Col>
                     <Button loading={buttonLoading} type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
@@ -278,7 +299,7 @@ function OrderDetail() {
                     </Button>
                 </Col>
                 <Col>
-                    <Tag color="#FAD7AC" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#B46504', border: '1px solid #B46504' }}>Tranh chấp</Tag>
+                    <Tag color="#FAD7AC" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#B46504', border: '1px solid #B46504', textAlign: "center" }}>Tranh chấp</Tag>
                 </Col>
                 <Col>
                     <Button loading={buttonLoading} type="primary" onClick={handleOrderComplete}>Xác nhận đơn hàng</Button>
@@ -287,20 +308,20 @@ function OrderDetail() {
         } else if (order?.statusId === ORDER_REJECT_COMPLAINT) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="#E1D5E7" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#9673A6', border: '1px solid #9673A6' }}>Từ chối khiếu nại</Tag>
+                    <Tag color="#E1D5E7" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#9673A6', border: '1px solid #9673A6', textAlign: "center" }}>Từ chối khiếu nại</Tag>
                 </Col>
             </Row>
         } else if (order?.statusId === ORDER_SELLER_REFUNDED) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="cyan" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2 }}>Hoàn trả tiền</Tag>
+                    <Tag color="cyan" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, textAlign: "center" }}>Hoàn trả tiền</Tag>
                 </Col>
             </Row>
         }
         else if (order?.statusId === ORDER_SELLER_VIOLATES) {
             return <Row justify="end" gutter={[8]}>
                 <Col>
-                    <Tag color="#FAD9D5" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#AE4132', border: '1px solid #AE4132' }}>Người bán vi phạm</Tag>
+                    <Tag color="#FAD9D5" style={{ width: '100%', fontSize: 14, height: 32, lineHeight: 2.2, color: '#AE4132', border: '1px solid #AE4132', textAlign: "center" }}>Người bán vi phạm</Tag>
                 </Col>
             </Row>
         }
@@ -421,23 +442,27 @@ function OrderDetail() {
                                 <Row gutter={[0, 32]}>
                                     {order?.orderDetails?.map((v, i) => {
                                         return (
-                                            <OrderDetailItem
-                                                key={i}
-                                                dateConfirmed={order?.dateConfirmed}
-                                                orderDetail={v}
-                                                hideAssetInformation={hideAssetInformationOrder[i] === undefined ? true : hideAssetInformationOrder[i]}
-                                                statusId={order.statusId}
-                                                handleHideAssetInformation={() => handleHideAssetInformation(i)}
-                                                handleDisplayAssetInformation={() => handleDisplayAssetInformation(i)}
-                                                handleFeedbackOrder={() => { orderDetailRef.current = v.orderDetailId; showModalAddFeedback(); }}
-                                            />
+                                            <Card style={{
+                                                width: "100%",
+                                                boxShadow: "0 3px 10px rgb(0 0 0 / 0.2)"
+                                            }}>
+                                                <OrderDetailItem
+                                                    key={i}
+                                                    dateConfirmed={order?.dateConfirmed}
+                                                    orderDetail={v}
+                                                    hideAssetInformation={hideAssetInformationOrder[i] === undefined ? true : hideAssetInformationOrder[i]}
+                                                    statusId={order.statusId}
+                                                    handleHideAssetInformation={() => handleHideAssetInformation(i)}
+                                                    handleDisplayAssetInformation={() => handleDisplayAssetInformation(i)}
+                                                    handleFeedbackOrder={() => { orderDetailRef.current = v.orderDetailId; showModalAddFeedback(); }}
+                                                />
+                                            </Card>
                                         )
                                     })}
                                 </Row>
-                                <div style={{ marginTop: '1em' }}>
-                                    {getNote(order?.historyOrderStatus)}
-                                </div>
+
                             </Card>
+
                             {/* {order?.note &&
                                 <>
                                     <Descriptions bordered style={{ marginTop: '1em' }}>
@@ -445,7 +470,7 @@ function OrderDetail() {
                                     </Descriptions>
                                 </>
                             } */}
-                            <Card style={{ marginTop: '20px' }}>
+                            <Card style={{ marginTop: '5px' }}>
                                 <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
                                     <Col span={24}>
                                         <Row justify='end'>
@@ -490,11 +515,21 @@ function OrderDetail() {
                                             })()}
                                         </Row>
                                     </Col>
-                                    <Col span={24}>
+                                    {/* <Col span={24}>
                                         {getButtonsStatus()}
-                                    </Col>
+                                    </Col> */}
                                 </Row>
                             </Card>
+
+                            <div>
+                                {getNote(order?.historyOrderStatus)}
+                            </div>
+
+                            <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
+                                <Col span={24}>
+                                    {getButtonsStatus()}
+                                </Col>
+                            </Row>
                         </>
                     }
                 </Spin >
