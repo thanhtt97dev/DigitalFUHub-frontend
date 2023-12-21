@@ -6,7 +6,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { NotificationContext } from '~/context/UI/NotificationContext';
 
 import { Card, Button, Input, Form, theme, Modal, Select, Upload, InputNumber, Space, Tag, Table, Tooltip, Spin, Switch, Row, Col } from 'antd';
-import { PlusOutlined, UploadOutlined, CloseOutlined, QuestionCircleOutlined, LeftOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined, CloseOutlined, QuestionCircleOutlined, LeftOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { getUserId, readDataFileExcelImportProduct, writeDataToExcel } from "~/utils";
 import { getAllCategory } from "~/api/category";
 import BoxImage from "~/components/BoxImage";
@@ -27,7 +27,7 @@ const columns = [
         render: (text, record) => <div key={record.index}>{text}</div>,
     }
 ];
-
+const { confirm } = Modal;
 const getBase64 = (file) =>
     new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -345,6 +345,18 @@ function EditProduct() {
         setMsgNotificationFileExceedLimit([]);
         setOpenNotificationFileExceedLimit(false);
     }
+    const handleBackPage = () => {
+        confirm({
+            title: 'Xác nhận',
+            icon: <ExclamationCircleFilled />,
+            content: 'Hủy thay đổi?',
+            onOk() {
+                return navigate('/seller/product/list');
+            },
+            onCancel() {
+            },
+        });
+    }
     return (
         <>
             <Spin spinning={loading}>
@@ -379,7 +391,13 @@ function EditProduct() {
                         width: '100%',
                         minHeight: "690px"
                     }}
-                    title={<div><Link to={'/seller/product/list'}><LeftOutlined />Trở về</Link>&nbsp; Cập nhật sản phẩm</div>}
+                    title={
+                        <Space>
+                            <Link style={{ fontWeight: '600', fontSize: '16px', lineHeight: '1em' }} onClick={handleBackPage} ><LeftOutlined /> <span style={{ fontWeight: '600', fontSize: '16px' }}>Trở lại</span></Link>
+                            <div>Cập nhật sản phẩm</div>
+                        </Space>
+                    }
+                // title={<div><Link to={'/seller/product/list'}><LeftOutlined />Trở về</Link>&nbsp; Cập nhật sản phẩm</div>}
                 >
                     <Form
                         form={form}
