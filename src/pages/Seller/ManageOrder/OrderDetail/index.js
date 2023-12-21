@@ -12,10 +12,9 @@ import {
     EyeInvisibleOutlined
 } from "@ant-design/icons";
 import userDefaultImage from '~/assets/images/user.jpg'
-import { Button, Card, Col, Divider, Image, Row, Space, Typography, Tag, Tooltip, Form, Modal, Avatar, Spin, Descriptions, Rate } from "antd";
+import { Button, Card, Col, Image, Row, Space, Typography, Tag, Tooltip, Form, Modal, Avatar, Spin, Descriptions, Rate } from "antd";
 import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE, RESPONSE_CODE_SHOP_BANNED } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
-import { useAuthUser } from 'react-auth-kit'
 import { getConversation } from '~/api/chat'
 import TextArea from "antd/es/input/TextArea";
 import ModalChangeOrderStatusDispute from "~/components/Modals/ModalChangeOrderStatusDispute";

@@ -220,14 +220,7 @@ function EditShop() {
                         </Row>
                         <Row justify="center">
                             <Col>
-                                <Form.Item
-                                    wrapperCol={{
-                                        span: 14,
-                                        offset: 6
-                                    }}
-                                    style={{ textAlign: 'center' }}>
-                                    <Button loading={buttonLoading} type="primary" htmlType="submit">Xác nhận</Button>
-                                </Form.Item>
+                                <Button loading={buttonLoading} type="primary" htmlType="submit">Xác nhận</Button>
                             </Col>
                         </Row>
                     </Form>
