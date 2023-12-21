@@ -13,12 +13,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { getListOrdersByCoupon } from "~/api/order";
 import Spinning from "~/components/Spinning";
 import { NotificationContext } from "~/context/UI/NotificationContext";
-import { CheckAccessContext } from "~/components/CheckAccess";
 
 
 function CouponDetail() {
     const notification = useContext(NotificationContext);
-    const { isShopBan } = useContext(CheckAccessContext);
 
     const navigate = useNavigate();
     // const notification = useContext(NotificationContext);
@@ -107,7 +105,7 @@ function CouponDetail() {
                 <Space>
                     <Link to={"/seller/coupon/list"}><LeftOutlined /> Trở lại</Link>
                     <div>Chi tiết mã giảm giá</div>
-                    {!isShopBan && dayjs(coupon?.startDate) > dayjs() ? <Link to={`/seller/coupon/edit/${coupon.couponId}`}><Tooltip title="Chỉnh sửa"><EditOutlined /></Tooltip></Link> : ''}
+                    {dayjs(coupon?.startDate) > dayjs() ? <Link to={`/seller/coupon/edit/${coupon.couponId}`}><Tooltip title="Chỉnh sửa"><EditOutlined /></Tooltip></Link> : ''}
                 </Space>
             }
         >

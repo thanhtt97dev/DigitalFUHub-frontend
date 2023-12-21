@@ -79,6 +79,7 @@ function EditProduct() {
     const [isActiveProduct, setIsActiveProduct] = useState()
     const [stateInit, setStateInit] = useState(true)
     const btnAddRef = useRef();
+    const [loadingBtnSubmit, setLoadingBtnSubmit] = useState(false);
     // const idIntervalRef = useRef();
     // const showItemRef = useRef(false);
 
@@ -310,21 +311,24 @@ function EditProduct() {
         editProductSeller(formData)
             .then(res => {
                 setLoading(false);
+                setLoadingBtnSubmit(true)
                 if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                     notification('success', 'Cập nhật sản phẩm thành công.');
+                    return navigate('/seller/product/list')
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đã bị khóa.")
-                    return navigate('/shopBanned')
                 }
                 else {
                     notification('error', 'Cập nhật sản phẩm thất bại.');
                 }
-                return navigate('/seller/product/list')
             })
             .catch(err => {
                 setLoading(false);
                 notification('error', 'Đã có lỗi xảy ra.');
                 return navigate('/seller/product/list')
+            })
+            .finally(() => {
+                setTimeout(() => { setLoadingBtnSubmit(false) }, 500)
             })
 
     }
@@ -838,7 +842,7 @@ function EditProduct() {
                         </Form.Item>
 
                         <Form.Item style={{ textAlign: 'center' }}>
-                            <Button type='primary' size='large' htmlType='submit'>Xác nhận</Button>
+                            <Button type='primary' size='large' htmlType='submit' loading={loadingBtnSubmit}>Xác nhận</Button>
                         </Form.Item>
                     </Form >
                 </Card>

@@ -47,7 +47,6 @@ import CouponDetailCustomer from '~/components/Cart/CouponDetailCustomer';
 import ErrorPage from '~/pages/ErrorPage';
 import ShopBan from '~/pages/ShopBan';
 import SalesPolicy from '~/pages/Policy/SalesPolicy';
-import CheckAccess from '~/components/CheckAccess';
 
 const routesConfig = [
     {
@@ -175,35 +174,35 @@ const routesConfig = [
     {
         title: 'Seller statistic',
         path: '/seller/statistic',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <Statistics />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon',
         path: '/seller/coupon/list',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <Coupons />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon',
         path: '/seller/coupon/add',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <AddCoupon />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon',
         path: '/seller/coupon/detail/:couponId',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <CouponDetail />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Coupon',
         path: '/seller/coupon/edit/:couponId',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <EditCoupon />,
         role: [SELLER_ROLE],
     },
@@ -215,49 +214,49 @@ const routesConfig = [
     {
         title: 'Seller order detail',
         path: '/seller/order/:orderId',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <OrderDetailSeller />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller All Products',
         path: '/seller/product/list',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <Products />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller add new product',
         path: '/seller/product/new',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <AddProduct />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller product detail (Edit)',
         path: '/seller/product/:productId',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <EditProduct />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller products banned',
         path: '/seller/product/banned',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <ProductsBan />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller orders',
         path: '/seller/order/list',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <Orders />,
         role: [SELLER_ROLE],
     },
     {
         title: 'Seller All Feedback',
         path: '/seller/feedback/list',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <Feedbacks />,
         role: [SELLER_ROLE],
     },
@@ -278,7 +277,7 @@ const routesConfig = [
     {
         title: 'Seller edit shop',
         path: '/seller/shop/edit',
-        layout: <CheckAccess><SellerLayout /></CheckAccess>,
+        layout: <SellerLayout />,
         component: <EditShop />,
         role: [SELLER_ROLE],
     },

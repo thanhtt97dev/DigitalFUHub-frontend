@@ -24,7 +24,6 @@ import { removeCouponSeller, getCouponsSeller, updateCouponFinish } from "~/api/
 import styles from "./Coupon.module.scss"
 import classNames from "classnames/bind";
 import { Link, useNavigate } from "react-router-dom";
-import { CheckAccessContext } from "~/components/CheckAccess";
 const { Title } = Typography;
 
 const cx = classNames.bind(styles)
@@ -55,8 +54,6 @@ const tabList = [
 
 function Coupons() {
     const notification = useContext(NotificationContext)
-    const { isShopBan } = useContext(CheckAccessContext);
-    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [formSearch] = Form.useForm();
     const [listCoupons, setListCoupons] = useState([]);
@@ -103,7 +100,6 @@ function Coupons() {
                     setTotalItems(res.data.result.totalItems)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đã bị khóa.")
-                    return navigate('/shopBanned')
                 }
                 else {
                     notification('error', 'Vui lòng kiểm tra lại.')
@@ -183,7 +179,6 @@ function Coupons() {
                     notification("success", "Xóa mã giảm giá thành công.")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đã bị khóa.")
-                    return navigate('/shopBanned')
                 }
                 else {
                     notification("error", "Xóa mã giảm giá thất bại.")
@@ -214,7 +209,6 @@ function Coupons() {
                     notification("success", "Kết thúc chương trình giảm giá thành công.")
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đã bị khóa.")
-                    return navigate('/shopBanned')
                 }
                 else {
                     notification("error", "Kết thúc chương trình giảm giá thất bại.")
@@ -245,7 +239,7 @@ function Coupons() {
         }
     };
     const couponIdRef = useRef(0);
-    const table = (data, isShopBan = false) => {
+    const table = (data) => {
         return <>
             <Table
                 onChange={handleTableChange}
@@ -374,18 +368,14 @@ function Coupons() {
                                         <Button type="link" style={{ width: '80px' }}>Chi tiết</Button>
                                     </Link>
                                 </Col>
-                                {!isShopBan &&
-                                    <Col>
-                                        <Link to={`/seller/coupon/edit/${record.couponId}`} >
-                                            <Button type="link" style={{ width: '80px' }}>Chỉnh sửa</Button>
-                                        </Link>
-                                    </Col>
-                                }
-                                {!isShopBan &&
-                                    <Col>
-                                        <Button type="link" style={{ width: '80px' }} onClick={() => { handleOpenDeleteCouponModal(); couponIdRef.current = record.couponId }}>Xóa</Button>
-                                    </Col>
-                                }
+                                <Col>
+                                    <Link to={`/seller/coupon/edit/${record.couponId}`} >
+                                        <Button type="link" style={{ width: '80px' }}>Chỉnh sửa</Button>
+                                    </Link>
+                                </Col>
+                                <Col>
+                                    <Button type="link" style={{ width: '80px' }} onClick={() => { handleOpenDeleteCouponModal(); couponIdRef.current = record.couponId }}>Xóa</Button>
+                                </Col>
                             </Row>
                         } else if (startDate.isBefore(now) && now.isBefore(endDate)) {
                             return <Row gutter={[8, 0]}>
@@ -416,10 +406,10 @@ function Coupons() {
     const [activeTabKey, setActiveTabKey] = useState('tab1');
 
     const contentList = {
-        tab1: table(listCoupons, isShopBan),
-        tab2: table(listCoupons, isShopBan),
-        tab3: table(listCoupons, isShopBan),
-        tab4: table(listCoupons, isShopBan),
+        tab1: table(listCoupons),
+        tab2: table(listCoupons),
+        tab3: table(listCoupons),
+        tab4: table(listCoupons),
     };
 
     const onTabChange = (key) => {
@@ -595,9 +585,7 @@ function Coupons() {
                         </Row>
                         <Row>
                             <Col offset={1}>
-                                {!isShopBan &&
-                                    <Button type="primary" icon={<PlusOutlined />} ghost onClick={() => setIsOpenOptionAddCouponModal(true)}>Tạo mã giảm giá</Button>
-                                }
+                                <Button type="primary" icon={<PlusOutlined />} ghost onClick={() => setIsOpenOptionAddCouponModal(true)}>Tạo mã giảm giá</Button>
                             </Col>
                             <Col flex={5} style={{ marginRight: '4em' }}>
                                 <Row gutter={[16, 16]} justify="end">
