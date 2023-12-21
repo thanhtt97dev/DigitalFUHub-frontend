@@ -67,7 +67,7 @@ function EditShop() {
                     setImgPreview(res.data.result.avatar)
                     setShopDescription(res.data.result.description)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                 } else {
                     notification("error", "Vui lòng kiểm tra lại.")
                 }
@@ -95,7 +95,7 @@ function EditShop() {
                 if (res.data.status.responseCode === "00") {
                     notification('success', "Cập nhật thông tin cửa hàng thành công.");
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                 }
                 else {
                     notification('error', "Vui lòng kiểm tra lại.");

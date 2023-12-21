@@ -56,7 +56,7 @@ function Feedbacks() {
                     setListFeedback(res.data.result.feedbacks);
                     setTotalItems(res.data.result.totalItems);
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
-                    notification("error", "Cửa hàng của bạn đã bị khóa.")
+                    notification("error", "Cửa hàng của bạn đang bị khóa.")
                     return navigate('/shopBanned')
                 }
                 setLoading(false);
