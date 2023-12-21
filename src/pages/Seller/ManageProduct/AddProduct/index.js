@@ -64,6 +64,7 @@ function AddProduct() {
     };
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
+    const [loadingBtnSubmit, setLoadingBtnSubmit] = useState(false);
     const [categories, setCategories] = useState([]);
 
     const [previewImage, setPreviewImage] = useState('');
@@ -231,6 +232,7 @@ function AddProduct() {
     // submit form
     const onFinish = (values) => {
         setLoading(true);
+        setLoadingBtnSubmit(true)
         let formData = new FormData();
         values.productImages.fileList.forEach((file, index) => {
             formData.append(`productDetailImageFiles`, file.originFileObj);
@@ -263,20 +265,22 @@ function AddProduct() {
                     // setFileImgProdList([]);
                     // setExcelFileList([]);
                     // btnAddRef.current.click();
+                    return navigate('/seller/product/list')
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đã bị khóa.")
-                    return navigate('/shopBanned')
                 }
                 else {
                     notification('error', "Thêm sản phẩm mới thất bại.");
                 }
-                return navigate('/seller/product/list')
             })
             .catch((err) => {
                 setLoading(false);
                 notification('error', "Đã có lỗi xảy ra.");
                 return navigate('/seller/product/list')
 
+            })
+            .finally(() => {
+                setTimeout(() => { setLoadingBtnSubmit(false) }, 500)
             })
     }
     const handleCloseNotificationFileExceedLimit = () => {
@@ -685,7 +689,7 @@ function AddProduct() {
                             </Space>
                         </Form.Item>
                         <Form.Item style={{ textAlign: 'center' }}>
-                            <Button type='primary' size='large' htmlType='submit'>Xác nhận</Button>
+                            <Button type='primary' size='large' htmlType='submit' loading={loadingBtnSubmit}>Xác nhận</Button>
                         </Form.Item>
                     </Form >
                 </Card>

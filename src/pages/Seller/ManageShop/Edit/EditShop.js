@@ -68,7 +68,6 @@ function EditShop() {
                     setShopDescription(res.data.result.description)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đã bị khóa.")
-                    return navigate('/shopBanned')
                 } else {
                     notification("error", "Vui lòng kiểm tra lại.")
                 }
@@ -97,7 +96,6 @@ function EditShop() {
                     notification('success', "Cập nhật thông tin cửa hàng thành công.");
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đã bị khóa.")
-                    return navigate('/shopBanned')
                 }
                 else {
                     notification('error', "Vui lòng kiểm tra lại.");

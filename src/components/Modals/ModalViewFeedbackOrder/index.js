@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ParseDateTime } from "~/utils";
 import { Button, Col, Image, Rate, Row, Typography, Modal, Avatar, Spin, } from "antd";
-import logoFPT from '~/assets/images/fpt-logo.jpg'
+import userDefaultImage from '~/assets/images/user.jpg'
 
 
 const { Text, Title, Paragraph } = Typography;
@@ -46,7 +46,7 @@ function ModalViewFeedbackOrder(
                         <Col span={23} offset={1}>
                             <Row gutter={[8, 8]} wrap={false}>
                                 <Col flex={0}>
-                                    <Avatar size="large" src={v.avatar || logoFPT} />
+                                    <Avatar size="large" src={v.avatar || userDefaultImage} />
                                 </Col>
                                 <Col flex={5} >
                                     <Row >

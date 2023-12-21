@@ -5,7 +5,7 @@ import { ParseDateTime, getUserId } from "~/utils";
 import { getListOrdersCustomer } from "~/api/order";
 import { RESPONSE_CODE_NOT_FEEDBACK_AGAIN, RESPONSE_CODE_SUCCESS } from "~/constants";
 import { addFeedbackOrder, getFeedbackDetail } from "~/api/feedback";
-import logoFPT from '~/assets/images/fpt-logo.jpg'
+import userDefaultImage from '~/assets/images/user.jpg'
 import { Link } from "react-router-dom";
 import { NotificationContext } from "~/context/UI/NotificationContext";
 
@@ -190,7 +190,7 @@ function OrdersConfirmed({ status, loading, setLoading }) {
                                     <Col span={23} offset={1}>
                                         <Row gutter={[8, 8]} wrap={false}>
                                             <Col flex={0}>
-                                                <Avatar size="large" src={v.avatar || logoFPT} />
+                                                <Avatar size="large" src={v.avatar || userDefaultImage} />
                                             </Col>
                                             <Col flex={5} >
                                                 <Row >

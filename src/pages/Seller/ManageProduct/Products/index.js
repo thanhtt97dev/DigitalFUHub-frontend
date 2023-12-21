@@ -18,7 +18,6 @@ import {
 } from "~/constants";
 import { getUserId } from "~/utils"
 import { useNavigate } from "react-router-dom";
-import { CheckAccessContext } from "~/components/CheckAccess";
 import { SearchOutlined } from "@ant-design/icons";
 
 
@@ -73,7 +72,6 @@ function Products() {
 
     const [loading, setLoading] = useState(false);
     const notification = useContext(NotificationContext);
-    const { isShopBan } = useContext(CheckAccessContext);
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const userId = getUserId()
@@ -200,9 +198,9 @@ function Products() {
         setActiveTabKey(key);
     };
     const contentList = {
-        tab1: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} isShopBan={isShopBan === undefined ? false : isShopBan} />,
-        tab2: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} isShopBan={isShopBan === undefined ? false : isShopBan} />,
-        tab3: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} isShopBan={isShopBan === undefined ? false : isShopBan} />,
+        tab1: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
+        tab2: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
+        tab3: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
         // tab4: <TableProduct tableParams={tableParams} handleTableChange={handleTableChange} data={dataTable} />,
     };
 

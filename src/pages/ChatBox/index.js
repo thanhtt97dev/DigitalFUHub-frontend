@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import classNames from 'classnames/bind';
 import styles from './Chatbox.module.scss';
-import fptImage from '~/assets/images/fpt-logo.jpg';
+import userDefaultImage from '~/assets/images/user.jpg';
+import adminDefaultImage from '~/assets/images/adminDefaultImage.jpg';
 import LayoutUserChat from '~/components/ChatBox/LayoutUserChat';
 import LayoutMessageChat from '~/components/ChatBox/LayoutMessageChat';
 import { useAuthUser } from 'react-auth-kit';
@@ -9,7 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ChatContext } from "~/context/SignalR/ChatContext";
 import { UserOnlineStatusContext } from "~/context/SignalR/UserOnlineStatusContext";
 import { GetConversations, GetMessages, updateUserConversation } from '~/api/chat';
-import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, RESPONSE_CODE_SUCCESS } from '~/constants';
+import { USER_CONVERSATION_TYPE_UN_READ, USER_CONVERSATION_TYPE_IS_READ, RESPONSE_CODE_SUCCESS, ADMIN_ROLE_ID, ADMIN_NAME_DISPLAY, CUSTOMER_ROLE_ID } from '~/constants';
 
 ///
 const cx = classNames.bind(styles);
@@ -107,16 +108,7 @@ const ChatBox = () => {
                     const status = data.status;
                     if (status.responseCode === RESPONSE_CODE_SUCCESS) {
                         const messages = data.result;
-
-                        // set avt default for empty avt
-                        const newMessages = messages.map((message) => {
-                            if (message.avatar.length === 0) {
-                                return { ...message, avatar: fptImage }
-                            }
-                            return message;
-                        })
-
-                        setMessages(newMessages);
+                        setMessages(messages);
                     }
                 }
             })
@@ -136,52 +128,50 @@ const ChatBox = () => {
 
         setIsLoadingSpinningConversations(true);
 
-        const loadConversations = () => {
-            GetConversations(user.id)
-                .then((response) => {
-                    if (response.status === 200) {
-                        const data = response.data;
-                        const status = data.status;
-                        if (status.responseCode === RESPONSE_CODE_SUCCESS) {
-                            const conversations = data.result;
-                            // Set avt default for empty avt
-                            const newConversation = conversations.map((conversation) => {
-                                const newUsers = conversation.users.map((user) => {
+        GetConversations(user.id)
+            .then((response) => {
+                if (response.status === 200) {
+                    const data = response.data;
+                    const status = data.status;
+                    if (status.responseCode === RESPONSE_CODE_SUCCESS) {
+                        const conversations = data.result;
 
-                                    if (user.avatar.length === 0) {
-                                        return { ...user, avatar: fptImage }
-                                    }
-                                    return user;
-                                })
 
-                                conversation.users = newUsers
-                                return conversation;
+                        // map users in conversation
+                        const newConversation = conversations.map((conversation) => {
+                            const newUsers = conversation.users.map((user) => {
+                                if (user.roleId === ADMIN_ROLE_ID) {
+                                    return { ...user, avatar: user.avatar === "" ? adminDefaultImage : user.avatar, fullname: ADMIN_NAME_DISPLAY }
+                                } else if (user.roleId === CUSTOMER_ROLE_ID) {
+                                    return { ...user, avatar: user.avatar === "" ? userDefaultImage : user.avatar }
+                                }
+                                return user;
                             })
 
-                            // Sort conversation by message creation date 
-                            const conversationSorted = sortConversationByMessageCreationDate(newConversation);
+                            conversation.users = newUsers
+                            return conversation;
+                        })
 
-                            // Update conversations
-                            setConversations(conversationSorted);
+                        // Sort conversation by message creation date 
+                        const conversationSorted = sortConversationByMessageCreationDate(newConversation);
 
-                            if (conversationIdPath) {
-                                const conversationFilter = newConversation.find(c => c.conversationId === conversationIdPath);
-                                setConversationSelected(conversationFilter)
-                            }
+                        // Update conversations
+                        setConversations(conversationSorted);
+
+                        if (conversationIdPath) {
+                            const conversationFilter = newConversation.find(c => c.conversationId === conversationIdPath);
+                            setConversationSelected(conversationFilter)
                         }
                     }
+                }
 
-                })
-                .catch(() => { })
-                .finally(() => {
-                    setTimeout(() => {
-                        setIsLoadingSpinningConversations(false);
-                    }, 500);
-                });
-
-        };
-
-        loadConversations();
+            })
+            .catch(() => { })
+            .finally(() => {
+                setTimeout(() => {
+                    setIsLoadingSpinningConversations(false);
+                }, 500);
+            });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadingConversationFlag]);
 
@@ -196,11 +186,6 @@ const ChatBox = () => {
                     if (user === null || user === undefined) return;
 
                     const userId = user.id;
-
-                    //set default avatar
-                    if (message.avatar === null || message.avatar === "") {
-                        message.avatar = fptImage;
-                    }
 
                     // data update message chat
                     if (conversationSelected?.conversationId === message.conversationId) {
@@ -241,7 +226,7 @@ const ChatBox = () => {
                         //set default avatar
                         const newUsers = message.users.map((user) => {
                             if (user.avatar.length === 0) {
-                                return { ...user, avatar: fptImage }
+                                return { ...user, avatar: userDefaultImage }
                             }
                             return user;
                         })
@@ -311,7 +296,6 @@ const ChatBox = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userOnlineStatusContext])
-
 
 
     /// data props

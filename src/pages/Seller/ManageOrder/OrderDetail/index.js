@@ -11,7 +11,7 @@ import {
     EyeOutlined,
     EyeInvisibleOutlined
 } from "@ant-design/icons";
-import logoFPT from '~/assets/images/fpt-logo.jpg'
+import userDefaultImage from '~/assets/images/user.jpg'
 import { Button, Card, Col, Divider, Image, Row, Space, Typography, Tag, Tooltip, Form, Modal, Avatar, Spin, Descriptions, Rate } from "antd";
 import { RESPONSE_CODE_SUCCESS, ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_ORDER_STATUS_CHANGED_BEFORE, RESPONSE_CODE_SHOP_BANNED } from "~/constants";
 import { NotificationContext } from "~/context/UI/NotificationContext";
@@ -358,7 +358,7 @@ function OrderDetailSeller() {
                         <Col span={23} offset={1}>
                             <Row gutter={[8, 8]} wrap={false}>
                                 <Col flex={0}>
-                                    <Avatar size="large" src={v.avatar || logoFPT} />
+                                    <Avatar size="large" src={v.avatar || userDefaultImage} />
                                 </Col>
                                 <Col flex={5} >
                                     <Row >
@@ -463,7 +463,7 @@ function OrderDetailSeller() {
                             title={<Row gutter={[8, 0]} align="bottom">
                                 <Col>
                                     {/* <Title level={5}><UserOutlined style={{ fontSize: '18px' }} /></Title> */}
-                                    <Avatar src={order.customerAvatar || logoFPT} />
+                                    <Avatar src={order.customerAvatar || userDefaultImage} />
                                 </Col>
                                 <Col>
                                     <Title level={5}>{order.customerUsername}</Title>

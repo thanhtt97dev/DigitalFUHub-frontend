@@ -85,6 +85,12 @@
     font-weight: bolder;
 }
 
+.flex-item-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .circle {
     width: 11px;
     height: 11px;
@@ -137,4 +143,12 @@
     bottom: 2%;
     right: 2%;
     border-radius: 100%;
+}
+
+.admin-name {
+    color: #1677ff;
+}
+
+.not-admin-name {
+    color: gray;
 }

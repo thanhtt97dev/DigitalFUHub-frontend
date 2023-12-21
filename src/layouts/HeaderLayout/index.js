@@ -11,7 +11,7 @@ import {
     HeartOutlined
 } from '@ant-design/icons';
 
-import logoFPT from '~/assets/images/fpt-logo.jpg';
+import userDefaultImage from '~/assets/images/user.jpg';
 import logo from '~/assets/images/DIGITALFUHUB.png';
 import { CUSTOMER_ROLE, RESPONSE_CODE_SUCCESS, SELLER_ROLE } from '~/constants';
 import ModalRequestDeposit from '../../components/Modals/ModalRequestDeposit';
@@ -154,7 +154,7 @@ function HeaderLayout() {
     useEffect(() => {
         if (user !== null) {
             if (user.avatar === undefined || user.avatar === "") {
-                setUserAvatart(logoFPT)
+                setUserAvatart(userDefaultImage)
             } else {
                 setUserAvatart(user.avatar)
             }

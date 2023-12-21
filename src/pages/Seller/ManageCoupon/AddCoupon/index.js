@@ -60,7 +60,6 @@ function AddCoupon() {
                     return navigate('/seller/coupon/list');
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đã bị khóa.")
-                    return navigate('/shopBanned')
                 }
                 else {
                     notification("error", "Tạo mã giảm giá thất bại.")
