@@ -115,16 +115,12 @@ function ModalRequestDeposit({ userId, text, style }) {
                             value={amount}
                             onPressEnter={handleSubmit}
                             onChange={(e) => handleInputAmount(e)}
+                            addonAfter="VNĐ"
                         />
                         <p><i style={{ color: "red" }}>{message}</i></p>
                     </div>
                     <p>
-                        <b style={{ color: "red" }}>Lưu ý:</b>
-                        <div style={{ marginLeft: "30px" }}>
-                            <i>Số tiền tối đa bạn có thể nạp 10,000,000 đ</i>
-                            <br />
-                            <i>Số tiền tối thiểu bạn có thể nạp 10,000 đ</i>
-                        </div>
+                        <><b style={{ color: "red" }}>Lưu ý:</b> <span>Số tiền tối thiểu bạn có thể nạp 10,000 đ</span></>
                     </p>
                 </>
 

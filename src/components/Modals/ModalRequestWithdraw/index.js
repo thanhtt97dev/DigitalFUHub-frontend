@@ -17,7 +17,6 @@ import {
     MIN_PRICE_CAN_WITHDRAW,
     MAX_PRICE_CAN_WITHDRAW,
     NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY,
-    SELLER_ROLE
 } from '~/constants'
 import { formatPrice } from "~/utils";
 
@@ -59,9 +58,11 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
     const handleSubmit = () => {
         setConfirmLoading(true)
         if (amount < MIN_PRICE_CAN_WITHDRAW) {
+            setTimeout(() => { setConfirmLoading(false); }, 500);
             return;
         }
         if (amount > customerBalance) {
+            setTimeout(() => { setConfirmLoading(false); }, 500);
             setMessage("Số dư không đủ!")
             return;
         }
@@ -155,7 +156,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                 title={<><ExclamationCircleFilled style={{ color: "#faad14" }} /> Yêu cầu rút tiền</>}
                 open={openModal}
                 onCancel={() => setOpenModal(false)}
-                width={"35%"}
+                width={"36%"}
                 footer={
                     <Space>
                         <Button onClick={() => setOpenModal(false)}>Hủy</Button>
@@ -186,15 +187,14 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                             value={amount}
                             onPressEnter={handleSubmit}
                             onChange={(e) => handleInputAmount(e)}
+                            addonAfter="VNĐ"
                         />
                         <p style={{ color: "red" }}>{message}</p>
                     </div>
                     <div>
                         <b style={{ color: "red" }}>Chú ý:</b>
-                        <div style={{ marginLeft: "30px" }}>
-                            <i>Số tiền bạn có thể rút trong 1 yêu cầu trong khoảng 100,000 - 3,000,000 VND</i>
-                            <br />
-                            {user.roleName === SELLER_ROLE ? <i>Bạn là người bán hàng.Số dư của bạn sau khi rút lớn hơn 300,000 VND</i> : ""}
+                        <div style={{ marginLeft: "10px" }}>
+                            <i>Số tiền bạn có thể rút trong 1 yêu cầu trong khoảng <b>100,000 - 3,000,000 VND</b></i>
                             <br />
                             <i>Một ngày bạn có thể tạo tối đa {NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY} yêu cầu rút tiền </i>
                         </div>

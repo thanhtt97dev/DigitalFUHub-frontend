@@ -9,25 +9,25 @@ function Finance() {
     const initialTabList = [
         {
             key: 'tab1',
-            tab: 'Lịch sử giao dịch',
-        },
-        {
-            key: 'tab2',
             tab: 'Lịch sử nạp tiền',
         },
         {
-            key: 'tab3',
+            key: 'tab2',
             tab: 'Lịch sử rút tiền',
-        }
+        },
+        {
+            key: 'tab3',
+            tab: 'Lịch sử giao dịch',
+        },
     ];
     const [tabKey, setTabKey] = useState('tab1');
     const handleTabChange = (key) => {
         setTabKey(key);
     };
     const contentList = {
-        tab1: (<HistoryTransaction />),
-        tab2: (<HistoryDeposit />),
-        tab3: (<HistoryWithdraw />),
+        tab1: (<HistoryDeposit />),
+        tab2: (<HistoryWithdraw />),
+        tab3: (<HistoryTransaction />),
     };
 
 
