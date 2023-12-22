@@ -20,7 +20,7 @@ function SalesSummaryCurrentMonth() {
                     setData(res.data.result);
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đang bị khóa.")
-                    return navigate('/shopBanned')
+                    // return navigate('/shopBanned')
                 }
             })
             .catch(err => {

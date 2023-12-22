@@ -54,7 +54,7 @@ function CouponDetail() {
                     setTotalItems(res.data.result.totalItems);
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đang bị khóa.")
-                    return navigate('/shopBanned')
+                    // return navigate('/shopBanned')
                 }
                 else {
                     notification("error", "Vui lòng kiểm tra lại.")

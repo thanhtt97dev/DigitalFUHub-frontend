@@ -215,7 +215,7 @@ function ProductsBan() {
                     }, 500)
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đang bị khóa.")
-                    return navigate('/shopBanned')
+                    // return navigate('/shopBanned')
                 } else if (res.data.status.responseCode === RESPONSE_CODE_NOT_ACCEPT) {
                     notification('error', "Tham số tìm kiếm không hợp lệ!");
                     setLoading(false)

@@ -100,7 +100,7 @@ function EditProduct() {
                     setProductVariants(productVariants.map((value) => ({ id: value.productVariantId, nameVariant: value.name, price: value.price, discount: value.discount, data: value.assetInformations, file: undefined })));
                 } else if (res.data.status.responseCode === RESPONSE_CODE_SHOP_BANNED) {
                     notification("error", "Cửa hàng của bạn đang bị khóa.")
-                    return navigate('/shopBanned')
+                    // return navigate('/shopBanned')
                 }
             })
             .catch((err) => {
