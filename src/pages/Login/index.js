@@ -80,7 +80,7 @@ function Login() {
                 }
             })
             .catch((err) => {
-                setMessage(err.response.data);
+                setMessage(err.response.data === "Username or Password not correct!" ? "Tài khoản hoặc mật khẩu không chính sác!" : err.response.data);
                 if (err.response.status === 416) { //handle 2FA
                     return navigate(`/verification2FA/${err.response.data}`);
                 }

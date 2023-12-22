@@ -360,7 +360,7 @@ function CouponDetail() {
                                                             />
                                                             <Column
                                                                 width="20%"
-                                                                title="Tổng tiền đơn hàng"
+                                                                title="Thành tiền"
                                                                 key="totalAmount"
                                                                 render={(_, record) => {
                                                                     return <p>{formatPrice(record.totalAmount - record.totalCouponDiscount)}</p>
