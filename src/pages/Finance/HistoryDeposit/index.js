@@ -12,7 +12,10 @@ import { formatPrice, ParseDateTime } from '~/utils/index'
 //import dayjs from 'dayjs';
 import {
     RESPONSE_CODE_SUCCESS,
-    PAGE_SIZE
+    PAGE_SIZE,
+    DEPOSIT_TRANSACTION_STATUS_UNPAY,
+    DEPOSIT_TRANSACTION_STATUS_PAIDED,
+    DEPOSIT_TRANSACTION_STATUS_EXPIRED
 } from "~/constants";
 import ModalRequestDeposit from "~/components/Modals/ModalRequestDeposit";
 
@@ -66,27 +69,43 @@ const columns = [
     },
     {
         title: 'Trạng thái',
-        dataIndex: 'isPay',
+        dataIndex: 'depositTransactionStatusId',
         width: '12%',
-        render: (paidDate, record) => {
+        render: (depositTransactionStatusId, record) => {
             return (
-                record.isPay ?
-                    <Tag color="#52c41a">Thành công</Tag>
-                    :
-                    <Tag color="#eeda49">Đang xử lý</Tag>
+                <>
+                    {(() => {
+                        if (depositTransactionStatusId === DEPOSIT_TRANSACTION_STATUS_UNPAY) {
+                            return <Tag color="#eeda49">Đang xử lý</Tag>
+                        } else if (depositTransactionStatusId === DEPOSIT_TRANSACTION_STATUS_PAIDED) {
+                            return <Tag color="#52c41a">Thành công</Tag>
+                        } else if (depositTransactionStatusId === DEPOSIT_TRANSACTION_STATUS_EXPIRED) {
+                            return <Tag color="gray">Đã hết hạn</Tag>
+                        } else {
+                            return ""
+                        }
+                    })()}
+                </>
             )
         }
     },
     {
         title: '',
-        dataIndex: 'isPay',
+        dataIndex: 'depositTransactionStatusId',
         width: '10%',
-        render: (isPay, record) => {
+        render: (depositTransactionStatusId, record) => {
             return (
-                isPay ?
-                    ""
-                    :
-                    <Link to={"/deposit"} state={{ amount: record.amount, code: record.code }}>Quét mã QR</Link>
+                <>
+                    {(() => {
+                        if (depositTransactionStatusId === DEPOSIT_TRANSACTION_STATUS_UNPAY) {
+                            return (
+                                <Link to={"/deposit"} state={{ amount: record.amount, code: record.code }}>Quét mã QR</Link>
+                            )
+                        } else {
+                            return ""
+                        }
+                    })()}
+                </>
             )
         }
     },
@@ -168,7 +187,7 @@ function HistoryDeposit() {
         }
 
         setSearchData({
-            depositTransactionId: values.depositTransactionId,
+            depositTransactionId: values.depositTransactionId + "",
             fromDate: (values.date === undefined) ? '' : values.date[0].$d.toLocaleDateString(),
             toDate: (values.date === undefined) ? '' : values.date[1].$d.toLocaleDateString(),
             //fromDate: values.date[0].$d.toLocaleDateString(),
@@ -237,8 +256,9 @@ function HistoryDeposit() {
                                         <Form.Item name="status" >
                                             <Select >
                                                 <Select.Option value={0}>Tất cả</Select.Option>
-                                                <Select.Option value={1}>Thành công</Select.Option>
-                                                <Select.Option value={2}>Đang xử lý</Select.Option>
+                                                <Select.Option value={1}>Đang xử lý</Select.Option>
+                                                <Select.Option value={2}>Thành công</Select.Option>
+                                                <Select.Option value={3}>Đã hết hạn</Select.Option>
                                             </Select>
                                         </Form.Item>
                                     </Col>

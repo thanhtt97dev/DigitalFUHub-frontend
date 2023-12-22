@@ -194,7 +194,7 @@ function HistoryWithdraw() {
         }
 
         setSearchData({
-            withdrawTransactionId: values.withdrawTransactionId,
+            withdrawTransactionId: values.withdrawTransactionId + "",
             fromDate: (values.date === undefined) ? '' : values.date[0].$d.toLocaleDateString(),
             toDate: (values.date === undefined) ? '' : values.date[1].$d.toLocaleDateString(),
             //fromDate: values.date[0].$d.toLocaleDateString(),
