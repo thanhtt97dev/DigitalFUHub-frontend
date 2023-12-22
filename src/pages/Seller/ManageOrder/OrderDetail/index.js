@@ -311,7 +311,7 @@ function OrderDetailSeller() {
     };
     const handleDisplayAssetInformation = (index) => {
         setHideAssetInformationOrder(prev => {
-            let newValue = [prev];
+            let newValue = [...prev];
             newValue[index] = false;
             return newValue;
         })
@@ -553,7 +553,7 @@ function OrderDetailSeller() {
                                                                     label: <label>Thông tin tài khoản <Tooltip title={hideAssetInformationOrder[i] === true ? "Hiển thị" : "Ẩn"}>{hideAssetInformationOrder[i] === true ? <EyeOutlined style={{ cursor: 'pointer' }} onClick={() => handleDisplayAssetInformation(i)} /> : <EyeInvisibleOutlined style={{ cursor: 'pointer' }} onClick={() => handleHideAssetInformation(i)} />}</Tooltip></label>,
                                                                     labelStyle: { 'text-align': 'right', width: '30%', fontWeight: 'bold' },
                                                                     span: '3',
-                                                                    children: v?.assetInformations?.map((v, i) => (<><Text key={i}>{hideAssetInformationOrder[i] === true ? "******" : v}</Text><br /></>))
+                                                                    children: v?.assetInformations?.map((v, ind) => (<><Text key={i}>{hideAssetInformationOrder[i] === true ? "******" : v}</Text><br /></>))
                                                                 },
                                                             ]} />
                                                         </Col>

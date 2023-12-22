@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col } from "antd";
+import { Card, Table, Tag, Button, Form, Input, DatePicker, Select, Row, Col, Tooltip } from "antd";
 import locale from 'antd/es/date-picker/locale/vi_VN';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import classNames from "classnames/bind";
@@ -23,7 +23,7 @@ import {
     RESPONSE_CODE_SHOP_BANNED
 } from "~/constants";
 import Column from "antd/es/table/Column";
-import { FileExcelOutlined, SearchOutlined } from "@ant-design/icons";
+import { FileExcelOutlined, QuestionCircleOutlined, SearchOutlined } from "@ant-design/icons";
 
 const cx = classNames.bind(styles);
 const { RangePicker } = DatePicker;
@@ -300,7 +300,7 @@ function Orders() {
                             title="Mã giảm giá sử dụng"
                             key="totalCouponDiscount"
                             render={(_, record) => (
-                                <p>{record.totalCouponDiscount === 0 ? "Không sử dụng" : `${formatPrice(record.totalCouponDiscount)}`}</p>
+                                <p>{record.totalCouponDiscount === 0 ? "Không sử dụng" : `-${formatPrice(record.totalCouponDiscount)}`}</p>
                             )}
                         />
                         <Column
@@ -312,8 +312,8 @@ function Orders() {
                             )}
                         />
                         <Column
-                            width="12%"
-                            title="Phí dịch vụ"
+                            width="14%"
+                            title={<div>Phí dịch vụ <Tooltip title="Tính theo tổng giá trị đơn hàng"><QuestionCircleOutlined /></Tooltip></div>}
                             key="businessFee"
                             render={(_, record) => (
                                 <p>{record.businessFee}%</p>
