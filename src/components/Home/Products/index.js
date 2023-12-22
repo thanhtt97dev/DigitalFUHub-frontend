@@ -11,6 +11,7 @@ const { Text } = Typography;
 const cx = classNames.bind(styles);
 ///
 
+
 /// styles
 const styleImage = { width: '100%', height: 192 }
 const styleRatingStar = { color: '#ee4d2d', fontSize: '.625rem', borderBottom: '1px solid white' }
@@ -26,6 +27,8 @@ const Products = ({ products, searchParam, totalProducts, setSearchParam }) => {
     /// router
     const navigate = useNavigate();
     ///
+
+
 
     /// handles
     const handleClickToProduct = (productId) => {

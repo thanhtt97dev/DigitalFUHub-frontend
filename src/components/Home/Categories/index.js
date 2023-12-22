@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import classNames from 'classnames/bind';
 import styles from '~/pages/Home/Home.module.scss';
+import Icon from "../Icons";
 import { Space } from 'antd';
 import { getAllCategory } from "~/api/category";
 import { RESPONSE_CODE_SUCCESS } from '~/constants';
@@ -55,13 +56,23 @@ const Categories = ({ searchParam, setSearchParam }) => {
             <p className={cx('text-title')}>DANH MỤC</p>
         </div>
         <Space size={[0, 0]} wrap>
-            <div className={cx('item-category')} style={searchParam.categoryId === 0 ? styleCategorySelected : {}} onClick={() => handleSelectCategory(0)}>
-                <p>Tất cả</p>
+            <div className={cx('item-category')} onClick={() => handleSelectCategory(0)}>
+                <Space direction="vertical" size={15} style={{ textAlign: 'center' }}>
+                    <Icon category={{ categoryId: 0 }} />
+                    <p style={searchParam.categoryId === 0 ? styleCategorySelected : {}}>
+                        Tất cả
+                    </p>
+                </Space>
             </div>
             {
                 categories.map((category, index) => (
-                    <div key={index} className={cx('item-category')} onClick={() => handleSelectCategory(category.categoryId)} style={searchParam.categoryId === category.categoryId ? styleCategorySelected : {}}>
-                        <p style={searchParam.categoryId === category.categoryId ? styleCategorySelected : {}}>{category.categoryName}</p>
+                    <div key={index} className={cx('item-category')} onClick={() => handleSelectCategory(category.categoryId)}>
+                        <Space direction="vertical" size={15} style={{ textAlign: 'center' }}>
+                            <Icon category={category} />
+                            <p style={searchParam.categoryId === category.categoryId ? styleCategorySelected : {}}>
+                                {category.categoryName}
+                            </p>
+                        </Space>
                     </div>
                 ))
             }
