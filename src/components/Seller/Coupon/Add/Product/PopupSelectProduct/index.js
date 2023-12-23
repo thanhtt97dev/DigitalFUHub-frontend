@@ -132,7 +132,7 @@ function PopupSelectProduct({ lsProductApplied, onSetLsProductApplied, isOpen, o
         setParamSearchProduct({
             productId: !productId ? '' : productId.trim(),
             productName: !productName ? '' : productName.trim(),
-            page
+            page: 1
         })
     }
     const handleTableChange = (pagination, filters, sorter) => {
