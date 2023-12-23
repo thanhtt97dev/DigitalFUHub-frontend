@@ -95,19 +95,19 @@ function SearchProduct() {
             })
     }, [searchParams])
     const handleChangeSelectRating = (e) => {
-        let newSearchParams = { ...getSearchParams, rating: e.target.value };
+        let newSearchParams = { ...getSearchParams, rating: e.target.value, page: 1 };
         return navigate(`/search?${ConvertSearchParamObjectToString(newSearchParams)}`)
     }
     const handleInputRangePrice = (minPrice, maxPrice) => {
-        let newSearchParams = { ...getSearchParams, minPrice, maxPrice };
+        let newSearchParams = { ...getSearchParams, minPrice, maxPrice, page: 1 };
         return navigate(`/search?${ConvertSearchParamObjectToString(newSearchParams)}`)
     }
     const handleChangeSelectCategory = (e) => {
-        let newSearchParams = { ...getSearchParams, category: e.target.value };
+        let newSearchParams = { ...getSearchParams, category: e.target.value, page: 1 };
         return navigate(`/search?${ConvertSearchParamObjectToString(newSearchParams)}`)
     }
     const handleChangeSelectSort = (e) => {
-        let newSearchParams = { ...getSearchParams, sort: e.target.value };
+        let newSearchParams = { ...getSearchParams, sort: e.target.value, page: 1 };
         return navigate(`/search?${ConvertSearchParamObjectToString(newSearchParams)}`)
     }
     const handleSelectPage = (value) => {
