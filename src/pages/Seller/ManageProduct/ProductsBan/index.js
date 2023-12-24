@@ -16,7 +16,7 @@ import {
 } from "~/constants";
 import { getUserId } from "~/utils"
 
-import { formatPrice } from "~/utils";
+import { formatPrice, sliceText } from "~/utils";
 
 import classNames from 'classnames/bind';
 import styles from './ProductBan.module.scss';
@@ -42,7 +42,7 @@ const columns = [
                     </Col>
                     <Col style={{ paddingLeft: "10px" }}>
                         <Row>
-                            <b>{record.productName}</b>
+                            <b>{sliceText(record.productName, 29)}</b>
                         </Row>
                         <Row style={{ marginTop: "10px" }}>
                             <Col offset={1} span={10}>
@@ -70,7 +70,7 @@ const columns = [
                 </Row>
             )
         },
-        width: '30%',
+        width: '40%',
     },
     {
         title: 'Phân loại hàng',
@@ -78,11 +78,11 @@ const columns = [
         render: (productVariants, record) => {
             return (
                 productVariants.map(element => {
-                    return <Row>{element.productVariantName}</Row>
+                    return <Row>{sliceText(element.productVariantName, 33)}</Row>
                 })
             )
         },
-        width: '20%',
+        width: '30%',
     },
     {
         title: 'Giá',
@@ -94,7 +94,7 @@ const columns = [
                 })
             )
         },
-        width: '20%',
+        width: '15%',
     },
     {
         title: 'Kho hàng',
@@ -106,12 +106,12 @@ const columns = [
                 })
             )
         },
-        width: '15%',
+        width: '10%',
     },
     {
         title: 'Doanh số',
         dataIndex: 'soldCount',
-        width: '15%',
+        width: '10%',
     },
     {
         title: '',
