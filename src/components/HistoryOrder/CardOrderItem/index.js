@@ -17,7 +17,7 @@ import { useAuthUser } from 'react-auth-kit'
 
 import { getConversation } from '~/api/chat'
 import { ORDER_CONFIRMED, ORDER_WAIT_CONFIRMATION, ORDER_COMPLAINT, ORDER_DISPUTE, ORDER_REJECT_COMPLAINT, ORDER_SELLER_VIOLATES, ORDER_SELLER_REFUNDED, RESPONSE_CODE_SUCCESS, LIMIT_TIME_TO_FEEDBACK } from "~/constants";
-import { formatPrice, getDistanceDayTwoDate, getUserId } from "~/utils";
+import { formatPrice, getDistanceDayTwoDate, getUserId, sliceText } from "~/utils";
 import ModalChangeOrderStatusComplaint from "~/components/Modals/ModalChangeOrderStatusComplaint";
 import ModalAddFeedbackOrder from "~/components/Modals/ModalAddFeedbackOrder";
 
@@ -322,7 +322,7 @@ function CardOrderItem({
                                             <Col span={17}>
                                                 <Link to={`/product/${v.productId}`}>
                                                     <Title level={5}>
-                                                        {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
+                                                        {sliceText(v.productName, 50)}
                                                     </Title>
                                                 </Link>
                                             </Col>
@@ -334,7 +334,7 @@ function CardOrderItem({
                                             }
                                         </Row>
                                     </Col>
-                                    <Col span={24}><Text>{`Phân loại hàng: ${v.productVariantName}`}</Text></Col>
+                                    <Col span={24}><Text>{`Phân loại hàng: ${sliceText(v.productName, 36)}`}</Text></Col>
                                     <Col span={24}>
                                         <Row>
                                             <Col span={1}>

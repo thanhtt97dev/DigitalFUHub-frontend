@@ -36,21 +36,25 @@ const { Text, Title, Paragraph } = Typography;
 // }
 const getNote = (historyOrderStatus) => {
     if (!historyOrderStatus) return null;
+    let isOrderHistoryHaveNote = false;
     let notes = [];
     notes = historyOrderStatus.map((v, i) => {
         if (v.orderStatusId === ORDER_COMPLAINT && v.note) {
+            isOrderHistoryHaveNote = true;
             return <Descriptions bordered>
                 <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi người mua (Khiếu nại)`}>
                     {v.note}
                 </Descriptions.Item>
             </Descriptions>
         } else if ((v.orderStatusId === ORDER_DISPUTE || v.orderStatusId === ORDER_SELLER_REFUNDED) && v.note) {
+            isOrderHistoryHaveNote = true;
             return <Descriptions bordered>
                 <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi người bán (${v.orderStatusId === ORDER_DISPUTE ? 'Tranh chấp' : 'Hoàn trả tiền'})`}>
                     {v.note}
                 </Descriptions.Item>
             </Descriptions>
         } else if ((v.orderStatusId === ORDER_REJECT_COMPLAINT || v.orderStatusId === ORDER_SELLER_VIOLATES) && v.note) {
+            isOrderHistoryHaveNote = true;
             return <Descriptions bordered>
                 <Descriptions.Item labelStyle={{ width: '25%', color: 'red', fontWeight: '600' }} label={`Phản hồi quản trị viên (${v.orderStatusId === ORDER_REJECT_COMPLAINT ? 'Từ chối khiếu nại' : 'Người bán vi phạm'})`}>
                     {v.note}
@@ -60,7 +64,20 @@ const getNote = (historyOrderStatus) => {
             return null;
         }
     })
-    return notes;
+    if (isOrderHistoryHaveNote === false) return null;
+    return (
+        <Card
+            title="Thông tin xử lý đơn hàng"
+            style={{
+                width: "100%",
+                boxShadow: "0 3px 10px rgb(0 0 0 / 0.2)",
+                borderRadius: "10px",
+                marginBottom: "20px"
+            }}
+        >
+            {notes}
+        </Card>
+    )
 }
 function OrderDetailSeller() {
     const notification = useContext(NotificationContext);
@@ -456,9 +473,20 @@ function OrderDetailSeller() {
             <Spin spinning={loading}>
                 {!loading &&
                     <>
-                        <HistoryOrderStatus historyOrderStatus={order?.historyOrderStatus} current={order?.statusId} />
                         <Card
-                            style={{ margin: '3em 0em 3em 0em' }}
+                            style={{
+                                width: "100%",
+                                boxShadow: "0 3px 10px rgb(0 0 0 / 0.1)"
+                            }}
+                        >
+                            <HistoryOrderStatus historyOrderStatus={order?.historyOrderStatus} current={order?.statusId} />
+                        </Card>
+                        <Card
+                            style={{
+                                margin: '3em 0em 3em 0em',
+                                width: "100%",
+                                boxShadow: "0 3px 10px rgb(0 0 0 / 0.1)"
+                            }}
                             title={<Row gutter={[8, 0]} align="bottom">
                                 <Col>
                                     {/* <Title level={5}><UserOutlined style={{ fontSize: '18px' }} /></Title> */}
@@ -485,88 +513,93 @@ function OrderDetailSeller() {
                             <Row gutter={[0, 32]}>
                                 {order?.orderDetails?.map((v, i) => {
                                     return (
-                                        <Col span={24} key={i}>
-                                            <Row gutter={[8, 8]}>
-                                                <Col flex={0}>
-                                                    <Link to={`/product/${v.productId}`} target="_blank" rel="noopener noreferrer" >
-                                                        <Image
-                                                            width={100}
-                                                            height={100}
-                                                            src={v.thumbnail}
-                                                            preview={false}
-                                                        />
-                                                    </Link>
-                                                </Col>
-                                                <Col flex={5}>
-                                                    <Row>
-                                                        <Col span={24}>
-                                                            <Row>
-                                                                <Col span={17}>
-                                                                    <Title level={5} style={{ marginBottom: 0 }}>
-                                                                        {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
-                                                                    </Title>
-                                                                </Col>
-                                                                {v.isFeedback && <Col offset={1} span={6}>
-                                                                    <Row justify="end" gutter={[8, 0]}>
-                                                                        <Col>
-                                                                            <Text>Đánh giá</Text>
-                                                                        </Col>
-                                                                        <Col>
-                                                                            <Rate style={{
-                                                                                fontSize: '14px',
-                                                                                lineHeight: '1.2',
-                                                                            }} disabled value={v.feedbackRate} />
-                                                                        </Col>
-                                                                    </Row>
-                                                                </Col>}
-                                                            </Row>
-                                                        </Col>
-                                                        <Col span={24}><Text>{`Phân loại: ${v.productVariantName}`}</Text></Col>
-                                                        <Col span={24}>
-                                                            <Row>
-                                                                <Col span={1}>
-                                                                    <Text>{`x${v.quantity}`}</Text>
-                                                                </Col>
-                                                                <Col span={23}>
-                                                                    <Row justify="end">
-                                                                        {v.discount === 0 ?
-                                                                            <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(parseInt(v.price))}</Text>
-                                                                            :
-                                                                            <Space size={[8, 0]}>
-                                                                                <Text delete style={{ color: 'rgba(0, 0, 0, .4)' }}>{formatPrice(parseInt(v.price))}</Text>
-                                                                                <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(parseInt(v.price - (v.price * v.discount / 100)))}</Text>
-                                                                            </Space>
-                                                                        }
-                                                                    </Row>
-                                                                </Col>
+                                        <Card
+                                            style={{
+                                                width: "100%",
+                                                boxShadow: "0 3px 10px rgb(0 0 0 / 0.1)"
+                                            }}
+                                        >
+                                            <Col span={24} key={i}>
+                                                <Row gutter={[8, 8]}>
+                                                    <Col flex={0}>
+                                                        <Link to={`/product/${v.productId}`} target="_blank" rel="noopener noreferrer" >
+                                                            <Image
+                                                                width={100}
+                                                                height={100}
+                                                                src={v.thumbnail}
+                                                                preview={false}
+                                                            />
+                                                        </Link>
+                                                    </Col>
+                                                    <Col flex={5}>
+                                                        <Row>
+                                                            <Col span={24}>
+                                                                <Row>
+                                                                    <Col span={17}>
+                                                                        <Title level={5} style={{ marginBottom: 0 }}>
+                                                                            {v.productName.length > 70 ? <Tooltip title={v.productName}>{v.productName.slice(0, 70)}...</Tooltip> : v.productName}
+                                                                        </Title>
+                                                                    </Col>
+                                                                    {v.isFeedback && <Col offset={1} span={6}>
+                                                                        <Row justify="end" gutter={[8, 0]}>
+                                                                            <Col>
+                                                                                <Text>Đánh giá</Text>
+                                                                            </Col>
+                                                                            <Col>
+                                                                                <Rate style={{
+                                                                                    fontSize: '14px',
+                                                                                    lineHeight: '1.2',
+                                                                                }} disabled value={v.feedbackRate} />
+                                                                            </Col>
+                                                                        </Row>
+                                                                    </Col>}
+                                                                </Row>
+                                                            </Col>
+                                                            <Col span={24}><Text>{`Phân loại: ${v.productVariantName}`}</Text></Col>
+                                                            <Col span={24}>
+                                                                <Row>
+                                                                    <Col span={1}>
+                                                                        <Text>{`x${v.quantity}`}</Text>
+                                                                    </Col>
+                                                                    <Col span={23}>
+                                                                        <Row justify="end">
+                                                                            {v.discount === 0 ?
+                                                                                <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(parseInt(v.price))}</Text>
+                                                                                :
+                                                                                <Space size={[8, 0]}>
+                                                                                    <Text delete style={{ color: 'rgba(0, 0, 0, .4)' }}>{formatPrice(parseInt(v.price))}</Text>
+                                                                                    <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(parseInt(v.price - (v.price * v.discount / 100)))}</Text>
+                                                                                </Space>
+                                                                            }
+                                                                        </Row>
+                                                                    </Col>
 
-                                                            </Row>
-                                                        </Col>
-                                                    </Row>
-                                                </Col>
-                                                <Col span={24}>
-                                                    <Row justify='end'>
-                                                        <Col span={24}>
-                                                            <Descriptions bordered items={[
-                                                                {
-                                                                    key: '1',
-                                                                    label: <label>Thông tin tài khoản <Tooltip title={hideAssetInformationOrder[i] === true ? "Hiển thị" : "Ẩn"}>{hideAssetInformationOrder[i] === true ? <EyeOutlined style={{ cursor: 'pointer' }} onClick={() => handleDisplayAssetInformation(i)} /> : <EyeInvisibleOutlined style={{ cursor: 'pointer' }} onClick={() => handleHideAssetInformation(i)} />}</Tooltip></label>,
-                                                                    labelStyle: { 'text-align': 'right', width: '30%', fontWeight: 'bold' },
-                                                                    span: '3',
-                                                                    children: v?.assetInformations?.map((v, ind) => (<><Text key={i}>{hideAssetInformationOrder[i] === true ? "******" : v}</Text><br /></>))
-                                                                },
-                                                            ]} />
-                                                        </Col>
-                                                    </Row>
-                                                </Col>
-                                            </Row>
-                                        </Col>
+                                                                </Row>
+                                                            </Col>
+                                                        </Row>
+                                                    </Col>
+                                                    <Col span={24}>
+                                                        <Row justify='end'>
+                                                            <Col span={24}>
+                                                                <Descriptions bordered items={[
+                                                                    {
+                                                                        key: '1',
+                                                                        label: <label>Thông tin tài khoản <Tooltip title={hideAssetInformationOrder[i] === true ? "Hiển thị" : "Ẩn"}>{hideAssetInformationOrder[i] === true ? <EyeOutlined style={{ cursor: 'pointer' }} onClick={() => handleDisplayAssetInformation(i)} /> : <EyeInvisibleOutlined style={{ cursor: 'pointer' }} onClick={() => handleHideAssetInformation(i)} />}</Tooltip></label>,
+                                                                        labelStyle: { 'text-align': 'right', width: '30%', fontWeight: 'bold' },
+                                                                        span: '3',
+                                                                        children: v?.assetInformations?.map((v, ind) => (<><Text key={i}>{hideAssetInformationOrder[i] === true ? "******" : v}</Text><br /></>))
+                                                                    },
+                                                                ]} />
+                                                            </Col>
+                                                        </Row>
+                                                    </Col>
+                                                </Row>
+                                            </Col>
+                                        </Card>
                                     )
                                 })}
                             </Row>
-                            <div style={{ marginTop: '1em' }}>
-                                {getNote(order?.historyOrderStatus)}
-                            </div>
+
                         </Card>
                         {/* {order?.note &&
                             <>
@@ -575,6 +608,8 @@ function OrderDetailSeller() {
                                 </Descriptions>
                             </>
                         } */}
+
+                        {getNote(order?.historyOrderStatus)}
 
                         <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
                             <Col span={24}>

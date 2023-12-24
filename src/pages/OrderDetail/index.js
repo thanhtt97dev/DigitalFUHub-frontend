@@ -73,18 +73,15 @@ const getNote = (historyOrderStatus) => {
     return (
         <Card
             title="Thông tin xử lý đơn hàng"
-            style={{ marginTop: '20px' }}
+            style={{
+                marginTop: '10px',
+                marginBottom: "20px",
+                width: "100%",
+                boxShadow: "0 3px 10px rgb(0 0 0 / 0.2)",
+                borderRadius: "10px"
+            }}
         >
-            <div
-                style={{
-                    width: "100%",
-                    boxShadow: "0 3px 10px rgb(0 0 0 / 0.2)",
-                    borderRadius: "10px"
-                }}
-            >
-                {notes}
-
-            </div>
+            {notes}
         </Card>
     )
 }
@@ -473,6 +470,9 @@ function OrderDetail() {
                                     </Descriptions>
                                 </>
                             } */}
+
+                            {getNote(order?.historyOrderStatus)}
+
                             <Card style={{ marginTop: '5px' }}>
                                 <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
                                     <Col span={24}>
@@ -523,10 +523,6 @@ function OrderDetail() {
                                     </Col> */}
                                 </Row>
                             </Card>
-
-                            <div>
-                                {getNote(order?.historyOrderStatus)}
-                            </div>
 
                             <Row gutter={[0, 16]} style={{ marginTop: '1em' }}>
                                 <Col span={24}>
