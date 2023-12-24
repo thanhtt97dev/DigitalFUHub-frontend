@@ -3,6 +3,7 @@ import { format, register } from 'timeago.js';
 import jwtDecode from 'jwt-decode'
 import CryptoJS from 'crypto-js';
 import { Workbook } from 'exceljs'
+import { Tooltip } from 'antd';
 
 //API
 
@@ -252,4 +253,11 @@ export function getDistanceDayTwoDate(date1, date2) {
     return diff / (24 * 60 * 60 * 1000)
 }
 
+export const sliceText = (text, to) => {
+    var length = text.length;
+    if (length - 3 <= to) {
+        return text
+    }
+    return <Tooltip title={text}>{text.slice(0, to) + "..."}</Tooltip>
+}
 

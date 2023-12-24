@@ -8,7 +8,11 @@ import { NotificationContext } from '~/context/UI/NotificationContext';
 import { getWithdrawTransaction } from '~/api/bank'
 import Spinning from "~/components/Spinning";
 import ModalRequestWithdraw from "~/components/Modals/ModalRequestWithdraw";
-import { formatPrice, ParseDateTime } from '~/utils/index'
+import {
+    formatPrice,
+    ParseDateTime,
+    sliceText
+} from '~/utils/index'
 //import dayjs from 'dayjs';
 import {
     RESPONSE_CODE_SUCCESS,
@@ -69,6 +73,11 @@ function HistoryWithdraw() {
             title: 'Đơn vị thụ hưởng',
             dataIndex: 'creditAccountName',
             width: '12%',
+            render: (creditAccountName) => {
+                return (
+                    <span>{sliceText(creditAccountName, 25)}</span>
+                )
+            }
         },
         {
             title: 'Số tài khoản',
@@ -79,6 +88,11 @@ function HistoryWithdraw() {
             title: 'Ngân hàng đối tác',
             dataIndex: 'bankName',
             width: '12%',
+            render: (bankName) => {
+                return (
+                    <span>{sliceText(bankName, 25)}</span>
+                )
+            }
         },
         {
             title: 'Trạng thái',
