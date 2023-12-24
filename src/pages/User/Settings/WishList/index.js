@@ -235,6 +235,9 @@ const WishList = () => {
         <Spinning spinning={isLoadingProducts}>
             <div>
                 <Card title={<Space size={20} align="center">{isEdit ? <Checkbox onChange={handleCheckAll} indeterminate={indeterminateCheckAll} checked={checkAll}></Checkbox> : <></>}<p>Danh sách các sản phẩm yêu thích</p></Space>} style={styleContainer}
+                    headStyle={{
+                        backgroundColor: "#f5f5f5"
+                    }}
                     bodyStyle={{ padding: 15 }}
                     extra={<>
                         {products.length > 0 && (isEdit ? <Button type="link" onClick={handleClickComplete}><Text type="success">Hoàn tất</Text></Button>

@@ -60,11 +60,11 @@ function OrderDetailItem({ dateConfirmed, orderDetail, statusId, hideAssetInform
                                 <Col span={23}>
                                     <Row justify="end">
                                         {orderDetail.discount === 0 ?
-                                            <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(orderDetail.price)}</Text>
+                                            <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(parseInt(orderDetail.price))}</Text>
                                             :
                                             <Space size={[8, 0]}>
-                                                <Text delete style={{ color: 'rgba(0, 0, 0, .4)' }}>{formatPrice(orderDetail.price)}</Text>
-                                                <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(orderDetail.price - (orderDetail.price * orderDetail.discount / 100))}</Text>
+                                                <Text delete style={{ color: 'rgba(0, 0, 0, .4)' }}>{formatPrice(parseInt(orderDetail.price))}</Text>
+                                                <Text style={{ color: 'rgb(22, 119, 255)', fontWeight: '600' }}>{formatPrice(parseInt(orderDetail.price - (orderDetail.price * orderDetail.discount / 100)))}</Text>
                                             </Space>
                                         }
                                     </Row>

@@ -374,8 +374,11 @@ function OrderDetail() {
 
         {order &&
             <Card
-                style={{
+                headStyle={{
                     backgroundColor: "#f5f5f5"
+                }}
+                bodyStyle={{
+                    backgroundColor: 'rgba(245, 245, 245, 0.6)'
                 }}
                 title={
                     <Row>
@@ -415,7 +418,7 @@ function OrderDetail() {
                                         <Title level={5}>
                                             <Link to={`/shop/${order.shopId}`}>
                                                 <Button
-                                                    type="primary"
+                                                    // type="primary"
                                                     size="small"
                                                     icon={<ShopOutlined />}
                                                 >
@@ -444,7 +447,7 @@ function OrderDetail() {
                                         return (
                                             <Card style={{
                                                 width: "100%",
-                                                boxShadow: "0 3px 10px rgb(0 0 0 / 0.2)"
+                                                boxShadow: "0 3px 10px rgb(0 0 0 / 0.1)"
                                             }}>
                                                 <OrderDetailItem
                                                     key={i}

@@ -222,8 +222,8 @@ export const getVietnamCurrentTime = () => {
 }
 
 export function discountPrice(price, discount) {
-    const result = price * discount / 100
-    return (price - result)
+    const result = price * discount / 100;
+    return parseInt(price - result);
 }
 
 export const stringGuid = () => {

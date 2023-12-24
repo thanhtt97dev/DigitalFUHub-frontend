@@ -30,7 +30,11 @@ function Wallet() {
             })
     }, [])
     return (<>
-        <Card title="Thông tin ví của tôi">
+        <Card title="Thông tin ví của tôi"
+            headStyle={{
+                backgroundColor: "#f5f5f5"
+            }}
+        >
             <Spinning spinning={loading}>
                 {!loading
                     ?
