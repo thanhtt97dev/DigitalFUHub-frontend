@@ -55,10 +55,10 @@ const columns = [
         width: '15%',
         render: (paidDate, record) => {
             return (
-                record.isPay ?
-                    <p>{ParseDateTime(paidDate)}</p>
+                (record.depositTransactionStatusId === DEPOSIT_TRANSACTION_STATUS_PAIDED) ?
+                    <span>{ParseDateTime(paidDate)}</span>
                     :
-                    <p>TBD</p>
+                    <span>TBD</span>
             )
         }
     },
