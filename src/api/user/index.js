@@ -93,8 +93,8 @@ export const getCoinUser = (id) => {
     return apiGetAuth(`api/users/GetCoin/${id}`);
 };
 
-export const confirmEmail = (token) => {
-    return apiGet(`api/users/ConfirmEmail/${token}`);
+export const confirmEmail = (data) => {
+    return apiPost(`api/users/ConfirmEmail`, data);
 };
 export const generateTokenConfirmEmail = (email) => {
     return apiGet(`api/users/GenerateTokenConfirmEmail/${email}`);

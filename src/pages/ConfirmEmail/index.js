@@ -18,7 +18,10 @@ function ConfirmEmail() {
     useEffect(() => {
         const tokenParam = searchParams.get("token");
         if (tokenParam) {
-            confirmEmail(tokenParam)
+            const data = {
+                token: tokenParam
+            };
+            confirmEmail(data)
                 .then((res) => {
                     if (res.data.status.responseCode === RESPONSE_CODE_SUCCESS) {
                         notification('success', 'Xác thực tài khoản thành công.')
