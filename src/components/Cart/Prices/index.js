@@ -174,7 +174,7 @@ const Prices = ({ dataPropPriceComponent }) => {
         for (let i = 0; i < carts.length; i++) {
             const cartDetails = carts[i].products;
             const cartDetailsFil = cartDetails.filter(x => cartDetailIdSelecteds.includes(x.cartDetailId));
-            if (cartDetailsFil) {
+            if (cartDetailsFil.length > 0) {
                 // add order dto
                 const shopProduct = {
                     shopId: carts[i].shopId,
