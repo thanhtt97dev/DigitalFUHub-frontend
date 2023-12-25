@@ -130,10 +130,11 @@ function Personal() {
 
         if (newFullName === undefined || newFullName === "") {
             return Promise.reject("Họ và tên không được bỏ trống");
-        } else if (!validator.isAlpha(newFullName, 'vi-VN', { ignore: ' ' })) {
-
-            return Promise.reject("Họ và tên chỉ chứa các kí tự chữ cái");
-        } else {
+        }
+        // else if (!validator.isAlpha(newFullName, 'vi-VN', { ignore: ' ' })) {
+        //     return Promise.reject("Họ và tên chỉ chứa các kí tự chữ cái");
+        // } 
+        else {
             return Promise.resolve()
 
         }
