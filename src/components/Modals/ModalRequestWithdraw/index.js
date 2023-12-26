@@ -105,7 +105,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
         setAmount(e.target.value)
         if (value < MIN_PRICE_CAN_WITHDRAW) {
             setDisableBtnSubmit(true)
-            setMessage("Số tiền cần phải lớn hơn hoặc bằng 100,000 VND ")
+            setMessage("Số tiền cần phải lớn hơn hoặc bằng 50,000 VND ")
         } else if (value > MAX_PRICE_CAN_WITHDRAW) {
             setMessage("Số tiền cần phải nhỏ hơn hoặc bằng 3,000,000 VND ")
             setDisableBtnSubmit(true)
@@ -194,7 +194,7 @@ function ModalRequestWithdraw({ userId, text, style, callBack }) {
                     <div>
                         <b style={{ color: "red" }}>Chú ý:</b>
                         <div style={{ marginLeft: "10px" }}>
-                            <i>Số tiền bạn có thể rút trong 1 yêu cầu trong khoảng <b>100,000 - 3,000,000 VND</b></i>
+                            <i>Số tiền bạn có thể rút trong 1 yêu cầu trong khoảng <b>50,000 - 3,000,000 VND</b></i>
                             <br />
                             <i>Một ngày bạn có thể tạo tối đa {NUMBER_WITH_DRAW_REQUEST_CAN_MAKE_A_DAY} yêu cầu rút tiền </i>
                         </div>
